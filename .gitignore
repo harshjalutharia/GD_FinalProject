@@ -75,3 +75,5 @@ crashlytics-build.properties
 **/.DS_Store
 **/*_ignore
 **/*_ignore.meta
+
+.idea/
