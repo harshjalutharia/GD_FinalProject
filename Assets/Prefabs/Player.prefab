@@ -200,7 +200,7 @@ MonoBehaviour:
   jumpKey: 32
   GroundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 4294967295
   grounded: 0
   orientation: {fileID: 3827837098921800371}
   animator: {fileID: 2929119099450096932}
@@ -209,6 +209,7 @@ MonoBehaviour:
     verticalSpeed: 0
     horizontalSpeed: 0
     requestJump: 0
+    sliding: 0
   debugText1: {fileID: 0}
   debugText2: {fileID: 0}
 --- !u!136 &2673767056869230301

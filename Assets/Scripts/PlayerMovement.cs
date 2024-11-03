@@ -11,16 +11,16 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Control how fast player moves, doesn't represent actual speed")]
     public float moveSpeed;
 
-    [SerializeField, Tooltip("Slide if current speed larger than this threshold")]
+    [SerializeField, Tooltip("READ ONLY. Slide if current speed larger than this threshold. Vmax=moveSpeed/groundDrag")]
     private float slideSpeedThreshold;
 
     [Tooltip("Limit the max walking speed, Vmax=moveSpeed/groundDrag")]
     public float groundDrag;
 
-    [Tooltip("Limit the max fly speed")] 
+    [Tooltip("Limit the max fly speed. Vmax_fly=moveSpeed/airDrag")] 
     public float airDrag;
 
-    [Tooltip("Resistance while sliding")] 
+    [Tooltip("Resistance Force while sliding")] 
     public float slideResistance;
     
     [Tooltip("Instantaneous force exerted during a jump")]
@@ -81,7 +81,7 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Animation Controller")]
     public Animator animator;
 
-    [SerializeField, Tooltip("Variables bind for animation control")]
+    [SerializeField, Tooltip("READ ONLY. Variables bind for animation control")]
     private AnimationVars animationVars;
     
 
@@ -239,6 +239,7 @@ public class PlayerMovement : MonoBehaviour
     
     private Vector3 CalculateResistance(float drag)
     {
+        // the resistance increases linearly with horizontal velocity. But has a max value
         Vector3 horizontalVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         float resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * drag, 0, moveSpeed + slideResistance);
         Vector3 resistanceForce = resistanceMag * horizontalVelocity.normalized;
@@ -261,6 +262,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("verticalSpeed", animationVars.verticalSpeed);
         animator.SetFloat("horizontalSpeed", animationVars.horizontalSpeed);
         animator.SetBool("requestJump", animationVars.requestJump);
+        animator.SetBool("sliding", animationVars.horizontalSpeed > slideSpeedThreshold);
     }
     
     
@@ -271,6 +273,7 @@ public class PlayerMovement : MonoBehaviour
         public float verticalSpeed;
         public float horizontalSpeed;
         public bool requestJump;
+        public bool sliding;
     }
 
     
