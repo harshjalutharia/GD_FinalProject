@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
 
     private void Start() {
         // Given the Session Memory, set the session seed already
-        SetSeed(SessionMemory.current.seed);
+        SetSeed(SessionMemory.current.seed, true);
 
         // === Start Camera ===
         m_startCameraFader.gameObject.SetActive(true);
@@ -74,15 +74,20 @@ public class GameManager : MonoBehaviour
         */
     }
 
-    public void SetSeed(string inputSeed) {
+    public void SetSeed(string inputSeed, bool setInputField = false) {
         if (inputSeed.Length > 0 && int.TryParse(inputSeed, out int parsedInt)) {
             m_userSeed = parsedInt;
-            return;
+            if (setInputField)  m_startSeedInputField.text = inputSeed;
         }
-        RandomizeSeed();
+        else {
+            RandomizeSeed();
+            if (setInputField)  m_startSeedInputField.text = "";
+        }
+       
     }
-    public void SetSeed(int inputSeed) {
+    public void SetSeed(int inputSeed, bool setInputField = false) {
         m_userSeed = inputSeed;
+        if (setInputField)  m_startSeedInputField.text = m_userSeed.ToString();
     }
     public void RandomizeSeed() {
         m_userSeed = UnityEngine.Random.Range(0, 100000);

@@ -7,7 +7,7 @@ public class SessionMemory : MonoBehaviour
     public static SessionMemory current;
 
     [Header("=== Stored Memory ===")]
-    [Tooltip("The seed integer that'll be shared across scenes")]   public int seed = -1;
+    [Tooltip("The seed integer that'll be shared across scenes")]   public string seed = "";
 
     private void Awake() {
         // Prevent any new ones from appearing
@@ -23,7 +23,7 @@ public class SessionMemory : MonoBehaviour
     }
 
     public void SetSeed(int newSeed) {
-        seed = newSeed;
+        seed = newSeed.ToString();
     }
 }
 
