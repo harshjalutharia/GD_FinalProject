@@ -8,13 +8,22 @@ using UnityEngine.Serialization;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
+    [Tooltip("Control how fast player moves, doesn't represent actual speed")]
     public float moveSpeed;
 
-    [Tooltip("Friction with ground")]
+    [SerializeField, Tooltip("Slide if current speed larger than this threshold")]
+    private float slideSpeedThreshold;
+
+    [Tooltip("Limit the max walking speed, Vmax=moveSpeed/groundDrag")]
     public float groundDrag;
 
-    [Tooltip("Friction in the air")] public float airDrag;
+    [Tooltip("Limit the max fly speed")] 
+    public float airDrag;
 
+    [Tooltip("Resistance while sliding")] 
+    public float slideResistance;
+    
+    [Tooltip("Instantaneous force exerted during a jump")]
     public float jumpForce;
     
     [Tooltip("Used to avoid double jump")]
@@ -23,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Used to reduces movement speed in the air")]
     public float airMultiplier;
     
-    [Tooltip("Ascending force")]
+    [Tooltip("Continuous force applied during flight")]
     public float flightForce;
     
     private bool readyToJump;
@@ -33,19 +42,19 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] 
     private bool requestFlight;
     
-    [Tooltip("Max stamina used for fly")]
+    [Tooltip("Maximum stamina for flight")]
     public float maxFlightStamina;
     
-    [Tooltip("How much stamina consumed when jump")]
-    public float JumpStaminaConsume;
+    [Tooltip("Stamina consumed by jumping")]
+    public float jumpStaminaConsume;
     
-    [SerializeField] 
+    [SerializeField, Tooltip("Current stamina")] 
     private float flightStamina;
     
-    [FormerlySerializedAs("flyStaminaDecreaseSpeed")] [Tooltip("Stamina consumption speed when flying")]
+    [Tooltip("Stamina consumed per second of flight")]
     public float flightStaminaDecreaseSpeed;
     
-    [FormerlySerializedAs("flyStaminaRefillSpeed")] [Tooltip("Stamina refill speed when grounded")]
+    [Tooltip("Stamina regained per second while on the ground")]
     public float flightStaminaRefillSpeed; 
 
     [Header("Input")]
@@ -69,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
 
     [Header("Animation")]
+    [Tooltip("Animation Controller")]
     public Animator animator;
 
     [SerializeField, Tooltip("Variables bind for animation control")]
@@ -86,6 +96,8 @@ public class PlayerMovement : MonoBehaviour
 
         readyToJump = true;
         flightStamina = maxFlightStamina;
+
+        slideSpeedThreshold = moveSpeed / groundDrag;
     }
 
     private void Update()
@@ -117,7 +129,7 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         MovePlayer();
-        SpeedControl();
+        // SpeedControl();
     }
 
     private void DealInput()
@@ -126,7 +138,7 @@ public class PlayerMovement : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
 
         // jump input
-        if(Input.GetKey(jumpKey) && readyToJump && grounded && flightStamina > JumpStaminaConsume)
+        if(Input.GetKey(jumpKey) && readyToJump && grounded && flightStamina > jumpStaminaConsume)
         {
             readyToJump = false;
             Invoke(nameof(ResetJump), jumpCooldown);
@@ -150,10 +162,10 @@ public class PlayerMovement : MonoBehaviour
     private void MovePlayer()
     {
         // handle drag
-        if (grounded)
-            rb.drag = groundDrag;
-        else
-            rb.drag = airDrag;
+        // if (grounded)
+        //     rb.drag = groundDrag;
+        // else
+        //     rb.drag = airDrag;
         
         // calculate movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
@@ -162,19 +174,23 @@ public class PlayerMovement : MonoBehaviour
         // on ground
         if (grounded)
         {
-            rb.AddForce(moveDirection.normalized * moveSpeed, ForceMode.Force);
+            Vector3 moveForce = moveDirection.normalized * moveSpeed - CalculateResistance(groundDrag);
+            rb.AddForce(moveForce, ForceMode.Force);
         }
         // in air
-        else if(!grounded)
-            rb.AddForce(moveSpeed * airMultiplier * moveDirection.normalized, ForceMode.Force);
+        else if (!grounded)
+        {
+            Vector3 moveForce = moveDirection.normalized * moveSpeed - CalculateResistance(airDrag);
+            rb.AddForce(airMultiplier * moveForce, ForceMode.Force);
+        }
         // end horizontal movement
         
         // begin vertical movement
         rb.useGravity = true;
         if (requestJump)
         {
-            Invoke(nameof(Jump), 0.5f);
-            flightStamina -= JumpStaminaConsume;
+            Jump();
+            flightStamina -= jumpStaminaConsume;
             flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
             requestJump = false; 
             animationVars.requestJump = true;
@@ -189,17 +205,17 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
-    private void SpeedControl()
-    {
-        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-
-        // limit velocity if needed
-        if(flatVel.magnitude > moveSpeed)
-        {
-            Vector3 limitedVel = flatVel.normalized * moveSpeed;
-            rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
-        }
-    }
+    // private void SpeedControl()
+    // {
+    //     Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+    //
+    //     // limit velocity if needed
+    //     if(flatVel.magnitude > moveSpeed)
+    //     {
+    //         Vector3 limitedVel = flatVel.normalized * moveSpeed;
+    //         rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
+    //     }
+    // }
 
     private void Jump()
     {
@@ -219,6 +235,16 @@ public class PlayerMovement : MonoBehaviour
     {
         readyToJump = true;
     }
+    
+    
+    private Vector3 CalculateResistance(float drag)
+    {
+        Vector3 horizontalVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+        float resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * drag, 0, moveSpeed + slideResistance);
+        Vector3 resistanceForce = resistanceMag * horizontalVelocity.normalized;
+        return resistanceForce;
+    }
+    
 
     private void ResetAnimatorRequestJump()
     {
@@ -246,4 +272,6 @@ public class PlayerMovement : MonoBehaviour
         public float horizontalSpeed;
         public bool requestJump;
     }
+
+    
 }

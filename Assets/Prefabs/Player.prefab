@@ -118,6 +118,7 @@ GameObject:
   - component: {fileID: 8073086772555192299}
   - component: {fileID: 6847563188713013762}
   - component: {fileID: 1585654971461282024}
+  - component: {fileID: 2673767056869230301}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -181,16 +182,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fa2b1bfb6110cb40a69f0d98343fef5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 10
-  groundDrag: 0.9
-  airDrag: 0.2
-  jumpForce: 6
+  moveSpeed: 20
+  slideSpeedThreshold: 0
+  groundDrag: 8
+  airDrag: 6
+  slideResistance: 2
+  jumpForce: 5
   jumpCooldown: 1
-  airMultiplier: 0.4
+  airMultiplier: 0.8
   flightForce: 3
   requestFlight: 0
   maxFlightStamina: 10
-  JumpStaminaConsume: 3
+  jumpStaminaConsume: 3
   flightStamina: 0
   flightStaminaDecreaseSpeed: 3
   flightStaminaRefillSpeed: 5
@@ -198,9 +201,6 @@ MonoBehaviour:
   GroundMask:
     serializedVersion: 2
     m_Bits: 64
-  leftFoot: {fileID: 8503769264018910870}
-  rightFoot: {fileID: 6528507972844073304}
-  detectionRadius: 0.3
   grounded: 0
   orientation: {fileID: 3827837098921800371}
   animator: {fileID: 2929119099450096932}
@@ -211,6 +211,29 @@ MonoBehaviour:
     requestJump: 0
   debugText1: {fileID: 0}
   debugText2: {fileID: 0}
+--- !u!136 &2673767056869230301
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4132312772176831909}
+  m_Material: {fileID: 13400000, guid: 921cab676b964af4da5eeb9741565f86, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.06
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.99, z: 0}
 --- !u!1 &6907383726543715847
 GameObject:
   m_ObjectHideFlags: 0
@@ -366,7 +389,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2748857001480785095
 Transform:
   m_ObjectHideFlags: 0
@@ -397,7 +420,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9109665223868247908}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 921cab676b964af4da5eeb9741565f86, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -409,7 +432,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.16
+  m_Radius: 0.06
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -508,16 +531,6 @@ Transform:
 --- !u!4 &5471388642500519741 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -5610780211712759928, guid: 24fc2c3e62c52bf4e9e63fd980b8e85d, type: 3}
-  m_PrefabInstance: {fileID: 8776609558996467893}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &6528507972844073304 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -6677381884866629139, guid: 24fc2c3e62c52bf4e9e63fd980b8e85d, type: 3}
-  m_PrefabInstance: {fileID: 8776609558996467893}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &8503769264018910870 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1139325989675019811, guid: 24fc2c3e62c52bf4e9e63fd980b8e85d, type: 3}
   m_PrefabInstance: {fileID: 8776609558996467893}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &9099099296081717086 stripped
