@@ -83,11 +83,13 @@ public class GameManager : MonoBehaviour
             RandomizeSeed();
             if (setInputField)  m_startSeedInputField.text = "";
         }
+        m_terrainGenerator.SetSeed(m_userSeed);
        
     }
     public void SetSeed(int inputSeed, bool setInputField = false) {
         m_userSeed = inputSeed;
         if (setInputField)  m_startSeedInputField.text = m_userSeed.ToString();
+        m_terrainGenerator.SetSeed(m_userSeed);
     }
     public void RandomizeSeed() {
         m_userSeed = UnityEngine.Random.Range(0, 100000);
