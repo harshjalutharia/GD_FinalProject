@@ -50,12 +50,14 @@ public class NoiseMap : MonoBehaviour
     [SerializeField] private bool m_showGrid = false;
     [SerializeField] private Color m_gridColor = Color.white;
     [SerializeField] private int m_gridCellSize;
+    [SerializeField] private Color m_coordColor = Color.blue;
+    [SerializeField] private Vector2Int m_debugGridCoord = new Vector2Int(0,0);
     
     private void OnDrawGizmos() {
         if (!m_showGrid) return;
         Gizmos.color = m_gridColor;
 
-        Vector3 extents = new Vector3((float)m_mapChunkSize/2f, 0f, (float)m_mapChunkSize/2f);
+        Vector3 extents = new Vector3((float)(m_mapChunkSize-1)/2f, 0f, (float)(m_mapChunkSize-1)/2f);
         Vector3 gridDimensions = extents*2f;
         Gizmos.DrawWireCube(transform.position, gridDimensions);
         
@@ -69,6 +71,11 @@ public class NoiseMap : MonoBehaviour
                 Gizmos.DrawWireCube(cellCenter, gridCellDimensions);
             }
         }
+
+        Gizmos.color = m_coordColor;
+        float debugCoordY = m_heightMap[m_debugGridCoord.x, m_debugGridCoord.y];
+        Gizmos.DrawSphere(new Vector3((float)m_debugGridCoord.x - extents.x, debugCoordY, gridDimensions.z - (float)m_debugGridCoord.y - extents.z), 1f);
+        
     }
     #endif
 
@@ -184,7 +191,63 @@ public class NoiseMap : MonoBehaviour
         if (m_renderer != null)     m_renderer.sharedMaterial.mainTexture = texture;
     }
 
+    public virtual Vector2 GetMapExtents() {
+        float l = (float)(m_mapChunkSize-1)/2f;
+        return new Vector2(l,l);
+    }
+
+    public virtual Vector3 GetRandomPosition(bool useSeedEngine = false, int edgeBuffer = 50) {
+        int coordX = (useSeedEngine)
+            ? m_prng.Next(0,m_mapChunkSize)
+            : UnityEngine.Random.Range(0,m_mapChunkSize);
+        int coordY = (useSeedEngine)
+            ? m_prng.Next(0,m_mapChunkSize)
+            : UnityEngine.Random.Range(0,m_mapChunkSize);
+        Debug.Log($"Raw Coords: ["+coordX.ToString()+","+coordY.ToString()+"]");
+        
+        coordX = Mathf.Clamp(coordX, edgeBuffer, m_mapChunkSize-1-edgeBuffer);
+        coordY = Mathf.Clamp(coordY, edgeBuffer, m_mapChunkSize-1-edgeBuffer);
+        Debug.Log($"Coords: ["+coordX.ToString()+","+coordY.ToString()+"]");
+        
+        Vector3 worldPos;
+        QueryHeightAtCoords(coordX, coordY, out worldPos);
+        Debug.Log("["+coordX.ToString() + ","+coordY.ToString() + "] => " + worldPos.ToString());
+        return worldPos;
+    }
+
+    public virtual float QueryHeightAtCoords(int x, int y, out Vector3 worldPosition) {
+        float mapWidth = (float)m_mapChunkSize - 1f;
+        float mapExtent = mapWidth / 2f;
+
+        float worldX = (float)x - mapExtent;
+        float worldY = m_heightMap[x,y];
+        float worldZ = mapWidth - (float)y - mapExtent;
+
+        worldPosition = new Vector3(worldX, worldY, worldZ);
+        return worldY;
+    }
+
+    public virtual float queryHeightAtWorldPos(float worldX, float worldZ, out int x, out int y) {
+        float mapWidth = (float)m_mapChunkSize - 1f;
+        float mapExtent = mapWidth / 2f;
+
+        x = Mathf.Clamp(Mathf.RoundToInt(worldX + mapExtent), 0, m_mapChunkSize-1);
+        y = Mathf.Clamp(Mathf.RoundToInt(worldZ + mapExtent - mapWidth)*-1, 0, m_mapChunkSize-1);
+        return m_heightMap[x,y];
+    }
+
+
     protected virtual void OnValidate() {}
-
-
 }
+
+namespace Extensions {
+    public static class VectorExtensions {
+        public static Vector2 ToVector2(this Vector3 v0) {
+            return new Vector2(v0.x, v0.z);
+        }
+        public static Vector3 ToVector3(this Vector2 v0, float y = 0f) {
+            return new Vector3(v0.x, y, v0.y);
+        } 
+    }
+}
+

@@ -2,11 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Extensions;
 
 public class SessionManager : MonoBehaviour
 {
     [Header("=== Player Settings ===")]
-    [SerializeField, Tooltip("Player camera")]  private CameraFader m_playerCameraFader;
+    [SerializeField, Tooltip("The player themselves")]          private GameObject m_player;
+    [SerializeField, Tooltip("Player camera")]                  private CameraFader m_playerCameraFader;
+    [SerializeField, Tooltip("The player's start position")]    private Vector3 m_playerStartPosition = Vector3.zero;
+    [SerializeField, Tooltip("The player's end position")]      private Vector3 m_playerEndPosition = Vector3.zero;
 
     [Header("=== Terrain Generation ===")]
     [SerializeField, Tooltip("The noise map that generates terrain.")]  private NoiseMap m_terrainGenerator;
@@ -32,6 +36,21 @@ public class SessionManager : MonoBehaviour
         ToggleCanvasGroup(m_pauseMenuGroup, false);
         m_pauseMenuOpen = false;
         ToggleCanvasGroup(m_movementDebugGroup, false);
+
+        // Designate the start and end positions of the player
+        do {
+            m_playerStartPosition = m_terrainGenerator.GetRandomPosition(false, 50);
+            m_playerEndPosition = m_terrainGenerator.GetRandomPosition(false, 50);
+            Debug.Log(m_playerStartPosition.ToString() + " | " + m_playerEndPosition.ToString());
+        } while(Vector2.Distance(m_playerStartPosition.ToVector2(), m_playerEndPosition.ToVector2()) < 50f);
+
+        // Teleport the player to the start postiion
+        m_player.transform.position = m_playerStartPosition;
+        GameObject tempObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        tempObj.transform.position = m_playerStartPosition;
+        int testX, testY;
+        m_terrainGenerator.queryHeightAtWorldPos(m_playerStartPosition.x, m_playerStartPosition.z, out testX, out testY);
+        Debug.Log($"Test output world position coords: ["+testX.ToString() + "," + testY.ToString() +"]");
 
         // Let the camera fade in
         m_playerCameraFader.FadeIn();
