@@ -11,9 +11,12 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Control how fast player moves, doesn't represent actual speed")]
     public float moveSpeed;
 
-    [SerializeField, Tooltip("READ ONLY. Slide if current speed larger than this threshold. Vmax=moveSpeed/groundDrag")]
+    [SerializeField, Tooltip("READ ONLY. Controls the max walking speed on a level surface. Vmax=moveSpeed/groundDrag")]
     private float slideSpeedThreshold;
 
+    [Tooltip("Start slide if current speed larger than slideSpeedThreshold + slideStartSpeedOffset.")]
+    public float slideStartSpeedOffset;
+    
     [Tooltip("Limit the max walking speed, Vmax=moveSpeed/groundDrag")]
     public float groundDrag;
 
@@ -22,8 +25,11 @@ public class PlayerMovement : MonoBehaviour
     
     private PhysicMaterial physicMaterial;
 
-    [Tooltip("Limit the max fly speed. Vmax_fly=moveSpeed/airDrag")] 
-    public float airDrag;
+    [Tooltip("Limit the horizontal max fly speed. Vmax_fly=moveSpeed/airDragHorizontal")] 
+    public float airDragHorizontal;
+    
+    [Tooltip("Only limit the max downward velocity speed. Vmax_drop=9.81/airDragVertical")] 
+    public float airDragVertical;
 
     [Tooltip("Resistance Force while sliding")] 
     public float slideResistance;
@@ -110,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         // ground check
-        Collider[] colliders = Physics.OverlapSphere(orientation.position, 0.1f, GroundMask);
+        Collider[] colliders = Physics.OverlapSphere(orientation.position, 0.05f, GroundMask);
         int count = 0;
         foreach (var colider in colliders)
         {
@@ -207,8 +213,14 @@ public class PlayerMovement : MonoBehaviour
         // in air
         else if (!grounded)
         {
-            Vector3 moveForce = moveDirection.normalized * moveSpeed - CalculateResistance(airDrag);
+            Vector3 moveForce = moveDirection.normalized * moveSpeed - CalculateResistance(airDragHorizontal);
             rb.AddForce(airMultiplier * moveForce, ForceMode.Force);
+            
+            // limit descent speed if player has input
+            if (rb.velocity.y < 0 && moveDirection.magnitude > 0.05f)
+            {
+                rb.AddForce(airDragVertical * rb.velocity.y * Vector3.down, ForceMode.Force);
+            }
         }
         // end horizontal movement
         
@@ -221,7 +233,7 @@ public class PlayerMovement : MonoBehaviour
             flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
             requestJump = false; 
             animationVars.requestJump = true;
-            Invoke(nameof(ResetAnimatorRequestJump), 0.2f);
+            Invoke(nameof(ResetAnimatorRequestJump), 0.5f);
         }
         else if (requestFlight)
         {
@@ -285,7 +297,15 @@ public class PlayerMovement : MonoBehaviour
         animationVars.horizontalSpeed = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude;
         animationVars.verticalSpeed = rb.velocity.y;
         animationVars.horizontalInput = moveDirection.magnitude > 0.05f;
-        animationVars.sliding = animationVars.horizontalSpeed > slideSpeedThreshold;
+        if (animationVars.sliding)
+        {
+            animationVars.sliding = animationVars.horizontalSpeed > slideSpeedThreshold && grounded;
+        }
+        else
+        {
+            animationVars.sliding = animationVars.horizontalSpeed > slideSpeedThreshold + slideStartSpeedOffset && grounded;
+        }
+        
         
         animator.SetBool("grounded", animationVars.grounded);
         animator.SetFloat("verticalSpeed", animationVars.verticalSpeed);
