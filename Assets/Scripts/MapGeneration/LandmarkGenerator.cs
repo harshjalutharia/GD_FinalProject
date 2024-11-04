@@ -2,11 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
-using UnityEditor;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
 using Random = UnityEngine.Random;
 using Vector3 = UnityEngine.Vector3;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class LandmarkGenerator : MonoBehaviour
 {
@@ -15,6 +17,7 @@ public class LandmarkGenerator : MonoBehaviour
     [SerializeField, Tooltip("Parent for landmarks")]                                       private Transform m_landmarkParent;
 
     [Header("=== Generation Settings ===")]
+    [SerializeField, Tooltip("Seed integer for landmark randomization")]                    private int m_seed;
     [SerializeField, Tooltip("Minimum distance between any 2 landmarks")]                   private float minimumDistanceBetweenLandmarks = 50f;
     [SerializeField, Tooltip("Total number of landmarks to spawn")]                         private int landmarkCount = 6;
     [SerializeField, Tooltip("Padding to avoid spawning on edge of map")]                   private float spawnBorderPadding = 35f;
@@ -43,6 +46,17 @@ public class LandmarkGenerator : MonoBehaviour
         public void InstantiateLandmark(GameObject prefab, Transform objectParent) {
             this.landmarkObject = Instantiate(prefab, this.location, Quaternion.identity, objectParent);
         }
+    }
+
+    public virtual void SetSeed(string newSeed) {
+        if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {
+            m_seed = validNewSeed;
+            return;
+        }
+        m_seed = UnityEngine.Random.Range(0, 1000001);
+    }
+    public virtual void SetSeed(int newSeed) {
+        m_seed = newSeed;
     }
 
     public void GenerateLandmarks(Vector3 destination, NoiseMap terrainMap)
@@ -182,8 +196,12 @@ public class LandmarkGenerator : MonoBehaviour
         while(m_landmarkPositions.Count > 0) {
             GameObject landmark = m_landmarkPositions[0].landmarkObject;
             m_landmarkPositions.RemoveAt(0);
-            if (!EditorApplication.isPlaying)   DestroyImmediate(landmark);
-            else                                Destroy(landmark);
+            #if UNITY_EDITOR
+                if (!EditorApplication.isPlaying)   DestroyImmediate(landmark);
+                else                                Destroy(landmark);
+            #else
+                Destroy(landmark);
+            #endif
         }
     }
 }

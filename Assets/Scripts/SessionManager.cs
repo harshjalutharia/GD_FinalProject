@@ -15,6 +15,8 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("Player camera")]                  private CameraFader m_playerCameraFader;
     [SerializeField, Tooltip("The player's start position")]    private Vector3 m_playerStartPosition = Vector3.zero;
     [SerializeField, Tooltip("The player's end position")]      private Vector3 m_playerEndPosition = Vector3.zero;
+    public Vector3 playerStartPosition => m_playerStartPosition;
+    public Vector3 playerEndPosition => m_playerEndPosition;
 
     [Header("=== Terrain Generation ===")]
     [SerializeField, Tooltip("The noise map that generates terrain.")]          private NoiseMap m_terrainGenerator;
@@ -37,6 +39,7 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The key code input for holding the map")]     private KeyCode m_showMapKey = KeyCode.LeftShift;
     [SerializeField, Tooltip("The transition time for the map transition")] private float m_heldMapTransitionTime = 0.25f;
     [SerializeField, Tooltip("Is the map being shown currently?")]          private bool m_isShowingMap;
+    public bool isShowingMap => m_isShowingMap;
     private Vector3 m_heldMapVelocity = Vector3.zero;
 
     [Header("=== Scene Transition Settings ===")]
@@ -114,6 +117,7 @@ public class SessionManager : MonoBehaviour
         m_currentActiveCanvasGroup = m_winMenuGroup;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        if (GameTracker.current != null) GameTracker.current.StopTracking();
         StartCoroutine(ToggleCanvasGroupCoroutine(m_winMenuGroup, true, m_winMenuTransitionTime));
     }
 
@@ -140,6 +144,10 @@ public class SessionManager : MonoBehaviour
 
         // Migrate to start
         SceneManager.LoadScene(0);
+    }
+
+    public void SaveGameSession() {
+        if (GameTracker.current != null) GameTracker.current.SaveUserData();
     }
 
     public void ToggleCanvasGroup(CanvasGroup group, bool setTo) {
@@ -194,6 +202,9 @@ public class SessionManager : MonoBehaviour
 
         // Let the camera fade in
         m_playerCameraFader.FadeIn();
+
+        // Start the tracker, if exists
+        if (GameTracker.current != null) GameTracker.current.StartTracking();
     }
 
 }
