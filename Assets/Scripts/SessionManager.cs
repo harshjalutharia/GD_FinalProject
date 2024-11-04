@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Extensions;
 
+using Random = UnityEngine.Random;
+
 public class SessionManager : MonoBehaviour
 {
     public static SessionManager current;
@@ -28,18 +30,29 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The input button for movement debug canvas")]         private KeyCode m_movementDebugKeyCode = KeyCode.M;
     [SerializeField, Tooltip("The canvas group for the player movement debug.")]    private CanvasGroup m_movementDebugGroup;
 
+    [Header("=== Held Map Settings ===")]
+    [SerializeField, Tooltip("The held map object transform itself")]       private Transform m_heldMap;
+    [SerializeField, Tooltip("Ref. point for the visible map position")]    private Transform m_heldMapVisiblePosRef;
+    [SerializeField, Tooltip("Ref. point for the inviisble map position")]  private Transform m_heldMapInvisiblePosRef;
+    [SerializeField, Tooltip("The key code input for holding the map")]     private KeyCode m_showMapKey = KeyCode.LeftShift;
+    [SerializeField, Tooltip("The transition time for the map transition")] private float m_heldMapTransitionTime = 0.25f;
+    [SerializeField, Tooltip("Is the map being shown currently?")]          private bool m_isShowingMap;
+    private Vector3 m_heldMapVelocity = Vector3.zero;
+
     [Header("=== Scene Transition Settings ===")]
-    private CanvasGroup m_currentActiveCanvasGroup = null;
     [SerializeField, Tooltip("Transition time to move between scenes")]             private float m_sceneTransitionTime = 2f;
     [SerializeField, Tooltip("Is the player transitioning between scenes?")]        private bool m_isSceneTransitioning = false;
+    private CanvasGroup m_currentActiveCanvasGroup = null;
 
     private void Awake() {
         current = this;
     }
 
     private void Start() {
-        // At the start, we ex[ect to be able to read the seed info from SessionMemory and use that to generate the terrain
-        m_terrainGenerator.SetSeed(SessionMemory.current.seed);
+        // At the start, we expect to be able to read the seed info from SessionMemory and use that to generate the terrain
+        SetSeed(SessionMemory.current.seed);
+
+        // Initialize terrain generation        
         m_terrainGenerator.GenerateMap();
 
         // Hide any other menus
@@ -53,8 +66,30 @@ public class SessionManager : MonoBehaviour
 
     private void Update() {
         if (m_isSceneTransitioning) return;
+        
+        // Menu stuff
         if (Input.GetKeyDown(m_pauseMenuKeyCode)) OpenPauseMenu();
         if (Input.GetKeyDown(m_movementDebugKeyCode)) ToggleDebugMenu();
+
+        // Held map stuff
+        m_isShowingMap = Input.GetKey(m_showMapKey);
+        Vector3 m_heldMapTarget = (m_isShowingMap) ? m_heldMapVisiblePosRef.position : m_heldMapInvisiblePosRef.position;
+        m_heldMap.position = Vector3.SmoothDamp(m_heldMap.position, m_heldMapTarget, ref m_heldMapVelocity, m_heldMapTransitionTime);
+        m_heldMap.gameObject.SetActive(m_isShowingMap || Vector3.Distance(m_heldMap.position, m_heldMapInvisiblePosRef.position) >= 0.1f);
+
+    }
+
+    public void SetSeed(string newSeed) {
+        int validNewSeed;
+        if (newSeed.Length > 0 && int.TryParse(newSeed, out validNewSeed)) {
+            SetSeed(validNewSeed);
+            return;
+        }
+        SetSeed(Random.Range(0, 1000001));
+    }
+    public void SetSeed(int newSeed) {
+        m_terrainGenerator.SetSeed(SessionMemory.current.seed);
+        Random.InitState(newSeed);
     }
 
     public void OpenPauseMenu() {   

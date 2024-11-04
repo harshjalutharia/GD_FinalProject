@@ -25,6 +25,7 @@ public class NoiseMap : MonoBehaviour
     [SerializeField] protected MeshFilter m_filter;
     [SerializeField] protected MeshRenderer m_renderer;
     [SerializeField] protected MeshCollider m_collider;
+    [SerializeField] protected MeshRenderer m_heldRenderer;
     [SerializeField] protected DrawMode m_drawMode = DrawMode.Noise;
     [SerializeField] protected FilterMode m_textureFilterMode = FilterMode.Point;
     [SerializeField] protected ColorMode m_colorMode = ColorMode.TerrainTypes;
@@ -190,6 +191,7 @@ public class NoiseMap : MonoBehaviour
         if (m_filter != null)       m_filter.sharedMesh = meshData.CreateMesh();
         if (m_collider != null)     m_collider.sharedMesh = m_filter.sharedMesh;
         if (m_renderer != null)     m_renderer.sharedMaterial.mainTexture = texture;
+        if (m_heldRenderer != null) m_heldRenderer.sharedMaterial.mainTexture = Generators.FlipTextureHorizontally(texture);
     }
 
     public virtual Vector2 GetMapExtents() {
