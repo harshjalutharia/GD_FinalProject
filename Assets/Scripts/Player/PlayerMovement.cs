@@ -17,6 +17,11 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Limit the max walking speed, Vmax=moveSpeed/groundDrag")]
     public float groundDrag;
 
+    [Tooltip("When the user has no direction input, applies the friction")]
+    public float friction;
+    
+    private PhysicMaterial physicMaterial;
+
     [Tooltip("Limit the max fly speed. Vmax_fly=moveSpeed/airDrag")] 
     public float airDrag;
 
@@ -98,6 +103,8 @@ public class PlayerMovement : MonoBehaviour
         flightStamina = maxFlightStamina;
 
         slideSpeedThreshold = moveSpeed / groundDrag;
+
+        physicMaterial = GetComponent<CapsuleCollider>().material;
     }
 
     private void Update()
@@ -169,6 +176,19 @@ public class PlayerMovement : MonoBehaviour
         
         // calculate movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        
+        //set friction if player has no input
+        if (moveDirection.magnitude < 0.05f)
+        {
+            physicMaterial.dynamicFriction = friction;
+            physicMaterial.staticFriction = friction;
+        }
+        else
+        {
+            physicMaterial.dynamicFriction = 0;
+            physicMaterial.staticFriction = 0;
+        }
+        
         
         // begin horizontal movement
         // on ground
@@ -257,12 +277,15 @@ public class PlayerMovement : MonoBehaviour
         animationVars.grounded = grounded;
         animationVars.horizontalSpeed = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude;
         animationVars.verticalSpeed = rb.velocity.y;
+        animationVars.horizontalInput = moveDirection.magnitude > 0.05f;
+        animationVars.sliding = animationVars.horizontalSpeed > slideSpeedThreshold;
         
         animator.SetBool("grounded", animationVars.grounded);
         animator.SetFloat("verticalSpeed", animationVars.verticalSpeed);
         animator.SetFloat("horizontalSpeed", animationVars.horizontalSpeed);
         animator.SetBool("requestJump", animationVars.requestJump);
-        animator.SetBool("sliding", animationVars.horizontalSpeed > slideSpeedThreshold);
+        animator.SetBool("sliding", animationVars.sliding);
+        animator.SetBool("horizontalInput", animationVars.horizontalInput);
     }
     
     
@@ -272,6 +295,7 @@ public class PlayerMovement : MonoBehaviour
         public bool grounded;
         public float verticalSpeed;
         public float horizontalSpeed;
+        public bool horizontalInput; 
         public bool requestJump;
         public bool sliding;
     }

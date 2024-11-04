@@ -185,6 +185,7 @@ MonoBehaviour:
   moveSpeed: 20
   slideSpeedThreshold: 0
   groundDrag: 8
+  friction: 8
   airDrag: 6
   slideResistance: 2
   jumpForce: 5
@@ -208,6 +209,7 @@ MonoBehaviour:
     grounded: 0
     verticalSpeed: 0
     horizontalSpeed: 0
+    horizontalInput: 0
     requestJump: 0
     sliding: 0
   debugText1: {fileID: 0}

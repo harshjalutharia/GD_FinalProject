@@ -924,10 +924,6 @@ PrefabInstance:
       propertyPath: debugText2
       value: 
       objectReference: {fileID: 993263801}
-    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
-      propertyPath: GroundMask.m_Bits
-      value: 4294967295
-      objectReference: {fileID: 0}
     - target: {fileID: 4132312772176831909, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
       propertyPath: m_Name
       value: Player
