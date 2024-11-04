@@ -72,10 +72,11 @@ public class NoiseMap : MonoBehaviour
             }
         }
 
-        Gizmos.color = m_coordColor;
-        float debugCoordY = m_heightMap[m_debugGridCoord.x, m_debugGridCoord.y];
-        Gizmos.DrawSphere(new Vector3((float)m_debugGridCoord.x - extents.x, debugCoordY, gridDimensions.z - (float)m_debugGridCoord.y - extents.z), 1f);
-        
+        if (m_heightMap != null && m_heightMap.Length > 0) {
+            Gizmos.color = m_coordColor;
+            float debugCoordY = m_heightMap[m_debugGridCoord.x, m_debugGridCoord.y];
+            Gizmos.DrawSphere(new Vector3((float)m_debugGridCoord.x - extents.x, debugCoordY, gridDimensions.z - (float)m_debugGridCoord.y - extents.z), 1f);
+        }
     }
     #endif
 
