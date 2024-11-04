@@ -6,6 +6,8 @@ using Extensions;
 
 public class SessionManager : MonoBehaviour
 {
+    public static SessionManager current;
+
     [Header("=== Player Settings ===")]
     [SerializeField, Tooltip("The player themselves")]          private GameObject m_player;
     [SerializeField, Tooltip("Player camera")]                  private CameraFader m_playerCameraFader;
@@ -13,19 +15,26 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The player's end position")]      private Vector3 m_playerEndPosition = Vector3.zero;
 
     [Header("=== Terrain Generation ===")]
-    [SerializeField, Tooltip("The noise map that generates terrain.")]  private NoiseMap m_terrainGenerator;
+    [SerializeField, Tooltip("The noise map that generates terrain.")]      private NoiseMap m_terrainGenerator;
+    [SerializeField, Tooltip("Reference to the destination Game Object")]   private Transform m_destinationRef;
 
     [Header("=== Menus ===")]
     [SerializeField, Tooltip("The input button for pause menu")]                    private KeyCode m_pauseMenuKeyCode = KeyCode.Tab;
     [SerializeField, Tooltip("The transition time for menus to appear/disappear.")] private float m_pauseMenuTransitionTime = 1f;
     [SerializeField, Tooltip("The canvas group for the pause menu")]                private CanvasGroup m_pauseMenuGroup;
-    [SerializeField, Tooltip("Is the pause menu open?")]                            private bool m_pauseMenuOpen = false;
+    [SerializeField, Tooltip("The canvas group for the win screen")]                private CanvasGroup m_winMenuGroup;
+    [SerializeField, Tooltip("The transition time for the win screen to appear")]   private float m_winMenuTransitionTime = 1f;
     [SerializeField, Tooltip("The input button for movement debug canvas")]         private KeyCode m_movementDebugKeyCode = KeyCode.M;
     [SerializeField, Tooltip("The canvas group for the player movement debug.")]    private CanvasGroup m_movementDebugGroup;
 
     [Header("=== Scene Transition Settings ===")]
+    private CanvasGroup m_currentActiveCanvasGroup = null;
     [SerializeField, Tooltip("Transition time to move between scenes")]             private float m_sceneTransitionTime = 2f;
     [SerializeField, Tooltip("Is the player transitioning between scenes?")]        private bool m_isSceneTransitioning = false;
+
+    private void Awake() {
+        current = this;
+    }
 
     private void Start() {
         // At the start, we ex[ect to be able to read the seed info from SessionMemory and use that to generate the terrain
@@ -34,7 +43,7 @@ public class SessionManager : MonoBehaviour
 
         // Hide any other menus
         ToggleCanvasGroup(m_pauseMenuGroup, false);
-        m_pauseMenuOpen = false;
+        ToggleCanvasGroup(m_winMenuGroup, false);
         ToggleCanvasGroup(m_movementDebugGroup, false);
 
         // Designate the start and end positions of the player
@@ -48,9 +57,9 @@ public class SessionManager : MonoBehaviour
         m_player.transform.position = m_playerStartPosition;
         GameObject tempObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         tempObj.transform.position = m_playerStartPosition;
-        int testX, testY;
-        m_terrainGenerator.QueryHeightAtWorldPos(m_playerStartPosition.x, m_playerStartPosition.z, out testX, out testY);
-        Debug.Log($"Test output world position coords: ["+testX.ToString() + "," + testY.ToString() +"]");
+
+        // Teleport the destination ref to the destination point
+        m_destinationRef.position = m_playerEndPosition;
 
         // Let the camera fade in
         m_playerCameraFader.FadeIn();
@@ -63,20 +72,28 @@ public class SessionManager : MonoBehaviour
     }
 
     public void OpenPauseMenu() {   
-        if (m_pauseMenuOpen) return;
+        if (m_currentActiveCanvasGroup == m_pauseMenuGroup) return;
         Debug.Log("Opening Pause Menu");
-        m_pauseMenuOpen = true;
+        m_currentActiveCanvasGroup = m_pauseMenuGroup;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         StartCoroutine(ToggleCanvasGroupCoroutine(m_pauseMenuGroup, true, m_pauseMenuTransitionTime));
     }
     public void ClosePauseMenu() {  
-        if (!m_pauseMenuOpen) return;
+        if (m_currentActiveCanvasGroup != m_pauseMenuGroup) return;
         Debug.Log("Closing Pause Menu");
-        m_pauseMenuOpen = false;
+        m_currentActiveCanvasGroup = null;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         StartCoroutine(ToggleCanvasGroupCoroutine(m_pauseMenuGroup, false, m_pauseMenuTransitionTime));  
+    }
+
+    public void OpenWinMenu() {
+        Debug.Log("Openning win menu");
+        m_currentActiveCanvasGroup = m_winMenuGroup;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        StartCoroutine(ToggleCanvasGroupCoroutine(m_winMenuGroup, true, m_winMenuTransitionTime));
     }
 
     public void ToggleDebugMenu() {
@@ -91,9 +108,14 @@ public class SessionManager : MonoBehaviour
         m_playerCameraFader.FadeOut();
         
         // Fade out menues
-        SetCanvasGroupInteractable(m_pauseMenuGroup, false);
+        if (m_currentActiveCanvasGroup != null) {
+            SetCanvasGroupInteractable(m_currentActiveCanvasGroup, false);
+            yield return ToggleCanvasGroupCoroutine(m_currentActiveCanvasGroup, false, m_sceneTransitionTime);
+        }
+        yield return null;
+        ToggleCanvasGroup(m_pauseMenuGroup, false);
+        ToggleCanvasGroup(m_winMenuGroup, false);
         ToggleCanvasGroup(m_movementDebugGroup, false);
-        yield return ToggleCanvasGroupCoroutine(m_pauseMenuGroup, false, m_sceneTransitionTime);
 
         // Migrate to start
         SceneManager.LoadScene(0);
