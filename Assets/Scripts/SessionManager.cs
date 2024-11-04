@@ -49,7 +49,7 @@ public class SessionManager : MonoBehaviour
         GameObject tempObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         tempObj.transform.position = m_playerStartPosition;
         int testX, testY;
-        m_terrainGenerator.queryHeightAtWorldPos(m_playerStartPosition.x, m_playerStartPosition.z, out testX, out testY);
+        m_terrainGenerator.QueryHeightAtWorldPos(m_playerStartPosition.x, m_playerStartPosition.z, out testX, out testY);
         Debug.Log($"Test output world position coords: ["+testX.ToString() + "," + testY.ToString() +"]");
 
         // Let the camera fade in

@@ -227,7 +227,7 @@ public class NoiseMap : MonoBehaviour
         return worldY;
     }
 
-    public virtual float queryHeightAtWorldPos(float worldX, float worldZ, out int x, out int y) {
+    public virtual float QueryHeightAtWorldPos(float worldX, float worldZ, out int x, out int y) {
         float mapWidth = (float)m_mapChunkSize - 1f;
         float mapExtent = mapWidth / 2f;
 
