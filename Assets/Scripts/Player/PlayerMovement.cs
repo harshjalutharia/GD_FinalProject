@@ -110,10 +110,17 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         // ground check
-        // Collider[] colliders1 = Physics.OverlapSphere(leftFoot.position, detectionRadius, GroundMask);
-        // Collider[] colliders2 = Physics.OverlapSphere(rightFoot.position, detectionRadius, GroundMask);
-        // grounded = colliders1.Length > 0 || colliders2.Length > 0;
-        grounded = Physics.Raycast(orientation.position, Vector3.down, 0.1f, GroundMask);
+        Collider[] colliders = Physics.OverlapSphere(orientation.position, 0.1f, GroundMask);
+        int count = 0;
+        foreach (var colider in colliders)
+        {
+            if (colider.gameObject.transform != this.transform)
+            {
+                count++;
+            }
+        }
+        grounded = count > 0 ;
+        // grounded = Physics.Raycast(orientation.position, Vector3.down, 0.2f, GroundMask);
         
         DealInput();
         
