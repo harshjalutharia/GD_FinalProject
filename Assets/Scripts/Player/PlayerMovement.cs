@@ -314,6 +314,10 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("sliding", animationVars.sliding);
         animator.SetBool("horizontalInput", animationVars.horizontalInput);
     }
+
+    public float GetFlightStamina() {
+        return flightStamina;
+    }
     
     
     [System.Serializable] 
