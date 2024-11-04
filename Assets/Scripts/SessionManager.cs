@@ -15,8 +15,9 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The player's end position")]      private Vector3 m_playerEndPosition = Vector3.zero;
 
     [Header("=== Terrain Generation ===")]
-    [SerializeField, Tooltip("The noise map that generates terrain.")]      private NoiseMap m_terrainGenerator;
-    [SerializeField, Tooltip("Reference to the destination Game Object")]   private Transform m_destinationRef;
+    [SerializeField, Tooltip("The noise map that generates terrain.")]          private NoiseMap m_terrainGenerator;
+    [SerializeField, Tooltip("Reference to the destination Game Object")]       private Transform m_destinationRef;
+    [SerializeField, Tooltip("The landmark generator that places buildings")]   private LandmarkGenerator m_landmarkGenerator;
 
     [Header("=== Menus ===")]
     [SerializeField, Tooltip("The input button for pause menu")]                    private KeyCode m_pauseMenuKeyCode = KeyCode.Tab;
@@ -47,16 +48,7 @@ public class SessionManager : MonoBehaviour
         ToggleCanvasGroup(m_movementDebugGroup, false);
 
         // Designate the start and end positions of the player
-        Invoke(nameof(SetPlayerInitialPosition), 0.1f);
-        
-        // GameObject tempObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        // tempObj.transform.position = m_playerStartPosition;
-
-        // Teleport the destination ref to the destination point
-        m_destinationRef.position = m_playerEndPosition;
-
-        // Let the camera fade in
-        m_playerCameraFader.FadeIn();
+        Invoke(nameof(SetPlayerInitialPosition), 1f);
     }
 
     private void Update() {
@@ -160,6 +152,13 @@ public class SessionManager : MonoBehaviour
         // Teleport the player to the start postiion
         m_player.transform.position = m_playerStartPosition;
         Debug.Log(m_player.transform.position);
+
+        // Teleport the destination ref to the destination point
+        m_destinationRef.position = m_playerEndPosition;
+        m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_terrainGenerator);
+
+        // Let the camera fade in
+        m_playerCameraFader.FadeIn();
     }
 
 }

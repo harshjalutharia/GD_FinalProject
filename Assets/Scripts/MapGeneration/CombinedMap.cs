@@ -53,9 +53,5 @@ public class CombinedMap : NoiseMap
         }
 
         if (m_drawMode != DrawMode.None) RenderMap();
-
-        LandmarkGenerator landmarkGenerator = GetComponent<LandmarkGenerator>();
-        if (landmarkGenerator != null)
-            landmarkGenerator.GenerateLandmarks();
     }
 }
