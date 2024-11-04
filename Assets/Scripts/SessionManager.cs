@@ -47,16 +47,10 @@ public class SessionManager : MonoBehaviour
         ToggleCanvasGroup(m_movementDebugGroup, false);
 
         // Designate the start and end positions of the player
-        do {
-            m_playerStartPosition = m_terrainGenerator.GetRandomPosition(false, 50);
-            m_playerEndPosition = m_terrainGenerator.GetRandomPosition(false, 50);
-            Debug.Log(m_playerStartPosition.ToString() + " | " + m_playerEndPosition.ToString());
-        } while(Vector2.Distance(m_playerStartPosition.ToVector2(), m_playerEndPosition.ToVector2()) < 50f);
-
-        // Teleport the player to the start postiion
-        m_player.transform.position = m_playerStartPosition;
-        GameObject tempObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        tempObj.transform.position = m_playerStartPosition;
+        Invoke(nameof(SetPlayerInitialPosition), 0.1f);
+        
+        // GameObject tempObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        // tempObj.transform.position = m_playerStartPosition;
 
         // Teleport the destination ref to the destination point
         m_destinationRef.position = m_playerEndPosition;
@@ -152,6 +146,20 @@ public class SessionManager : MonoBehaviour
 
         group.interactable = setTo;
         group.blocksRaycasts = setTo;
+    }
+
+    private void SetPlayerInitialPosition()
+    {
+        Debug.Log(m_player.transform.position);
+        do {
+            m_playerStartPosition = m_terrainGenerator.GetRandomPosition(false, 50);
+            m_playerEndPosition = m_terrainGenerator.GetRandomPosition(false, 50);
+            Debug.Log(m_playerStartPosition.ToString() + " | " + m_playerEndPosition.ToString());
+        } while(Vector2.Distance(m_playerStartPosition.ToVector2(), m_playerEndPosition.ToVector2()) < 50f);
+
+        // Teleport the player to the start postiion
+        m_player.transform.position = m_playerStartPosition;
+        Debug.Log(m_player.transform.position);
     }
 
 }
