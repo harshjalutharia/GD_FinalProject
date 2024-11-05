@@ -46,6 +46,9 @@ public class GameManager : MonoBehaviour
 
     private void Awake() {
         current = this;
+        if (m_userSeed == 0) {
+            RandomizeSeed();
+        }
     }
 
     private void Start() {
