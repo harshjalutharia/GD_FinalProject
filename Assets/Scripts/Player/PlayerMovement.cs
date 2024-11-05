@@ -17,6 +17,9 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Start slide if current speed larger than slideSpeedThreshold + slideStartSpeedOffset.")]
     public float slideStartSpeedOffset;
     
+    [Tooltip("Start paragliding if current speed larger than slideSpeedThreshold + paraglidingStartSpeedOffset.")]
+    public float paraglidingStartSpeedOffset;
+    
     [Tooltip("Limit the max walking speed, Vmax=moveSpeed/groundDrag")]
     public float groundDrag;
 
@@ -76,7 +79,11 @@ public class PlayerMovement : MonoBehaviour
     private float verticalInput;
 
     [Header("Ground Check")]
-    public LayerMask GroundMask;
+    [Tooltip("Positions to perform ground detect")]
+    public Transform[] groundDetections = new Transform[2];
+    
+    [Tooltip("Set to everything is OK")]
+    public LayerMask groundMask;
     
     [SerializeField] 
     private bool grounded;
@@ -116,11 +123,19 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         // ground check
-        Collider[] colliders = Physics.OverlapSphere(orientation.position, 0.05f, GroundMask);
+        Collider[] colliders1 = Physics.OverlapSphere(groundDetections[0].position, 0.05f, groundMask);
+        Collider[] colliders2 = Physics.OverlapSphere(groundDetections[1].position, 0.05f, groundMask);
         int count = 0;
-        foreach (var colider in colliders)
+        foreach (var collider in colliders1)
         {
-            if (colider.gameObject.transform != this.transform)
+            if (collider.gameObject.transform != this.transform)
+            {
+                count++;
+            }
+        }
+        foreach (var collider in colliders2)
+        {
+            if (collider.gameObject.transform != this.transform)
             {
                 count++;
             }
@@ -207,14 +222,14 @@ public class PlayerMovement : MonoBehaviour
         // on ground
         if (grounded)
         {
-            Vector3 moveForce = moveDirection.normalized * moveSpeed - CalculateResistance(groundDrag);
+            Vector3 moveForce = moveDirection.normalized * moveSpeed - CalculateResistance(groundDrag, grounded);
             rb.AddForce(moveForce, ForceMode.Force);
         }
         // in air
         else if (!grounded)
         {
-            Vector3 moveForce = moveDirection.normalized * moveSpeed - CalculateResistance(airDragHorizontal);
-            rb.AddForce(airMultiplier * moveForce, ForceMode.Force);
+            Vector3 moveForce = moveDirection.normalized * (airMultiplier * moveSpeed) - CalculateResistance(airDragHorizontal, grounded);
+            rb.AddForce(moveForce, ForceMode.Force);
             
             // limit descent speed if player has input
             if (rb.velocity.y < 0 && moveDirection.magnitude > 0.05f)
@@ -276,13 +291,23 @@ public class PlayerMovement : MonoBehaviour
     }
     
     
-    private Vector3 CalculateResistance(float drag)
+    private Vector3 CalculateResistance(float drag, bool ground)
     {
-        // the resistance increases linearly with horizontal velocity. But has a max value
         Vector3 horizontalVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
-        float resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * drag, 0, moveSpeed + slideResistance);
+        float resistanceMag = 0;
+        if (ground)
+        {
+            // the resistance increases linearly with horizontal velocity. But has a max value
+            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * drag, 0, moveSpeed + slideResistance);
+            
+        }
+        else
+        {
+            resistanceMag = horizontalVelocity.magnitude * drag;
+        }
         Vector3 resistanceForce = resistanceMag * horizontalVelocity.normalized;
         return resistanceForce;
+        
     }
     
 
@@ -305,6 +330,17 @@ public class PlayerMovement : MonoBehaviour
         {
             animationVars.sliding = animationVars.horizontalSpeed > slideSpeedThreshold + slideStartSpeedOffset && grounded;
         }
+
+        animationVars.paragliding = !grounded && animationVars.verticalSpeed < 0 && animationVars.horizontalInput &&
+                                    animationVars.horizontalSpeed > slideSpeedThreshold + paraglidingStartSpeedOffset;
+        // if (animationVars.paragliding)
+        // {
+        //     animationVars.paragliding = animationVars.horizontalSpeed > slideSpeedThreshold && !grounded;
+        // }
+        // else
+        // {
+        //     animationVars.paragliding = animationVars.horizontalSpeed > slideSpeedThreshold + paraglidingStartSpeedOffset && !grounded;
+        // }
         
         
         animator.SetBool("grounded", animationVars.grounded);
@@ -312,6 +348,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("horizontalSpeed", animationVars.horizontalSpeed);
         animator.SetBool("requestJump", animationVars.requestJump);
         animator.SetBool("sliding", animationVars.sliding);
+        animator.SetBool("paragliding", animationVars.paragliding);
         animator.SetBool("horizontalInput", animationVars.horizontalInput);
     }
 
@@ -329,6 +366,7 @@ public class PlayerMovement : MonoBehaviour
         public bool horizontalInput; 
         public bool requestJump;
         public bool sliding;
+        public bool paragliding;
     }
 
     

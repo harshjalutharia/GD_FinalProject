@@ -141,6 +141,8 @@ Transform:
   m_Children:
   - {fileID: 9099099296081717086}
   - {fileID: 3827837098921800371}
+  - {fileID: 7946510050813310827}
+  - {fileID: 544791977718023971}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &6847563188713013762
@@ -185,14 +187,15 @@ MonoBehaviour:
   moveSpeed: 10
   slideSpeedThreshold: 0
   slideStartSpeedOffset: 0.7
+  paraglidingStartSpeedOffset: 0.7
   groundDrag: 8
   friction: 8
-  airDragHorizontal: 5
-  airDragVertical: 2.2
+  airDragHorizontal: 0.25
+  airDragVertical: 2.6
   slideResistance: 0.6
   jumpForce: 3
   jumpCooldown: 1
-  airMultiplier: 0.4
+  airMultiplier: 0.1
   flightForce: 1
   requestFlight: 0
   maxFlightStamina: 10
@@ -201,7 +204,10 @@ MonoBehaviour:
   flightStaminaDecreaseSpeed: 3
   flightStaminaRefillSpeed: 5
   jumpKey: 32
-  GroundMask:
+  groundDetections:
+  - {fileID: 7946510050813310827}
+  - {fileID: 544791977718023971}
+  groundMask:
     serializedVersion: 2
     m_Bits: 4294967295
   grounded: 0
@@ -214,6 +220,7 @@ MonoBehaviour:
     horizontalInput: 0
     requestJump: 0
     sliding: 0
+    paragliding: 0
   debugText1: {fileID: 0}
   debugText2: {fileID: 0}
 --- !u!136 &2673767056869230301
@@ -239,6 +246,68 @@ CapsuleCollider:
   m_Height: 1.77
   m_Direction: 1
   m_Center: {x: 0, y: 0.88, z: 0}
+--- !u!1 &4383759143389534512
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 544791977718023971}
+  m_Layer: 0
+  m_Name: GroundDetection2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &544791977718023971
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4383759143389534512}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.147}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8073086772555192299}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6177088129385391936
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7946510050813310827}
+  m_Layer: 0
+  m_Name: GroundDetection1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7946510050813310827
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6177088129385391936}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.127}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8073086772555192299}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6907383726543715847
 GameObject:
   m_ObjectHideFlags: 0
