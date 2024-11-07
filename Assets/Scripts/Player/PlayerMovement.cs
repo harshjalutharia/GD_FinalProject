@@ -245,9 +245,7 @@ public class PlayerMovement : MonoBehaviour
         rb.useGravity = true;
         if (requestJump)
         {
-            Jump();
-            flightStamina -= jumpStaminaConsume;
-            flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
+            Invoke(nameof(Jump), 0.15f);
             requestJump = false; 
             animationVars.requestJump = true;
             Invoke(nameof(ResetAnimatorRequestJump), 0.5f);
@@ -275,6 +273,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
+        flightStamina -= jumpStaminaConsume;
+        flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
         // reset y velocity
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
