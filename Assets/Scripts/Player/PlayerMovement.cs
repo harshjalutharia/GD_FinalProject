@@ -125,22 +125,24 @@ public class PlayerMovement : MonoBehaviour
         // ground check
         Collider[] colliders1 = Physics.OverlapSphere(groundDetections[0].position, 0.05f, groundMask);
         Collider[] colliders2 = Physics.OverlapSphere(groundDetections[1].position, 0.05f, groundMask);
-        int count = 0;
+        grounded = false;
         foreach (var collider in colliders1)
         {
-            if (collider.gameObject.transform != this.transform)
+            if (collider.gameObject.layer != LayerMask.NameToLayer("Player"))
             {
-                count++;
+                grounded = true;
+                break;
             }
         }
         foreach (var collider in colliders2)
         {
-            if (collider.gameObject.transform != this.transform)
+            if (grounded) break;
+            if (collider.gameObject.layer != LayerMask.NameToLayer("Player"))
             {
-                count++;
+                grounded = true;
+                break;
             }
         }
-        grounded = count > 0 ;
         // grounded = Physics.Raycast(orientation.position, Vector3.down, 0.2f, GroundMask);
         
         DealInput();
