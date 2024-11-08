@@ -6,6 +6,8 @@ public class VoronoiMap : NoiseMap
 {
 
     [Header("=== Voronoi Map Generation ===")]
+    [SerializeField] private int m_numRegions;
+    [SerializeField] private TerrainType[] m_voronoiRegions;
     [SerializeField] private Vector2Int[] m_voronoiCenters;
     [SerializeField] private int m_edgeBuffer = 20;
     [SerializeField, Range(0,10)] private int m_lloydRelaxationIterations = 2;
@@ -14,15 +16,17 @@ public class VoronoiMap : NoiseMap
         m_prng = new System.Random(m_seed);
 
         // generate the terrain types
-        for(int i = 0; i < m_terrainTypes.Length; i++) {
+        if (m_numRegions <= 0) m_numRegions = 1;
+        m_voronoiRegions = new TerrainType[m_numRegions];
+        for(int i = 0; i < m_numRegions; i++) {
             string name = $"Region {i+1}";
-            float height = (float)(i+1)/(float)m_terrainTypes.Length;
+            float height = (float)(i+1)/(float)m_numRegions;
             Color color =  new Color(
                 (float)m_prng.Next(0, 100)/100f, 
                 (float)m_prng.Next(0, 100)/100f,
                 (float)m_prng.Next(0, 100)/100f
             );
-            m_terrainTypes[i] = new TerrainType { name=name, height=height, color=color };
+            m_voronoiRegions[i] = new TerrainType { name=name, height=height, color=color };
         }
 
         // In this first run, we generate the voronoi regions first, using pure randomness.
@@ -44,7 +48,7 @@ public class VoronoiMap : NoiseMap
 
     private Vector2Int[] GenerateVoronoiPoints() {        
         List<Vector2Int> existingPoints = new List<Vector2Int>();
-        while(existingPoints.Count < m_terrainTypes.Length) {
+        while(existingPoints.Count < m_voronoiRegions.Length) {
             Vector2Int pointIndices = new Vector2Int(
                 m_prng.Next(m_edgeBuffer, m_mapChunkSize-m_edgeBuffer),
                 m_prng.Next(m_edgeBuffer, m_mapChunkSize-m_edgeBuffer)
@@ -64,8 +68,8 @@ public class VoronoiMap : NoiseMap
                 // Iterate through regions, check which region index we're actually in
                 float currentHeight = data[x,y];
                 int regionIndex = 0;
-                for(int i = 0; i < m_terrainTypes.Length; i++) {
-                    if (currentHeight <= m_terrainTypes[i].height) {
+                for(int i = 0; i < m_voronoiRegions.Length; i++) {
+                    if (currentHeight <= m_voronoiRegions[i].height) {
                         regionIndex = i;
                         break;
                     }
@@ -109,7 +113,7 @@ public class VoronoiMap : NoiseMap
                         closestDistance = dist;
                     }
                 }
-                regionMap[x,y] = m_terrainTypes[closestIndex].height;          
+                regionMap[x,y] = m_voronoiRegions[closestIndex].height;          
             }
         }
         return regionMap;
