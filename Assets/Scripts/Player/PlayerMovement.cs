@@ -392,13 +392,12 @@ public class PlayerMovement : MonoBehaviour
         animationVars.horizontalInput = moveDirection.magnitude > 0.05f;
         if (animationVars.sliding)
         {
-            animationVars.sliding = animationVars.horizontalSpeed > slideSpeedThreshold && grounded && !sprinting &&
-                                    animationVars.verticalSpeed < 1.6f;
+            animationVars.sliding = animationVars.horizontalSpeed > slideSpeedThreshold && grounded && !sprinting;
         }
         else
         {
             animationVars.sliding = animationVars.horizontalSpeed > slideSpeedThreshold + slideStartSpeedOffset &&
-                                    grounded && !sprinting && animationVars.verticalSpeed < 1.6f;
+                                    grounded && !sprinting;
         }
 
         animationVars.paragliding = !grounded && animationVars.verticalSpeed < 0 && animationVars.horizontalInput &&
