@@ -54,7 +54,7 @@ public class NoiseMap : MonoBehaviour
     [SerializeField] private Color m_coordColor = Color.blue;
     [SerializeField] private Vector2Int m_debugGridCoord = new Vector2Int(0,0);
     
-    private void OnDrawGizmos() {
+    protected virtual void OnDrawGizmos() {
         if (!m_showGrid) return;
         Gizmos.color = m_gridColor;
 
