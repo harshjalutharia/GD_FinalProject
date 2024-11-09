@@ -8,8 +8,11 @@ using UnityEngine.Serialization;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-    [Tooltip("Control how fast player moves, doesn't represent actual speed")]
+    [Tooltip("The force pushing character to walk, doesn't represent actual speed")]
     public float moveSpeed;
+    
+    [Tooltip("The force pushing character to sprint, doesn't represent actual speed")]
+    public float sprintSpeed;
 
     [SerializeField, Tooltip("READ ONLY. Controls the max walking speed on a level surface. Vmax=moveSpeed/groundDrag")]
     private float slideSpeedThreshold;
@@ -22,6 +25,9 @@ public class PlayerMovement : MonoBehaviour
     
     [Tooltip("Limit the max walking speed, Vmax=moveSpeed/groundDrag")]
     public float groundDrag;
+    
+    [Tooltip("Limit the max sprint speed, Vmax=moveSpeed/groundDragSprint")]
+    public float groundDragSprint;
 
     [Tooltip("When the user has no direction input, applies the friction")]
     public float friction;
@@ -49,14 +55,12 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Continuous force applied during flight")]
     public float flightForce;
     
-    private bool readyToJump;
+    [Tooltip("Used to determine the player direction")]
+    public Transform orientation;
     
-    private bool requestJump;
     
-    [SerializeField] 
-    private bool requestFlight;
-    
-    [Tooltip("Maximum stamina for flight")]
+    [Header("Stamina Settings")]
+    [Tooltip("Maximum stamina for flight and sprint")]
     public float maxFlightStamina;
     
     [Tooltip("Stamina consumed by jumping")]
@@ -68,11 +72,19 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Stamina consumed per second of flight")]
     public float flightStaminaDecreaseSpeed;
     
-    [Tooltip("Stamina regained per second while on the ground")]
+    [Tooltip("Stamina consumed per second of springting")]
+    public float sprintStaminaDecreaseSpeed;
+
+    [Tooltip("Could not start sprinting if stamina low that this value")] 
+    public float sprintMinStamina;
+    
+    [Tooltip("Stamina regained per second while on the ground and not sprinting")]
     public float flightStaminaRefillSpeed; 
 
     [Header("Input")]
     public KeyCode jumpKey = KeyCode.Space;
+
+    public KeyCode sprintKey = KeyCode.LeftAlt;
     
     private float horizontalInput;
     
@@ -85,11 +97,29 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Set to everything is OK")]
     public LayerMask groundMask;
     
+    [Header("Private States")]
     [SerializeField] 
     private bool grounded;
     
-    [Tooltip("Used to determine the player direction")]
-    public Transform orientation;
+    [SerializeField]
+    private bool readyToJump;
+    
+    [SerializeField] 
+    private bool requestJump;
+    
+    [SerializeField] 
+    private bool sprinting;
+    
+    [SerializeField] 
+    private bool requestFlight;
+    
+    [SerializeField] 
+    private bool flightActivated;
+    
+    [SerializeField] 
+    private bool sprintActivated;
+    
+    
     
     private Vector3 moveDirection;
 
@@ -118,6 +148,13 @@ public class PlayerMovement : MonoBehaviour
         slideSpeedThreshold = moveSpeed / groundDrag;
 
         physicMaterial = GetComponent<CapsuleCollider>().material;
+
+        // initially do not have special movement
+        flightActivated = false;   
+        sprintActivated = false;
+        
+        ActivateFlight();
+        ActivateSprint();
     }
 
     private void Update()
@@ -148,11 +185,23 @@ public class PlayerMovement : MonoBehaviour
         DealInput();
         
         // refill flight stamina when grounded
-        if (grounded)
+        if (grounded && !sprinting)
         {
             flightStamina += flightStaminaRefillSpeed * Time.deltaTime;
             flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
         }
+        else if(sprinting)
+        {
+            flightStamina -= sprintStaminaDecreaseSpeed * Time.deltaTime;
+            flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
+        }
+        else if (requestFlight)
+        {
+            flightStamina -= flightStaminaDecreaseSpeed * Time.deltaTime;
+            flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
+        }
+        
+        
 
         SetAnimation();
         
@@ -183,7 +232,7 @@ public class PlayerMovement : MonoBehaviour
         }
         
         // fly input
-        if (!grounded && Input.GetKey(jumpKey) && flightStamina > 0)
+        if (flightActivated && !grounded && Input.GetKey(jumpKey) && flightStamina > 0)
         {
             requestFlight = true;
         }
@@ -192,6 +241,22 @@ public class PlayerMovement : MonoBehaviour
             requestFlight = false;
         }
         
+        // sprint input
+        if (sprintActivated && grounded && Input.GetKey(sprintKey) && moveDirection.magnitude > 0.02f)
+        {
+            if (sprinting)
+            {
+                sprinting = flightStamina > 0;
+            }
+            else
+            {
+                sprinting = flightStamina > sprintMinStamina;
+            }
+        }
+        else
+        {
+            sprinting = false;
+        }
     }
 
     
@@ -219,18 +284,17 @@ public class PlayerMovement : MonoBehaviour
             physicMaterial.staticFriction = 0;
         }
         
-        
         // begin horizontal movement
         // on ground
         if (grounded)
         {
-            Vector3 moveForce = moveDirection.normalized * moveSpeed - CalculateResistance(groundDrag, grounded);
+            Vector3 moveForce = moveDirection.normalized * (sprinting ? sprintSpeed : moveSpeed) - CalculateResistance();
             rb.AddForce(moveForce, ForceMode.Force);
         }
         // in air
         else if (!grounded)
         {
-            Vector3 moveForce = moveDirection.normalized * (airMultiplier * moveSpeed) - CalculateResistance(airDragHorizontal, grounded);
+            Vector3 moveForce = moveDirection.normalized * (airMultiplier * moveSpeed) - CalculateResistance();
             rb.AddForce(moveForce, ForceMode.Force);
             
             // limit descent speed if player has input
@@ -243,18 +307,16 @@ public class PlayerMovement : MonoBehaviour
         
         // begin vertical movement
         rb.useGravity = true;
-        if (requestJump)
+        if (requestJump) // jump control
         {
             Invoke(nameof(Jump), 0.15f);
             requestJump = false; 
             animationVars.requestJump = true;
-            Invoke(nameof(ResetAnimatorRequestJump), 0.5f);
+            Invoke(nameof(ResetAnimatorRequestJump), 0.2f);
         }
-        else if (requestFlight)
+        else if (requestFlight)     // flight control
         {
             FlyUp();
-            flightStamina -= flightStaminaDecreaseSpeed * Time.fixedDeltaTime;
-            flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
         }
         
     }
@@ -293,19 +355,22 @@ public class PlayerMovement : MonoBehaviour
     }
     
     
-    private Vector3 CalculateResistance(float drag, bool ground)
+    private Vector3 CalculateResistance()
     {
         Vector3 horizontalVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         float resistanceMag = 0;
-        if (ground)
+        if (grounded && !sprinting)  // walking drag
         {
             // the resistance increases linearly with horizontal velocity. But has a max value
-            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * drag, 0, moveSpeed + slideResistance);
-            
+            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * groundDrag, 0, moveSpeed + slideResistance);
+        }
+        else if (grounded && sprinting)
+        {
+            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * groundDragSprint, 0, sprintSpeed*2);
         }
         else
         {
-            resistanceMag = horizontalVelocity.magnitude * drag;
+            resistanceMag = horizontalVelocity.magnitude * airDragHorizontal;
         }
         Vector3 resistanceForce = resistanceMag * horizontalVelocity.normalized;
         return resistanceForce;
@@ -321,16 +386,19 @@ public class PlayerMovement : MonoBehaviour
     private void SetAnimation()
     {
         animationVars.grounded = grounded;
+        animationVars.sprinting = sprinting;
         animationVars.horizontalSpeed = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude;
         animationVars.verticalSpeed = rb.velocity.y;
         animationVars.horizontalInput = moveDirection.magnitude > 0.05f;
         if (animationVars.sliding)
         {
-            animationVars.sliding = animationVars.horizontalSpeed > slideSpeedThreshold && grounded;
+            animationVars.sliding = animationVars.horizontalSpeed > slideSpeedThreshold && grounded && !sprinting &&
+                                    animationVars.verticalSpeed < 1.6f;
         }
         else
         {
-            animationVars.sliding = animationVars.horizontalSpeed > slideSpeedThreshold + slideStartSpeedOffset && grounded;
+            animationVars.sliding = animationVars.horizontalSpeed > slideSpeedThreshold + slideStartSpeedOffset &&
+                                    grounded && !sprinting && animationVars.verticalSpeed < 1.6f;
         }
 
         animationVars.paragliding = !grounded && animationVars.verticalSpeed < 0 && animationVars.horizontalInput &&
@@ -352,11 +420,26 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("sliding", animationVars.sliding);
         animator.SetBool("paragliding", animationVars.paragliding);
         animator.SetBool("horizontalInput", animationVars.horizontalInput);
+        animator.SetBool("sprinting", animationVars.sprinting);
     }
 
     public float GetFlightStamina() {
         return flightStamina;
     }
+
+
+    // Could fly after activate
+    public void ActivateFlight()  
+    {
+        flightActivated = true;
+    }
+
+    // Could sprint after activate
+    public void ActivateSprint()
+    {
+        sprintActivated = true;
+    }
+    
     
     
     [System.Serializable] 
@@ -369,6 +452,7 @@ public class PlayerMovement : MonoBehaviour
         public bool requestJump;
         public bool sliding;
         public bool paragliding;
+        public bool sprinting;
     }
 
     
