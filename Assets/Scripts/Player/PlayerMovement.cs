@@ -120,7 +120,6 @@ public class PlayerMovement : MonoBehaviour
     private bool sprintActivated;
     
     
-    
     private Vector3 moveDirection;
 
     private Rigidbody rb;
@@ -131,7 +130,12 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField, Tooltip("READ ONLY. Variables bind for animation control")]
     private AnimationVars animationVars;
-    
+
+    [Header("Audio")] 
+    private AudioSource audioSource;
+
+    [Tooltip("Sound of cheating")]
+    public AudioClip switchSound;
 
     [Header("Debug UI Element")] 
     public TextMeshProUGUI debugText1;
@@ -152,6 +156,8 @@ public class PlayerMovement : MonoBehaviour
         // initially do not have special movement
         flightActivated = false;   
         sprintActivated = false;
+
+        audioSource = GetComponent<AudioSource>();
         
         ActivateFlight();
         ActivateSprint();
@@ -210,12 +216,17 @@ public class PlayerMovement : MonoBehaviour
         float overAllSpeed = rb.velocity.magnitude;
         debugText1.text = "Stamina: " + flightStamina;
         debugText2.text = "Velocity:" + rb.velocity + " \nHorizontal Speed:" + horizontalSpeed + " Speed:" + overAllSpeed;
+        if (Input.GetKey(KeyCode.P))
+        {
+            ActivateFlight();
+            ActivateSprint();
+            audioSource.PlayOneShot(switchSound);
+        }
     }
 
     private void FixedUpdate()
     {
         MovePlayer();
-        // SpeedControl();
     }
 
     private void DealInput()
@@ -263,12 +274,6 @@ public class PlayerMovement : MonoBehaviour
     // called in FixedUpdate
     private void MovePlayer()
     {
-        // handle drag
-        // if (grounded)
-        //     rb.drag = groundDrag;
-        // else
-        //     rb.drag = airDrag;
-        
         // calculate movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         
@@ -320,18 +325,6 @@ public class PlayerMovement : MonoBehaviour
         }
         
     }
-
-    // private void SpeedControl()
-    // {
-    //     Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-    //
-    //     // limit velocity if needed
-    //     if(flatVel.magnitude > moveSpeed)
-    //     {
-    //         Vector3 limitedVel = flatVel.normalized * moveSpeed;
-    //         rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
-    //     }
-    // }
 
     private void Jump()
     {
