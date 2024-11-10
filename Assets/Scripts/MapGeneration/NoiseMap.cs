@@ -239,6 +239,63 @@ public class NoiseMap : MonoBehaviour
         return m_heightMap[x,y];
     }
 
+    public virtual float QueryNoiseAtCoords(int x, int y, out Vector3 worldPosition) {
+        float mapWidth = (float)m_mapChunkSize - 1f;
+        float mapExtent = mapWidth / 2f;
+
+        float noiseX = (float)x - mapExtent;
+        float noiseY = m_noiseMap[x,y];
+        float noiseZ = mapWidth - (float)y - mapExtent;
+
+        worldPosition = new Vector3(noiseX, noiseY, noiseZ);
+        return noiseY;
+    }
+    public virtual float QueryNoiseAtWorldPos(float worldX, float worldZ, out int x, out int y) {
+        float mapWidth = (float)m_mapChunkSize - 1f;
+        float mapExtent = mapWidth / 2f;
+
+        x = Mathf.Clamp(Mathf.RoundToInt(worldX + mapExtent), 0, m_mapChunkSize-1);
+        y = Mathf.Clamp(Mathf.RoundToInt(worldZ + mapExtent - mapWidth)*-1, 0, m_mapChunkSize-1);
+        return m_noiseMap[x,y];
+    }
+
+    public virtual int QueryRegionAtCoords(int x, int y, out Vector3 worldPosition) {
+        float mapWidth = (float)m_mapChunkSize - 1f;
+        float mapExtent = mapWidth / 2f;
+
+        float worldX = (float)x - mapExtent;
+        float worldY = m_heightMap[x,y];
+        float worldZ = mapWidth - (float)y - mapExtent;
+        worldPosition = new Vector3(worldX, worldY, worldZ);
+
+        float noiseY = m_noiseMap[x,y];
+        int regionIndex = 0;
+        for(int i = 0; i < m_terrainTypes.Length; i++) {
+            if (noiseY <= m_terrainTypes[i].height) {
+                regionIndex = i;
+                break;
+            }
+        }
+        return regionIndex;
+    }
+    public virtual int QueryRegionAtWorldPos(float worldX, float worldZ, out int x, out int y) {
+        float mapWidth = (float)m_mapChunkSize - 1f;
+        float mapExtent = mapWidth / 2f;
+
+        x = Mathf.Clamp(Mathf.RoundToInt(worldX + mapExtent), 0, m_mapChunkSize-1);
+        y = Mathf.Clamp(Mathf.RoundToInt(worldZ + mapExtent - mapWidth)*-1, 0, m_mapChunkSize-1);
+        
+        float noiseY = m_noiseMap[x,y];
+        int regionIndex = 0;
+        for(int i = 0; i < m_terrainTypes.Length; i++) {
+            if (noiseY <= m_terrainTypes[i].height) {
+                regionIndex = i;
+                break;
+            }
+        }
+        return regionIndex;
+    }
+
 
     protected virtual void OnValidate() {}
 }
