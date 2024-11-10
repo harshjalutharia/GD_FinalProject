@@ -21,6 +21,7 @@ public class VoronoiMap : NoiseMap
     [SerializeField, Tooltip("Designate a buffer zone from the map edges where centroids cannot be spawned.")]                  private int m_edgeBuffer = 20;
     [SerializeField, Tooltip("The number of times Lloyd Relaxation is conducted to 'clump' the regions"), Range(0,10)]          private int m_lloydRelaxationIterations = 2;
     [SerializeField, Tooltip("Do we make the edge regions feel like cliffs?")]                                                  private bool m_edgeBorder = true;
+    [SerializeField, Tooltip("Do we use a falloff noise map for border determination? If so, set here. Otherwise, just uses regions next to edge")] private FalloffMap m_falloffMap;
     [SerializeField, Tooltip("The number of iterations to smoothen the heights of regions."), Range(0,10)]                      private int m_heightSmoothenIterations = 2;
     [SerializeField, Tooltip("The weight factor applied to the new smoothened height, when smoothening region heights"), Range(0f, 1f)] private float m_heightSmoothenWeight = 0.25f;
 
@@ -97,20 +98,7 @@ public class VoronoiMap : NoiseMap
         // If we want to define an edge border, then we have to do a double-check along the edge pixels
         // Any regions that have an edge pixel is considered a border segment.
         // For those segments, we have to set the height to 1.
-        if (m_edgeBorder) {
-            for(int y = 0; y < m_mapChunkSize; y++) {
-                m_voronoiSegments[voronoiMap[0,y]].height = 1f;
-                m_voronoiSegments[voronoiMap[0,y]].isBorder = true;
-                m_voronoiSegments[voronoiMap[m_mapChunkSize-1,y]].height = 1f;
-                m_voronoiSegments[voronoiMap[m_mapChunkSize-1,y]].isBorder = true;
-            }
-            for(int x = 0; x < m_mapChunkSize; x++) {
-                m_voronoiSegments[voronoiMap[x,0]].height = 1f;
-                m_voronoiSegments[voronoiMap[x,0]].isBorder = true;
-                m_voronoiSegments[voronoiMap[x,m_mapChunkSize-1]].height = 1f;
-                m_voronoiSegments[voronoiMap[x,m_mapChunkSize-1]].isBorder = true;
-            }
-        }
+        SetBorderRegions(voronoiMap);
 
         // At this point, it's a good idea to generate a lookup table of some kind - namely, one that'll
         //  allow us to associate voronoi segments with their pixels
@@ -259,6 +247,36 @@ public class VoronoiMap : NoiseMap
         }
 
         return noiseMap;
+    }
+
+    private void SetBorderRegions(int[,] voronoiMap) {
+        if (!m_edgeBorder) return;
+        
+        if (m_falloffMap != null) {
+            for(int y = 0; y < m_mapChunkSize; y++) {
+                for(int x = 0; x < m_mapChunkSize; x++) {
+                    if (m_falloffMap.noiseMap[x,y] < 1f) {
+                        m_voronoiSegments[voronoiMap[x,y]].height = 1f;
+                        m_voronoiSegments[voronoiMap[x,y]].isBorder = true;
+                    }
+                }
+            }
+            return;
+        }
+
+        for(int y = 0; y < m_mapChunkSize; y++) {
+            m_voronoiSegments[voronoiMap[0,y]].height = 1f;
+            m_voronoiSegments[voronoiMap[0,y]].isBorder = true;
+            m_voronoiSegments[voronoiMap[m_mapChunkSize-1,y]].height = 1f;
+            m_voronoiSegments[voronoiMap[m_mapChunkSize-1,y]].isBorder = true;
+        }
+        for(int x = 0; x < m_mapChunkSize; x++) {
+            m_voronoiSegments[voronoiMap[x,0]].height = 1f;
+            m_voronoiSegments[voronoiMap[x,0]].isBorder = true;
+            m_voronoiSegments[voronoiMap[x,m_mapChunkSize-1]].height = 1f;
+            m_voronoiSegments[voronoiMap[x,m_mapChunkSize-1]].isBorder = true;
+        }
+
     }
 
 }

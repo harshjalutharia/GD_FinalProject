@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class CombinedMap : NoiseMap
 {
+    public enum ApplyMethod { Off, Generate, GenerateApply }
     public enum CombineMethod { Set, Add, Subtract, Multiply, Divide }
     
     [System.Serializable]
     public class CombineItem {
         public NoiseMap map;
         public CombineMethod combineMethod = CombineMethod.Multiply;
-        public bool apply = true;
+        public ApplyMethod apply = ApplyMethod.GenerateApply;
     }
 
     [Header("=== Combined Map Settings ===")]
@@ -22,12 +23,13 @@ public class CombinedMap : NoiseMap
         m_heightMap = Generators.GenerateFloatMap(m_mapChunkSize, m_mapChunkSize, 0f);
 
         foreach(CombineItem ci in m_maps) {
-            if (!ci.apply) continue;
+            if (ci.apply == ApplyMethod.Off) continue;
             ci.map.SetSeed(m_seed);
             ci.map.SetDimensions(m_dimensions);
             ci.map.SetChunkSize(m_mapChunkSize);
             ci.map.SetLevelOfDetail(m_levelOfDetail);
             ci.map.GenerateMap();
+            if (ci.apply == ApplyMethod.Generate) continue;
             switch(ci.combineMethod) {
                 case CombineMethod.Multiply:
                     m_noiseMap = Generators.MultiplyMap(m_mapChunkSize, m_mapChunkSize, m_noiseMap, ci.map.noiseMap);

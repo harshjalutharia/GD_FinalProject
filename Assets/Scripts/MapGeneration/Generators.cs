@@ -3,6 +3,8 @@ using UnityEngine;
 
 public static class Generators {
 
+    public enum FalloffShape { Box, Radial }
+
     public static float[,] GenerateFloatMap(int mapWidth, int mapHeight, float defaultValue) {
         float[,] noiseMap = new float[mapWidth, mapHeight];
         for(int y = 0; y < mapHeight; y++) {
@@ -107,6 +109,39 @@ public static class Generators {
 
         return heightMap;
     }
+    // Generator function: Generates a "falloff" map where cells of a map at the edges are made flat, 
+    //      and those close to a given centroid position retain their height.
+    public static float[,] GenerateFalloffMap(
+            int mapWidth, int mapHeight,
+            float centerX, float centerY, FalloffShape shape, 
+            float falloffStart, float falloffEnd
+    ) {
+        float[,] heightMap = new float[mapWidth, mapHeight];
+        float halfWidth = mapWidth/2f;
+        float halfHeight = mapHeight/2f;
+        Vector2 centroid = new Vector2(centerX, centerY);
+        
+        for(int y = 0; y < mapHeight; y++) {
+            for(int x = 0; x < mapWidth; x++) {
+                // This forces the X position and Y position to be between -1 and 1
+                float xPos = (float)(x) / mapWidth * 2f - 1;
+                float yPos = (float)(y) / mapHeight * 2f - 1;
+
+                // Depending on the falloff shape (i.e. box or radial), we have to determine the `t` value
+                float t = (shape == FalloffShape.Box)
+                    ? Mathf.Max(Mathf.Abs(xPos-centerX), Mathf.Abs(yPos-centerY))
+                    : Vector2.Distance(centroid, new Vector2(xPos, yPos));
+                // Find which value is closer to the edge
+                //float t = Mathf.Max(Mathf.Abs(xPos), Mathf.Abs(yPos));
+                if (t < falloffStart) heightMap[x,y] = 1;
+                else if (t > falloffEnd) heightMap[x,y] = 0;
+                else heightMap[x,y] = Mathf.SmoothStep(1,0,Mathf.InverseLerp(falloffStart, falloffEnd, t));
+            }
+        }
+
+        return heightMap;
+    }
+
     public static float[,] GenerateHeightMap(float[,] noiseMap, AnimationCurve heightCurve, float heightMultiplier) {
         int width = noiseMap.GetLength(0);
         int height = noiseMap.GetLength(1);
