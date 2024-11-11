@@ -84,7 +84,10 @@ public class PlayerMovement : MonoBehaviour
     [Header("Input")]
     public KeyCode jumpKey = KeyCode.Space;
 
-    public KeyCode sprintKey = KeyCode.LeftAlt;
+    public KeyCode sprintKey = KeyCode.LeftShift;
+
+    [Tooltip("Activate the ability to fly and sprint")]
+    public KeyCode cheatKey = KeyCode.C;
     
     private float horizontalInput;
     
@@ -159,8 +162,6 @@ public class PlayerMovement : MonoBehaviour
 
         audioSource = GetComponent<AudioSource>();
         
-        ActivateFlight();
-        ActivateSprint();
     }
 
     private void Update()
@@ -216,7 +217,9 @@ public class PlayerMovement : MonoBehaviour
         float overAllSpeed = rb.velocity.magnitude;
         debugText1.text = "Stamina: " + flightStamina;
         debugText2.text = "Velocity:" + rb.velocity + " \nHorizontal Speed:" + horizontalSpeed + " Speed:" + overAllSpeed;
-        if (Input.GetKey(KeyCode.P))
+        
+        // cheat
+        if (Input.GetKey(cheatKey))
         {
             ActivateFlight();
             ActivateSprint();
@@ -296,14 +299,14 @@ public class PlayerMovement : MonoBehaviour
             Vector3 moveForce = moveDirection.normalized * (sprinting ? sprintSpeed : moveSpeed) - CalculateResistance();
             rb.AddForce(moveForce, ForceMode.Force);
         }
-        // in air
+        // in the air
         else if (!grounded)
         {
             Vector3 moveForce = moveDirection.normalized * (airMultiplier * moveSpeed) - CalculateResistance();
             rb.AddForce(moveForce, ForceMode.Force);
             
             // limit descent speed if player has input
-            if (rb.velocity.y < 0 && moveDirection.magnitude > 0.05f)
+            if (flightActivated && rb.velocity.y < 0 && moveDirection.magnitude > 0.05f)
             {
                 rb.AddForce(airDragVertical * rb.velocity.y * Vector3.down, ForceMode.Force);
             }

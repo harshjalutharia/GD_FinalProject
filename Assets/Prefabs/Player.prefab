@@ -1181,7 +1181,7 @@ MonoBehaviour:
   sprintMinStamina: 5
   flightStaminaRefillSpeed: 5
   jumpKey: 32
-  sprintKey: 301
+  sprintKey: 304
   groundDetections:
   - {fileID: 7946510050813310827}
   - {fileID: 544791977718023971}
