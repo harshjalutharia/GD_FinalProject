@@ -279,4 +279,22 @@ public class VoronoiMap : NoiseMap
 
     }
 
+    public List<Vector3> GetCentroidsInWorldPos()
+    {
+        List<Vector3> centroidWorldPos = new List<Vector3>();
+        for (int i = 0; i < m_voronoiCentroids.Length; i++)
+        {
+            Vector2Int centroidPos = m_voronoiCentroids[i];
+            float height = QueryHeightAtCoords(centroidPos.x, centroidPos.y, out Vector3 relWorldPos);
+            Vector3 worldPos = transform.position + relWorldPos;
+            centroidWorldPos.Add(worldPos);
+        }
+        return centroidWorldPos;
+    }
+
+    public Dictionary<int, List<int>> GetNeighbourMap()
+    {
+        return m_voronoiSegmentNeighborMap;
+    }
+
 }
