@@ -359,8 +359,8 @@ public class LandmarkGenerator : MonoBehaviour
         }
 
         // Makes sure it is not too far from the closest landmark
-        //if (closestDistance > maximumDistanceBetweenLandmarks)
-        //    isValidPoint = false;
+        if (closestDistance > maximumDistanceBetweenLandmarks)
+            isValidPoint = false;
 
         return isValidPoint;
     }
