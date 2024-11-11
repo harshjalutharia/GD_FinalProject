@@ -187,8 +187,8 @@ public class SessionManager : MonoBehaviour
     {
         Debug.Log(m_player.transform.position);
         do {
-            m_playerStartPosition = m_terrainGenerator.GetRandomPosition(false, 50);
-            m_playerEndPosition = m_terrainGenerator.GetRandomPosition(false, 50);
+            m_playerStartPosition = m_terrainGenerator.GetRandomPosition(false, 125);
+            m_playerEndPosition = m_terrainGenerator.GetRandomPosition(false, 125);
             Debug.Log(m_playerStartPosition.ToString() + " | " + m_playerEndPosition.ToString());
         } while(Vector2.Distance(m_playerStartPosition.ToVector2(), m_playerEndPosition.ToVector2()) < 50f);
 
