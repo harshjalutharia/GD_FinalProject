@@ -172,7 +172,7 @@ public class PlayerMovement : MonoBehaviour
         grounded = false;
         foreach (var collider in colliders1)
         {
-            if (collider.gameObject.layer != LayerMask.NameToLayer("Player"))
+            if (collider.gameObject.layer != LayerMask.NameToLayer("Player") && collider.gameObject.layer != LayerMask.NameToLayer("FakePlayer"))
             {
                 grounded = true;
                 break;
@@ -181,7 +181,7 @@ public class PlayerMovement : MonoBehaviour
         foreach (var collider in colliders2)
         {
             if (grounded) break;
-            if (collider.gameObject.layer != LayerMask.NameToLayer("Player"))
+            if (collider.gameObject.layer != LayerMask.NameToLayer("Player") && collider.gameObject.layer != LayerMask.NameToLayer("FakePlayer"))
             {
                 grounded = true;
                 break;
@@ -416,6 +416,11 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("paragliding", animationVars.paragliding);
         animator.SetBool("horizontalInput", animationVars.horizontalInput);
         animator.SetBool("sprinting", animationVars.sprinting);
+    }
+
+    public AnimationVars getAnimationVars()
+    {
+        return animationVars;
     }
 
     public float GetFlightStamina() {
