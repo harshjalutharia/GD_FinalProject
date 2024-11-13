@@ -32,6 +32,10 @@ public class LandmarkGenerator : MonoBehaviour
     [SerializeField, Tooltip("Maximum retries to spawn all landmarks before it gives up")]  private int maxRetries = 10;
     [SerializeField, Tooltip("Randomization to add when generating new landmarks")]         private float randomizationFactor = 10f;
     [SerializeField, Tooltip("Place landmark at destination?")]                             private bool m_placeLandmarkAtDest = false;
+    [SerializeField, Tooltip("Radius of the circle around end point where ruins spawn")]    private float endRegionRadius = 20f;
+    [SerializeField, Tooltip("Number of ruins to spawn in end region")]                     private int endRegionRuinCount = 10;
+    [SerializeField, Tooltip("Minimum distance between 2 ruins")]                           private float minimumDistanceBetweenRuins = 5f;
+
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("List of landmark positions")]                                 private List<SpawnPoint> m_landmarkPositions;
@@ -84,6 +88,16 @@ public class LandmarkGenerator : MonoBehaviour
         // Clear our previous existing list of landmarks, if they exist.
         ClearLandmarks();
         m_landmarkPositions = new List<SpawnPoint>();
+
+        if (m_voronoiMap != null)
+        {
+            m_landmarkPositions.Add(new SpawnPoint(destination));
+            m_landmarkPositions[0].InstantiateLandmark(landmarkPrefab, m_landmarkParent);
+
+            GenerateRuinsAroundPoint(destination, terrainMap);
+        }
+        // TODO: REMOVE IF NEED TO SPAWN OTHER LANDMARKS
+        return;
 
         if (m_voronoiMap != null)
         {
@@ -297,6 +311,50 @@ public class LandmarkGenerator : MonoBehaviour
             {
                 Instantiate(weeniePrefab[regionIndex], spawnPoint, Quaternion.identity, m_landmarkParent);
             }
+        }
+    }
+
+    private void GenerateRuinsAroundPoint(Vector3 point, NoiseMap voronoiMap)
+    {
+        List<Vector3> ruinSpawnPoints = new List<Vector3>();
+        float landmarkSize = landmarkPrefab.GetComponent<Renderer>().bounds.extents.magnitude;
+        float ruinSize = weeniePrefab[0].GetComponent<Renderer>().bounds.extents.magnitude;
+
+        for (int i = 0; i < endRegionRuinCount; i++)
+        {
+            double r = landmarkSize + (endRegionRadius * Math.Sqrt(Random.value));
+            double theta = Random.value * 2 * Math.PI;
+
+            double x = point.x + (r * Math.Cos(theta));
+            double z = point.z + (r * Math.Sin(theta));
+
+            bool validPoint = true;
+
+            foreach (var ruinSpawn in ruinSpawnPoints)
+            {
+                if (Vector3.Distance(new Vector3(ruinSpawn.x, 0f, ruinSpawn.z), new Vector3((float)x, 0f, (float)z)) <
+                    minimumDistanceBetweenRuins + (2*ruinSize))
+                {
+                    validPoint = false;
+                    break;
+                }
+
+            }
+
+            if (!validPoint)
+            {
+                i--;
+                continue;
+            }
+
+            int gridX, gridY;
+            float y = voronoiMap.QueryHeightAtWorldPos((float)x, (float)z, out gridX, out gridY);
+            ruinSpawnPoints.Add(new Vector3((float)x, y, (float)z));
+        }
+
+        foreach (var spawnPoint in ruinSpawnPoints)
+        {
+            Instantiate(weeniePrefab[0], spawnPoint, Quaternion.identity, m_landmarkParent);
         }
     }
 
