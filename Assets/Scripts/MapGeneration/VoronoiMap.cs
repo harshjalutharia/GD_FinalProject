@@ -14,6 +14,7 @@ public class VoronoiMap : NoiseMap
     [System.Serializable]
     public class VoronoiSegment : TerrainType {
         public bool isBorder = false;
+        public int terrainIndex = 0;
     }
 
     [Header("=== Voronoi Map Generation ===")]
@@ -27,7 +28,9 @@ public class VoronoiMap : NoiseMap
 
     [Header("=== Voronoi Outputs - READ-ONLY ===")]
     [SerializeField, Tooltip("The different voronoi segments generated.")]          private VoronoiSegment[] m_voronoiSegments;
+    public VoronoiSegment[] voronoiSegments => m_voronoiSegments;
     [SerializeField, Tooltip("The centroids of the generated voronoi segments.")]   private Vector2Int[] m_voronoiCentroids;
+    public Vector2Int[] voronoiCentroids => m_voronoiCentroids;
     [SerializeField, Tooltip("The lookup dictionary to map segments to pixels")]    private Dictionary<int, List<Vector2Int>> m_voronoiSegmentToPixelsMap;
     [SerializeField, Tooltip("Neighbor lookup for each voronoi segment")]           private Dictionary<int, List<int>> m_voronoiSegmentNeighborMap;
     [SerializeField] private int[] m_voronoiSegmentNeighborCount;
@@ -231,7 +234,14 @@ public class VoronoiMap : NoiseMap
                         heightCount += 1;
                     }
                     // Set the new height
-                    m_voronoiSegments[j].height = origHeight*origWeight + (height / (float)heightCount)*m_heightSmoothenWeight;
+                    float newHeight = origHeight*origWeight + (height / (float)heightCount)*m_heightSmoothenWeight;
+                    m_voronoiSegments[j].height = newHeight;
+                    for(int k = 0; k < m_terrainTypes.Length; k++) {
+                        if (newHeight <= m_terrainTypes[k].height) {
+                            m_voronoiSegments[j].terrainIndex = k;
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -290,6 +300,24 @@ public class VoronoiMap : NoiseMap
             centroidWorldPos.Add(worldPos);
         }
         return centroidWorldPos;
+    }
+
+    public int GetRandomSegmentIndex(bool useSeedEngine = false) {
+        if (useSeedEngine) return m_prng.Next(0, m_voronoiSegments.Length);
+        return UnityEngine.Random.Range(0, m_voronoiSegments.Length);
+    }
+
+    public virtual Vector3 GetRandomPositionInSegment(int segmentIndex, bool useSeedEngine = false, int edgeBuffer = 50) {
+        List<Vector2Int> segmentPositions = m_voronoiSegmentToPixelsMap[segmentIndex];
+        Vector2Int coords = (useSeedEngine)
+            ? segmentPositions[m_prng.Next(0, segmentPositions.Count)]
+            : segmentPositions[UnityEngine.Random.Range(0,segmentPositions.Count)];
+        
+        int coordX = Mathf.Clamp(coords.x, edgeBuffer, m_mapChunkSize-1-edgeBuffer);
+        int coordY = Mathf.Clamp(coords.y, edgeBuffer, m_mapChunkSize-1-edgeBuffer);
+        
+        QueryHeightAtCoords(coordX, coordY, out Vector3 worldPos);
+        return worldPos;
     }
 
     public Dictionary<int, List<int>> GetNeighbourMap()

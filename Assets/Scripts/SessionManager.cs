@@ -22,6 +22,7 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The noise map that generates terrain.")]          private NoiseMap m_terrainGenerator;
     [SerializeField, Tooltip("Reference to the destination Game Object")]       private Transform m_destinationRef;
     [SerializeField, Tooltip("The landmark generator that places buildings")]   private LandmarkGenerator m_landmarkGenerator;
+    [SerializeField, Tooltip("Specific refrence to the voronoi map used")]      private VoronoiMap m_voronoiMap;
 
     [Header("=== Menus ===")]
     [SerializeField, Tooltip("The input button for pause menu")]                    private KeyCode m_pauseMenuKeyCode = KeyCode.Tab;
@@ -184,18 +185,21 @@ public class SessionManager : MonoBehaviour
     }
 
     private void SetPlayerInitialPosition()
-    {
+    {   
+        /*
         Debug.Log(m_player.transform.position);
         do {
             m_playerStartPosition = m_terrainGenerator.GetRandomPosition(false, 125);
             m_playerEndPosition = m_terrainGenerator.GetRandomPosition(false, 125);
             Debug.Log(m_playerStartPosition.ToString() + " | " + m_playerEndPosition.ToString());
         } while(Vector2.Distance(m_playerStartPosition.ToVector2(), m_playerEndPosition.ToVector2()) < 50f);
+        */
+
+        GenerateStartAndEnd(m_terrainGenerator, m_voronoiMap, 150f, 20, out m_playerStartPosition, out int playerStartPositionIndex, out m_playerEndPosition, out int playerEndPositionIndex);
 
         // Teleport the player to the start postiion
         m_player.transform.position = m_playerStartPosition;
         Debug.Log(m_player.transform.position);
-
         // Teleport the destination ref to the destination point
         m_destinationRef.position = m_playerEndPosition;
         m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_terrainGenerator);
@@ -205,6 +209,33 @@ public class SessionManager : MonoBehaviour
 
         // Start the tracker, if exists
         if (GameTracker.current != null) GameTracker.current.StartTracking();
+    }
+
+    private void GenerateStartAndEnd(NoiseMap terrainMap, VoronoiMap vMap, float minDistance, int numAttempts, out Vector3 startPos, out int startIndex, out Vector3 endPos, out int endIndex) {
+        VoronoiMap.VoronoiSegment[] segments = vMap.voronoiSegments;
+        Vector2Int[] centroids = vMap.voronoiCentroids;
+
+        startIndex = 0;
+        endIndex = segments.Length-1;
+        int curAttempts = 0;
+        while(curAttempts < numAttempts) {
+            startIndex = vMap.GetRandomSegmentIndex(true);
+            endIndex = vMap.GetRandomSegmentIndex(true);
+            if (segments[startIndex].isBorder || segments[endIndex].isBorder) {
+                curAttempts += 1;
+                continue;
+            }
+            Vector2Int startCentroid = centroids[startIndex];
+            Vector2Int endCentroid = centroids[endIndex];
+            if (Vector2Int.Distance(startCentroid, endCentroid) >= minDistance) break;
+            curAttempts += 1;
+        }
+        Vector3 vStartPos = vMap.GetRandomPositionInSegment(startIndex, true, 100);
+        Vector3 vEndPos = vMap.GetRandomPositionInSegment(endIndex, true, 100);
+        float startHeight = terrainMap.QueryHeightAtWorldPos(vStartPos.x, vStartPos.z, out int startX, out int startY);
+        float endHeight = terrainMap.QueryHeightAtWorldPos(vEndPos.x, vEndPos.z, out int endX, out int endY);
+        startPos = new Vector3(vStartPos.x, startHeight, vStartPos.z);
+        endPos = new Vector3(vEndPos.x, endHeight, vEndPos.z);
     }
 
 }
