@@ -231,11 +231,12 @@ public class NoiseMap : MonoBehaviour
     }
 
     public virtual float QueryHeightAtWorldPos(float worldX, float worldZ, out int x, out int y) {
+        Vector3 worldPos = new Vector3(worldX, transform.position.y, worldZ) - transform.position;
         float mapWidth = (float)m_mapChunkSize - 1f;
         float mapExtent = mapWidth / 2f;
 
-        x = Mathf.Clamp(Mathf.RoundToInt(worldX + mapExtent), 0, m_mapChunkSize-1);
-        y = Mathf.Clamp(Mathf.RoundToInt(worldZ + mapExtent - mapWidth)*-1, 0, m_mapChunkSize-1);
+        x = Mathf.Clamp(Mathf.RoundToInt(worldPos.x + mapExtent), 0, m_mapChunkSize-1);
+        y = Mathf.Clamp(Mathf.RoundToInt(worldPos.z + mapExtent - mapWidth)*-1, 0, m_mapChunkSize-1);
         return m_heightMap[x,y];
     }
 

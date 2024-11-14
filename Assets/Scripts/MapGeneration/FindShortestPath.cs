@@ -23,17 +23,23 @@ public class FindShortestPath : MonoBehaviour
     [Header("=== Debug ===")]
     [SerializeField] private Transform m_startRef;
     [SerializeField] private Transform m_endRef;
+    [SerializeField] private Vector3[] m_pathCorners;
     [SerializeField] private Vector3[] m_pathPositions;
 
     #if UNITY_EDITOR
     void OnDrawGizmos() {
-        if (m_pathPositions == null || m_pathPositions.Length == 0) return;
-        Gizmos.color = Color.blue;
-        for(int i = 0; i < m_pathPositions.Length-1; i++) {
-            Gizmos.DrawSphere(m_pathPositions[i], 0.5f);
-            Gizmos.DrawLine(m_pathPositions[i], m_pathPositions[i+1]);
+        if (m_pathCorners != null && m_pathCorners.Length > 0) {
+            Gizmos.color = Color.red;
+            for(int i = 0; i < m_pathCorners.Length; i++) Gizmos.DrawSphere(m_pathCorners[i], 0.75f);
         }
-        Gizmos.DrawSphere(m_pathPositions[m_pathPositions.Length-1], 0.5f);
+        if (m_pathPositions != null && m_pathPositions.Length > 0) {
+            Gizmos.color = Color.blue;
+            for(int i = 0; i < m_pathPositions.Length-1; i++) {
+                Gizmos.DrawSphere(m_pathPositions[i], 0.5f);
+                Gizmos.DrawLine(m_pathPositions[i], m_pathPositions[i+1]);
+            }
+            Gizmos.DrawSphere(m_pathPositions[m_pathPositions.Length-1], 0.5f);
+        }
     }
     #endif
 
@@ -95,7 +101,7 @@ public class FindShortestPath : MonoBehaviour
                 Vector3 pos = navPath.corners[i] + direction * k * m_pathPointDiscretization;
                 // Query what point this corner point is
                 float h = m_terrainGenerator.QueryHeightAtWorldPos(pos.x, pos.z, out int x, out int z);
-                Debug.Log(h);
+                Debug.Log($"Height at ({x.ToString()},{z.ToString()}): {h.ToString()}");
                 points.Add(new Vector3(pos.x, h, pos.z));
                 // Check what region index this is in
                 int segmentIndex = m_voronoiMap.QueryRegionAtWorldPos(pos.x, pos.z, out x, out z);
@@ -107,6 +113,7 @@ public class FindShortestPath : MonoBehaviour
             }
         }
 
+        m_pathCorners = navPath.corners;
         m_pathPositions = points.ToArray();
         return true;
     }
