@@ -19,7 +19,7 @@ public class PerlinNoiseMap : NoiseMap
             m_octaves, m_persistance, m_lacunarity, m_offset
         );
         m_heightMap = Generators.GenerateHeightMap(m_noiseMap, m_textureHeightCurve, m_textureHeightMultiplier);
-
+        m_heightRange = GetHeightRange(m_heightMap);
         if (m_drawMode != DrawMode.None) RenderMap();
     }
 

@@ -117,6 +117,7 @@ public class VoronoiMap : NoiseMap
 
         // We can generate the height map afterwards
         m_heightMap = Generators.GenerateHeightMap(m_noiseMap, m_textureHeightCurve, m_textureHeightMultiplier);
+        m_heightRange = GetHeightRange(m_heightMap);
         if (m_drawMode != DrawMode.None) RenderMap();
     }
 

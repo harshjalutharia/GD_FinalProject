@@ -14,6 +14,12 @@ public class NoiseMap : MonoBehaviour
         public Color color;
     }
 
+    [System.Serializable]
+    public class MinMax {
+        public float min;
+        public float max;
+    }
+
     [Header("=== Map Settings ===")]
     [SerializeField] protected int m_seed;
     [SerializeField] protected Vector2Int m_dimensions = new Vector2Int(100,100);
@@ -33,6 +39,7 @@ public class NoiseMap : MonoBehaviour
     [SerializeField] protected float m_textureHeightMultiplier = 2000f;
     [SerializeField] protected TerrainType[] m_terrainTypes;
     [SerializeField] protected Gradient m_terrainColorGradient;
+    [SerializeField] protected Material m_meshMaterial;
 
     [Header("=== Debug Settings ===")]
     [SerializeField] private bool m_autoUpdate;
@@ -43,8 +50,11 @@ public class NoiseMap : MonoBehaviour
     public float[,] noiseMap => m_noiseMap;
     [SerializeField] protected float[,] m_heightMap;
     public float[,] heightMap => m_heightMap;
+    [SerializeField] protected MinMax m_heightRange;
+    public MinMax heightRange => m_heightRange;
     [SerializeField] protected Color[] m_colorMap;
     public Color[] colorMap => m_colorMap;
+    
 
     #if UNITY_EDITOR
     [Header("== DEBUG ===")]
@@ -111,6 +121,7 @@ public class NoiseMap : MonoBehaviour
         m_prng = new System.Random(m_seed);
         m_noiseMap = Generators.GenerateRandomMap(m_mapChunkSize, m_mapChunkSize, m_prng);
         m_heightMap = Generators.GenerateHeightMap(m_noiseMap, m_textureHeightCurve, m_textureHeightMultiplier);
+        m_heightRange = GetHeightRange(m_heightMap);
         if (m_drawMode != DrawMode.None) RenderMap();
     }
 
@@ -164,6 +175,25 @@ public class NoiseMap : MonoBehaviour
         return meshData;
     }
 
+    public virtual void InitializeMaterials() {
+        if (m_meshMaterial == null) {
+            Debug.Log("Unable to initialize mesh material due to null material.");
+            return;
+        }
+
+        // Tell the material about our min and max height, which should be set by this point
+        if (m_heightRange == null) {
+            Debug.Log("Unable to initialize mesh materials due to null height range");
+            return;
+        }
+
+        m_meshMaterial.SetFloat("inHeight", m_heightRange.min);
+        m_meshMaterial.SetFloat("maxHeight", m_heightRange.max);
+
+        if (m_renderer != null)     m_renderer.material = m_meshMaterial;
+        if (m_heldRenderer != null) m_heldRenderer.material = m_meshMaterial;
+    }
+
     public virtual void DrawMap() {
         // We then draw the texture of the map
         switch(m_drawMode) {
@@ -181,6 +211,7 @@ public class NoiseMap : MonoBehaviour
 
     public virtual void RenderMap() {
         GenerateColorMap();
+        InitializeMaterials();
         DrawMap();
     }
 
@@ -197,6 +228,20 @@ public class NoiseMap : MonoBehaviour
     public virtual Vector2 GetMapExtents() {
         float l = (float)(m_mapChunkSize-1)/2f;
         return new Vector2(l,l);
+    }
+
+    public virtual MinMax GetHeightRange(float[,] data) {
+        int width = data.GetLength(0);
+        int height = data.GetLength(1);
+        MinMax mm = new MinMax { min=float.MaxValue, max=float.MinValue};
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                float v = data[x,y];
+                if (v < mm.min) mm.min = v;
+                if (v > mm.max) mm.max = v;
+            }
+        }
+        return mm;
     }
 
     public virtual Vector3 GetRandomPosition(bool useSeedEngine = false, int edgeBuffer = 50) {

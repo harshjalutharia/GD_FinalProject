@@ -21,7 +21,7 @@ public class FalloffMap : NoiseMap
             m_falloffStart, m_falloffEnd
         );
         m_heightMap = Generators.GenerateHeightMap(m_noiseMap, m_textureHeightCurve, m_textureHeightMultiplier);
-
+        m_heightRange = GetHeightRange(m_heightMap);
         if (m_drawMode != DrawMode.None) RenderMap();
     }
 

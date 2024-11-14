@@ -54,6 +54,50 @@ public class CombinedMap : NoiseMap
             }
         }
 
+        // Normalize noise map to between 0 and 1
+        m_noiseMap = NormalizeNoiseMap(m_noiseMap);
+
+        // With the normalized noise map, we can now base the height map such that the smallest possible height is set to 0.
+        m_heightMap = RecenterHeightMap(m_heightMap);
+
         if (m_drawMode != DrawMode.None) RenderMap();
+    }
+
+    private float[,] NormalizeNoiseMap(float[,] data) {
+        int width = data.GetLength(0);
+        int height = data.GetLength(1);
+
+        // Determine noise range based on min max logic
+        MinMax noiseRange = GetHeightRange(m_noiseMap);
+
+        // With min and max determined, normalize data
+        float[,] newNoiseMap = new float[width,height];
+        float divisor = noiseRange.max - noiseRange.min;
+        if (divisor == 0) divisor = 0.0001f;
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                newNoiseMap[x,y] = (data[x,y] - noiseRange.min) / divisor;
+            }
+        }
+
+        return newNoiseMap;
+    }
+
+    private float[,] RecenterHeightMap(float[,] data) {
+        int width = data.GetLength(0);
+        int height = data.GetLength(1);
+        
+        // Get min and max of height
+        m_heightRange = GetHeightRange(m_heightMap);
+
+        // With min and max determined, normalize data
+        float[,] newHeightMap = new float[width,height];
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                newHeightMap[x,y] = data[x,y] - m_heightRange.min;
+            }
+        }
+
+        return newHeightMap;
     }
 }
