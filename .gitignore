@@ -70,10 +70,17 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+/[Aa]ssets/[Bb]uilding/**
+/[Aa]ssets/[Bb]uilding.meta
+/[Aa]ssets/[Ss]cenes/For Building.unity
+/[Aa]ssets/[Ss]cenes/For Building.unity.meta
+
+
 
 # Custom Ignores
 **/.DS_Store
 **/*_ignore
 **/*_ignore.meta
+
 
 .idea/
