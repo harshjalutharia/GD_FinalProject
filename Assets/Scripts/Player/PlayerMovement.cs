@@ -175,7 +175,7 @@ public class PlayerMovement : MonoBehaviour
 
         // initially do not have special movement
         flightActivated = false;   
-        sprintActivated = false;
+        sprintActivated = true;
 
         audioSource = GetComponent<AudioSource>();
         
