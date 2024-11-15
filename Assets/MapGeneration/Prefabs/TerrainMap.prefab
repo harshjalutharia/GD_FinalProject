@@ -1,0 +1,4906 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &895846870566983572
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5082927814310155588}
+  - component: {fileID: 6845655144132619670}
+  m_Layer: 0
+  m_Name: Voronoi-Segments
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5082927814310155588
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 895846870566983572}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 500, y: -25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8142674162609628291}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6845655144132619670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 895846870566983572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de4c7578d18a32643ae76644b5168c9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_seed: 32
+  m_dimensions: {x: 100, y: 100}
+  m_mapChunkSize: 481
+  m_levelOfDetail: 1
+  m_autoUpdate: 0
+  m_filter: {fileID: 0}
+  m_renderer: {fileID: 0}
+  m_collider: {fileID: 0}
+  m_heldRenderer: {fileID: 0}
+  m_meshMaterial: {fileID: 2100000, guid: 93f0a9e875fee304ba30662d9f49fc2f, type: 2}
+  m_drawMode: 0
+  m_textureFilterMode: 0
+  m_textureHeightMultiplier: 1
+  m_textureHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_colorMode: 0
+  m_meshMaterialLayers:
+  - name: 
+    texture: {fileID: 2800000, guid: 40eb2d070faacc0439107bf770f90931, type: 3}
+    tint: {r: 0.41037738, g: 0.48750186, b: 1, a: 0}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0.022
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: fd5b53e482132d64287d83ec0d3f3235, type: 3}
+    tint: {r: 0.9648836, g: 1, b: 0.7028302, a: 0}
+    tintStrength: 0
+    startHeight: 0.022
+    blendStrength: 0
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: e333982e6b0238545ae65782199b39d7, type: 3}
+    tint: {r: 0.60119534, g: 0.6698113, b: 0.05371129, a: 0}
+    tintStrength: 0
+    startHeight: 0.112
+    blendStrength: 0.173
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: a8087cc094c09e9419cba8569a36961f, type: 3}
+    tint: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    tintStrength: 0
+    startHeight: 0.831
+    blendStrength: 0.05
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: 504f02f7dacb88d45bdd0f21741a8b14, type: 3}
+    tint: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0}
+    tintStrength: 0
+    startHeight: 0.938
+    blendStrength: 0.072
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: fb4721a27ff9e5442ab710b6971d94b8, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 0}
+    tintStrength: 0
+    startHeight: 0.983
+    blendStrength: 0.019
+    textureScale: 20
+  m_terrainTypes: []
+  m_terrainColorGradient:
+    serializedVersion: 2
+    key0: {r: 0, g: 0, b: 0, a: 1}
+    key1: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  m_heightRange:
+    min: 0.13396293
+    max: 0.81302077
+  m_showGrid: 0
+  m_gridColor: {r: 1, g: 1, b: 1, a: 1}
+  m_gridCellSize: 0
+  m_coordColor: {r: 0, g: 0, b: 1, a: 1}
+  m_debugGridCoord: {x: 0, y: 0}
+  m_numSegments: 150
+  m_edgeBuffer: 20
+  m_lloydRelaxationIterations: 5
+  m_edgeBorderSetting: 0
+  m_falloffMap: {fileID: 0}
+  m_falloffThreshold: 1
+  m_heightSmoothenIterations: 2
+  m_heightSmoothenWeight: 0.25
+  m_voronoiSegments:
+  - name: Region 1
+    texture: {fileID: 0}
+    tint: {r: 0.44, g: 0.2, b: 0.13, a: 1}
+    tintStrength: 0
+    startHeight: 0.13396293
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 2
+    texture: {fileID: 0}
+    tint: {r: 0.38, g: 0.65, b: 0.52, a: 1}
+    tintStrength: 0
+    startHeight: 0.1920504
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 3
+    texture: {fileID: 0}
+    tint: {r: 0.24, g: 0.49, b: 0.93, a: 1}
+    tintStrength: 0
+    startHeight: 0.2918377
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 4
+    texture: {fileID: 0}
+    tint: {r: 0.07, g: 0.86, b: 0.45, a: 1}
+    tintStrength: 0
+    startHeight: 0.26431793
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 5
+    texture: {fileID: 0}
+    tint: {r: 0.63, g: 0.11, b: 0.38, a: 1}
+    tintStrength: 0
+    startHeight: 0.17627469
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 6
+    texture: {fileID: 0}
+    tint: {r: 0.01, g: 0.31, b: 0.83, a: 1}
+    tintStrength: 0
+    startHeight: 0.16060999
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 7
+    texture: {fileID: 0}
+    tint: {r: 0.54, g: 0.7, b: 0.06, a: 1}
+    tintStrength: 0
+    startHeight: 0.2519795
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 8
+    texture: {fileID: 0}
+    tint: {r: 0.69, g: 0.4, b: 0.21, a: 1}
+    tintStrength: 0
+    startHeight: 0.29432213
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 9
+    texture: {fileID: 0}
+    tint: {r: 0.83, g: 0.1, b: 0.44, a: 1}
+    tintStrength: 0
+    startHeight: 0.16492651
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 10
+    texture: {fileID: 0}
+    tint: {r: 0.51, g: 0.38, b: 0.85, a: 1}
+    tintStrength: 0
+    startHeight: 0.23040211
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 11
+    texture: {fileID: 0}
+    tint: {r: 0, g: 0.88, b: 0.16, a: 1}
+    tintStrength: 0
+    startHeight: 0.26430973
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 12
+    texture: {fileID: 0}
+    tint: {r: 0.79, g: 0.81, b: 0.14, a: 1}
+    tintStrength: 0
+    startHeight: 0.20042156
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 13
+    texture: {fileID: 0}
+    tint: {r: 0.53, g: 0.18, b: 0.82, a: 1}
+    tintStrength: 0
+    startHeight: 0.30567947
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 14
+    texture: {fileID: 0}
+    tint: {r: 0.12, g: 0.07, b: 0.6, a: 1}
+    tintStrength: 0
+    startHeight: 0.199818
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 15
+    texture: {fileID: 0}
+    tint: {r: 0.42, g: 0.89, b: 0.77, a: 1}
+    tintStrength: 0
+    startHeight: 0.27823177
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 16
+    texture: {fileID: 0}
+    tint: {r: 0.97, g: 0.22, b: 0.95, a: 1}
+    tintStrength: 0
+    startHeight: 0.30891716
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 17
+    texture: {fileID: 0}
+    tint: {r: 0.27, g: 0.45, b: 0.12, a: 1}
+    tintStrength: 0
+    startHeight: 0.25116542
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 18
+    texture: {fileID: 0}
+    tint: {r: 0.14, g: 0.87, b: 0, a: 1}
+    tintStrength: 0
+    startHeight: 0.2354886
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 19
+    texture: {fileID: 0}
+    tint: {r: 0.6, g: 0.74, b: 0.8, a: 1}
+    tintStrength: 0
+    startHeight: 0.24479075
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 20
+    texture: {fileID: 0}
+    tint: {r: 0.92, g: 0.55, b: 0.54, a: 1}
+    tintStrength: 0
+    startHeight: 0.26826724
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 21
+    texture: {fileID: 0}
+    tint: {r: 0.07, g: 0.72, b: 0.11, a: 1}
+    tintStrength: 0
+    startHeight: 0.30060092
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 22
+    texture: {fileID: 0}
+    tint: {r: 0.08, g: 0.07, b: 0.98, a: 1}
+    tintStrength: 0
+    startHeight: 0.31608424
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 23
+    texture: {fileID: 0}
+    tint: {r: 0.28, g: 0.84, b: 0.3, a: 1}
+    tintStrength: 0
+    startHeight: 0.25430018
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 24
+    texture: {fileID: 0}
+    tint: {r: 0.23, g: 0.47, b: 0.12, a: 1}
+    tintStrength: 0
+    startHeight: 0.26378587
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 25
+    texture: {fileID: 0}
+    tint: {r: 0.01, g: 0.41, b: 0.63, a: 1}
+    tintStrength: 0
+    startHeight: 0.24340162
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 26
+    texture: {fileID: 0}
+    tint: {r: 0.46, g: 0.27, b: 0.5, a: 1}
+    tintStrength: 0
+    startHeight: 0.29641756
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 27
+    texture: {fileID: 0}
+    tint: {r: 0.43, g: 0.86, b: 0.88, a: 1}
+    tintStrength: 0
+    startHeight: 0.3182376
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 28
+    texture: {fileID: 0}
+    tint: {r: 0.48, g: 0.24, b: 0.93, a: 1}
+    tintStrength: 0
+    startHeight: 0.28029555
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 29
+    texture: {fileID: 0}
+    tint: {r: 0.72, g: 0.85, b: 0, a: 1}
+    tintStrength: 0
+    startHeight: 0.30980584
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 30
+    texture: {fileID: 0}
+    tint: {r: 0.15, g: 0.18, b: 0.07, a: 1}
+    tintStrength: 0
+    startHeight: 0.34926817
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 31
+    texture: {fileID: 0}
+    tint: {r: 0.34, g: 0.61, b: 0.63, a: 1}
+    tintStrength: 0
+    startHeight: 0.28825668
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 32
+    texture: {fileID: 0}
+    tint: {r: 0.27, g: 0.05, b: 0.34, a: 1}
+    tintStrength: 0
+    startHeight: 0.3520035
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 33
+    texture: {fileID: 0}
+    tint: {r: 0.49, g: 0.34, b: 0.82, a: 1}
+    tintStrength: 0
+    startHeight: 0.3312984
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 34
+    texture: {fileID: 0}
+    tint: {r: 0.79, g: 0.69, b: 0.38, a: 1}
+    tintStrength: 0
+    startHeight: 0.35006273
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 35
+    texture: {fileID: 0}
+    tint: {r: 0.65, g: 0.04, b: 0.97, a: 1}
+    tintStrength: 0
+    startHeight: 0.3477633
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 36
+    texture: {fileID: 0}
+    tint: {r: 0, g: 0.12, b: 0.45, a: 1}
+    tintStrength: 0
+    startHeight: 0.31721172
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 37
+    texture: {fileID: 0}
+    tint: {r: 0.37, g: 0.13, b: 0.47, a: 1}
+    tintStrength: 0
+    startHeight: 0.38806623
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 38
+    texture: {fileID: 0}
+    tint: {r: 0.3, g: 0.49, b: 0.69, a: 1}
+    tintStrength: 0
+    startHeight: 0.3312301
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 39
+    texture: {fileID: 0}
+    tint: {r: 0.66, g: 0.58, b: 0.48, a: 1}
+    tintStrength: 0
+    startHeight: 0.37059325
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 40
+    texture: {fileID: 0}
+    tint: {r: 0.17, g: 0.35, b: 0.21, a: 1}
+    tintStrength: 0
+    startHeight: 0.32529375
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 41
+    texture: {fileID: 0}
+    tint: {r: 0.97, g: 0.12, b: 0.65, a: 1}
+    tintStrength: 0
+    startHeight: 0.38495237
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 42
+    texture: {fileID: 0}
+    tint: {r: 0.22, g: 0.88, b: 0.86, a: 1}
+    tintStrength: 0
+    startHeight: 0.35959786
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 43
+    texture: {fileID: 0}
+    tint: {r: 0.48, g: 0.73, b: 0.36, a: 1}
+    tintStrength: 0
+    startHeight: 0.43135667
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 44
+    texture: {fileID: 0}
+    tint: {r: 0.29, g: 0.96, b: 0.92, a: 1}
+    tintStrength: 0
+    startHeight: 0.41339684
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 45
+    texture: {fileID: 0}
+    tint: {r: 0.68, g: 0.63, b: 0.17, a: 1}
+    tintStrength: 0
+    startHeight: 0.3456432
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 46
+    texture: {fileID: 0}
+    tint: {r: 0.49, g: 0.83, b: 0.2, a: 1}
+    tintStrength: 0
+    startHeight: 0.41662708
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 47
+    texture: {fileID: 0}
+    tint: {r: 0.96, g: 0.72, b: 0.73, a: 1}
+    tintStrength: 0
+    startHeight: 0.39677185
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 48
+    texture: {fileID: 0}
+    tint: {r: 0.54, g: 0.78, b: 0.04, a: 1}
+    tintStrength: 0
+    startHeight: 0.45388556
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 49
+    texture: {fileID: 0}
+    tint: {r: 0.59, g: 0.04, b: 0.12, a: 1}
+    tintStrength: 0
+    startHeight: 0.35506114
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 50
+    texture: {fileID: 0}
+    tint: {r: 0.94, g: 0.61, b: 0.46, a: 1}
+    tintStrength: 0
+    startHeight: 0.44969577
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 51
+    texture: {fileID: 0}
+    tint: {r: 0.85, g: 0.32, b: 0.98, a: 1}
+    tintStrength: 0
+    startHeight: 0.44287065
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 52
+    texture: {fileID: 0}
+    tint: {r: 0.6, g: 0.81, b: 0.56, a: 1}
+    tintStrength: 0
+    startHeight: 0.40966427
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 53
+    texture: {fileID: 0}
+    tint: {r: 0.73, g: 0.42, b: 0.15, a: 1}
+    tintStrength: 0
+    startHeight: 0.4257159
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 54
+    texture: {fileID: 0}
+    tint: {r: 0.1, g: 0.51, b: 0.39, a: 1}
+    tintStrength: 0
+    startHeight: 0.4436764
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 55
+    texture: {fileID: 0}
+    tint: {r: 0.09, g: 0.08, b: 0.17, a: 1}
+    tintStrength: 0
+    startHeight: 0.36017737
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 56
+    texture: {fileID: 0}
+    tint: {r: 0.54, g: 0.61, b: 0.85, a: 1}
+    tintStrength: 0
+    startHeight: 0.5051217
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 57
+    texture: {fileID: 0}
+    tint: {r: 0.52, g: 0.16, b: 0.75, a: 1}
+    tintStrength: 0
+    startHeight: 0.37127727
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 58
+    texture: {fileID: 0}
+    tint: {r: 0.28, g: 0.21, b: 0.63, a: 1}
+    tintStrength: 0
+    startHeight: 0.4721778
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 59
+    texture: {fileID: 0}
+    tint: {r: 0.48, g: 0.43, b: 0.34, a: 1}
+    tintStrength: 0
+    startHeight: 0.46297377
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 60
+    texture: {fileID: 0}
+    tint: {r: 0.6, g: 0.63, b: 0.84, a: 1}
+    tintStrength: 0
+    startHeight: 0.44112596
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 61
+    texture: {fileID: 0}
+    tint: {r: 0.74, g: 0.54, b: 0.11, a: 1}
+    tintStrength: 0
+    startHeight: 0.4427808
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 62
+    texture: {fileID: 0}
+    tint: {r: 0.9, g: 0.43, b: 0.64, a: 1}
+    tintStrength: 0
+    startHeight: 0.47663212
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 63
+    texture: {fileID: 0}
+    tint: {r: 0.94, g: 0.07, b: 0.82, a: 1}
+    tintStrength: 0
+    startHeight: 0.37941638
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 64
+    texture: {fileID: 0}
+    tint: {r: 0.6, g: 0.76, b: 0.4, a: 1}
+    tintStrength: 0
+    startHeight: 0.49786472
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 65
+    texture: {fileID: 0}
+    tint: {r: 0.04, g: 0.85, b: 0.2, a: 1}
+    tintStrength: 0
+    startHeight: 0.52079105
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 66
+    texture: {fileID: 0}
+    tint: {r: 0.33, g: 0.45, b: 0.7, a: 1}
+    tintStrength: 0
+    startHeight: 0.5006171
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 67
+    texture: {fileID: 0}
+    tint: {r: 0.87, g: 0.05, b: 0.42, a: 1}
+    tintStrength: 0
+    startHeight: 0.47281232
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 68
+    texture: {fileID: 0}
+    tint: {r: 0.27, g: 0.42, b: 0.45, a: 1}
+    tintStrength: 0
+    startHeight: 0.47453216
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 69
+    texture: {fileID: 0}
+    tint: {r: 0.7, g: 0.56, b: 0.1, a: 1}
+    tintStrength: 0
+    startHeight: 0.48910415
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 70
+    texture: {fileID: 0}
+    tint: {r: 0.34, g: 0.12, b: 0.38, a: 1}
+    tintStrength: 0
+    startHeight: 0.47842205
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 71
+    texture: {fileID: 0}
+    tint: {r: 0.22, g: 0.12, b: 0.79, a: 1}
+    tintStrength: 0
+    startHeight: 0.53720975
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 72
+    texture: {fileID: 0}
+    tint: {r: 0.3, g: 0.36, b: 0.97, a: 1}
+    tintStrength: 0
+    startHeight: 0.4470541
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 73
+    texture: {fileID: 0}
+    tint: {r: 0.27, g: 0.18, b: 0.64, a: 1}
+    tintStrength: 0
+    startHeight: 0.4762765
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 74
+    texture: {fileID: 0}
+    tint: {r: 0.52, g: 0.6, b: 0.54, a: 1}
+    tintStrength: 0
+    startHeight: 0.5514914
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 75
+    texture: {fileID: 0}
+    tint: {r: 0.02, g: 0.91, b: 0.39, a: 1}
+    tintStrength: 0
+    startHeight: 0.5726802
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 76
+    texture: {fileID: 0}
+    tint: {r: 0.35, g: 0.23, b: 0.36, a: 1}
+    tintStrength: 0
+    startHeight: 0.54254425
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 77
+    texture: {fileID: 0}
+    tint: {r: 0.43, g: 0.14, b: 0.97, a: 1}
+    tintStrength: 0
+    startHeight: 0.46697456
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 78
+    texture: {fileID: 0}
+    tint: {r: 0.64, g: 0.72, b: 0.58, a: 1}
+    tintStrength: 0
+    startHeight: 0.53442264
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 79
+    texture: {fileID: 0}
+    tint: {r: 0.42, g: 0.46, b: 0.11, a: 1}
+    tintStrength: 0
+    startHeight: 0.43914375
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 80
+    texture: {fileID: 0}
+    tint: {r: 0.66, g: 0.2, b: 0.86, a: 1}
+    tintStrength: 0
+    startHeight: 0.45141122
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 81
+    texture: {fileID: 0}
+    tint: {r: 0.53, g: 0.59, b: 0.94, a: 1}
+    tintStrength: 0
+    startHeight: 0.43662128
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 82
+    texture: {fileID: 0}
+    tint: {r: 0.44, g: 0.38, b: 0.63, a: 1}
+    tintStrength: 0
+    startHeight: 0.5906026
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 83
+    texture: {fileID: 0}
+    tint: {r: 0.6, g: 0.74, b: 0.48, a: 1}
+    tintStrength: 0
+    startHeight: 0.5334617
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 84
+    texture: {fileID: 0}
+    tint: {r: 0.23, g: 0.05, b: 0.26, a: 1}
+    tintStrength: 0
+    startHeight: 0.5703488
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 85
+    texture: {fileID: 0}
+    tint: {r: 0.05, g: 0.34, b: 0.44, a: 1}
+    tintStrength: 0
+    startHeight: 0.55622774
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 86
+    texture: {fileID: 0}
+    tint: {r: 0.88, g: 0.24, b: 0.51, a: 1}
+    tintStrength: 0
+    startHeight: 0.5335242
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 87
+    texture: {fileID: 0}
+    tint: {r: 0.06, g: 0.34, b: 0.33, a: 1}
+    tintStrength: 0
+    startHeight: 0.5359667
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 88
+    texture: {fileID: 0}
+    tint: {r: 0.74, g: 0.91, b: 0.97, a: 1}
+    tintStrength: 0
+    startHeight: 0.54300165
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 89
+    texture: {fileID: 0}
+    tint: {r: 0.4, g: 0.57, b: 0.4, a: 1}
+    tintStrength: 0
+    startHeight: 0.57943726
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 90
+    texture: {fileID: 0}
+    tint: {r: 0.21, g: 0.88, b: 0.89, a: 1}
+    tintStrength: 0
+    startHeight: 0.5629673
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 91
+    texture: {fileID: 0}
+    tint: {r: 0.85, g: 0.61, b: 0.98, a: 1}
+    tintStrength: 0
+    startHeight: 0.5219093
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 92
+    texture: {fileID: 0}
+    tint: {r: 0.78, g: 0.98, b: 0, a: 1}
+    tintStrength: 0
+    startHeight: 0.6373657
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 93
+    texture: {fileID: 0}
+    tint: {r: 0.59, g: 0.58, b: 0.52, a: 1}
+    tintStrength: 0
+    startHeight: 0.5918129
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 94
+    texture: {fileID: 0}
+    tint: {r: 0.75, g: 0.74, b: 0.49, a: 1}
+    tintStrength: 0
+    startHeight: 0.63639474
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 95
+    texture: {fileID: 0}
+    tint: {r: 0.87, g: 0.19, b: 0.08, a: 1}
+    tintStrength: 0
+    startHeight: 0.5123498
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 96
+    texture: {fileID: 0}
+    tint: {r: 0.71, g: 0.58, b: 0.37, a: 1}
+    tintStrength: 0
+    startHeight: 0.6167174
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 97
+    texture: {fileID: 0}
+    tint: {r: 0.13, g: 0.54, b: 0.22, a: 1}
+    tintStrength: 0
+    startHeight: 0.56191343
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 98
+    texture: {fileID: 0}
+    tint: {r: 0.6, g: 0.6, b: 0.85, a: 1}
+    tintStrength: 0
+    startHeight: 0.61214626
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 99
+    texture: {fileID: 0}
+    tint: {r: 0.53, g: 0.79, b: 0.67, a: 1}
+    tintStrength: 0
+    startHeight: 0.57104486
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 100
+    texture: {fileID: 0}
+    tint: {r: 0.96, g: 0.03, b: 0.8, a: 1}
+    tintStrength: 0
+    startHeight: 0.58375466
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 101
+    texture: {fileID: 0}
+    tint: {r: 0.23, g: 0.39, b: 0.85, a: 1}
+    tintStrength: 0
+    startHeight: 0.63388425
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 102
+    texture: {fileID: 0}
+    tint: {r: 0.58, g: 0.38, b: 0.44, a: 1}
+    tintStrength: 0
+    startHeight: 0.57852244
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 103
+    texture: {fileID: 0}
+    tint: {r: 0.27, g: 0.27, b: 0.36, a: 1}
+    tintStrength: 0
+    startHeight: 0.63939637
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 104
+    texture: {fileID: 0}
+    tint: {r: 0.43, g: 0.28, b: 0.65, a: 1}
+    tintStrength: 0
+    startHeight: 0.6673322
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 105
+    texture: {fileID: 0}
+    tint: {r: 0.98, g: 0.3, b: 0.6, a: 1}
+    tintStrength: 0
+    startHeight: 0.6397243
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 106
+    texture: {fileID: 0}
+    tint: {r: 0.83, g: 0.86, b: 0.72, a: 1}
+    tintStrength: 0
+    startHeight: 0.63768893
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 107
+    texture: {fileID: 0}
+    tint: {r: 0.89, g: 0.68, b: 0.99, a: 1}
+    tintStrength: 0
+    startHeight: 0.6735395
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 108
+    texture: {fileID: 0}
+    tint: {r: 0.02, g: 0.07, b: 0.34, a: 1}
+    tintStrength: 0
+    startHeight: 0.6271458
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 109
+    texture: {fileID: 0}
+    tint: {r: 0.67, g: 0.24, b: 0.01, a: 1}
+    tintStrength: 0
+    startHeight: 0.66931725
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 110
+    texture: {fileID: 0}
+    tint: {r: 0.12, g: 0.24, b: 0.19, a: 1}
+    tintStrength: 0
+    startHeight: 0.6439329
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 111
+    texture: {fileID: 0}
+    tint: {r: 0.33, g: 0.62, b: 0.54, a: 1}
+    tintStrength: 0
+    startHeight: 0.6952056
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 112
+    texture: {fileID: 0}
+    tint: {r: 0.71, g: 0.51, b: 0.35, a: 1}
+    tintStrength: 0
+    startHeight: 0.64821464
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 113
+    texture: {fileID: 0}
+    tint: {r: 0.64, g: 0.29, b: 0.81, a: 1}
+    tintStrength: 0
+    startHeight: 0.69795597
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 114
+    texture: {fileID: 0}
+    tint: {r: 0.64, g: 0.43, b: 0.31, a: 1}
+    tintStrength: 0
+    startHeight: 0.67022526
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 115
+    texture: {fileID: 0}
+    tint: {r: 0.01, g: 0.69, b: 0.25, a: 1}
+    tintStrength: 0
+    startHeight: 0.6664083
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 116
+    texture: {fileID: 0}
+    tint: {r: 0.56, g: 0.62, b: 0.29, a: 1}
+    tintStrength: 0
+    startHeight: 0.68888384
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 117
+    texture: {fileID: 0}
+    tint: {r: 0.25, g: 0.7, b: 0.92, a: 1}
+    tintStrength: 0
+    startHeight: 0.6974419
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 118
+    texture: {fileID: 0}
+    tint: {r: 0.95, g: 0.07, b: 0.34, a: 1}
+    tintStrength: 0
+    startHeight: 0.68263
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 119
+    texture: {fileID: 0}
+    tint: {r: 0.81, g: 0.21, b: 0.31, a: 1}
+    tintStrength: 0
+    startHeight: 0.6816844
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 120
+    texture: {fileID: 0}
+    tint: {r: 0.51, g: 0.91, b: 0.13, a: 1}
+    tintStrength: 0
+    startHeight: 0.73070586
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 121
+    texture: {fileID: 0}
+    tint: {r: 0.43, g: 0.14, b: 0.02, a: 1}
+    tintStrength: 0
+    startHeight: 0.7462227
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 122
+    texture: {fileID: 0}
+    tint: {r: 0.16, g: 0.1, b: 0.66, a: 1}
+    tintStrength: 0
+    startHeight: 0.7405751
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 123
+    texture: {fileID: 0}
+    tint: {r: 0.1, g: 0.26, b: 0.78, a: 1}
+    tintStrength: 0
+    startHeight: 0.73652846
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 124
+    texture: {fileID: 0}
+    tint: {r: 0.24, g: 0.19, b: 0.57, a: 1}
+    tintStrength: 0
+    startHeight: 0.71693444
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 125
+    texture: {fileID: 0}
+    tint: {r: 0.9, g: 0.25, b: 0.25, a: 1}
+    tintStrength: 0
+    startHeight: 0.63980347
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 126
+    texture: {fileID: 0}
+    tint: {r: 0.68, g: 0, b: 0.38, a: 1}
+    tintStrength: 0
+    startHeight: 0.7485968
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 127
+    texture: {fileID: 0}
+    tint: {r: 0.09, g: 0.1, b: 0.62, a: 1}
+    tintStrength: 0
+    startHeight: 0.71676534
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 128
+    texture: {fileID: 0}
+    tint: {r: 0.71, g: 0.87, b: 0.54, a: 1}
+    tintStrength: 0
+    startHeight: 0.7155762
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 129
+    texture: {fileID: 0}
+    tint: {r: 0.26, g: 0.37, b: 0.54, a: 1}
+    tintStrength: 0
+    startHeight: 0.68986046
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 130
+    texture: {fileID: 0}
+    tint: {r: 0.19, g: 0.9, b: 0.3, a: 1}
+    tintStrength: 0
+    startHeight: 0.76849705
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 131
+    texture: {fileID: 0}
+    tint: {r: 0.03, g: 0.12, b: 0.37, a: 1}
+    tintStrength: 0
+    startHeight: 0.7348136
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 132
+    texture: {fileID: 0}
+    tint: {r: 0.68, g: 0.2, b: 0.28, a: 1}
+    tintStrength: 0
+    startHeight: 0.7572857
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 133
+    texture: {fileID: 0}
+    tint: {r: 0.28, g: 0.84, b: 0.58, a: 1}
+    tintStrength: 0
+    startHeight: 0.70836467
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 134
+    texture: {fileID: 0}
+    tint: {r: 0.58, g: 0.45, b: 0.35, a: 1}
+    tintStrength: 0
+    startHeight: 0.76975495
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 135
+    texture: {fileID: 0}
+    tint: {r: 0.5, g: 0, b: 0.51, a: 1}
+    tintStrength: 0
+    startHeight: 0.7525823
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 136
+    texture: {fileID: 0}
+    tint: {r: 0.35, g: 0.04, b: 0.82, a: 1}
+    tintStrength: 0
+    startHeight: 0.8109171
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 137
+    texture: {fileID: 0}
+    tint: {r: 0.09, g: 0.13, b: 0.21, a: 1}
+    tintStrength: 0
+    startHeight: 0.75028056
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 138
+    texture: {fileID: 0}
+    tint: {r: 0.93, g: 0.42, b: 0.8, a: 1}
+    tintStrength: 0
+    startHeight: 0.7301054
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 139
+    texture: {fileID: 0}
+    tint: {r: 0.5, g: 0.72, b: 0.27, a: 1}
+    tintStrength: 0
+    startHeight: 0.7306303
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 140
+    texture: {fileID: 0}
+    tint: {r: 0.48, g: 0.9, b: 0.73, a: 1}
+    tintStrength: 0
+    startHeight: 0.7798468
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 141
+    texture: {fileID: 0}
+    tint: {r: 0.11, g: 0.91, b: 0.36, a: 1}
+    tintStrength: 0
+    startHeight: 0.7414334
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 142
+    texture: {fileID: 0}
+    tint: {r: 0.48, g: 0.21, b: 0.06, a: 1}
+    tintStrength: 0
+    startHeight: 0.7823305
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 143
+    texture: {fileID: 0}
+    tint: {r: 0.19, g: 0.22, b: 0.04, a: 1}
+    tintStrength: 0
+    startHeight: 0.81302077
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 144
+    texture: {fileID: 0}
+    tint: {r: 0.96, g: 0.39, b: 0.15, a: 1}
+    tintStrength: 0
+    startHeight: 0.7573227
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 145
+    texture: {fileID: 0}
+    tint: {r: 0.79, g: 0.5, b: 0.64, a: 1}
+    tintStrength: 0
+    startHeight: 0.7962047
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 146
+    texture: {fileID: 0}
+    tint: {r: 0.27, g: 0.2, b: 0.86, a: 1}
+    tintStrength: 0
+    startHeight: 0.79766375
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 147
+    texture: {fileID: 0}
+    tint: {r: 0.03, g: 0.91, b: 0.32, a: 1}
+    tintStrength: 0
+    startHeight: 0.78089994
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 148
+    texture: {fileID: 0}
+    tint: {r: 0.71, g: 0.1, b: 0.77, a: 1}
+    tintStrength: 0
+    startHeight: 0.7740354
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 149
+    texture: {fileID: 0}
+    tint: {r: 0.09, g: 0.1, b: 0.7, a: 1}
+    tintStrength: 0
+    startHeight: 0.7857392
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  - name: Region 150
+    texture: {fileID: 0}
+    tint: {r: 0.57, g: 0.17, b: 0.48, a: 1}
+    tintStrength: 0
+    startHeight: 0.7903371
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 2
+  m_voronoiCentroids:
+  - {x: 23, y: 401}
+  - {x: 449, y: 402}
+  - {x: 215, y: 268}
+  - {x: 462, y: 27}
+  - {x: 378, y: 231}
+  - {x: 73, y: 386}
+  - {x: 382, y: 70}
+  - {x: 339, y: 17}
+  - {x: 63, y: 422}
+  - {x: 90, y: 129}
+  - {x: 236, y: 194}
+  - {x: 205, y: 468}
+  - {x: 202, y: 184}
+  - {x: 378, y: 287}
+  - {x: 190, y: 73}
+  - {x: 188, y: 301}
+  - {x: 18, y: 271}
+  - {x: 456, y: 231}
+  - {x: 123, y: 461}
+  - {x: 27, y: 65}
+  - {x: 152, y: 104}
+  - {x: 53, y: 279}
+  - {x: 341, y: 242}
+  - {x: 428, y: 454}
+  - {x: 24, y: 21}
+  - {x: 454, y: 359}
+  - {x: 208, y: 439}
+  - {x: 430, y: 304}
+  - {x: 165, y: 462}
+  - {x: 228, y: 55}
+  - {x: 329, y: 203}
+  - {x: 303, y: 313}
+  - {x: 56, y: 244}
+  - {x: 334, y: 133}
+  - {x: 87, y: 70}
+  - {x: 384, y: 106}
+  - {x: 405, y: 51}
+  - {x: 462, y: 186}
+  - {x: 180, y: 372}
+  - {x: 103, y: 420}
+  - {x: 226, y: 353}
+  - {x: 263, y: 175}
+  - {x: 102, y: 250}
+  - {x: 114, y: 22}
+  - {x: 310, y: 170}
+  - {x: 134, y: 148}
+  - {x: 240, y: 460}
+  - {x: 174, y: 410}
+  - {x: 286, y: 203}
+  - {x: 216, y: 118}
+  - {x: 354, y: 334}
+  - {x: 400, y: 413}
+  - {x: 109, y: 372}
+  - {x: 427, y: 176}
+  - {x: 464, y: 315}
+  - {x: 135, y: 243}
+  - {x: 338, y: 288}
+  - {x: 294, y: 428}
+  - {x: 399, y: 138}
+  - {x: 289, y: 240}
+  - {x: 188, y: 337}
+  - {x: 274, y: 355}
+  - {x: 413, y: 265}
+  - {x: 333, y: 425}
+  - {x: 315, y: 50}
+  - {x: 364, y: 449}
+  - {x: 180, y: 20}
+  - {x: 79, y: 340}
+  - {x: 16, y: 316}
+  - {x: 86, y: 164}
+  - {x: 330, y: 383}
+  - {x: 52, y: 461}
+  - {x: 49, y: 355}
+  - {x: 265, y: 419}
+  - {x: 167, y: 216}
+  - {x: 40, y: 143}
+  - {x: 393, y: 462}
+  - {x: 436, y: 62}
+  - {x: 88, y: 460}
+  - {x: 461, y: 270}
+  - {x: 17, y: 451}
+  - {x: 303, y: 458}
+  - {x: 356, y: 158}
+  - {x: 69, y: 318}
+  - {x: 212, y: 395}
+  - {x: 423, y: 103}
+  - {x: 58, y: 102}
+  - {x: 416, y: 219}
+  - {x: 263, y: 315}
+  - {x: 351, y: 100}
+  - {x: 16, y: 358}
+  - {x: 287, y: 118}
+  - {x: 18, y: 226}
+  - {x: 57, y: 188}
+  - {x: 71, y: 26}
+  - {x: 285, y: 20}
+  - {x: 305, y: 269}
+  - {x: 152, y: 335}
+  - {x: 115, y: 103}
+  - {x: 95, y: 353}
+  - {x: 295, y: 394}
+  - {x: 258, y: 220}
+  - {x: 251, y: 385}
+  - {x: 91, y: 292}
+  - {x: 63, y: 218}
+  - {x: 239, y: 241}
+  - {x: 141, y: 367}
+  - {x: 280, y: 147}
+  - {x: 184, y: 158}
+  - {x: 455, y: 138}
+  - {x: 117, y: 331}
+  - {x: 237, y: 149}
+  - {x: 124, y: 396}
+  - {x: 257, y: 275}
+  - {x: 464, y: 89}
+  - {x: 107, y: 203}
+  - {x: 233, y: 17}
+  - {x: 248, y: 96}
+  - {x: 148, y: 37}
+  - {x: 313, y: 93}
+  - {x: 189, y: 242}
+  - {x: 147, y: 293}
+  - {x: 275, y: 65}
+  - {x: 361, y: 396}
+  - {x: 464, y: 451}
+  - {x: 153, y: 398}
+  - {x: 142, y: 432}
+  - {x: 237, y: 424}
+  - {x: 179, y: 121}
+  - {x: 118, y: 297}
+  - {x: 170, y: 267}
+  - {x: 334, y: 466}
+  - {x: 138, y: 70}
+  - {x: 16, y: 111}
+  - {x: 146, y: 187}
+  - {x: 17, y: 177}
+  - {x: 315, y: 352}
+  - {x: 406, y: 333}
+  - {x: 187, y: 427}
+  - {x: 348, y: 62}
+  - {x: 45, y: 306}
+  - {x: 272, y: 463}
+  - {x: 395, y: 173}
+  - {x: 225, y: 310}
+  - {x: 379, y: 22}
+  - {x: 421, y: 16}
+  - {x: 392, y: 369}
+  - {x: 368, y: 192}
+  - {x: 209, y: 218}
+  - {x: 75, y: 265}
+  m_voronoiSegmentNeighborCount: 050000000500000007000000030000000600000007000000060000000400000006000000050000000600000004000000060000000700000008000000060000000500000004000000040000000500000005000000060000000700000004000000020000000500000005000000060000000400000005000000070000000700000006000000070000000600000006000000050000000400000007000000070000000700000006000000070000000400000006000000080000000500000005000000050000000500000008000000060000000600000005000000030000000700000005000000050000000600000007000000050000000600000006000000070000000500000005000000040000000500000004000000050000000500000003000000070000000600000006000000060000000300000005000000040000000400000003000000040000000700000006000000070000000700000006000000070000000500000005000000030000000600000005000000060000000400000004000000050000000600000006000000040000000700000005000000060000000600000005000000060000000600000005000000060000000500000009000000080000000500000007000000040000000700000004000000060000000400000006000000040000000600000007000000060000000200000005000000070000000500000005000000050000000600000003000000060000000400000006000000040000000500000005000000060000000600000005000000040000000500000006000000050000000400000006000000060000000600000004000000
+  m_showVoronoiCentroids: 0
+  m_showVoronoiStats: 0
+--- !u!1 &1165580399179139408
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 576364273173245929}
+  - component: {fileID: 4910390087031641497}
+  m_Layer: 0
+  m_Name: Perlin Noise - Valleys
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &576364273173245929
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1165580399179139408}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8142674162609628291}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4910390087031641497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1165580399179139408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03bee3bb4b1af0c469e65c5eac5f466f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_seed: 32
+  m_dimensions: {x: 100, y: 100}
+  m_mapChunkSize: 481
+  m_levelOfDetail: 1
+  m_autoUpdate: 1
+  m_filter: {fileID: 0}
+  m_renderer: {fileID: 0}
+  m_collider: {fileID: 0}
+  m_heldRenderer: {fileID: 0}
+  m_meshMaterial: {fileID: 2100000, guid: 9cfa5c2eca410114c8e3fdd94e4f57fa, type: 2}
+  m_drawMode: 0
+  m_textureFilterMode: 0
+  m_textureHeightMultiplier: 30
+  m_textureHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.2
+      value: 0.1865375
+      inSlope: 0.09398391
+      outSlope: 0.09398391
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.45
+      value: 0.1971107
+      inSlope: -0.007524296
+      outSlope: -0.007524296
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.17197423
+    - serializedVersion: 3
+      time: 0.9476746
+      value: 0.9365265
+      inSlope: 1.2991297
+      outSlope: 1.2991297
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.07362753
+      outWeight: 0.23165177
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 4.5289474
+      outSlope: 4.5289474
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.23687313
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_colorMode: 0
+  m_meshMaterialLayers:
+  - name: 
+    texture: {fileID: 2800000, guid: 40eb2d070faacc0439107bf770f90931, type: 3}
+    tint: {r: 0.41037738, g: 0.48750186, b: 1, a: 0}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0.022
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: fd5b53e482132d64287d83ec0d3f3235, type: 3}
+    tint: {r: 0.9648836, g: 1, b: 0.7028302, a: 0}
+    tintStrength: 0
+    startHeight: 0.022
+    blendStrength: 0
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: e333982e6b0238545ae65782199b39d7, type: 3}
+    tint: {r: 0.60119534, g: 0.6698113, b: 0.05371129, a: 0}
+    tintStrength: 0
+    startHeight: 0.112
+    blendStrength: 0.173
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: a8087cc094c09e9419cba8569a36961f, type: 3}
+    tint: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    tintStrength: 0
+    startHeight: 0.831
+    blendStrength: 0.05
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: 504f02f7dacb88d45bdd0f21741a8b14, type: 3}
+    tint: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0}
+    tintStrength: 0
+    startHeight: 0.938
+    blendStrength: 0.072
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: fb4721a27ff9e5442ab710b6971d94b8, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 0}
+    tintStrength: 0
+    startHeight: 0.983
+    blendStrength: 0.019
+    textureScale: 20
+  m_terrainTypes:
+  - name: Water
+    height: 0.25
+    color: {r: 0, g: 0.08572531, b: 1, a: 1}
+  - name: Land
+    height: 1
+    color: {r: 0.437266, g: 1, b: 0, a: 0.9372549}
+  m_terrainColorGradient:
+    serializedVersion: 2
+    key0: {r: 0, g: 0, b: 0, a: 1}
+    key1: {r: 1, g: 0.2071498, b: 0.13679248, a: 1}
+    key2: {r: 0.5990566, g: 0.7525229, b: 1, a: 0}
+    key3: {r: 0.80427307, g: 0.8301887, b: 0.043075833, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 19661
+    ctime2: 32768
+    ctime3: 45875
+    ctime4: 65535
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 5
+    m_NumAlphaKeys: 2
+  m_heightRange:
+    min: 0
+    max: 30
+  m_showGrid: 0
+  m_gridColor: {r: 1, g: 1, b: 1, a: 1}
+  m_gridCellSize: 10
+  m_coordColor: {r: 0, g: 0, b: 1, a: 1}
+  m_debugGridCoord: {x: 45, y: 0}
+  m_noiseScale: 100
+  m_octaves: 4
+  m_persistance: 0.288
+  m_lacunarity: 1
+  m_offset: {x: 0, y: 0}
+--- !u!1 &1524515765440999466
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4865048768368122025}
+  - component: {fileID: 8155129564736552846}
+  m_Layer: 0
+  m_Name: Border Map
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4865048768368122025
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524515765440999466}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7132320810783066289}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8155129564736552846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524515765440999466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dc868556e4b0d44f834924695b6d374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_seed: 32
+  m_dimensions: {x: 100, y: 100}
+  m_mapChunkSize: 481
+  m_levelOfDetail: 1
+  m_autoUpdate: 0
+  m_filter: {fileID: 0}
+  m_renderer: {fileID: 0}
+  m_collider: {fileID: 0}
+  m_heldRenderer: {fileID: 0}
+  m_meshMaterial: {fileID: 2100000, guid: c220406a34a551149818fdbd23d157a3, type: 2}
+  m_drawMode: 0
+  m_textureFilterMode: 0
+  m_textureHeightMultiplier: 2
+  m_textureHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 3
+      inSlope: -2
+      outSlope: -2
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -2
+      outSlope: -2
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_colorMode: 2
+  m_meshMaterialLayers:
+  - name: Sandy Grass
+    texture: {fileID: 2800000, guid: fd5b53e482132d64287d83ec0d3f3235, type: 3}
+    tint: {r: 0.008677464, g: 0.3679245, b: 0.008677464, a: 0}
+    tintStrength: 1
+    startHeight: 0
+    blendStrength: 0.019
+    textureScale: 20
+  - name: Grass
+    texture: {fileID: 2800000, guid: e333982e6b0238545ae65782199b39d7, type: 3}
+    tint: {r: 0, g: 0.6132076, b: 0, a: 0}
+    tintStrength: 1
+    startHeight: 0.25
+    blendStrength: 0.173
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: a8087cc094c09e9419cba8569a36961f, type: 3}
+    tint: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    tintStrength: 0
+    startHeight: 0.5
+    blendStrength: 0.05
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: 504f02f7dacb88d45bdd0f21741a8b14, type: 3}
+    tint: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0}
+    tintStrength: 0
+    startHeight: 0.85
+    blendStrength: 0.072
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: fb4721a27ff9e5442ab710b6971d94b8, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 0}
+    tintStrength: 0
+    startHeight: 0.925
+    blendStrength: 0.019
+    textureScale: 20
+  m_terrainTypes: []
+  m_terrainColorGradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  m_heightRange:
+    min: 0
+    max: 111.89008
+  m_showGrid: 0
+  m_gridColor: {r: 1, g: 1, b: 1, a: 1}
+  m_gridCellSize: 0
+  m_coordColor: {r: 0, g: 0, b: 1, a: 1}
+  m_debugGridCoord: {x: 0, y: 0}
+  m_maps:
+  - map: {fileID: 1405345413130978109}
+    combineMethod: 0
+    apply: 2
+  - map: {fileID: 3358125217667476780}
+    combineMethod: 3
+    apply: 2
+--- !u!1 &3664708782652159726
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8092102711172372074}
+  - component: {fileID: 3358125217667476780}
+  m_Layer: 0
+  m_Name: Hill Falloff Invert
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8092102711172372074
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3664708782652159726}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7132320810783066289}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3358125217667476780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3664708782652159726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b9db22f3eea89e40aafe584626e2ada, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_seed: 32
+  m_dimensions: {x: 100, y: 100}
+  m_mapChunkSize: 481
+  m_levelOfDetail: 1
+  m_autoUpdate: 0
+  m_filter: {fileID: 0}
+  m_renderer: {fileID: 0}
+  m_collider: {fileID: 0}
+  m_heldRenderer: {fileID: 0}
+  m_meshMaterial: {fileID: 2100000, guid: 40a76a25fe4121a4baef1e37f014ff37, type: 2}
+  m_drawMode: 0
+  m_textureFilterMode: 0
+  m_textureHeightMultiplier: 1
+  m_textureHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_colorMode: 0
+  m_meshMaterialLayers: []
+  m_terrainTypes:
+  - name: 
+    height: 0
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - name: 
+    height: 0
+    color: {r: 0, g: 0, b: 0, a: 0}
+  m_terrainColorGradient:
+    serializedVersion: 2
+    key0: {r: 0, g: 0, b: 0, a: 1}
+    key1: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  m_heightRange:
+    min: 0
+    max: 1
+  m_showGrid: 0
+  m_gridColor: {r: 1, g: 1, b: 1, a: 1}
+  m_gridCellSize: 0
+  m_coordColor: {r: 0, g: 0, b: 1, a: 1}
+  m_debugGridCoord: {x: 0, y: 0}
+  m_centroidX: 0
+  m_centroidY: 0
+  m_falloffShape: 1
+  m_falloffStart: 0.5
+  m_falloffEnd: 1
+  m_invert: 1
+--- !u!1 &4687806819570219567
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3972373699726948784}
+  - component: {fileID: 7283325526705958133}
+  - component: {fileID: 6981560625261199475}
+  - component: {fileID: 8064151537551963733}
+  - component: {fileID: 8741269351894905515}
+  m_Layer: 0
+  m_Name: Voronoi Border Map
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3972373699726948784
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4687806819570219567}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7132320810783066289}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &7283325526705958133
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4687806819570219567}
+  m_Mesh: {fileID: 0}
+--- !u!23 &6981560625261199475
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4687806819570219567}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 3bccfe2562dd7754b92b7f246f454412, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &8064151537551963733
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4687806819570219567}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
+--- !u!114 &8741269351894905515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4687806819570219567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de4c7578d18a32643ae76644b5168c9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_seed: 32
+  m_dimensions: {x: 100, y: 100}
+  m_mapChunkSize: 481
+  m_levelOfDetail: 1
+  m_autoUpdate: 0
+  m_filter: {fileID: 7283325526705958133}
+  m_renderer: {fileID: 6981560625261199475}
+  m_collider: {fileID: 8064151537551963733}
+  m_heldRenderer: {fileID: 0}
+  m_meshMaterial: {fileID: 2100000, guid: 3bccfe2562dd7754b92b7f246f454412, type: 2}
+  m_drawMode: 0
+  m_textureFilterMode: 0
+  m_textureHeightMultiplier: 1
+  m_textureHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_colorMode: 1
+  m_meshMaterialLayers:
+  - name: 
+    texture: {fileID: 2800000, guid: 40eb2d070faacc0439107bf770f90931, type: 3}
+    tint: {r: 0.41037738, g: 0.48750186, b: 1, a: 0}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0.022
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: fd5b53e482132d64287d83ec0d3f3235, type: 3}
+    tint: {r: 0.9648836, g: 1, b: 0.7028302, a: 0}
+    tintStrength: 0
+    startHeight: 0.022
+    blendStrength: 0
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: e333982e6b0238545ae65782199b39d7, type: 3}
+    tint: {r: 0.60119534, g: 0.6698113, b: 0.05371129, a: 0}
+    tintStrength: 0
+    startHeight: 0.112
+    blendStrength: 0.173
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: a8087cc094c09e9419cba8569a36961f, type: 3}
+    tint: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    tintStrength: 0
+    startHeight: 0.831
+    blendStrength: 0.05
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: 504f02f7dacb88d45bdd0f21741a8b14, type: 3}
+    tint: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0}
+    tintStrength: 0
+    startHeight: 0.938
+    blendStrength: 0.072
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: fb4721a27ff9e5442ab710b6971d94b8, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 0}
+    tintStrength: 0
+    startHeight: 0.983
+    blendStrength: 0.019
+    textureScale: 20
+  m_terrainTypes: []
+  m_terrainColorGradient:
+    serializedVersion: 2
+    key0: {r: 0, g: 0, b: 0, a: 1}
+    key1: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  m_heightRange:
+    min: 0
+    max: 1
+  m_showGrid: 0
+  m_gridColor: {r: 1, g: 1, b: 1, a: 1}
+  m_gridCellSize: 0
+  m_coordColor: {r: 0, g: 0, b: 1, a: 1}
+  m_debugGridCoord: {x: 0, y: 0}
+  m_numSegments: 150
+  m_edgeBuffer: 20
+  m_lloydRelaxationIterations: 5
+  m_edgeBorderSetting: 1
+  m_falloffMap: {fileID: 813493640401442311}
+  m_falloffThreshold: 0.5
+  m_heightSmoothenIterations: 2
+  m_heightSmoothenWeight: 0.25
+  m_voronoiSegments:
+  - name: Region 1
+    texture: {fileID: 0}
+    tint: {r: 0.44, g: 0.2, b: 0.13, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 2
+    texture: {fileID: 0}
+    tint: {r: 0.38, g: 0.65, b: 0.52, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 3
+    texture: {fileID: 0}
+    tint: {r: 0.24, g: 0.49, b: 0.93, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 4
+    texture: {fileID: 0}
+    tint: {r: 0.07, g: 0.86, b: 0.45, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 5
+    texture: {fileID: 0}
+    tint: {r: 0.63, g: 0.11, b: 0.38, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 6
+    texture: {fileID: 0}
+    tint: {r: 0.01, g: 0.31, b: 0.83, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 7
+    texture: {fileID: 0}
+    tint: {r: 0.54, g: 0.7, b: 0.06, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 8
+    texture: {fileID: 0}
+    tint: {r: 0.69, g: 0.4, b: 0.21, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 9
+    texture: {fileID: 0}
+    tint: {r: 0.83, g: 0.1, b: 0.44, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 10
+    texture: {fileID: 0}
+    tint: {r: 0.51, g: 0.38, b: 0.85, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 11
+    texture: {fileID: 0}
+    tint: {r: 0, g: 0.88, b: 0.16, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 12
+    texture: {fileID: 0}
+    tint: {r: 0.79, g: 0.81, b: 0.14, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 13
+    texture: {fileID: 0}
+    tint: {r: 0.53, g: 0.18, b: 0.82, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 14
+    texture: {fileID: 0}
+    tint: {r: 0.12, g: 0.07, b: 0.6, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 15
+    texture: {fileID: 0}
+    tint: {r: 0.42, g: 0.89, b: 0.77, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 16
+    texture: {fileID: 0}
+    tint: {r: 0.97, g: 0.22, b: 0.95, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 17
+    texture: {fileID: 0}
+    tint: {r: 0.27, g: 0.45, b: 0.12, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 18
+    texture: {fileID: 0}
+    tint: {r: 0.14, g: 0.87, b: 0, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 19
+    texture: {fileID: 0}
+    tint: {r: 0.6, g: 0.74, b: 0.8, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 20
+    texture: {fileID: 0}
+    tint: {r: 0.92, g: 0.55, b: 0.54, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 21
+    texture: {fileID: 0}
+    tint: {r: 0.07, g: 0.72, b: 0.11, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 22
+    texture: {fileID: 0}
+    tint: {r: 0.08, g: 0.07, b: 0.98, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 23
+    texture: {fileID: 0}
+    tint: {r: 0.28, g: 0.84, b: 0.3, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 24
+    texture: {fileID: 0}
+    tint: {r: 0.23, g: 0.47, b: 0.12, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 25
+    texture: {fileID: 0}
+    tint: {r: 0.01, g: 0.41, b: 0.63, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 26
+    texture: {fileID: 0}
+    tint: {r: 0.46, g: 0.27, b: 0.5, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 27
+    texture: {fileID: 0}
+    tint: {r: 0.43, g: 0.86, b: 0.88, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 28
+    texture: {fileID: 0}
+    tint: {r: 0.48, g: 0.24, b: 0.93, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 29
+    texture: {fileID: 0}
+    tint: {r: 0.72, g: 0.85, b: 0, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 30
+    texture: {fileID: 0}
+    tint: {r: 0.15, g: 0.18, b: 0.07, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 31
+    texture: {fileID: 0}
+    tint: {r: 0.34, g: 0.61, b: 0.63, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 32
+    texture: {fileID: 0}
+    tint: {r: 0.27, g: 0.05, b: 0.34, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 33
+    texture: {fileID: 0}
+    tint: {r: 0.49, g: 0.34, b: 0.82, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 34
+    texture: {fileID: 0}
+    tint: {r: 0.79, g: 0.69, b: 0.38, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 35
+    texture: {fileID: 0}
+    tint: {r: 0.65, g: 0.04, b: 0.97, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 36
+    texture: {fileID: 0}
+    tint: {r: 0, g: 0.12, b: 0.45, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 37
+    texture: {fileID: 0}
+    tint: {r: 0.37, g: 0.13, b: 0.47, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 38
+    texture: {fileID: 0}
+    tint: {r: 0.3, g: 0.49, b: 0.69, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 39
+    texture: {fileID: 0}
+    tint: {r: 0.66, g: 0.58, b: 0.48, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 40
+    texture: {fileID: 0}
+    tint: {r: 0.17, g: 0.35, b: 0.21, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 41
+    texture: {fileID: 0}
+    tint: {r: 0.97, g: 0.12, b: 0.65, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 42
+    texture: {fileID: 0}
+    tint: {r: 0.22, g: 0.88, b: 0.86, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 43
+    texture: {fileID: 0}
+    tint: {r: 0.48, g: 0.73, b: 0.36, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 44
+    texture: {fileID: 0}
+    tint: {r: 0.29, g: 0.96, b: 0.92, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 45
+    texture: {fileID: 0}
+    tint: {r: 0.68, g: 0.63, b: 0.17, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 46
+    texture: {fileID: 0}
+    tint: {r: 0.49, g: 0.83, b: 0.2, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 47
+    texture: {fileID: 0}
+    tint: {r: 0.96, g: 0.72, b: 0.73, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 48
+    texture: {fileID: 0}
+    tint: {r: 0.54, g: 0.78, b: 0.04, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 49
+    texture: {fileID: 0}
+    tint: {r: 0.59, g: 0.04, b: 0.12, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 50
+    texture: {fileID: 0}
+    tint: {r: 0.94, g: 0.61, b: 0.46, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 51
+    texture: {fileID: 0}
+    tint: {r: 0.85, g: 0.32, b: 0.98, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 52
+    texture: {fileID: 0}
+    tint: {r: 0.6, g: 0.81, b: 0.56, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 53
+    texture: {fileID: 0}
+    tint: {r: 0.73, g: 0.42, b: 0.15, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 54
+    texture: {fileID: 0}
+    tint: {r: 0.1, g: 0.51, b: 0.39, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 55
+    texture: {fileID: 0}
+    tint: {r: 0.09, g: 0.08, b: 0.17, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 56
+    texture: {fileID: 0}
+    tint: {r: 0.54, g: 0.61, b: 0.85, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 57
+    texture: {fileID: 0}
+    tint: {r: 0.52, g: 0.16, b: 0.75, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 58
+    texture: {fileID: 0}
+    tint: {r: 0.28, g: 0.21, b: 0.63, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 59
+    texture: {fileID: 0}
+    tint: {r: 0.48, g: 0.43, b: 0.34, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 60
+    texture: {fileID: 0}
+    tint: {r: 0.6, g: 0.63, b: 0.84, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 61
+    texture: {fileID: 0}
+    tint: {r: 0.74, g: 0.54, b: 0.11, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 62
+    texture: {fileID: 0}
+    tint: {r: 0.9, g: 0.43, b: 0.64, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 63
+    texture: {fileID: 0}
+    tint: {r: 0.94, g: 0.07, b: 0.82, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 64
+    texture: {fileID: 0}
+    tint: {r: 0.6, g: 0.76, b: 0.4, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 65
+    texture: {fileID: 0}
+    tint: {r: 0.04, g: 0.85, b: 0.2, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 66
+    texture: {fileID: 0}
+    tint: {r: 0.33, g: 0.45, b: 0.7, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 67
+    texture: {fileID: 0}
+    tint: {r: 0.87, g: 0.05, b: 0.42, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 68
+    texture: {fileID: 0}
+    tint: {r: 0.27, g: 0.42, b: 0.45, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 69
+    texture: {fileID: 0}
+    tint: {r: 0.7, g: 0.56, b: 0.1, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 70
+    texture: {fileID: 0}
+    tint: {r: 0.34, g: 0.12, b: 0.38, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 71
+    texture: {fileID: 0}
+    tint: {r: 0.22, g: 0.12, b: 0.79, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 72
+    texture: {fileID: 0}
+    tint: {r: 0.3, g: 0.36, b: 0.97, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 73
+    texture: {fileID: 0}
+    tint: {r: 0.27, g: 0.18, b: 0.64, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 74
+    texture: {fileID: 0}
+    tint: {r: 0.52, g: 0.6, b: 0.54, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 75
+    texture: {fileID: 0}
+    tint: {r: 0.02, g: 0.91, b: 0.39, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 76
+    texture: {fileID: 0}
+    tint: {r: 0.35, g: 0.23, b: 0.36, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 77
+    texture: {fileID: 0}
+    tint: {r: 0.43, g: 0.14, b: 0.97, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 78
+    texture: {fileID: 0}
+    tint: {r: 0.64, g: 0.72, b: 0.58, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 79
+    texture: {fileID: 0}
+    tint: {r: 0.42, g: 0.46, b: 0.11, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 80
+    texture: {fileID: 0}
+    tint: {r: 0.66, g: 0.2, b: 0.86, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 81
+    texture: {fileID: 0}
+    tint: {r: 0.53, g: 0.59, b: 0.94, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 82
+    texture: {fileID: 0}
+    tint: {r: 0.44, g: 0.38, b: 0.63, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 83
+    texture: {fileID: 0}
+    tint: {r: 0.6, g: 0.74, b: 0.48, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 84
+    texture: {fileID: 0}
+    tint: {r: 0.23, g: 0.05, b: 0.26, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 85
+    texture: {fileID: 0}
+    tint: {r: 0.05, g: 0.34, b: 0.44, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 86
+    texture: {fileID: 0}
+    tint: {r: 0.88, g: 0.24, b: 0.51, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 87
+    texture: {fileID: 0}
+    tint: {r: 0.06, g: 0.34, b: 0.33, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 88
+    texture: {fileID: 0}
+    tint: {r: 0.74, g: 0.91, b: 0.97, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 89
+    texture: {fileID: 0}
+    tint: {r: 0.4, g: 0.57, b: 0.4, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 90
+    texture: {fileID: 0}
+    tint: {r: 0.21, g: 0.88, b: 0.89, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 91
+    texture: {fileID: 0}
+    tint: {r: 0.85, g: 0.61, b: 0.98, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 92
+    texture: {fileID: 0}
+    tint: {r: 0.78, g: 0.98, b: 0, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 93
+    texture: {fileID: 0}
+    tint: {r: 0.59, g: 0.58, b: 0.52, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 94
+    texture: {fileID: 0}
+    tint: {r: 0.75, g: 0.74, b: 0.49, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 95
+    texture: {fileID: 0}
+    tint: {r: 0.87, g: 0.19, b: 0.08, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 96
+    texture: {fileID: 0}
+    tint: {r: 0.71, g: 0.58, b: 0.37, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 97
+    texture: {fileID: 0}
+    tint: {r: 0.13, g: 0.54, b: 0.22, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 98
+    texture: {fileID: 0}
+    tint: {r: 0.6, g: 0.6, b: 0.85, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 99
+    texture: {fileID: 0}
+    tint: {r: 0.53, g: 0.79, b: 0.67, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 100
+    texture: {fileID: 0}
+    tint: {r: 0.96, g: 0.03, b: 0.8, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 101
+    texture: {fileID: 0}
+    tint: {r: 0.23, g: 0.39, b: 0.85, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 102
+    texture: {fileID: 0}
+    tint: {r: 0.58, g: 0.38, b: 0.44, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 103
+    texture: {fileID: 0}
+    tint: {r: 0.27, g: 0.27, b: 0.36, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 104
+    texture: {fileID: 0}
+    tint: {r: 0.43, g: 0.28, b: 0.65, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 105
+    texture: {fileID: 0}
+    tint: {r: 0.98, g: 0.3, b: 0.6, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 106
+    texture: {fileID: 0}
+    tint: {r: 0.83, g: 0.86, b: 0.72, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 107
+    texture: {fileID: 0}
+    tint: {r: 0.89, g: 0.68, b: 0.99, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 108
+    texture: {fileID: 0}
+    tint: {r: 0.02, g: 0.07, b: 0.34, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 109
+    texture: {fileID: 0}
+    tint: {r: 0.67, g: 0.24, b: 0.01, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 110
+    texture: {fileID: 0}
+    tint: {r: 0.12, g: 0.24, b: 0.19, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 111
+    texture: {fileID: 0}
+    tint: {r: 0.33, g: 0.62, b: 0.54, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 112
+    texture: {fileID: 0}
+    tint: {r: 0.71, g: 0.51, b: 0.35, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 113
+    texture: {fileID: 0}
+    tint: {r: 0.64, g: 0.29, b: 0.81, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 114
+    texture: {fileID: 0}
+    tint: {r: 0.64, g: 0.43, b: 0.31, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 115
+    texture: {fileID: 0}
+    tint: {r: 0.01, g: 0.69, b: 0.25, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 116
+    texture: {fileID: 0}
+    tint: {r: 0.56, g: 0.62, b: 0.29, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 117
+    texture: {fileID: 0}
+    tint: {r: 0.25, g: 0.7, b: 0.92, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 118
+    texture: {fileID: 0}
+    tint: {r: 0.95, g: 0.07, b: 0.34, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 119
+    texture: {fileID: 0}
+    tint: {r: 0.81, g: 0.21, b: 0.31, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 120
+    texture: {fileID: 0}
+    tint: {r: 0.51, g: 0.91, b: 0.13, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 121
+    texture: {fileID: 0}
+    tint: {r: 0.43, g: 0.14, b: 0.02, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 122
+    texture: {fileID: 0}
+    tint: {r: 0.16, g: 0.1, b: 0.66, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 123
+    texture: {fileID: 0}
+    tint: {r: 0.1, g: 0.26, b: 0.78, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 124
+    texture: {fileID: 0}
+    tint: {r: 0.24, g: 0.19, b: 0.57, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 125
+    texture: {fileID: 0}
+    tint: {r: 0.9, g: 0.25, b: 0.25, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 126
+    texture: {fileID: 0}
+    tint: {r: 0.68, g: 0, b: 0.38, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 127
+    texture: {fileID: 0}
+    tint: {r: 0.09, g: 0.1, b: 0.62, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 128
+    texture: {fileID: 0}
+    tint: {r: 0.71, g: 0.87, b: 0.54, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 129
+    texture: {fileID: 0}
+    tint: {r: 0.26, g: 0.37, b: 0.54, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 130
+    texture: {fileID: 0}
+    tint: {r: 0.19, g: 0.9, b: 0.3, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 131
+    texture: {fileID: 0}
+    tint: {r: 0.03, g: 0.12, b: 0.37, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 132
+    texture: {fileID: 0}
+    tint: {r: 0.68, g: 0.2, b: 0.28, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 133
+    texture: {fileID: 0}
+    tint: {r: 0.28, g: 0.84, b: 0.58, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 134
+    texture: {fileID: 0}
+    tint: {r: 0.58, g: 0.45, b: 0.35, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 135
+    texture: {fileID: 0}
+    tint: {r: 0.5, g: 0, b: 0.51, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 136
+    texture: {fileID: 0}
+    tint: {r: 0.35, g: 0.04, b: 0.82, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 137
+    texture: {fileID: 0}
+    tint: {r: 0.09, g: 0.13, b: 0.21, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 138
+    texture: {fileID: 0}
+    tint: {r: 0.93, g: 0.42, b: 0.8, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 139
+    texture: {fileID: 0}
+    tint: {r: 0.5, g: 0.72, b: 0.27, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 140
+    texture: {fileID: 0}
+    tint: {r: 0.48, g: 0.9, b: 0.73, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 141
+    texture: {fileID: 0}
+    tint: {r: 0.11, g: 0.91, b: 0.36, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 142
+    texture: {fileID: 0}
+    tint: {r: 0.48, g: 0.21, b: 0.06, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 143
+    texture: {fileID: 0}
+    tint: {r: 0.19, g: 0.22, b: 0.04, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 144
+    texture: {fileID: 0}
+    tint: {r: 0.96, g: 0.39, b: 0.15, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 145
+    texture: {fileID: 0}
+    tint: {r: 0.79, g: 0.5, b: 0.64, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 146
+    texture: {fileID: 0}
+    tint: {r: 0.27, g: 0.2, b: 0.86, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 147
+    texture: {fileID: 0}
+    tint: {r: 0.03, g: 0.91, b: 0.32, a: 1}
+    tintStrength: 0
+    startHeight: 1
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  - name: Region 148
+    texture: {fileID: 0}
+    tint: {r: 0.71, g: 0.1, b: 0.77, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 149
+    texture: {fileID: 0}
+    tint: {r: 0.09, g: 0.1, b: 0.7, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 0
+    terrainIndex: 0
+  - name: Region 150
+    texture: {fileID: 0}
+    tint: {r: 0.57, g: 0.17, b: 0.48, a: 1}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
+    isBorder: 1
+    terrainIndex: 0
+  m_voronoiCentroids:
+  - {x: 23, y: 401}
+  - {x: 449, y: 402}
+  - {x: 215, y: 268}
+  - {x: 462, y: 27}
+  - {x: 378, y: 231}
+  - {x: 73, y: 386}
+  - {x: 382, y: 70}
+  - {x: 339, y: 17}
+  - {x: 63, y: 422}
+  - {x: 90, y: 129}
+  - {x: 236, y: 194}
+  - {x: 205, y: 468}
+  - {x: 202, y: 184}
+  - {x: 378, y: 287}
+  - {x: 190, y: 73}
+  - {x: 188, y: 301}
+  - {x: 18, y: 271}
+  - {x: 456, y: 231}
+  - {x: 123, y: 461}
+  - {x: 27, y: 65}
+  - {x: 152, y: 104}
+  - {x: 53, y: 279}
+  - {x: 341, y: 242}
+  - {x: 428, y: 454}
+  - {x: 24, y: 21}
+  - {x: 454, y: 359}
+  - {x: 208, y: 439}
+  - {x: 430, y: 304}
+  - {x: 165, y: 462}
+  - {x: 228, y: 55}
+  - {x: 329, y: 203}
+  - {x: 303, y: 313}
+  - {x: 56, y: 244}
+  - {x: 334, y: 133}
+  - {x: 87, y: 70}
+  - {x: 384, y: 106}
+  - {x: 405, y: 51}
+  - {x: 462, y: 186}
+  - {x: 180, y: 372}
+  - {x: 103, y: 420}
+  - {x: 226, y: 353}
+  - {x: 263, y: 175}
+  - {x: 102, y: 250}
+  - {x: 114, y: 22}
+  - {x: 310, y: 170}
+  - {x: 134, y: 148}
+  - {x: 240, y: 460}
+  - {x: 174, y: 410}
+  - {x: 286, y: 203}
+  - {x: 216, y: 118}
+  - {x: 354, y: 334}
+  - {x: 400, y: 413}
+  - {x: 109, y: 372}
+  - {x: 427, y: 176}
+  - {x: 464, y: 315}
+  - {x: 135, y: 243}
+  - {x: 338, y: 288}
+  - {x: 294, y: 428}
+  - {x: 399, y: 138}
+  - {x: 289, y: 240}
+  - {x: 188, y: 337}
+  - {x: 274, y: 355}
+  - {x: 413, y: 265}
+  - {x: 333, y: 425}
+  - {x: 315, y: 50}
+  - {x: 364, y: 449}
+  - {x: 180, y: 20}
+  - {x: 79, y: 340}
+  - {x: 16, y: 316}
+  - {x: 86, y: 164}
+  - {x: 330, y: 383}
+  - {x: 52, y: 461}
+  - {x: 49, y: 355}
+  - {x: 265, y: 419}
+  - {x: 167, y: 216}
+  - {x: 40, y: 143}
+  - {x: 393, y: 462}
+  - {x: 436, y: 62}
+  - {x: 88, y: 460}
+  - {x: 461, y: 270}
+  - {x: 17, y: 451}
+  - {x: 303, y: 458}
+  - {x: 356, y: 158}
+  - {x: 69, y: 318}
+  - {x: 212, y: 395}
+  - {x: 423, y: 103}
+  - {x: 58, y: 102}
+  - {x: 416, y: 219}
+  - {x: 263, y: 315}
+  - {x: 351, y: 100}
+  - {x: 16, y: 358}
+  - {x: 287, y: 118}
+  - {x: 18, y: 226}
+  - {x: 57, y: 188}
+  - {x: 71, y: 26}
+  - {x: 285, y: 20}
+  - {x: 305, y: 269}
+  - {x: 152, y: 335}
+  - {x: 115, y: 103}
+  - {x: 95, y: 353}
+  - {x: 295, y: 394}
+  - {x: 258, y: 220}
+  - {x: 251, y: 385}
+  - {x: 91, y: 292}
+  - {x: 63, y: 218}
+  - {x: 239, y: 241}
+  - {x: 141, y: 367}
+  - {x: 280, y: 147}
+  - {x: 184, y: 158}
+  - {x: 455, y: 138}
+  - {x: 117, y: 331}
+  - {x: 237, y: 149}
+  - {x: 124, y: 396}
+  - {x: 257, y: 275}
+  - {x: 464, y: 89}
+  - {x: 107, y: 203}
+  - {x: 233, y: 17}
+  - {x: 248, y: 96}
+  - {x: 148, y: 37}
+  - {x: 313, y: 93}
+  - {x: 189, y: 242}
+  - {x: 147, y: 293}
+  - {x: 275, y: 65}
+  - {x: 361, y: 396}
+  - {x: 464, y: 451}
+  - {x: 153, y: 398}
+  - {x: 142, y: 432}
+  - {x: 237, y: 424}
+  - {x: 179, y: 121}
+  - {x: 118, y: 297}
+  - {x: 170, y: 267}
+  - {x: 334, y: 466}
+  - {x: 138, y: 70}
+  - {x: 16, y: 111}
+  - {x: 146, y: 187}
+  - {x: 17, y: 177}
+  - {x: 315, y: 352}
+  - {x: 406, y: 333}
+  - {x: 187, y: 427}
+  - {x: 348, y: 62}
+  - {x: 45, y: 306}
+  - {x: 272, y: 463}
+  - {x: 395, y: 173}
+  - {x: 225, y: 310}
+  - {x: 379, y: 22}
+  - {x: 421, y: 16}
+  - {x: 392, y: 369}
+  - {x: 368, y: 192}
+  - {x: 209, y: 218}
+  - {x: 75, y: 265}
+  m_voronoiSegmentNeighborCount: 050000000500000007000000030000000600000007000000060000000400000006000000050000000600000004000000060000000700000008000000060000000500000004000000040000000500000005000000060000000700000004000000020000000500000005000000060000000400000005000000070000000700000006000000070000000600000006000000050000000400000007000000070000000700000006000000070000000400000006000000080000000500000005000000050000000500000008000000060000000600000005000000030000000700000005000000050000000600000007000000050000000600000006000000070000000500000005000000040000000500000004000000050000000500000003000000070000000600000006000000060000000300000005000000040000000400000003000000040000000700000006000000070000000700000006000000070000000500000005000000030000000600000005000000060000000400000004000000050000000600000006000000040000000700000005000000060000000600000005000000060000000600000005000000060000000500000009000000080000000500000007000000040000000700000004000000060000000400000006000000040000000600000007000000060000000200000005000000070000000500000005000000050000000600000003000000060000000400000006000000040000000500000005000000060000000600000005000000040000000500000006000000050000000400000006000000060000000600000004000000
+  m_showVoronoiCentroids: 0
+  m_showVoronoiStats: 0
+--- !u!1 &4934027346650867614
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3808971186562656186}
+  - component: {fileID: 813493640401442311}
+  m_Layer: 0
+  m_Name: Hill Falloff
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3808971186562656186
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4934027346650867614}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7132320810783066289}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &813493640401442311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4934027346650867614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b9db22f3eea89e40aafe584626e2ada, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_seed: 32
+  m_dimensions: {x: 100, y: 100}
+  m_mapChunkSize: 481
+  m_levelOfDetail: 1
+  m_autoUpdate: 0
+  m_filter: {fileID: 0}
+  m_renderer: {fileID: 0}
+  m_collider: {fileID: 0}
+  m_heldRenderer: {fileID: 0}
+  m_meshMaterial: {fileID: 2100000, guid: d0af5845f358ab44e886f225b9516e74, type: 2}
+  m_drawMode: 0
+  m_textureFilterMode: 0
+  m_textureHeightMultiplier: 1
+  m_textureHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_colorMode: 0
+  m_meshMaterialLayers: []
+  m_terrainTypes:
+  - name: 
+    height: 0
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - name: 
+    height: 0
+    color: {r: 0, g: 0, b: 0, a: 0}
+  m_terrainColorGradient:
+    serializedVersion: 2
+    key0: {r: 0, g: 0, b: 0, a: 1}
+    key1: {r: 0.9245283, g: 0.9245283, b: 0.9245283, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  m_heightRange:
+    min: 0
+    max: 1
+  m_showGrid: 0
+  m_gridColor: {r: 1, g: 1, b: 1, a: 1}
+  m_gridCellSize: 0
+  m_coordColor: {r: 0, g: 0, b: 1, a: 1}
+  m_debugGridCoord: {x: 0, y: 0}
+  m_centroidX: 0
+  m_centroidY: 0
+  m_falloffShape: 1
+  m_falloffStart: 0.5
+  m_falloffEnd: 1
+  m_invert: 0
+--- !u!1 &6538419994226355084
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7132320810783066289}
+  - component: {fileID: 3262293502388240520}
+  - component: {fileID: 5229846673049051188}
+  - component: {fileID: 1903497957913835595}
+  - component: {fileID: 6192881067607133007}
+  m_Layer: 0
+  m_Name: TerrainMap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7132320810783066289
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6538419994226355084}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3808971186562656186}
+  - {fileID: 8092102711172372074}
+  - {fileID: 8142674162609628291}
+  - {fileID: 6736177400292513411}
+  - {fileID: 4865048768368122025}
+  - {fileID: 3972373699726948784}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &3262293502388240520
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6538419994226355084}
+  m_Mesh: {fileID: 0}
+--- !u!23 &5229846673049051188
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6538419994226355084}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 217fde7098daa504c8fc91ac7824bda1, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1903497957913835595
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6538419994226355084}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
+--- !u!114 &6192881067607133007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6538419994226355084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dc868556e4b0d44f834924695b6d374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_seed: 32
+  m_dimensions: {x: 100, y: 100}
+  m_mapChunkSize: 481
+  m_levelOfDetail: 1
+  m_autoUpdate: 0
+  m_filter: {fileID: 3262293502388240520}
+  m_renderer: {fileID: 5229846673049051188}
+  m_collider: {fileID: 1903497957913835595}
+  m_heldRenderer: {fileID: 0}
+  m_meshMaterial: {fileID: 2100000, guid: 217fde7098daa504c8fc91ac7824bda1, type: 2}
+  m_drawMode: 3
+  m_textureFilterMode: 0
+  m_textureHeightMultiplier: 1
+  m_textureHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_colorMode: 2
+  m_meshMaterialLayers:
+  - name: Sandy Grass
+    texture: {fileID: 2800000, guid: fd5b53e482132d64287d83ec0d3f3235, type: 3}
+    tint: {r: 0.008677464, g: 0.3679245, b: 0.008677464, a: 0}
+    tintStrength: 1
+    startHeight: 0
+    blendStrength: 0.019
+    textureScale: 20
+  - name: Grass
+    texture: {fileID: 2800000, guid: e333982e6b0238545ae65782199b39d7, type: 3}
+    tint: {r: 0, g: 0.6132076, b: 0, a: 0}
+    tintStrength: 1
+    startHeight: 0.25
+    blendStrength: 0.173
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: a8087cc094c09e9419cba8569a36961f, type: 3}
+    tint: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    tintStrength: 0
+    startHeight: 0.5
+    blendStrength: 0.481
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: 504f02f7dacb88d45bdd0f21741a8b14, type: 3}
+    tint: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0}
+    tintStrength: 0
+    startHeight: 0.85
+    blendStrength: 0.072
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: fb4721a27ff9e5442ab710b6971d94b8, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 0}
+    tintStrength: 0
+    startHeight: 0.925
+    blendStrength: 0.019
+    textureScale: 20
+  m_terrainTypes: []
+  m_terrainColorGradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  m_heightRange:
+    min: 0
+    max: 112.91925
+  m_showGrid: 0
+  m_gridColor: {r: 1, g: 1, b: 1, a: 1}
+  m_gridCellSize: 0
+  m_coordColor: {r: 0, g: 0, b: 1, a: 1}
+  m_debugGridCoord: {x: 0, y: 0}
+  m_maps:
+  - map: {fileID: 813493640401442311}
+    combineMethod: 0
+    apply: 1
+  - map: {fileID: 3358125217667476780}
+    combineMethod: 0
+    apply: 1
+  - map: {fileID: 1405345413130978109}
+    combineMethod: 0
+    apply: 1
+  - map: {fileID: 6826912210262848135}
+    combineMethod: 0
+    apply: 3
+  - map: {fileID: 8155129564736552846}
+    combineMethod: 1
+    apply: 3
+  - map: {fileID: 8741269351894905515}
+    combineMethod: 0
+    apply: 1
+--- !u!1 &7474613189726536286
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6736177400292513411}
+  - component: {fileID: 6826912210262848135}
+  m_Layer: 0
+  m_Name: Traversable Map
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6736177400292513411
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7474613189726536286}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7132320810783066289}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6826912210262848135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7474613189726536286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dc868556e4b0d44f834924695b6d374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_seed: 32
+  m_dimensions: {x: 100, y: 100}
+  m_mapChunkSize: 481
+  m_levelOfDetail: 1
+  m_autoUpdate: 0
+  m_filter: {fileID: 0}
+  m_renderer: {fileID: 0}
+  m_collider: {fileID: 0}
+  m_heldRenderer: {fileID: 0}
+  m_meshMaterial: {fileID: 2100000, guid: 021db879a78de5747bec5868faa8cdb4, type: 2}
+  m_drawMode: 0
+  m_textureFilterMode: 0
+  m_textureHeightMultiplier: 1
+  m_textureHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_colorMode: 2
+  m_meshMaterialLayers:
+  - name: Sandy Grass
+    texture: {fileID: 2800000, guid: fd5b53e482132d64287d83ec0d3f3235, type: 3}
+    tint: {r: 0.008677464, g: 0.3679245, b: 0.008677464, a: 0}
+    tintStrength: 1
+    startHeight: 0
+    blendStrength: 0.019
+    textureScale: 20
+  - name: Grass
+    texture: {fileID: 2800000, guid: e333982e6b0238545ae65782199b39d7, type: 3}
+    tint: {r: 0, g: 0.6132076, b: 0, a: 0}
+    tintStrength: 1
+    startHeight: 0.25
+    blendStrength: 0.173
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: a8087cc094c09e9419cba8569a36961f, type: 3}
+    tint: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    tintStrength: 0
+    startHeight: 0.5
+    blendStrength: 0.05
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: 504f02f7dacb88d45bdd0f21741a8b14, type: 3}
+    tint: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0}
+    tintStrength: 0
+    startHeight: 0.85
+    blendStrength: 0.072
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: fb4721a27ff9e5442ab710b6971d94b8, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 0}
+    tintStrength: 0
+    startHeight: 0.925
+    blendStrength: 0.019
+    textureScale: 20
+  m_terrainTypes: []
+  m_terrainColorGradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  m_heightRange:
+    min: 0
+    max: 31.771656
+  m_showGrid: 0
+  m_gridColor: {r: 1, g: 1, b: 1, a: 1}
+  m_gridCellSize: 0
+  m_coordColor: {r: 0, g: 0, b: 1, a: 1}
+  m_debugGridCoord: {x: 0, y: 0}
+  m_maps:
+  - map: {fileID: 1405345413130978109}
+    combineMethod: 0
+    apply: 2
+  - map: {fileID: 813493640401442311}
+    combineMethod: 3
+    apply: 2
+--- !u!1 &8171330522439444817
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8142674162609628291}
+  - component: {fileID: 1915026810612055390}
+  - component: {fileID: 1741872052031213021}
+  - component: {fileID: 1099124857006548736}
+  - component: {fileID: 1405345413130978109}
+  m_Layer: 0
+  m_Name: HillMap
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8142674162609628291
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8171330522439444817}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 576364273173245929}
+  - {fileID: 1691490566945361118}
+  - {fileID: 5082927814310155588}
+  m_Father: {fileID: 7132320810783066289}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &1915026810612055390
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8171330522439444817}
+  m_Mesh: {fileID: 0}
+--- !u!23 &1741872052031213021
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8171330522439444817}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 96217eeea4bcf1a459166e280baa2f81, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1099124857006548736
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8171330522439444817}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
+--- !u!114 &1405345413130978109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8171330522439444817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dc868556e4b0d44f834924695b6d374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_seed: 32
+  m_dimensions: {x: 100, y: 100}
+  m_mapChunkSize: 481
+  m_levelOfDetail: 1
+  m_autoUpdate: 0
+  m_filter: {fileID: 1915026810612055390}
+  m_renderer: {fileID: 1741872052031213021}
+  m_collider: {fileID: 1099124857006548736}
+  m_heldRenderer: {fileID: 0}
+  m_meshMaterial: {fileID: 2100000, guid: 96217eeea4bcf1a459166e280baa2f81, type: 2}
+  m_drawMode: 0
+  m_textureFilterMode: 0
+  m_textureHeightMultiplier: 1
+  m_textureHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_colorMode: 2
+  m_meshMaterialLayers:
+  - name: Sandy Grass
+    texture: {fileID: 2800000, guid: fd5b53e482132d64287d83ec0d3f3235, type: 3}
+    tint: {r: 0.008677464, g: 0.3679245, b: 0.008677464, a: 0}
+    tintStrength: 1
+    startHeight: 0
+    blendStrength: 0.019
+    textureScale: 20
+  - name: Grass
+    texture: {fileID: 2800000, guid: e333982e6b0238545ae65782199b39d7, type: 3}
+    tint: {r: 0, g: 0.6132076, b: 0, a: 0}
+    tintStrength: 1
+    startHeight: 0.25
+    blendStrength: 0.173
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: a8087cc094c09e9419cba8569a36961f, type: 3}
+    tint: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    tintStrength: 0
+    startHeight: 0.5
+    blendStrength: 0.05
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: 504f02f7dacb88d45bdd0f21741a8b14, type: 3}
+    tint: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0}
+    tintStrength: 0
+    startHeight: 0.85
+    blendStrength: 0.072
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: fb4721a27ff9e5442ab710b6971d94b8, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 0}
+    tintStrength: 0
+    startHeight: 0.925
+    blendStrength: 0.019
+    textureScale: 20
+  m_terrainTypes: []
+  m_terrainColorGradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  m_heightRange:
+    min: 0
+    max: 34.87688
+  m_showGrid: 0
+  m_gridColor: {r: 1, g: 1, b: 1, a: 1}
+  m_gridCellSize: 0
+  m_coordColor: {r: 0, g: 0, b: 1, a: 1}
+  m_debugGridCoord: {x: 0, y: 0}
+  m_maps:
+  - map: {fileID: 6845655144132619670}
+    combineMethod: 0
+    apply: 3
+  - map: {fileID: 4910390087031641497}
+    combineMethod: 1
+    apply: 3
+  - map: {fileID: 6187335501495015583}
+    combineMethod: 1
+    apply: 3
+--- !u!1 &8419991544976629799
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1691490566945361118}
+  - component: {fileID: 6187335501495015583}
+  m_Layer: 0
+  m_Name: Perlin Noise - Dunes
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1691490566945361118
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8419991544976629799}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8142674162609628291}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6187335501495015583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8419991544976629799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03bee3bb4b1af0c469e65c5eac5f466f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_seed: 32
+  m_dimensions: {x: 100, y: 100}
+  m_mapChunkSize: 481
+  m_levelOfDetail: 1
+  m_autoUpdate: 1
+  m_filter: {fileID: 0}
+  m_renderer: {fileID: 0}
+  m_collider: {fileID: 0}
+  m_heldRenderer: {fileID: 0}
+  m_meshMaterial: {fileID: 2100000, guid: f16db0cbcb3fffd43a9fdcaa004d9510, type: 2}
+  m_drawMode: 0
+  m_textureFilterMode: 0
+  m_textureHeightMultiplier: 10
+  m_textureHeightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_colorMode: 0
+  m_meshMaterialLayers:
+  - name: 
+    texture: {fileID: 2800000, guid: 40eb2d070faacc0439107bf770f90931, type: 3}
+    tint: {r: 0.41037738, g: 0.48750186, b: 1, a: 0}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0.022
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: fd5b53e482132d64287d83ec0d3f3235, type: 3}
+    tint: {r: 0.9648836, g: 1, b: 0.7028302, a: 0}
+    tintStrength: 0
+    startHeight: 0.022
+    blendStrength: 0
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: e333982e6b0238545ae65782199b39d7, type: 3}
+    tint: {r: 0.60119534, g: 0.6698113, b: 0.05371129, a: 0}
+    tintStrength: 0
+    startHeight: 0.112
+    blendStrength: 0.173
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: a8087cc094c09e9419cba8569a36961f, type: 3}
+    tint: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    tintStrength: 0
+    startHeight: 0.831
+    blendStrength: 0.05
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: 504f02f7dacb88d45bdd0f21741a8b14, type: 3}
+    tint: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0}
+    tintStrength: 0
+    startHeight: 0.938
+    blendStrength: 0.072
+    textureScale: 20
+  - name: 
+    texture: {fileID: 2800000, guid: fb4721a27ff9e5442ab710b6971d94b8, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 0}
+    tintStrength: 0
+    startHeight: 0.983
+    blendStrength: 0.019
+    textureScale: 20
+  m_terrainTypes:
+  - name: Water
+    height: 0.25
+    color: {r: 0, g: 0.08572531, b: 1, a: 1}
+  - name: Land
+    height: 1
+    color: {r: 0.437266, g: 1, b: 0, a: 0.9372549}
+  m_terrainColorGradient:
+    serializedVersion: 2
+    key0: {r: 0, g: 0, b: 0, a: 1}
+    key1: {r: 1, g: 0.2071498, b: 0.13679248, a: 1}
+    key2: {r: 0.5990566, g: 0.7525229, b: 1, a: 0}
+    key3: {r: 0.80427307, g: 0.8301887, b: 0.043075833, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 19661
+    ctime2: 32768
+    ctime3: 45875
+    ctime4: 65535
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 5
+    m_NumAlphaKeys: 2
+  m_heightRange:
+    min: 0
+    max: 10
+  m_showGrid: 0
+  m_gridColor: {r: 1, g: 1, b: 1, a: 1}
+  m_gridCellSize: 0
+  m_coordColor: {r: 0, g: 0, b: 1, a: 1}
+  m_debugGridCoord: {x: 0, y: 0}
+  m_noiseScale: 17.5
+  m_octaves: 4
+  m_persistance: 0.187
+  m_lacunarity: 1
+  m_offset: {x: 0, y: 0}
