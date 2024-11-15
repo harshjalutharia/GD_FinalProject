@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,8 +95,17 @@ public class PlayerMovement : MonoBehaviour
     private float verticalInput;
 
     [Header("Ground Check")]
+    
     [Tooltip("Positions to perform ground detect")]
     public Transform[] groundDetections = new Transform[2];
+    private RaycastHit[] groundHits = new RaycastHit[2];
+    private Vector3[] normProject = new Vector3[2];
+
+    [Tooltip("Distance of ground check")]
+    public float groundCheckDistance;
+
+    [Tooltip("Keep player on the ground if the angular change of slope is less than this value")]
+    public float slopAngularChangeTolerance;
     
     [Tooltip("Set to everything is OK")]
     public LayerMask groundMask;
@@ -103,12 +113,18 @@ public class PlayerMovement : MonoBehaviour
     [Header("Private States")]
     [SerializeField] 
     private bool grounded;
+
+    [SerializeField]
+    private bool grabGround;
     
     [SerializeField]
     private bool readyToJump;
     
     [SerializeField] 
     private bool requestJump;
+
+    [SerializeField] 
+    private bool preparingJump;
     
     [SerializeField] 
     private bool sprinting;
@@ -121,6 +137,7 @@ public class PlayerMovement : MonoBehaviour
     
     [SerializeField] 
     private bool sprintActivated;
+    
     
     
     private Vector3 moveDirection;
@@ -166,27 +183,27 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        // ground check
-        Collider[] colliders1 = Physics.OverlapSphere(groundDetections[0].position, 0.05f, groundMask);
-        Collider[] colliders2 = Physics.OverlapSphere(groundDetections[1].position, 0.05f, groundMask);
-        grounded = false;
-        foreach (var collider in colliders1)
-        {
-            if (collider.gameObject.layer != LayerMask.NameToLayer("Player") && collider.gameObject.layer != LayerMask.NameToLayer("FakePlayer"))
-            {
-                grounded = true;
-                break;
-            }
-        }
-        foreach (var collider in colliders2)
-        {
-            if (grounded) break;
-            if (collider.gameObject.layer != LayerMask.NameToLayer("Player") && collider.gameObject.layer != LayerMask.NameToLayer("FakePlayer"))
-            {
-                grounded = true;
-                break;
-            }
-        }
+
+        // Collider[] colliders1 = Physics.OverlapSphere(groundDetections[0].position, 0.05f, groundMask);
+        // Collider[] colliders2 = Physics.OverlapSphere(groundDetections[1].position, 0.05f, groundMask);
+        // grounded = false;
+        // foreach (var collider in colliders1)
+        // {
+        //     if (collider.gameObject.layer != LayerMask.NameToLayer("Player") && collider.gameObject.layer != LayerMask.NameToLayer("FakePlayer"))
+        //     {
+        //         grounded = true;
+        //         break;
+        //     }
+        // }
+        // foreach (var collider in colliders2)
+        // {
+        //     if (grounded) break;
+        //     if (collider.gameObject.layer != LayerMask.NameToLayer("Player") && collider.gameObject.layer != LayerMask.NameToLayer("FakePlayer"))
+        //     {
+        //         grounded = true;
+        //         break;
+        //     }
+        // }
         // grounded = Physics.Raycast(orientation.position, Vector3.down, 0.2f, GroundMask);
         
         DealInput();
@@ -212,12 +229,17 @@ public class PlayerMovement : MonoBehaviour
 
         SetAnimation();
         
+        
         // debug message
         float horizontalSpeed = new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude;
         float overAllSpeed = rb.velocity.magnitude;
-        debugText1.text = "Stamina: " + flightStamina;
+        
+        debugText1.text = normProject[0] + " " + normProject[1] + "angle:" + Vector3.Angle(normProject[0], normProject[1]);
         debugText2.text = "Velocity:" + rb.velocity + " \nHorizontal Speed:" + horizontalSpeed + " Speed:" + overAllSpeed;
         
+        // Debug.Log(normProject[0] + " " + normProject[1]);
+        Debug.DrawRay(groundHits[0].point, groundHits[0].normal, Color.blue, 0, false);
+        Debug.DrawRay(groundHits[1].point, groundHits[1].normal, Color.green, 0, false);
         // cheat
         if (Input.GetKey(cheatKey))
         {
@@ -229,6 +251,33 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // apply two ground normal check
+        for (int i = 0; i < 2; i++)
+        {
+            Physics.Raycast(groundDetections[i].position, Vector3.down, out groundHits[i], Mathf.Infinity,
+                groundMask);
+        }
+        // project the norm of the ground
+        normProject[0] =
+            animator.transform.InverseTransformDirection(Vector3.ProjectOnPlane(groundHits[0].normal,
+                animator.transform.right));
+        normProject[1] =
+            animator.transform.InverseTransformDirection(Vector3.ProjectOnPlane(groundHits[1].normal,
+                animator.transform.right));
+        
+        // determine the ground grab
+        grabGround = normProject[1].z >= normProject[0].z && //normProject[1].z >= 0 && 
+                     Vector3.Angle(normProject[0], normProject[1]) < slopAngularChangeTolerance && grounded &&
+                     !preparingJump && !requestFlight;
+        
+        // if (!grabGround)
+        //     Debug.Log((normProject[1].z >= normProject[0].z) + " " + Vector3.Angle(normProject[0], normProject[1]));
+        
+        Collider[] colliders = Physics.OverlapSphere(orientation.position, 0.1f, groundMask);
+        
+        grounded = colliders.Length > 0; 
+        
+        
         MovePlayer();
     }
 
@@ -243,6 +292,7 @@ public class PlayerMovement : MonoBehaviour
             readyToJump = false;
             Invoke(nameof(ResetJump), jumpCooldown);
             requestJump = true;
+            preparingJump = true;
         }
         
         // fly input
@@ -281,7 +331,7 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         
         //set friction if player has no input
-        if (moveDirection.magnitude < 0.05f)
+        if (moveDirection.magnitude < 0.05f && grounded)
         {
             physicMaterial.dynamicFriction = friction;
             physicMaterial.staticFriction = friction;
@@ -314,13 +364,19 @@ public class PlayerMovement : MonoBehaviour
         // end horizontal movement
         
         // begin vertical movement
+        if (grabGround)
+        {
+            //rb.AddForce(animator.transform.TransformDirection(-0.5f * (groundHits[0].normal + groundHits[0].normal)) * 50, ForceMode.Force);
+            rb.AddForce(50 * -0.5f * (groundHits[0].normal + groundHits[0].normal), ForceMode.Force);
+        }
+        
         rb.useGravity = true;
         if (requestJump) // jump control
         {
+            requestJump = false;
             Invoke(nameof(Jump), 0.15f);
-            requestJump = false; 
             animationVars.requestJump = true;
-            Invoke(nameof(ResetAnimatorRequestJump), 0.2f);
+            // Invoke(nameof(ResetAnimatorRequestJump), 0.2f);
         }
         else if (requestFlight)     // flight control
         {
@@ -331,6 +387,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump()
     {
+        animationVars.requestJump = false;
+        
         flightStamina -= jumpStaminaConsume;
         flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
         // reset y velocity
@@ -348,6 +406,7 @@ public class PlayerMovement : MonoBehaviour
     private void ResetJump()
     {
         readyToJump = true;
+        preparingJump = false;
     }
     
     
@@ -374,10 +433,10 @@ public class PlayerMovement : MonoBehaviour
     }
     
 
-    private void ResetAnimatorRequestJump()
-    {
-        animationVars.requestJump = false;
-    }
+    // private void ResetAnimatorRequestJump()
+    // {
+    //     animationVars.requestJump = false;
+    // }
 
     private void SetAnimation()
     {
@@ -454,6 +513,4 @@ public class PlayerMovement : MonoBehaviour
         public bool paragliding;
         public bool sprinting;
     }
-
-    
 }
