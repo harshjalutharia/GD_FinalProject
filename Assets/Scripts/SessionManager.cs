@@ -211,7 +211,7 @@ public class SessionManager : MonoBehaviour
         */
 
         GenerateStartAndEnd(m_terrainGenerator, m_voronoiMap, 150f, 20, out m_playerStartPosition, out int playerStartPositionIndex, out m_playerEndPosition, out int playerEndPositionIndex);
-        m_pathFinder.CalculatePath(m_playerStartPosition, m_playerEndPosition, false, true, out List<Vector3> pathPoints, out List<int> pathSegmentIndices);
+        if (m_pathFinder != null) m_pathFinder.CalculatePath(m_playerStartPosition, m_playerEndPosition, false, true, out List<Vector3> pathPoints, out List<int> pathSegmentIndices);
         if (m_vegetationGenerator != null) m_vegetationGenerator.GenerateVegetation();
 
         // Teleport the player to the start postiion
