@@ -289,7 +289,11 @@ MonoBehaviour:
   endRegionRadius: 20
   endRegionRuinCount: 10
   minimumDistanceBetweenRuins: 5
+  visionPointsCount: 10
+  minimumDistanceInWeenieAndPath: 40
+  minimumDistanceBetweenWeenies: 40
   m_landmarkPositions: []
+  m_weeniePositions: []
 --- !u!4 &52809524
 Transform:
   m_ObjectHideFlags: 0
@@ -1815,6 +1819,34 @@ PrefabInstance:
       propertyPath: debugText2
       value: 
       objectReference: {fileID: 1444173675}
+    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
+      propertyPath: jumpInput.m_Name
+      value: Jump Input
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
+      propertyPath: sprintInput.m_Name
+      value: Sprint Input
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
+      propertyPath: directionInput.m_Name
+      value: Direction Input
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
+      propertyPath: switchSprintInput.m_Name
+      value: Switch Sprint Input
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
+      propertyPath: directionInput.m_SingletonActionBindings.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
+      propertyPath: directionInput.m_SingletonActionBindings.Array.data[0].m_Id
+      value: e96c1e38-3db7-4fc9-818c-217495fe7a75
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
+      propertyPath: directionInput.m_SingletonActionBindings.Array.data[0].m_Action
+      value: Direction Input
+      objectReference: {fileID: 0}
     - target: {fileID: 4132312772176831909, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
       propertyPath: m_Name
       value: Player
@@ -1900,6 +1932,50 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4132312772176831909, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
   m_PrefabInstance: {fileID: 910432214}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1050562724
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1050562726}
+  - component: {fileID: 1050562725}
+  m_Layer: 0
+  m_Name: InputManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1050562725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1050562724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16062b412373e7548a5763aa7a3d7d8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1050562726
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1050562724}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1077314801
 GameObject:
   m_ObjectHideFlags: 0
@@ -6512,17 +6588,14 @@ MonoBehaviour:
   m_landmarkGenerator: {fileID: 52809523}
   m_voronoiMap: {fileID: 1089995271}
   m_pathFinder: {fileID: 1089995269}
-  m_pauseMenuKeyCode: 13
   m_pauseMenuTransitionTime: 1
   m_pauseMenuGroup: {fileID: 1168569848}
   m_winMenuGroup: {fileID: 9831595}
   m_winMenuTransitionTime: 1
-  m_movementDebugKeyCode: 109
   m_movementDebugGroup: {fileID: 841794904}
   m_heldMap: {fileID: 1132202831}
   m_heldMapVisiblePosRef: {fileID: 1132202830}
   m_heldMapInvisiblePosRef: {fileID: 1132202829}
-  m_showMapKey: 9
   m_heldMapTransitionTime: 0.25
   m_isShowingMap: 0
   m_sceneTransitionTime: 2
@@ -11991,3 +12064,4 @@ SceneRoots:
   - {fileID: 787478457}
   - {fileID: 1132202827}
   - {fileID: 549417809}
+  - {fileID: 1050562726}

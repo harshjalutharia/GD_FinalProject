@@ -147,10 +147,8 @@ public class NoiseMap : MonoBehaviour
         //  - Shader = Only applies if a mesh material is set
 
         // 0. Set the components to use the materials we are using
-        if (m_meshMaterial != null) {
-            if (m_renderer != null)     m_renderer.material = m_meshMaterial;
-            if (m_heldRenderer != null) m_heldRenderer.material = m_meshMaterial;
-        }
+        if (m_meshMaterial != null && m_renderer != null) m_renderer.material = m_meshMaterial;
+
         // 1. Check if ColorMode is set to Shader... because if there is no material to set, we can't do anything. We must manually change to `ColorMode.TerrainType`
         else if (m_colorMode == ColorMode.Shader) {
             Debug.LogWarning($"{gameObject.name}: Unable to use ColorMode.Shader due to missing mesh material. Setting to ColorMode.TerrainTypes manually.");
@@ -158,44 +156,35 @@ public class NoiseMap : MonoBehaviour
         }
 
         // 2. Based on color mode, render the different color types
-        Color[] cMap = null;
-        switch(m_colorMode) {
-            case ColorMode.Shader:
-                m_meshMaterial.SetInt("layerCount", m_meshMaterialLayers.Length);
-                m_meshMaterial.SetColorArray("baseColors", m_meshMaterialLayers.Select(x => x.tint).ToArray());
-                m_meshMaterial.SetFloatArray("baseStartHeights", m_meshMaterialLayers.Select(x => x.startHeight).ToArray());
-                m_meshMaterial.SetFloatArray("baseBlends", m_meshMaterialLayers.Select(x => x.blendStrength).ToArray());
-                m_meshMaterial.SetFloatArray("baseColorStrength", m_meshMaterialLayers.Select(x => x.tintStrength).ToArray());
-                m_meshMaterial.SetFloatArray("baseTextureScales", m_meshMaterialLayers.Select(x => x.textureScale).ToArray());
-                Texture2DArray texturesArray = GenerateTextureArray(m_meshMaterialLayers.Select(x => x.texture).ToArray());
-                m_meshMaterial.SetTexture("baseTextures", texturesArray);
-                m_meshMaterial.SetFloat("inHeight", m_heightRange.min);
-                m_meshMaterial.SetFloat("maxHeight", m_heightRange.max);
-                break;
-            case ColorMode.TerrainTypes:
-                cMap = new Color[m_mapChunkSize * m_mapChunkSize];
-                for(int y = 0; y < m_mapChunkSize; y++) {
-                    for(int x = 0; x < m_mapChunkSize; x++) {
-                        float currentHeight = m_noiseMap[x,y];
-                        for(int i = m_meshMaterialLayers.Length-1; i >= 0 ; i--) {
-                            if (currentHeight >= m_meshMaterialLayers[i].startHeight) {
-                                cMap[y*m_mapChunkSize + x] = m_meshMaterialLayers[i].tint;
-                                break;
-                            }
-                        }
-                    }
-                }
-                break;
-            default:
-                cMap = new Color[m_mapChunkSize * m_mapChunkSize];
-                for(int y = 0; y < m_mapChunkSize; y++) {
-                    for(int x = 0; x < m_mapChunkSize; x++) {
-                        float currentHeight = m_noiseMap[x,y];
+        Color[] cMap = new Color[m_mapChunkSize * m_mapChunkSize];
+        for(int y = 0; y < m_mapChunkSize; y++) {
+            for(int x = 0; x < m_mapChunkSize; x++) {
+                float currentHeight = m_heightMap[x,y];
+                for(int i = m_meshMaterialLayers.Length-1; i >= 0 ; i--) {
+                    float materialHeight = m_meshMaterialLayers[i].startHeight * m_heightRange.max;
+                    if (m_colorMode == ColorMode.Gradient) {
                         cMap[y*m_mapChunkSize+x] = m_terrainColorGradient.Evaluate(currentHeight);
+                    } else if (currentHeight >= materialHeight) {
+                        cMap[y*m_mapChunkSize + x] = m_meshMaterialLayers[i].tint;
+                        break;
                     }
                 }
-                break;
+            }
         }
+
+        if (m_colorMode == ColorMode.Shader) {
+            m_meshMaterial.SetInt("layerCount", m_meshMaterialLayers.Length);
+            m_meshMaterial.SetColorArray("baseColors", m_meshMaterialLayers.Select(x => x.tint).ToArray());
+            m_meshMaterial.SetFloatArray("baseStartHeights", m_meshMaterialLayers.Select(x => x.startHeight).ToArray());
+            m_meshMaterial.SetFloatArray("baseBlends", m_meshMaterialLayers.Select(x => x.blendStrength).ToArray());
+            m_meshMaterial.SetFloatArray("baseColorStrength", m_meshMaterialLayers.Select(x => x.tintStrength).ToArray());
+            m_meshMaterial.SetFloatArray("baseTextureScales", m_meshMaterialLayers.Select(x => x.textureScale).ToArray());
+            Texture2DArray texturesArray = GenerateTextureArray(m_meshMaterialLayers.Select(x => x.texture).ToArray());
+            m_meshMaterial.SetTexture("baseTextures", texturesArray);
+            m_meshMaterial.SetFloat("inHeight", m_heightRange.min);
+            m_meshMaterial.SetFloat("maxHeight", m_heightRange.max);
+        }
+
         return cMap;
     }
 
@@ -260,7 +249,6 @@ public class NoiseMap : MonoBehaviour
         m_meshMaterial.SetFloat("maxHeight", m_heightRange.max);
 
         if (m_renderer != null)     m_renderer.material = m_meshMaterial;
-        if (m_heldRenderer != null) m_heldRenderer.material = m_meshMaterial;
     }
 
     public virtual void DrawMap(Color[] cMap) {
@@ -269,18 +257,16 @@ public class NoiseMap : MonoBehaviour
         //  2. Texture2D texture - built based on several conditions
         MeshData mData = (m_drawMode == DrawMode.Mesh) ? GenerateTerrainMesh(m_heightMap) : GenerateTerrainMesh(m_noiseMap);
         Texture2D tData = null;
-        if (m_colorMode != ColorMode.Shader) {
-            switch(m_drawMode) {
-                case DrawMode.Color:
-                    tData = Generators.TextureFromColorMap(m_mapChunkSize, m_mapChunkSize, cMap, m_textureFilterMode);
-                    break;
-                case DrawMode.Mesh:
-                    tData = Generators.TextureFromColorMap(m_mapChunkSize, m_mapChunkSize, cMap, m_textureFilterMode);
-                    break;
-                default:
-                    tData = Generators.TextureFromHeightMap(m_noiseMap, m_textureFilterMode);
-                    break;
-            }
+        switch(m_drawMode) {
+            case DrawMode.Color:
+                tData = Generators.TextureFromColorMap(m_mapChunkSize, m_mapChunkSize, cMap, m_textureFilterMode);
+                break;
+            case DrawMode.Mesh:
+                tData = Generators.TextureFromColorMap(m_mapChunkSize, m_mapChunkSize, cMap, m_textureFilterMode);
+                break;
+            default:
+                tData = Generators.TextureFromHeightMap(m_noiseMap, m_textureFilterMode);
+                break;
         }
         DrawMesh(mData, tData);
     }

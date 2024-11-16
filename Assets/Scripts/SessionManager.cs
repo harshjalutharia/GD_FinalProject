@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Extensions;
-
+using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
 public class SessionManager : MonoBehaviour
@@ -26,19 +26,22 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The shortest path finder for path prediction")]   private FindShortestPath m_pathFinder;
 
     [Header("=== Menus ===")]
-    [SerializeField, Tooltip("The input button for pause menu")]                    private KeyCode m_pauseMenuKeyCode = KeyCode.Tab;
+    //[SerializeField, Tooltip("The input button for pause menu")]                    private KeyCode m_pauseMenuKeyCode = KeyCode.Tab;
+                                                                                    private InputAction m_pauseMenuInput;
     [SerializeField, Tooltip("The transition time for menus to appear/disappear.")] private float m_pauseMenuTransitionTime = 1f;
     [SerializeField, Tooltip("The canvas group for the pause menu")]                private CanvasGroup m_pauseMenuGroup;
     [SerializeField, Tooltip("The canvas group for the win screen")]                private CanvasGroup m_winMenuGroup;
     [SerializeField, Tooltip("The transition time for the win screen to appear")]   private float m_winMenuTransitionTime = 1f;
-    [SerializeField, Tooltip("The input button for movement debug canvas")]         private KeyCode m_movementDebugKeyCode = KeyCode.M;
+    //[SerializeField, Tooltip("The input button for movement debug canvas")]         private KeyCode m_movementDebugKeyCode = KeyCode.M;
+                                                                                    private InputAction m_movementDebugInput;
     [SerializeField, Tooltip("The canvas group for the player movement debug.")]    private CanvasGroup m_movementDebugGroup;
-
+    
     [Header("=== Held Map Settings ===")]
     [SerializeField, Tooltip("The held map object transform itself")]       private Transform m_heldMap;
     [SerializeField, Tooltip("Ref. point for the visible map position")]    private Transform m_heldMapVisiblePosRef;
     [SerializeField, Tooltip("Ref. point for the inviisble map position")]  private Transform m_heldMapInvisiblePosRef;
-    [SerializeField, Tooltip("The key code input for holding the map")]     private KeyCode m_showMapKey = KeyCode.LeftShift;
+    //[SerializeField, Tooltip("The key code input for holding the map")]     private KeyCode m_showMapKey = KeyCode.LeftShift;
+                                                                            private InputAction m_showMapInput;
     [SerializeField, Tooltip("The transition time for the map transition")] private float m_heldMapTransitionTime = 0.25f;
     [SerializeField, Tooltip("Is the map being shown currently?")]          private bool m_isShowingMap;
     public bool isShowingMap => m_isShowingMap;
@@ -51,6 +54,10 @@ public class SessionManager : MonoBehaviour
 
     private void Awake() {
         current = this;
+        var controls = InputManager.Instance.controls;
+        m_pauseMenuInput = controls.Player.Menu;
+        m_showMapInput = controls.Player.Map;
+        m_movementDebugInput = controls.Debug.DebugUI;
     }
 
     private void Start() {
@@ -73,11 +80,15 @@ public class SessionManager : MonoBehaviour
         if (m_isSceneTransitioning) return;
         
         // Menu stuff
-        if (Input.GetKeyDown(m_pauseMenuKeyCode)) OpenPauseMenu();
-        if (Input.GetKeyDown(m_movementDebugKeyCode)) ToggleDebugMenu();
+        //if (Input.GetKeyDown(m_pauseMenuKeyCode)) OpenPauseMenu();
+        //if (Input.GetKeyDown(m_movementDebugKeyCode)) ToggleDebugMenu();
+        if (m_pauseMenuInput.WasPressedThisFrame()) OpenPauseMenu();
+        if (m_movementDebugInput.WasPressedThisFrame()) ToggleDebugMenu();
+        
 
         // Held map stuff
-        m_isShowingMap = Input.GetKey(m_showMapKey);
+        //m_isShowingMap = Input.GetKey(m_showMapKey);
+        m_isShowingMap = m_showMapInput.IsPressed();
         Vector3 m_heldMapTarget = (m_isShowingMap) ? m_heldMapVisiblePosRef.position : m_heldMapInvisiblePosRef.position;
         m_heldMap.position = Vector3.SmoothDamp(m_heldMap.position, m_heldMapTarget, ref m_heldMapVelocity, m_heldMapTransitionTime);
         m_heldMap.gameObject.SetActive(m_isShowingMap || Vector3.Distance(m_heldMap.position, m_heldMapInvisiblePosRef.position) >= 0.1f);
