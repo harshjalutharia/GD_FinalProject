@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -83,6 +84,8 @@ public class PlayerMovement : MonoBehaviour
     public float flightStaminaRefillSpeed; 
 
     [Header("Input")]
+    private PlayerControls controls; 
+    
     public KeyCode jumpKey = KeyCode.Space;
 
     public KeyCode sprintKey = KeyCode.LeftShift;
@@ -161,6 +164,11 @@ public class PlayerMovement : MonoBehaviour
     public TextMeshProUGUI debugText1;
     public TextMeshProUGUI debugText2;
 
+    private void Awake()
+    {
+        controls = new PlayerControls(); 
+    }
+    
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -280,11 +288,26 @@ public class PlayerMovement : MonoBehaviour
         
         MovePlayer();
     }
+    
+    private void OnEnable()
+    {
+        controls.Enable(); 
+    }
+
+    private void OnDisable()
+    {
+        controls.Disable(); 
+    }
 
     private void DealInput()
     {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
+        //horizontalInput = Input.GetAxisRaw("Horizontal");
+        //verticalInput = Input.GetAxisRaw("Vertical");
+        // use new input system to get the input value
+        Vector2 movement2D = controls.Player.Move.ReadValue<Vector2>();
+        horizontalInput = movement2D.x;
+        verticalInput = movement2D.y;
+        
 
         // jump input
         if(Input.GetKey(jumpKey) && readyToJump && grounded && flightStamina > jumpStaminaConsume)
@@ -431,6 +454,12 @@ public class PlayerMovement : MonoBehaviour
         return resistanceForce;
         
     }
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        
+    }
+    
     
 
     // private void ResetAnimatorRequestJump()

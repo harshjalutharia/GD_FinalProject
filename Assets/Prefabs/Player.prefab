@@ -1166,7 +1166,7 @@ MonoBehaviour:
   airDragHorizontal: 0.25
   airDragVertical: 2.6
   slideResistance: 0.6
-  jumpForce: 4
+  jumpForce: 3.5
   jumpCooldown: 0.8
   airMultiplier: 0.1
   flightForce: 1
