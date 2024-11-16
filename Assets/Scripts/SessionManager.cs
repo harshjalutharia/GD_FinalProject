@@ -205,7 +205,7 @@ public class SessionManager : MonoBehaviour
         StartCoroutine(m_player.GetComponent<PlayerMovement>().ActivatePlayer());
         // Teleport the destination ref to the destination point
         m_destinationRef.position = m_playerEndPosition;
-        m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_terrainGenerator);
+        m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_playerStartPosition, m_terrainGenerator);
 
         // Let the camera fade in
         m_playerCameraFader.FadeIn();
