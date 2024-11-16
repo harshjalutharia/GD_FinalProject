@@ -17,7 +17,7 @@ public class FindShortestPathEditor : Editor
         if (GUILayout.Button("Bake NavMesh")) {
             nm.BuildNavMesh();
         }
-        if (GUILayout.Button("Generate")) {
+        if (GUILayout.Button("Generate Debug Path")) {
             nm.GenerateShortestPath();
         }
     }
