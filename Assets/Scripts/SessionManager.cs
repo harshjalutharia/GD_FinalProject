@@ -23,6 +23,7 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("Reference to the destination Game Object")]       private Transform m_destinationRef;
     [SerializeField, Tooltip("The landmark generator that places buildings")]   private LandmarkGenerator m_landmarkGenerator;
     [SerializeField, Tooltip("Specific refrence to the voronoi map used")]      private VoronoiMap m_voronoiMap;
+    [SerializeField, Tooltip("The shortest path finder for path prediction")]   private FindShortestPath m_pathFinder;
 
     [Header("=== Menus ===")]
     [SerializeField, Tooltip("The input button for pause menu")]                    private KeyCode m_pauseMenuKeyCode = KeyCode.Tab;
@@ -196,6 +197,7 @@ public class SessionManager : MonoBehaviour
         */
 
         GenerateStartAndEnd(m_terrainGenerator, m_voronoiMap, 150f, 20, out m_playerStartPosition, out int playerStartPositionIndex, out m_playerEndPosition, out int playerEndPositionIndex);
+        m_pathFinder.CalculatePath(m_playerStartPosition, m_playerEndPosition, false, true, out List<Vector3> pathPoints, out List<int> pathSegmentIndices);
 
         // Teleport the player to the start postiion
         m_player.transform.position = m_playerStartPosition;

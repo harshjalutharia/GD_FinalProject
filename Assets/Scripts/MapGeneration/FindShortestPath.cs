@@ -89,7 +89,9 @@ public class FindShortestPath : MonoBehaviour
         float endY = m_terrainGenerator.QueryHeightAtWorldPos(end.x, end.z, out int endCoordX, out int endCoordZ);
 
         // Next, use NavMesh to predict an optimal path. Return early if path not found
-        bool pathFound = NavMesh.CalculatePath(new Vector3(start.x, startY, start.z), new Vector3(end.x, endY, end.z), NavMesh.AllAreas, navPath);
+        GetClosestPointOnMesh(new Vector3(start.x, startY, start.z), out Vector3 meshStart);
+        GetClosestPointOnMesh(new Vector3(end.x, endY, end.z), out Vector3 meshEnd);
+        bool pathFound = NavMesh.CalculatePath(meshStart, meshEnd, NavMesh.AllAreas, navPath);
         Debug.Log($"Path Found: {pathFound.ToString()}");
         if (!pathFound) return false;
         
@@ -133,4 +135,14 @@ public class FindShortestPath : MonoBehaviour
         }
         m_navMeshSurface.BuildNavMesh(); 
     } 
+
+    public bool GetClosestPointOnMesh(Vector3 query, out Vector3 closest, float queryRange=10f) {
+        NavMeshHit hit;
+		if (NavMesh.SamplePosition(query, out hit, queryRange, NavMesh.AllAreas)) {
+			closest = hit.position;
+			return true;
+		}
+        closest = query;
+        return false;
+    }
 }
