@@ -498,6 +498,12 @@ public class PlayerMovement : MonoBehaviour
     {
         sprintActivated = true;
     }
+
+    public IEnumerator ActivatePlayer()
+    {
+        yield return new WaitForFixedUpdate();
+        rb.isKinematic = false;
+    }
     
     
     

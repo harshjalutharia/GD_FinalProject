@@ -202,6 +202,7 @@ public class SessionManager : MonoBehaviour
         // Teleport the player to the start postiion
         m_player.transform.position = m_playerStartPosition;
         Debug.Log(m_player.transform.position);
+        StartCoroutine(m_player.GetComponent<PlayerMovement>().ActivatePlayer());
         // Teleport the destination ref to the destination point
         m_destinationRef.position = m_playerEndPosition;
         m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_terrainGenerator);

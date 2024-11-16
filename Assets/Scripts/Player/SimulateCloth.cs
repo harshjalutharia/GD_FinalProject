@@ -117,14 +117,14 @@ public class SimulateCloth : MonoBehaviour
                 AddSpring(meshVertexMatrix[i, j], meshVertexMatrix[i + 1, j + 1]);
             }
         }
-        // AddSpring(meshVertexMatrix[12, 0], meshVertexMatrix[12, 6]);
+        AddSpring(meshVertexMatrix[12, 0], meshVertexMatrix[12, 6]);
         
         
         // expand renderer bound
-        var meshRenderer = GetComponent<MeshRenderer>();
-        var meshRendererBound = meshRenderer.bounds;
-        meshRendererBound.Expand(99);
-        meshRenderer.bounds = meshRendererBound;
+        // var meshRenderer = GetComponent<MeshRenderer>();
+        // var meshRendererBound = meshRenderer.bounds;
+        // meshRendererBound.Expand(99);
+        // meshRenderer.bounds = meshRendererBound;
     }
 
     // Update is called once per frame
