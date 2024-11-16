@@ -85,8 +85,12 @@ public class FindShortestPath : MonoBehaviour
         segmentIndices = new List<int>();
         int prevSegmentIndex = -1;
 
+        float startY = m_terrainGenerator.QueryHeightAtWorldPos(start.x, start.z, out int startCoordX, out int startCoordZ);
+        float endY = m_terrainGenerator.QueryHeightAtWorldPos(end.x, end.z, out int endCoordX, out int endCoordZ);
+
         // Next, use NavMesh to predict an optimal path. Return early if path not found
-        bool pathFound = NavMesh.CalculatePath(start, end, NavMesh.AllAreas, navPath);
+        bool pathFound = NavMesh.CalculatePath(new Vector3(start.x, startY, start.z), new Vector3(end.x, endY, end.z), NavMesh.AllAreas, navPath);
+        Debug.Log($"Path Found: {pathFound.ToString()}");
         if (!pathFound) return false;
         
         // Given this, can we generate a new set of path points based on the corners with some discretization to create "in-between" points?
@@ -94,18 +98,20 @@ public class FindShortestPath : MonoBehaviour
             Vector3 displacement = navPath.corners[i+1] - navPath.corners[i];
             float totalDistance = displacement.magnitude;
             Vector3 direction = displacement.normalized;
-            Debug.Log(direction);
-
+            
+            // How many points will we experience?
             int numIterations = Mathf.FloorToInt(totalDistance/m_pathPointDiscretization);
+            
+            // Iterate, add points as they come
             for(int k = 0; k <= numIterations; k++) {
                 Vector3 pos = navPath.corners[i] + direction * k * m_pathPointDiscretization;
                 // Query what point this corner point is
                 float h = m_terrainGenerator.QueryHeightAtWorldPos(pos.x, pos.z, out int x, out int z);
-                Debug.Log($"Height at ({x.ToString()},{z.ToString()}): {h.ToString()}");
                 points.Add(new Vector3(pos.x, h, pos.z));
                 // Check what region index this is in
-                int segmentIndex = m_voronoiMap.QueryRegionAtWorldPos(pos.x, pos.z, out x, out z);
+                int segmentIndex = m_voronoiMap.QueryVoronoiSegmentAtWorldPos(pos.x, pos.z, out x, out z);
                 if (prevSegmentIndex != segmentIndex) {
+                    Debug.Log($"Moving to segment {segmentIndex+1}");
                     segmentIndices.Add(segmentIndex);
                     prevSegmentIndex = segmentIndex;
                 }
@@ -115,6 +121,8 @@ public class FindShortestPath : MonoBehaviour
 
         m_pathCorners = navPath.corners;
         m_pathPositions = points.ToArray();
+
+        Debug.Log(segmentIndices.Count);
         return true;
     }
 

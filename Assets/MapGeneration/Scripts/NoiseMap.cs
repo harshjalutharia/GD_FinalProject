@@ -393,8 +393,8 @@ public class NoiseMap : MonoBehaviour
 
         float noiseY = m_noiseMap[x,y];
         int regionIndex = 0;
-        for(int i = 0; i < m_terrainTypes.Length; i++) {
-            if (noiseY <= m_terrainTypes[i].height) {
+        for(int i = m_meshMaterialLayers.Length-1; i >= 0 ; i--) {
+            if (noiseY >= m_meshMaterialLayers[i].startHeight) {
                 regionIndex = i;
                 break;
             }
@@ -410,8 +410,8 @@ public class NoiseMap : MonoBehaviour
         
         float noiseY = m_noiseMap[x,y];
         int regionIndex = 0;
-        for(int i = 0; i < m_terrainTypes.Length; i++) {
-            if (noiseY <= m_terrainTypes[i].height) {
+        for(int i = m_meshMaterialLayers.Length-1; i >= 0 ; i--) {
+            if (noiseY >= m_meshMaterialLayers[i].startHeight) {
                 regionIndex = i;
                 break;
             }

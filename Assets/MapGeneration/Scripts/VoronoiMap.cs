@@ -41,6 +41,7 @@ public class VoronoiMap : NoiseMap
     [SerializeField, Tooltip("The centroids of the generated voronoi segments.")]   private Vector2Int[] m_voronoiCentroids;
     public Vector2Int[] voronoiCentroids => m_voronoiCentroids;
     [SerializeField, Tooltip("The lookup dictionary to map segments to pixels")]    private Dictionary<int, List<Vector2Int>> m_voronoiSegmentToPixelsMap;
+    [SerializeField, Tooltip("The lookup dictionary to map pixels to map segments")] private int[,] m_voronoiMap;
     [SerializeField, Tooltip("Neighbor lookup for each voronoi segment")]           private Dictionary<int, List<int>> m_voronoiSegmentNeighborMap;
     [SerializeField] private int[] m_voronoiSegmentNeighborCount;
 
@@ -118,6 +119,9 @@ public class VoronoiMap : NoiseMap
         
         // Finalize the voronoi centroids
         m_voronoiCentroids = centroids;
+
+        // Finalize mapper for pixel to voronoi segment
+        m_voronoiMap = voronoiMap;
 
         // The generated noisemap needs to be converted from an int[,] to a float[,] based on region
         // We want to smoothen the terrain regions so that we don't have these weird pocket areas.\
@@ -331,6 +335,31 @@ public class VoronoiMap : NoiseMap
         
         QueryHeightAtCoords(coordX, coordY, out Vector3 worldPos);
         return worldPos;
+    }
+
+    public virtual int QueryVoronoiSegmentAtCoords(int x, int y, out Vector3 worldPosition) {
+        float mapWidth = (float)m_mapChunkSize - 1f;
+        float mapExtent = mapWidth / 2f;
+
+        float worldX = (float)x - mapExtent;
+        float worldY = m_heightMap[x,y];
+        float worldZ = mapWidth - (float)y - mapExtent;
+        worldPosition = new Vector3(worldX, worldY, worldZ);
+
+        float noiseY = m_noiseMap[x,y];
+        int regionIndex = m_voronoiMap[x,y];
+        return regionIndex;
+    }
+    public virtual int QueryVoronoiSegmentAtWorldPos(float worldX, float worldZ, out int x, out int y) {
+        float mapWidth = (float)m_mapChunkSize - 1f;
+        float mapExtent = mapWidth / 2f;
+
+        x = Mathf.Clamp(Mathf.RoundToInt(worldX + mapExtent), 0, m_mapChunkSize-1);
+        y = Mathf.Clamp(Mathf.RoundToInt(worldZ + mapExtent - mapWidth)*-1, 0, m_mapChunkSize-1);
+        
+        float noiseY = m_noiseMap[x,y];
+        int regionIndex = m_voronoiMap[x,y];
+        return regionIndex;
     }
 
     public Dictionary<int, List<int>> GetNeighbourMap()
