@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1439603208813202615}
   - component: {fileID: 2618180078766244626}
   - component: {fileID: 266085804396066776}
+  - component: {fileID: 6253477137397613037}
   m_Layer: 0
   m_Name: PT_Fruit_Tree_01_dead_cut
   m_TagString: Untagged
@@ -83,3 +84,26 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!136 &6253477137397613037
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1779396640715740685}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.23
+  m_Height: 4.619417
+  m_Direction: 1
+  m_Center: {x: 0, y: 2.9283743, z: 0}
