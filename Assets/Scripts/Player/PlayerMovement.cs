@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
 public class PlayerMovement : MonoBehaviour
@@ -81,17 +82,26 @@ public class PlayerMovement : MonoBehaviour
     public float sprintMinStamina;
     
     [Tooltip("Stamina regained per second while on the ground and not sprinting")]
-    public float flightStaminaRefillSpeed; 
+    public float flightStaminaRefillSpeed;
 
     [Header("Input")]
     private PlayerControls controls; 
+
+    [SerializeField] private InputAction directionInput;
+
+    [SerializeField] private InputAction jumpInput;
     
-    public KeyCode jumpKey = KeyCode.Space;
+    [SerializeField] private InputAction sprintInput;
 
-    public KeyCode sprintKey = KeyCode.LeftShift;
+    [SerializeField] private InputAction switchSprintInput;
+    
+    
+    //public KeyCode jumpKey = KeyCode.Space;
 
-    [Tooltip("Activate the ability to fly and sprint")]
-    public KeyCode cheatKey = KeyCode.C;
+    //public KeyCode sprintKey = KeyCode.LeftShift;
+
+    //[Tooltip("Activate the ability to fly and sprint")]
+    //public KeyCode cheatKey = KeyCode.C;
     
     private float horizontalInput;
     
@@ -131,6 +141,9 @@ public class PlayerMovement : MonoBehaviour
     
     [SerializeField] 
     private bool sprinting;
+
+    [SerializeField] 
+    private bool keepSprint;
     
     [SerializeField] 
     private bool requestFlight;
@@ -166,7 +179,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
-        controls = new PlayerControls(); 
+        controls = InputManager.Instance.controls;
+        directionInput = controls.Player.Move;
+        jumpInput = controls.Player.JumpFly;
+        sprintInput = controls.Player.Sprint;
+        switchSprintInput = controls.Player.SwitchSprint;
     }
     
     private void Start()
@@ -249,7 +266,7 @@ public class PlayerMovement : MonoBehaviour
         Debug.DrawRay(groundHits[0].point, groundHits[0].normal, Color.blue, 0, false);
         Debug.DrawRay(groundHits[1].point, groundHits[1].normal, Color.green, 0, false);
         // cheat
-        if (Input.GetKey(cheatKey))
+        if (controls.Debug.ActivateFlight.WasPressedThisFrame())
         {
             ActivateFlight();
             ActivateSprint();
@@ -301,16 +318,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void DealInput()
     {
-        //horizontalInput = Input.GetAxisRaw("Horizontal");
-        //verticalInput = Input.GetAxisRaw("Vertical");
         // use new input system to get the input value
-        Vector2 movement2D = controls.Player.Move.ReadValue<Vector2>();
+        Vector2 movement2D = directionInput.ReadValue<Vector2>();
         horizontalInput = movement2D.x;
         verticalInput = movement2D.y;
         
 
         // jump input
-        if(Input.GetKey(jumpKey) && readyToJump && grounded && flightStamina > jumpStaminaConsume)
+        if(jumpInput.WasPressedThisFrame() && readyToJump && grounded && flightStamina > jumpStaminaConsume)
         {
             readyToJump = false;
             Invoke(nameof(ResetJump), jumpCooldown);
@@ -319,7 +334,7 @@ public class PlayerMovement : MonoBehaviour
         }
         
         // fly input
-        if (flightActivated && !grounded && Input.GetKey(jumpKey) && flightStamina > 0)
+        if (flightActivated && !grounded && jumpInput.IsPressed() && flightStamina > 0)
         {
             requestFlight = true;
         }
@@ -329,21 +344,32 @@ public class PlayerMovement : MonoBehaviour
         }
         
         // sprint input
-        if (sprintActivated && grounded && Input.GetKey(sprintKey) && moveDirection.magnitude > 0.02f)
+        if (sprintActivated && grounded && (sprintInput.IsPressed() || switchSprintInput.WasPressedThisFrame() || keepSprint) && moveDirection.magnitude > 0.02f)
         {
+            if (switchSprintInput.WasPressedThisFrame())
+            {
+                Debug.Log("switch sprint");
+            }
             if (sprinting)
             {
-                sprinting = flightStamina > 0;
+                sprinting = flightStamina > 0;  // end sprinting if stamina less than 0
             }
             else
             {
-                sprinting = flightStamina > sprintMinStamina;
+                sprinting = flightStamina > sprintMinStamina;  // could only start sprint if stamina larger than certain value
+                if (sprinting && switchSprintInput.WasPressedThisFrame())  // if sprint started by left joystick
+                {
+                    keepSprint = true;
+                }
             }
         }
         else
         {
             sprinting = false;
         }
+
+        if (!sprinting) 
+            keepSprint = false;
     }
 
     
@@ -457,7 +483,15 @@ public class PlayerMovement : MonoBehaviour
     
     private void OnTriggerEnter(Collider other)
     {
-        
+        if (other.CompareTag("StaminaPowerUp")) // tag name might be changed
+        {
+            //todo get the stamina increase amount from the collider object
+            var staminaIncrease = 3;  // change later
+
+            maxFlightStamina += staminaIncrease;
+            
+            //todo maybe some effect happens
+        }
     }
     
     
