@@ -11,6 +11,7 @@ using static Cinemachine.CinemachineBlendDefinition;
 using Vector2 = UnityEngine.Vector2;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using static LandmarkGenerator;
 
 
 #if UNITY_EDITOR
@@ -31,7 +32,7 @@ public class LandmarkGenerator : MonoBehaviour
     [SerializeField, Tooltip("Maximum distance between 2 close landmarks")]                 private float maximumDistanceBetweenLandmarks = 70f;
     [SerializeField, Tooltip("Total number of landmarks to spawn")]                         private int landmarkCount = 6;
     [SerializeField, Tooltip("Total number of weenies between landmarks to spawn")]         private int weenieBetweenLandmarksCount = 3;
-    [SerializeField, Tooltip("Padding to avoid spawning on edge of map")]                   private float spawnBorderPadding = 35f;
+    [SerializeField, Tooltip("Padding to avoid spawning on edge of map"), Range(0f, 0.5f)]  private float edgePadding = 0.15f;
     [SerializeField, Tooltip("Possible spawn points for each new landmark")]                private int spawnTriesPerLandmark = 24;
     [SerializeField, Tooltip("Maximum retries to spawn all landmarks before it gives up")]  private int maxRetries = 10;
     [SerializeField, Tooltip("Randomization to add when generating new landmarks")]         private float randomizationFactor = 10f;
@@ -42,11 +43,14 @@ public class LandmarkGenerator : MonoBehaviour
     [SerializeField, Tooltip("Number of points in path from where 1 weenie is visible")]    private int visionPointsCount = 10;
     [SerializeField, Tooltip("Minimum distance of weenie from path")]                       private float minimumDistanceInWeenieAndPath = 40f;
     [SerializeField, Tooltip("Minimum distance between any 2 weenies")]                     private float minimumDistanceBetweenWeenies = 40f;
+    [SerializeField, Tooltip("Height limit of landmark/weenie spawns")]                     private float spawnHeightLimit = 40f;
+    [SerializeField, Tooltip("Total number of weenies to spawn")]                           private int weenieCount = 20;
 
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("List of landmark positions")]                                 private List<SpawnPoint> m_landmarkPositions;
     [SerializeField, Tooltip("List of weenie positions")]                                   private List<Vector3> m_weeniePositions;
+    [SerializeField, Tooltip("List of positions' distances to check when spawning weenie")] private List<Vector3> m_weenieCheckPositions;
 
     [System.Serializable]
     public class SpawnPoint : IComparable<SpawnPoint>
@@ -74,6 +78,7 @@ public class LandmarkGenerator : MonoBehaviour
             this.spawnedObject = Instantiate(prefab, this.location, Quaternion.identity, objectParent);
         }
     }
+
 
     public virtual void SetSeed(string newSeed) {
         if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {
@@ -105,21 +110,56 @@ public class LandmarkGenerator : MonoBehaviour
         // Clear our previous existing list of landmarks, if they exist.
         ClearLandmarks();
         m_landmarkPositions = new List<SpawnPoint>();
+        m_weeniePositions = new List<Vector3>();
 
         if (m_voronoiMap != null)
         {
+            // Add landmark at destination
             m_landmarkPositions.Add(new SpawnPoint(destination));
-            m_landmarkPositions[0].InstantiateObject(landmarkPrefab, m_landmarkParent);
-
+            m_weenieCheckPositions.Add(destination);
+            
             GenerateRuinsAroundPoint(destination, terrainMap);
 
-            List<Vector3> path = new List<Vector3>();
-            path.Add(startPosition);
-            path.Add(destination);
+            // TODO: Replace this with path from path generation
+            List<Vector3> path = new List<Vector3>
+            {
+                startPosition,
+                destination
+            };
 
-            GenerateWeeniesInAllRegions(path, new List<int>(), terrainMap, x_size, z_size);
+            // Spawn landmark at destination
+            m_landmarkPositions[0].InstantiateObject(landmarkPrefab, m_landmarkParent);
+            
+            destination.y += 4f;    // doing this to make raycasts shoot from top of landmark
+            Vector3 lastWeenieLocation = destination;
+            while (m_weeniePositions.Count < weenieCount)
+            {
+                bool weenieGenerated = GenerateWeenieFromPoint(lastWeenieLocation, terrainMap, x_size, z_size);
+
+                // no new weenie can be generated from this point
+                if (!weenieGenerated)
+                {
+                    if (lastWeenieLocation == destination)
+                        break;
+                    // start again from destination
+                    lastWeenieLocation = destination;
+                }
+                else
+                {
+                    lastWeenieLocation = m_weeniePositions[^1];
+                }
+            }
+
+            for (int i = 0; i < m_weeniePositions.Count; i++)
+            {
+                Instantiate(weeniePrefab[1], m_weeniePositions[i], Quaternion.identity, m_landmarkParent);
+            }
+
+            // old weenie generation which spawns weenies based on path from start to destination
+            //GenerateWeeniesInAllRegions(path, new List<int>(), terrainMap, x_size, z_size);
         }
-        // TODO: REMOVE IF NEED TO SPAWN OTHER LANDMARKS
+
+        // Remove if need to spawn other landmarks
         return;
 
         if (m_voronoiMap != null)
@@ -255,6 +295,81 @@ public class LandmarkGenerator : MonoBehaviour
         }
     }
 
+    // Generates a weenie from a point and returns whether a weenie was generated or not
+    private bool GenerateWeenieFromPoint(Vector3 startPoint, NoiseMap terrainMap, float x_size, float z_size)
+    {
+        // Generates spawn points in a circle around startPoint
+        startPoint.y += 2f;
+        var possibleSpawnPoints = GenerateSpawnPoints(startPoint, m_weenieCheckPositions, minimumDistanceBetweenWeenies,
+            terrainMap, x_size, z_size);
+
+        if (possibleSpawnPoints.Count == 0)
+            return false;
+
+        var visionPoints = new List<Vector3>
+        {
+            startPoint
+        };
+
+        UpdatePointsBasedOnVisibility(ref possibleSpawnPoints, visionPoints);
+
+        if (possibleSpawnPoints.Count == 0)
+            return false;
+
+        var nextPoint = ChooseSpawnPoint(possibleSpawnPoints);
+
+        if (nextPoint != null)
+        {
+            m_weeniePositions.Add(nextPoint.location);
+            m_weenieCheckPositions.Add(nextPoint.location);
+            return true;
+        }
+
+        return false;
+    }
+
+    // Removes points that aren't visible from vision points
+    private void UpdatePointsBasedOnVisibility(ref List<SpawnPoint> updatePoints, List<Vector3> visionPoints)
+    {
+        if (updatePoints == null)
+            return;
+
+        for (int i = 0; i < updatePoints.Count; i++)
+        {
+            int count = 0;
+            updatePoints[i].location.y += 2f;
+            foreach (var visionPoint in visionPoints)
+            {
+                float distance = Vector3.Distance(updatePoints[i].location, visionPoint);
+
+                bool hit = Physics.Raycast(visionPoint, updatePoints[i].location - visionPoint, out RaycastHit raycastHit, distance + 2f);
+                if (hit)
+                {
+                    if (raycastHit.distance >= distance)
+                    {
+                        //Debug.DrawRay(visionPoint, updatePoints[i].location - visionPoint, Color.red, 120f);
+                        count++;
+                    }
+                }
+                else
+                {
+                    //Debug.DrawRay(visionPoint, updatePoints[i].location - visionPoint, Color.red, 120f);
+                    count++;
+                }
+            }
+
+            if (count == 0)
+            {
+                updatePoints.RemoveAt(i);
+                i--;
+            }
+            else
+            {
+                updatePoints[i].location.y -= 1f;
+            }
+        }
+    }
+
     private List<SpawnPoint> GetValidSpawnPoints(List<Vector3> possibleSpawns, List<int> spawnSimilarNeighbourCount)
     {
         List<SpawnPoint> spawnLocations = new List<SpawnPoint>();
@@ -342,13 +457,13 @@ public class LandmarkGenerator : MonoBehaviour
         }
 
         var possibleSpawnPoints = GeneratePointsNormalToPoints(pathPoints, visionPoints, terrainMap);
-        var updatedSpawnPoints = UpdateWeightsBasedOnVisibility(possibleSpawnPoints, visionPoints);
+        UpdateWeightsBasedOnVisibility(ref possibleSpawnPoints, visionPoints);
 
-        updatedSpawnPoints.Sort();
+        possibleSpawnPoints.Sort();
 
-        for (int i = 0; i < updatedSpawnPoints.Count; i++)
+        for (int i = 0; i < possibleSpawnPoints.Count; i++)
         {
-            SpawnPoint nextPoint = updatedSpawnPoints[i];
+            SpawnPoint nextPoint = possibleSpawnPoints[i];
             if (nextPoint.weight == 0)
             {
                 continue;
@@ -410,11 +525,15 @@ public class LandmarkGenerator : MonoBehaviour
         return normalPoints;
     }
 
-    private List<SpawnPoint> UpdateWeightsBasedOnVisibility(List<SpawnPoint> updatePoints, List<Vector3> visionPoints)
+    private void UpdateWeightsBasedOnVisibility(ref List<SpawnPoint> updatePoints, List<Vector3> visionPoints)
     {
+        if (updatePoints == null)
+            return;
+
         foreach (var spawnPoint in updatePoints)
         {
             int count = 0;
+            spawnPoint.location.y += 1f;
             foreach (var visionPoint in visionPoints)
             {
                 float distance = Vector3.Distance(spawnPoint.location, visionPoint);
@@ -423,18 +542,20 @@ public class LandmarkGenerator : MonoBehaviour
                 if (hit)
                 {
                     if (raycastHit.distance >= distance)
+                    {
+                        Debug.DrawRay(visionPoint, spawnPoint.location - visionPoint, Color.red, 120f);
                         count++;
+                    }
                 }
                 else
                 {
+                    Debug.DrawRay(visionPoint, spawnPoint.location - visionPoint, Color.red, 120f);
                     count++;
                 }
             }
-
+            spawnPoint.location.y -= 1f;
             spawnPoint.weight = count;
         }
-
-        return updatePoints;
     }
 
     private void GenerateWeeniesBetweenPoints(Vector3 point1, Vector3 point2, int weenieCount, NoiseMap terrainMap)
@@ -494,6 +615,7 @@ public class LandmarkGenerator : MonoBehaviour
 
             foreach (var ruinSpawn in ruinSpawnPoints)
             {
+                // makes sure new point is not too close to other ruins
                 if (Vector3.Distance(new Vector3(ruinSpawn.x, 0f, ruinSpawn.z), new Vector3((float)x, 0f, (float)z)) <
                     minimumDistanceBetweenRuins + (2*ruinSize))
                 {
@@ -521,6 +643,7 @@ public class LandmarkGenerator : MonoBehaviour
     // Generates spawn points in a circle around a location
     private List<SpawnPoint> GenerateSpawnPoints(Vector3 location, List<Vector3> checkPoints, float minimumDistance, NoiseMap terrainMap, float x_size, float z_size)
     {
+        float spawnBorderPadding = x_size * edgePadding * 2;
         List<SpawnPoint> spawnLocations = new List<SpawnPoint>();
         double angle = 0;
         while (angle < 2 * Math.PI)
@@ -534,12 +657,23 @@ public class LandmarkGenerator : MonoBehaviour
             if (x < x_size - spawnBorderPadding && x > -x_size + spawnBorderPadding && z < z_size - spawnBorderPadding && z > -z_size + spawnBorderPadding)
             {
                 float y = terrainMap.QueryHeightAtWorldPos((float)x, (float)z, out int gridX, out int gridY);
-                Vector3 newPoint = new Vector3((float)x, y, (float)z);
+                float yNoise = terrainMap.QueryNoiseAtWorldPos((float)x, (float)z, out gridX, out gridY);
 
-                // If point is not too close to other checkpoints, add it to list
-                if (CheckDistanceFromPoints(newPoint, checkPoints, minimumDistance, out float totalDistance)) 
+                // If new point is not too high up
+                if (y <= spawnHeightLimit)
                 {
-                    spawnLocations.Add(new SpawnPoint(newPoint, (int)totalDistance));
+                    Vector3 newPoint = new Vector3((float)x, y, (float)z);
+
+                    // If point is not too close to other checkpoints, add it to list
+                    if (CheckDistanceFromPoints(newPoint, checkPoints, minimumDistance, out float totalDistance))
+                    {
+                        spawnLocations.Add(new SpawnPoint(newPoint, (int)totalDistance));
+                        //Debug.DrawRay(location,  newPoint-location, Color.blue, 120f);
+                    }
+                    else
+                    {
+                        //Debug.DrawRay(location, newPoint - location, Color.grey, 120f);
+                    }
                 }
             }
 
@@ -604,16 +738,32 @@ public class LandmarkGenerator : MonoBehaviour
         return isValidPoint;
     }
 
+    // Chooses next point based on weight
     private SpawnPoint ChooseSpawnPoint(List<SpawnPoint> spawnPoints)
     {
         if (spawnPoints.Count == 1)
+        {
+            if (spawnPoints[0].weight == 0)
+                return null;
             return spawnPoints[0];
+        }
 
+        // TODO: Changed to only return max. Fix this to make it random again
         int totalWeight = 0;
+        int maxWeight = int.MinValue;
+        SpawnPoint maxPoint = null;
+
         foreach (var point in spawnPoints) 
         {
             totalWeight += point.weight;
+            if (point.weight > maxWeight)
+            {
+                maxWeight = point.weight;
+                maxPoint = point;
+            }
         }
+
+        return maxPoint;
 
         if (totalWeight == 0)
         {
@@ -631,7 +781,7 @@ public class LandmarkGenerator : MonoBehaviour
                 return point;
             }
         }
-        // should never return null
+        // only null when all weights are 0
         return null;
     }
 
