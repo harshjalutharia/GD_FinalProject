@@ -45,6 +45,8 @@ public class LandmarkGenerator : MonoBehaviour
     [SerializeField, Tooltip("Minimum distance between any 2 weenies")]                     private float minimumDistanceBetweenWeenies = 40f;
     [SerializeField, Tooltip("Height limit of landmark/weenie spawns")]                     private float spawnHeightLimit = 40f;
     [SerializeField, Tooltip("Total number of weenies to spawn")]                           private int weenieCount = 20;
+    [SerializeField, Tooltip("Landmark placement offset amount")]                           private float landmarkPlacementOffset = 10f;
+    [SerializeField, Tooltip("Weenie placement offset amount")]                             private float weeniePlacementOffset = 3f;
 
 
     [Header("=== Outputs - READ ONLY ===")]
@@ -116,45 +118,72 @@ public class LandmarkGenerator : MonoBehaviour
 
         if (m_voronoiMap != null)
         {
-            // Add landmark at destination
+            // OFfset landmark by spawning it in 1 of 4 offsets with the highest height
+            destination = OffsetPointByMaxHeight(destination, landmarkPlacementOffset, terrainMap);
+
             m_landmarkPositions.Add(new SpawnPoint(destination));
             m_weenieCheckPositions.Add(destination);
             
             GenerateRuinsAroundPoint(destination, terrainMap);
 
             // TODO: Replace this with path from path generation
-            List<Vector3> path = new List<Vector3>
-            {
-                startPosition,
-                destination
-            };
-
-            // Spawn landmark at destination
-            m_landmarkPositions[0].InstantiateObject(landmarkPrefab, m_landmarkParent);
+            //List<Vector3> path = new List<Vector3>
+            //{
+            //    startPosition,
+            //    destination
+            //};
             
             destination.y += 4f;    // doing this to make raycasts shoot from top of landmark
-            Vector3 lastWeenieLocation = destination;
-            while (m_weeniePositions.Count < weenieCount)
-            {
-                bool weenieGenerated = GenerateWeenieFromPoint(lastWeenieLocation, terrainMap, x_size, z_size);
 
-                // no new weenie can be generated from this point
-                if (!weenieGenerated)
+            // First, spawn as many weenies visible from landmark as possible
+            while (GenerateWeenieFromPoint(destination, terrainMap, x_size, z_size));
+
+            //for (int i = 0; i < m_weeniePositions.Count; i++)
+            //{
+
+            //    bool weenieGenerated = GenerateWeenieFromPoint(m_weeniePositions[i], terrainMap, x_size, z_size);
+            //    if (m_weeniePositions.Count >= weenieCount)
+            //        break;
+            //}
+
+            // Try spawning weenies from other weenies
+            for (int i = 0; i < m_weeniePositions.Count; i++)
+            {
+                if (GenerateWeenieFromPoint(m_weeniePositions[i], terrainMap, x_size, z_size))
                 {
-                    if (lastWeenieLocation == destination)
+                    i--;
+                    if (m_weeniePositions.Count >= weenieCount)
                         break;
-                    // start again from destination
-                    lastWeenieLocation = destination;
-                }
-                else
-                {
-                    lastWeenieLocation = m_weeniePositions[^1];
                 }
             }
 
+            //Vector3 lastWeenieLocation = destination;
+            //while (m_weeniePositions.Count < weenieCount)
+            //{
+            //    bool weenieGenerated = GenerateWeenieFromPoint(lastWeenieLocation, terrainMap, x_size, z_size);
+
+            //    // no new weenie can be generated from this point
+            //    if (!weenieGenerated)
+            //    {
+            //        if (lastWeenieLocation == destination)
+            //            break;
+            //        // start again from destination
+            //        lastWeenieLocation = destination;
+            //    }
+            //    else
+            //    {
+            //        lastWeenieLocation = m_weeniePositions[^1];
+            //    }
+            //}
+
+            // Spawn landmark at destination
+            m_landmarkPositions[0].InstantiateObject(landmarkPrefab, m_landmarkParent);
+
+            // Spawn all the weenies
             for (int i = 0; i < m_weeniePositions.Count; i++)
             {
-                Instantiate(weeniePrefab[1], m_weeniePositions[i], Quaternion.identity, m_landmarkParent);
+                var newPosition = OffsetPointByMaxHeight(m_weeniePositions[i], weeniePlacementOffset, terrainMap);
+                Instantiate(weeniePrefab[1], newPosition, Quaternion.identity, m_landmarkParent);
             }
 
             // old weenie generation which spawns weenies based on path from start to destination
@@ -370,6 +399,44 @@ public class LandmarkGenerator : MonoBehaviour
                 updatePoints[i].location.y -= 1f;
             }
         }
+    }
+
+    private Vector3 OffsetPointByMaxHeight(Vector3 point, float offsetAmount, NoiseMap terrainMap)
+    {
+        Vector3[] offsetSpawns =
+        {
+            point, point, point, point,
+            point, point, point, point
+        };
+        int maxIndex = -1;
+        float maxHeight = int.MinValue;
+
+        offsetSpawns[0].x += offsetAmount;
+        offsetSpawns[1].x -= offsetAmount;
+        offsetSpawns[2].z += offsetAmount;
+        offsetSpawns[3].z -= offsetAmount;
+        offsetSpawns[4].x += offsetAmount;
+        offsetSpawns[4].z += offsetAmount;
+        offsetSpawns[5].x += offsetAmount;
+        offsetSpawns[5].z -= offsetAmount;
+        offsetSpawns[6].x -= offsetAmount;
+        offsetSpawns[6].z += offsetAmount;
+        offsetSpawns[7].x -= offsetAmount;
+        offsetSpawns[7].z -= offsetAmount;
+
+        for (int i = 0; i < 8; i++)
+        {
+            float height =
+                terrainMap.QueryHeightAtWorldPos(offsetSpawns[i].x, offsetSpawns[i].z, out int x, out int y);
+            if (height > maxHeight)
+            {
+                maxHeight = height;
+                maxIndex = i;
+            }
+        }
+
+        offsetSpawns[maxIndex].y = maxHeight;
+        return offsetSpawns[maxIndex];
     }
 
     private List<SpawnPoint> GetValidSpawnPoints(List<Vector3> possibleSpawns, List<int> spawnSimilarNeighbourCount)
@@ -752,12 +819,16 @@ public class LandmarkGenerator : MonoBehaviour
 
         // TODO: Changed to only return max. Fix this to make it random again
         int totalWeight = 0;
+        int minWeight = int.MaxValue;
         int maxWeight = int.MinValue;
         SpawnPoint maxPoint = null;
 
         foreach (var point in spawnPoints) 
         {
             totalWeight += point.weight;
+            if(point.weight < minWeight)
+                minWeight = point.weight;
+
             if (point.weight > maxWeight)
             {
                 maxWeight = point.weight;
@@ -765,7 +836,7 @@ public class LandmarkGenerator : MonoBehaviour
             }
         }
 
-        return maxPoint;
+        //return maxPoint;
 
         if (totalWeight == 0)
         {
@@ -773,11 +844,14 @@ public class LandmarkGenerator : MonoBehaviour
             return spawnPoints[randomIndex];
         }
 
+        minWeight -= 1;
+        totalWeight = totalWeight - (minWeight * spawnPoints.Count);
+
         int randomWeight = Random.Range(1, totalWeight+1);
         int processedWeight = 0;
         foreach (var point in spawnPoints)
         {
-            processedWeight += point.weight;
+            processedWeight += point.weight - minWeight;
             if (randomWeight <= processedWeight)
             {
                 return point;
