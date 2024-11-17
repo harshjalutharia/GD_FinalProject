@@ -734,6 +734,9 @@ public class PlayerMovement : MonoBehaviour
     
     [SerializeField] 
     private bool sprintActivated;
+
+    [SerializeField] 
+    private bool paraglidingActivated;
     
     
     
@@ -780,7 +783,8 @@ public class PlayerMovement : MonoBehaviour
         physicMaterial = GetComponent<CapsuleCollider>().material;
 
         // initially do not have special movement
-        flightActivated = false;   
+        flightActivated = false;
+        paraglidingActivated = false;
         sprintActivated = true;
 
         audioSource = GetComponent<AudioSource>();
@@ -828,6 +832,7 @@ public class PlayerMovement : MonoBehaviour
         {
             ActivateFlight();
             ActivateSprint();
+            ActivateParagliding();
             audioSource.PlayOneShot(switchSound);
         }
     }
@@ -970,7 +975,7 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(moveForce, ForceMode.Force);
             
             // limit descent speed if player has input
-            if (flightActivated && rb.velocity.y < 0 && moveDirection.magnitude > 0.05f)
+            if (paraglidingActivated && rb.velocity.y < 0 && moveDirection.magnitude > 0.05f)
             {
                 rb.AddForce(airDragVertical * rb.velocity.y * Vector3.down, ForceMode.Force);
             }
@@ -1069,7 +1074,7 @@ public class PlayerMovement : MonoBehaviour
         animationVars.horizontalInput = moveDirection.magnitude > 0.05f;
         animationVars.sliding = sliding;
         animationVars.paragliding = !grounded && animationVars.verticalSpeed < 0 && animationVars.horizontalInput &&
-                                    animationVars.horizontalSpeed > slideSpeedThreshold + paraglidingStartSpeedOffset;
+                                    animationVars.horizontalSpeed > slideSpeedThreshold + paraglidingStartSpeedOffset && paraglidingActivated;
         
         animator.SetBool("grounded", animationVars.grounded);
         animator.SetFloat("verticalSpeed", animationVars.verticalSpeed);
@@ -1101,6 +1106,11 @@ public class PlayerMovement : MonoBehaviour
     public void ActivateSprint()
     {
         sprintActivated = true;
+    }
+    
+    public void ActivateParagliding()
+    {
+        paraglidingActivated = true;
     }
 
     public IEnumerator ActivatePlayer()

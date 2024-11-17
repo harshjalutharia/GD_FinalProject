@@ -1158,7 +1158,7 @@ MonoBehaviour:
   moveSpeed: 10
   sprintSpeed: 20
   slideSpeedThreshold: 0
-  slideStartSpeedOffset: 0.7
+  slideStartSpeedOffset: 1
   paraglidingStartSpeedOffset: 0.7
   groundDrag: 6
   groundDragSprint: 6.6
@@ -1178,9 +1178,42 @@ MonoBehaviour:
   sprintStaminaDecreaseSpeed: 3
   sprintMinStamina: 5
   flightStaminaRefillSpeed: 5
-  jumpKey: 32
-  sprintKey: 304
-  cheatKey: 99
+  directionInput:
+    m_Name: Direction Input
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 8f8793a3-7bd4-455c-a081-c9f0673701f0
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  jumpInput:
+    m_Name: Jump Input
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 7d7a8ba8-050e-4288-8015-af0ef56954f7
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  sprintInput:
+    m_Name: Sprint Input
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 50e309bf-12dd-4dad-98bf-3fd14bc32f98
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  switchSprintInput:
+    m_Name: Switch Sprint Input
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: dc241695-c7c7-4349-8925-be362a0533b4
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
   groundDetections:
   - {fileID: 7946510050813310827}
   - {fileID: 544791977718023971}
@@ -1195,6 +1228,8 @@ MonoBehaviour:
   requestJump: 0
   preparingJump: 0
   sprinting: 0
+  sliding: 0
+  keepSprint: 0
   requestFlight: 0
   flightActivated: 0
   sprintActivated: 0
