@@ -24,6 +24,7 @@ public class VegetationGenerator : MonoBehaviour
     [SerializeField, Tooltip("How much away (relatively) from border edge do we want to not spawn objects?"), Range(0f, 0.5f)]      private float m_edgeBuffer;    
     [SerializeField, Tooltip("Min noise map threshold to consider a pixel cell to generate in"), Range(0f,1f)]                      private float m_minHeight = 0.3f;
     [SerializeField, Tooltip("Max noise map threshold to consider a pixel cell to generate in"), Range(0f,1f)]                      private float m_maxHeight = 0.6f;
+    [SerializeField, Tooltip("Rotation Offset for rotating the prefab"), Range(0,30)]                      private int m_rotationOffset;
 
     [Header("=== Outputs - READ ONLY ===")]
     public List<GameObject> generatedTree;
@@ -89,9 +90,9 @@ public class VegetationGenerator : MonoBehaviour
                 Vector3 pos = pixelPosition + new Vector3 (posOffsetX, 0f, posOffsetZ);
 
                 // Get the orientation of the planted tree
-                float rotOffsetX = prng.Next(0,10);
+                float rotOffsetX = prng.Next(0,m_rotationOffset);
                 float rotOffsetY = prng.Next(0,360);
-                float rotOffsetZ = prng.Next(0,10);
+                float rotOffsetZ = prng.Next(0,m_rotationOffset);
                 Quaternion rot = Quaternion.Euler(rotOffsetX, rotOffsetY, rotOffsetZ);
 
                 // instantiate the object, store its reference in `generatedTree`, and add its circle to held map

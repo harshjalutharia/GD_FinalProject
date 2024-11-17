@@ -27,6 +27,8 @@ public class SessionManager : MonoBehaviour
 
     [SerializeField, Tooltip("The shortest path finder for path prediction")]   private VegetationGenerator m_vegetationGenerator;
 
+    [SerializeField, Tooltip("The shortest path finder for path prediction")]   private VegetationGenerator m_rockGenerator;
+
 
     [Header("=== Menus ===")]
     //[SerializeField, Tooltip("The input button for pause menu")]                    private KeyCode m_pauseMenuKeyCode = KeyCode.Tab;
@@ -216,7 +218,10 @@ public class SessionManager : MonoBehaviour
             m_vegetationGenerator.SetSeed(SessionMemory.current.seed);
             m_vegetationGenerator.GenerateVegetation();
         }
-
+        if (m_rockGenerator != null) {
+            m_rockGenerator.SetSeed(SessionMemory.current.seed);
+            m_rockGenerator.GenerateVegetation();
+        }
         // Teleport the player to the start postiion
         m_player.transform.position = m_playerStartPosition;
         Debug.Log(m_player.transform.position);
