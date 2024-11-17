@@ -20,12 +20,12 @@ public class SessionManager : MonoBehaviour
 
     [Header("=== Terrain Generation ===")]
     [SerializeField, Tooltip("The noise map that generates terrain.")]          private NoiseMap m_terrainGenerator;
-    [SerializeField, Tooltip("Reference to the destination Game Object")]       private Transform m_destinationRef;
     [SerializeField, Tooltip("The landmark generator that places buildings")]   private LandmarkGenerator m_landmarkGenerator;
     [SerializeField, Tooltip("Specific refrence to the voronoi map used")]      private VoronoiMap m_voronoiMap;
     [SerializeField, Tooltip("The shortest path finder for path prediction")]   private FindShortestPath m_pathFinder;
 
-    [SerializeField, Tooltip("The shortest path finder for path prediction")]   private VegetationGenerator m_vegetationGenerator;
+    [SerializeField, Tooltip("The vegetation generator to place trees")]    private VegetationGenerator m_vegetationGenerator;
+    [SerializeField, Tooltip("The gem generator to place gems")]            private GemGenerator m_gemGenerator;
 
     [SerializeField, Tooltip("The shortest path finder for path prediction")]   private VegetationGenerator m_rockGenerator;
 
@@ -90,7 +90,6 @@ public class SessionManager : MonoBehaviour
         if (m_pauseMenuInput.WasPressedThisFrame()) OpenPauseMenu();
         if (m_movementDebugInput.WasPressedThisFrame()) ToggleDebugMenu();
         
-
         // Held map stuff
         //m_isShowingMap = Input.GetKey(m_showMapKey);
         m_isShowingMap = m_showMapInput.IsPressed();
@@ -227,8 +226,12 @@ public class SessionManager : MonoBehaviour
         Debug.Log(m_player.transform.position);
         StartCoroutine(m_player.GetComponent<PlayerMovement>().ActivatePlayer());
         // Teleport the destination ref to the destination point
-        m_destinationRef.position = m_playerEndPosition;
         if (m_landmarkGenerator != null) m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_playerStartPosition, m_terrainGenerator);
+        if (m_gemGenerator != null) {
+            m_gemGenerator.SetSeed(SessionMemory.current.seed);
+            m_gemGenerator.GenerateSmallGems();
+            m_gemGenerator.GenerateDestinationGem(m_playerEndPosition);
+        }
 
         // Let the camera fade in
         m_playerCameraFader.FadeIn();
