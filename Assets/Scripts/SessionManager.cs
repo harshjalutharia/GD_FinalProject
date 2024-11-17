@@ -212,7 +212,10 @@ public class SessionManager : MonoBehaviour
 
         GenerateStartAndEnd(m_terrainGenerator, m_voronoiMap, 150f, 20, out m_playerStartPosition, out int playerStartPositionIndex, out m_playerEndPosition, out int playerEndPositionIndex);
         if (m_pathFinder != null) m_pathFinder.CalculatePath(m_playerStartPosition, m_playerEndPosition, false, true, out List<Vector3> pathPoints, out List<int> pathSegmentIndices);
-        if (m_vegetationGenerator != null) m_vegetationGenerator.GenerateVegetation();
+        if (m_vegetationGenerator != null) {
+            m_vegetationGenerator.SetSeed(SessionMemory.current.seed);
+            m_vegetationGenerator.GenerateVegetation();
+        }
 
         // Teleport the player to the start postiion
         m_player.transform.position = m_playerStartPosition;
@@ -220,7 +223,7 @@ public class SessionManager : MonoBehaviour
         StartCoroutine(m_player.GetComponent<PlayerMovement>().ActivatePlayer());
         // Teleport the destination ref to the destination point
         m_destinationRef.position = m_playerEndPosition;
-        m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_playerStartPosition, m_terrainGenerator);
+        if (m_landmarkGenerator != null) m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_playerStartPosition, m_terrainGenerator);
 
         // Let the camera fade in
         m_playerCameraFader.FadeIn();
