@@ -49,7 +49,9 @@ public class LandmarkGenerator : MonoBehaviour
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("List of landmark positions")]                                 private List<SpawnPoint> m_landmarkPositions;
+    public List<SpawnPoint> landmarkPositions => m_landmarkPositions;
     [SerializeField, Tooltip("List of weenie positions")]                                   private List<Vector3> m_weeniePositions;
+    public List<Vector3> weeniePositions => m_weeniePositions;
     [SerializeField, Tooltip("List of positions' distances to check when spawning weenie")] private List<Vector3> m_weenieCheckPositions;
 
     [System.Serializable]
