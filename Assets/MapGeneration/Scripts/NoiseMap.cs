@@ -39,6 +39,7 @@ public class NoiseMap : MonoBehaviour
     [SerializeField, Tooltip("The seed used to control psuedo-rng for this map.")]                                  protected int m_seed;
     [SerializeField, Tooltip("TO BE DEPRECATED")]                                                                   protected Vector2Int m_dimensions = new Vector2Int(100,100);
     [SerializeField, Tooltip("The length and width of the generated map, in Unity meters.")]                        protected int m_mapChunkSize = 241;
+    public int mapChunkSize => m_mapChunkSize;
     [SerializeField, Range(0,6), Tooltip("The LOD level used to control the mesh fidelity.")]                       protected int m_levelOfDetail;
     [SerializeField, Tooltip("If set to TRUE, Unity will call `GenerateMap()` with every inspector value change.")] protected bool m_autoUpdate;
     public bool autoUpdate => m_autoUpdate;
@@ -288,6 +289,18 @@ public class NoiseMap : MonoBehaviour
         }
     }
 
+    public virtual void DrawCircleOnHeldMap(int x, int y, int radius, Color color) {
+        if (m_heldRenderer == null) return;
+        Texture2D original = (Texture2D)m_heldRenderer.sharedMaterial.mainTexture;
+        m_heldRenderer.sharedMaterial.mainTexture = Generators.DrawCircleOnTexture(original, x, y, radius, color);
+    }
+    public virtual void DrawCircleOnHeldMap(float x, float z, int radius, Color color) {
+        if (m_heldRenderer == null) return;
+        Vector2Int coords = QueryCoordsAtWorldPos(x, z, true);
+        Texture2D original = (Texture2D)m_heldRenderer.sharedMaterial.mainTexture;
+        m_heldRenderer.sharedMaterial.mainTexture = Generators.DrawCircleOnTexture(original, coords.x, coords.y, radius, color);
+    }
+
     public virtual Vector2 GetMapExtents() {
         float l = (float)(m_mapChunkSize-1)/2f;
         return new Vector2(l,l);
@@ -403,6 +416,15 @@ public class NoiseMap : MonoBehaviour
             }
         }
         return regionIndex;
+    }
+
+    public virtual Vector2Int QueryCoordsAtWorldPos(float worldX, float worldZ, bool flipX=false) {
+        float mapWidth = (float)m_mapChunkSize - 1f;
+        float mapExtent = mapWidth / 2f;
+        int x = Mathf.Clamp(Mathf.RoundToInt(worldX + mapExtent), 0, m_mapChunkSize-1);
+        if (flipX) x = (m_mapChunkSize-1) - x;
+        int y = Mathf.Clamp(Mathf.RoundToInt(worldZ + mapExtent - mapWidth)*-1, 0, m_mapChunkSize-1);
+        return new Vector2Int(x,y);
     }
 
 

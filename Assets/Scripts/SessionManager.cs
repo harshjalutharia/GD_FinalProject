@@ -25,6 +25,9 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("Specific refrence to the voronoi map used")]      private VoronoiMap m_voronoiMap;
     [SerializeField, Tooltip("The shortest path finder for path prediction")]   private FindShortestPath m_pathFinder;
 
+    [SerializeField, Tooltip("The shortest path finder for path prediction")]   private VegetationGenerator m_vegetationGenerator;
+
+
     [Header("=== Menus ===")]
     //[SerializeField, Tooltip("The input button for pause menu")]                    private KeyCode m_pauseMenuKeyCode = KeyCode.Tab;
                                                                                     private InputAction m_pauseMenuInput;
@@ -208,7 +211,11 @@ public class SessionManager : MonoBehaviour
         */
 
         GenerateStartAndEnd(m_terrainGenerator, m_voronoiMap, 150f, 20, out m_playerStartPosition, out int playerStartPositionIndex, out m_playerEndPosition, out int playerEndPositionIndex);
-        m_pathFinder.CalculatePath(m_playerStartPosition, m_playerEndPosition, false, true, out List<Vector3> pathPoints, out List<int> pathSegmentIndices);
+        if (m_pathFinder != null) m_pathFinder.CalculatePath(m_playerStartPosition, m_playerEndPosition, false, true, out List<Vector3> pathPoints, out List<int> pathSegmentIndices);
+        if (m_vegetationGenerator != null) {
+            m_vegetationGenerator.SetSeed(SessionMemory.current.seed);
+            m_vegetationGenerator.GenerateVegetation();
+        }
 
         // Teleport the player to the start postiion
         m_player.transform.position = m_playerStartPosition;
@@ -216,7 +223,7 @@ public class SessionManager : MonoBehaviour
         StartCoroutine(m_player.GetComponent<PlayerMovement>().ActivatePlayer());
         // Teleport the destination ref to the destination point
         m_destinationRef.position = m_playerEndPosition;
-        m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_playerStartPosition, m_terrainGenerator);
+        if (m_landmarkGenerator != null) m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_playerStartPosition, m_terrainGenerator);
 
         // Let the camera fade in
         m_playerCameraFader.FadeIn();
