@@ -5,7 +5,7 @@ using UnityEngine;
 public class DetectVisible : MonoBehaviour
 {
     private Renderer objectRenderer;
-    private CameraMovement cameraMovement; 
+    [SerializeField] private CameraMovement cameraMovement; 
 
     void Start()
     {

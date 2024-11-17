@@ -6,6 +6,7 @@ public class CameraMovement : MonoBehaviour
 {
     public float moveSpeed = 5f; 
     public HashSet<GameObject> visibleObjects = new HashSet<GameObject>();
+    public int numVisibleObjects;
 
     void Update()
     {
@@ -37,6 +38,8 @@ public class CameraMovement : MonoBehaviour
         {
             Debug.Log($"Visible object: {obj.name}");
         }
+
+        numVisibleObjects = visibleObjects.Count;
     }
 
 }
