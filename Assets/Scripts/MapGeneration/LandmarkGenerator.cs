@@ -20,9 +20,10 @@ using UnityEditor;
 
 public class LandmarkGenerator : MonoBehaviour
 {
+
     [Header("=== References ===")]
-    [SerializeField, Tooltip("Prefab for landmarks")]                                       private GameObject landmarkPrefab;
-    [SerializeField, Tooltip("Prefab for weenies")]                                         private List<GameObject> weeniePrefab;
+    [SerializeField, Tooltip("Prefab for landmarks")]                                       private Landmark landmarkPrefab;
+    [SerializeField, Tooltip("Prefab for weenies")]                                         private List<Landmark> weeniePrefab;
     [SerializeField, Tooltip("Parent for landmarks")]                                       private Transform m_landmarkParent;
     [SerializeField, Tooltip("Voronoi Map used in combinedMap")]                            private VoronoiMap m_voronoiMap;
 
@@ -77,9 +78,9 @@ public class LandmarkGenerator : MonoBehaviour
             return this.weight.CompareTo(otherPoint.weight);
         }
 
-        public void InstantiateObject(GameObject prefab, Transform objectParent) 
+        public void InstantiateObject(Landmark prefab, Transform objectParent) 
         {
-            this.spawnedObject = Instantiate(prefab, this.location, Quaternion.identity, objectParent);
+            this.spawnedObject = Instantiate(prefab.gameObject, this.location, Quaternion.identity, objectParent);
         }
     }
 
@@ -669,8 +670,8 @@ public class LandmarkGenerator : MonoBehaviour
     private void GenerateRuinsAroundPoint(Vector3 point, NoiseMap voronoiMap)
     {
         List<Vector3> ruinSpawnPoints = new List<Vector3>();
-        float landmarkSize = landmarkPrefab.GetComponent<Renderer>().bounds.extents.magnitude;
-        float ruinSize = weeniePrefab[0].GetComponent<Renderer>().bounds.extents.magnitude;
+        float landmarkSize = landmarkPrefab._renderer.bounds.extents.magnitude;
+        float ruinSize = weeniePrefab[0]._renderer.bounds.extents.magnitude;
 
         for (int i = 0; i < endRegionRuinCount; i++)
         {
