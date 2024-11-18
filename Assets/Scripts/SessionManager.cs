@@ -225,8 +225,9 @@ public class SessionManager : MonoBehaviour
         m_player.transform.position = m_playerStartPosition;
         Debug.Log(m_player.transform.position);
         StartCoroutine(m_player.GetComponent<PlayerMovement>().ActivatePlayer());
-        // Teleport the destination ref to the destination point
+        // Generate landmarks
         if (m_landmarkGenerator != null) m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_playerStartPosition, m_terrainGenerator);
+        // Generate gems, initialize view check
         if (m_gemGenerator != null) {
             m_gemGenerator.SetSeed(SessionMemory.current.seed);
             m_gemGenerator.GenerateSmallGems();
@@ -238,6 +239,12 @@ public class SessionManager : MonoBehaviour
 
         // Start the tracker, if exists
         if (GameTracker.current != null) GameTracker.current.StartTracking();
+
+        Invoke(nameof(InitializeCheckGemView), 1f);
+    }
+
+    private void InitializeCheckGemView() {
+        if (m_gemGenerator != null) m_gemGenerator.ToggleViewCheck(true);
     }
 
     private void GenerateStartAndEnd(NoiseMap terrainMap, VoronoiMap vMap, float minDistance, int numAttempts, out Vector3 startPos, out int startIndex, out Vector3 endPos, out int endIndex) {
