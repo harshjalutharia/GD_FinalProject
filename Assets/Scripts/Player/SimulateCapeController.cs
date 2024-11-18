@@ -39,4 +39,36 @@ public class SimulateCapeController : MonoBehaviour
         // Let the cape float when moving
         simulateCloth.AddForce(-1 * oscillationLevel * playerRb.velocity + transform.TransformDirection(fixedForce));
     }
+
+    public void CapePowerUp(float totalDuration)
+    {
+        StartCoroutine(ChangeEmissionColor(totalDuration/2));
+    }
+    
+    
+    private IEnumerator ChangeEmissionColor(float duration)
+    {
+        Color startColor = Color.black;
+        Color endColor = Color.white;
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
+        {
+            capeMaterial.SetColor("_EmissionColor", Color.Lerp(startColor, endColor, elapsedTime / duration));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        capeMaterial.SetColor("_EmissionColor", endColor);
+
+        elapsedTime = 0f;
+        yield return new WaitForSeconds(duration);
+        
+        while (elapsedTime < duration)
+        {
+            capeMaterial.SetColor("_EmissionColor", Color.Lerp(endColor, startColor, elapsedTime / duration));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        capeMaterial.SetColor("_EmissionColor", startColor);
+    }
 }

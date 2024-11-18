@@ -281,7 +281,7 @@ MonoBehaviour:
   maximumDistanceBetweenLandmarks: 100
   landmarkCount: 30
   weenieBetweenLandmarksCount: 3
-  spawnBorderPadding: 35
+  edgePadding: 0.15
   spawnTriesPerLandmark: 24
   maxRetries: 10
   randomizationFactor: 20
@@ -292,8 +292,13 @@ MonoBehaviour:
   visionPointsCount: 10
   minimumDistanceInWeenieAndPath: 40
   minimumDistanceBetweenWeenies: 40
+  spawnHeightLimit: 40
+  weenieCount: 20
+  landmarkPlacementOffset: 10
+  weeniePlacementOffset: 3
   m_landmarkPositions: []
   m_weeniePositions: []
+  m_weenieCheckPositions: []
 --- !u!4 &52809524
 Transform:
   m_ObjectHideFlags: 0
@@ -1819,34 +1824,6 @@ PrefabInstance:
       propertyPath: debugText2
       value: 
       objectReference: {fileID: 1444173675}
-    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
-      propertyPath: jumpInput.m_Name
-      value: Jump Input
-      objectReference: {fileID: 0}
-    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
-      propertyPath: sprintInput.m_Name
-      value: Sprint Input
-      objectReference: {fileID: 0}
-    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
-      propertyPath: directionInput.m_Name
-      value: Direction Input
-      objectReference: {fileID: 0}
-    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
-      propertyPath: switchSprintInput.m_Name
-      value: Switch Sprint Input
-      objectReference: {fileID: 0}
-    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
-      propertyPath: directionInput.m_SingletonActionBindings.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
-      propertyPath: directionInput.m_SingletonActionBindings.Array.data[0].m_Id
-      value: e96c1e38-3db7-4fc9-818c-217495fe7a75
-      objectReference: {fileID: 0}
-    - target: {fileID: 1585654971461282024, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
-      propertyPath: directionInput.m_SingletonActionBindings.Array.data[0].m_Action
-      value: Direction Input
-      objectReference: {fileID: 0}
     - target: {fileID: 4132312772176831909, guid: 64b182395c0b6744a920c74bce3ece13, type: 3}
       propertyPath: m_Name
       value: Player
@@ -2219,17 +2196,6 @@ PrefabInstance:
       addedObject: {fileID: 780609613}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0ffdab933ecf1a14395f72c761a5d728, type: 3}
---- !u!114 &1089995269 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3796048141864631287, guid: 0ffdab933ecf1a14395f72c761a5d728, type: 3}
-  m_PrefabInstance: {fileID: 1089995268}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 426d59d4886a84273bec248f2e0cbe84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1089995270 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6192881067607133007, guid: 0ffdab933ecf1a14395f72c761a5d728, type: 3}
@@ -2601,6 +2567,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 577151685801249168, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9964397
+      objectReference: {fileID: 0}
+    - target: {fileID: 577151685801249168, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.08430917
+      objectReference: {fileID: 0}
+    - target: {fileID: 577151685801249168, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.000000037659092
+      objectReference: {fileID: 0}
+    - target: {fileID: 577151685801249168, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.000000002591517
+      objectReference: {fileID: 0}
     - target: {fileID: 874340855222829141, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: m_Follow
       value: 
@@ -2609,10 +2591,6 @@ PrefabInstance:
       propertyPath: m_LookAt
       value: 
       objectReference: {fileID: 910432218}
-    - target: {fileID: 874340855222829141, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
-      propertyPath: m_XAxis.m_MaxSpeed
-      value: 80
-      objectReference: {fileID: 0}
     - target: {fileID: 1186657309078907170, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: player
       value: 
@@ -2631,19 +2609,19 @@ PrefabInstance:
       objectReference: {fileID: 910432219}
     - target: {fileID: 4803799580135197677, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.99405533
+      value: 0.99391055
       objectReference: {fileID: 0}
     - target: {fileID: 4803799580135197677, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.10887633
+      value: 0.11019005
       objectReference: {fileID: 0}
     - target: {fileID: 4803799580135197677, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.0000000035404317
+      value: -0.000000037578975
       objectReference: {fileID: 0}
     - target: {fileID: 4803799580135197677, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.000000002600679
+      value: 0.0000000035698509
       objectReference: {fileID: 0}
     - target: {fileID: 5395050454279213283, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2659,19 +2637,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5395050454279213283, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.999048
+      value: 0.99910486
       objectReference: {fileID: 0}
     - target: {fileID: 5395050454279213283, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.04362453
+      value: 0.042304087
       objectReference: {fileID: 0}
     - target: {fileID: 5395050454279213283, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000029969943
+      value: -0.000000007443912
       objectReference: {fileID: 0}
     - target: {fileID: 5395050454279213283, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0000000013086704
+      value: 3.1519004e-10
       objectReference: {fileID: 0}
     - target: {fileID: 5395050454279213283, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2688,6 +2666,22 @@ PrefabInstance:
     - target: {fileID: 6367212847971756039, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
       propertyPath: m_Name
       value: Main Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 8961630284868186568, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9982868
+      objectReference: {fileID: 0}
+    - target: {fileID: 8961630284868186568, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.058510993
+      objectReference: {fileID: 0}
+    - target: {fileID: 8961630284868186568, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.000000037713516
+      objectReference: {fileID: 0}
+    - target: {fileID: 8961630284868186568, guid: c7eb8811659556b4a8aee5a5851ff834, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.0000000016167087
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6544,11 +6538,12 @@ MonoBehaviour:
   m_playerStartPosition: {x: 0, y: 0, z: 0}
   m_playerEndPosition: {x: 0, y: 0, z: 0}
   m_terrainGenerator: {fileID: 1089995270}
-  m_destinationRef: {fileID: 2088511841}
   m_landmarkGenerator: {fileID: 52809523}
   m_voronoiMap: {fileID: 1089995271}
-  m_pathFinder: {fileID: 1089995269}
+  m_pathFinder: {fileID: 0}
   m_vegetationGenerator: {fileID: 0}
+  m_gemGenerator: {fileID: 0}
+  m_rockGenerator: {fileID: 0}
   m_pauseMenuTransitionTime: 1
   m_pauseMenuGroup: {fileID: 1168569848}
   m_winMenuGroup: {fileID: 9831595}

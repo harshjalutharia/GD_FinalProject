@@ -661,25 +661,17 @@ public class PlayerMovement : MonoBehaviour
     
     [Tooltip("Stamina regained per second while on the ground and not sprinting")]
     public float flightStaminaRefillSpeed;
-
-    [Header("Input")]
+    
     private PlayerControls controls; 
 
-    [SerializeField] private InputAction directionInput;
+    private InputAction directionInput;
 
-    [SerializeField] private InputAction jumpInput;
+    private InputAction jumpInput;
     
-    [SerializeField] private InputAction sprintInput;
+    private InputAction sprintInput;
 
-    [SerializeField] private InputAction switchSprintInput;
+    private InputAction switchSprintInput;
     
-    
-    //public KeyCode jumpKey = KeyCode.Space;
-
-    //public KeyCode sprintKey = KeyCode.LeftShift;
-
-    //[Tooltip("Activate the ability to fly and sprint")]
-    //public KeyCode cheatKey = KeyCode.C;
     
     private float horizontalInput;
     
@@ -689,7 +681,9 @@ public class PlayerMovement : MonoBehaviour
     
     [Tooltip("Positions to perform ground detect")]
     public Transform[] groundDetections = new Transform[2];
+    
     private RaycastHit[] groundHits = new RaycastHit[2];
+    
     private Vector3[] normProject = new Vector3[2];
 
     [Tooltip("Distance of ground check")]
@@ -701,7 +695,7 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Set to everything is OK")]
     public LayerMask groundMask;
     
-    [Header("Private States")]
+    [Header("Private States of movement")]
     [SerializeField] 
     private bool grounded;
 
@@ -738,8 +732,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] 
     private bool paraglidingActivated;
     
-    
-    
     private Vector3 moveDirection;
 
     private Rigidbody rb;
@@ -751,11 +743,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Tooltip("READ ONLY. Variables bind for animation control")]
     private AnimationVars animationVars;
 
-    [Header("Audio")] 
-    private AudioSource audioSource;
+    [Header("Others")] 
+    [Tooltip("particle system of collecting gem")]
+    public ParticleSystem collectGemParticles;
 
-    [Tooltip("Sound of cheating")]
-    public AudioClip switchSound;
+    [Tooltip("game object of the cape")] 
+    public SimulateCapeController cape;
+    
+    private PlayerSoundManager soundManager;
 
     [Header("Debug UI Element")] 
     public TextMeshProUGUI debugText1;
@@ -787,7 +782,7 @@ public class PlayerMovement : MonoBehaviour
         paraglidingActivated = false;
         sprintActivated = true;
 
-        audioSource = GetComponent<AudioSource>();
+        soundManager = GetComponent<PlayerSoundManager>();
         
     }
 
@@ -833,7 +828,7 @@ public class PlayerMovement : MonoBehaviour
             ActivateFlight();
             ActivateSprint();
             ActivateParagliding();
-            audioSource.PlayOneShot(switchSound);
+            soundManager.PlaySound(soundManager.cheat);
         }
     }
 
@@ -1053,14 +1048,19 @@ public class PlayerMovement : MonoBehaviour
     
     private void OnTriggerEnter(Collider other)
     {
+        // detect gem that increases stamina
         if (other.CompareTag("StaminaPowerUp")) // tag name might be changed
         {
             //todo get the stamina increase amount from the collider object
             var staminaIncrease = 3;  // change later
 
             maxFlightStamina += staminaIncrease;
+            //Destroy(other.gameObject);
             
             //todo maybe some effect happens
+            soundManager.PlaySound(soundManager.collectGem);
+            collectGemParticles.Play();
+            cape.CapePowerUp(3f);
         }
     }
     
