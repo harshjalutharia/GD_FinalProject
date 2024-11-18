@@ -234,16 +234,16 @@ public class SessionManager : MonoBehaviour
             m_gemGenerator.GenerateDestinationGem(m_playerEndPosition);
         }
 
-        // Let the camera fade in
-        m_playerCameraFader.FadeIn();
-
         // Start the tracker, if exists
         if (GameTracker.current != null) GameTracker.current.StartTracking();
 
-        Invoke(nameof(InitializeCheckGemView), 1f);
+        Invoke(nameof(InitializePlayerView), 5f);
     }
 
-    private void InitializeCheckGemView() {
+    private void InitializePlayerView() {
+        // Let the camera fade in
+        m_playerCameraFader.FadeIn();
+        // If a gem generator exists, toggle the view cam
         if (m_gemGenerator != null) m_gemGenerator.ToggleViewCheck(true);
     }
 

@@ -86,13 +86,21 @@ public class GemGenerator : MonoBehaviour
         if (m_maxSmallGems > m_landmarkGenerator.weeniePositions.Count) {
             m_maxSmallGems = m_landmarkGenerator.weeniePositions.Count;
         }
+
+        // Generate list of weenie indices that'll track which weenies we want to place the small gems at.
+        List<int> weenieIndices = new List<int>();
+        for(int i = 0; i < m_landmarkGenerator.weeniePositions.Count; i++) weenieIndices.Add(i);
         
         // Iterate among weenies. Generate as many small gems as there are weenies... or at least up to the max count of small gems
         if (m_gemData == null) m_gemData = new Dictionary<Gem, GemData>();
         int startID = m_gemData.Count;
         for(int i = 0; i < m_maxSmallGems; i++) {
+            // Which weenie should we choose this time?
+            int weenieIndex = m_prng.Next(0, weenieIndices.Count);
+
             // Get the position of the 
-            Vector3 weeniePosition = m_landmarkGenerator.weeniePositions[i];
+            Vector3 weeniePosition = m_landmarkGenerator.weeniePositions[weenieIndices[weenieIndex]];
+            weenieIndices.RemoveAt(weenieIndex);
             
             // Let's add noise to the position and rotation of the gem itself
             Vector3 pos = weeniePosition + new Vector3(0f, m_smallGemHeightOffset, 0f);
