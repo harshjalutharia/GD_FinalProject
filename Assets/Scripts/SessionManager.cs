@@ -27,7 +27,8 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The vegetation generator to place trees")]    private VegetationGenerator m_vegetationGenerator;
     [SerializeField, Tooltip("The gem generator to place gems")]            private GemGenerator m_gemGenerator;
 
-    [SerializeField, Tooltip("The shortest path finder for path prediction")]   private VegetationGenerator m_rockGenerator;
+    [SerializeField, Tooltip("The rock generator to place trees")]   private VegetationGenerator m_rockGenerator;
+    [SerializeField, Tooltip("The grass generator to place trees")]   private VegetationGenerator m_grassGenerator;
 
 
     [Header("=== Menus ===")]
@@ -220,6 +221,10 @@ public class SessionManager : MonoBehaviour
         if (m_rockGenerator != null) {
             m_rockGenerator.SetSeed(SessionMemory.current.seed);
             m_rockGenerator.GenerateVegetation();
+        }
+        if (m_grassGenerator != null) {
+            m_grassGenerator.SetSeed(SessionMemory.current.seed);
+            m_grassGenerator.GenerateVegetation();
         }
         // Teleport the player to the start postiion
         m_player.transform.position = m_playerStartPosition;

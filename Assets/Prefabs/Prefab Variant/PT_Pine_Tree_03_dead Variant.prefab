@@ -52,6 +52,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PT_Pine_Tree_03_dead Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 6323926895507881134, guid: c7827efbbf7212f42803476ce3f9d082, type: 3}
+      propertyPath: m_FadeMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323926895507881134, guid: c7827efbbf7212f42803476ce3f9d082, type: 3}
+      propertyPath: m_AnimateCrossFading
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
