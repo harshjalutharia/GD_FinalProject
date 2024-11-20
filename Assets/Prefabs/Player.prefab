@@ -131,12 +131,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 556583233504323279}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1.606, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8073086772555192299}
+  m_Father: {fileID: 7292779607995853842}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1003993183089225020
 GameObject:
@@ -6002,8 +6002,8 @@ Transform:
   m_Children:
   - {fileID: 9099099296081717086}
   - {fileID: 3827837098921800371}
-  - {fileID: 2994778596285685128}
   - {fileID: 7355553755626376634}
+  - {fileID: 7292779607995853842}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &6847563188713013762
@@ -6030,7 +6030,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 1
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
 --- !u!114 &1585654971461282024
@@ -6045,22 +6045,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fa2b1bfb6110cb40a69f0d98343fef5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 10
-  sprintSpeed: 20
-  slideSpeedThreshold: 0
-  slideStartSpeedOffset: 1
-  paraglidingStartSpeedOffset: 0.7
-  groundDrag: 6
-  groundDragSprint: 6.6
-  friction: 8
-  airDragHorizontal: 0.25
-  airDragVertical: 2.6
-  slideResistance: 0.6
+  moveForce: 8
+  sprintForce: 14
+  flightForce: 4
+  flightAscendForce: 1
   jumpForce: 3.5
   jumpCooldown: 0.8
-  airMultiplier: 0.1
-  flightForce: 1
-  orientation: {fileID: 3827837098921800371}
+  slideSpeedThreshold: 1.666667
+  slidingDropThreshold: 1
+  maxSprintSpeed: 3
+  slideStartSpeedOffset: 1
+  maxFlightSpeed: 2.1
+  maxParaglidingSpeed: 10
+  paraglidingFallingSpeed: 3
+  paraglidingStartSpeedOffset: 0.3333333
+  groundDrag: 0
+  groundDragSprint: 0
+  airDragHorizontal: 0
+  airDragParaglidingHorizontal: 0
+  airDragVertical: 0
+  friction: 8
+  frictionSlopAngle: 45
+  slideResistance: 0.6
   maxFlightStamina: 3.1
   jumpStaminaConsume: 3
   flightStamina: 0
@@ -6071,11 +6077,10 @@ MonoBehaviour:
   groundDetections:
   - {fileID: 7946510050813310827}
   - {fileID: 544791977718023971}
-  groundCheckDistance: 0.255
   slopAngularChangeTolerance: 18
   groundMask:
     serializedVersion: 2
-    m_Bits: 247
+    m_Bits: 83
   grounded: 0
   grabGround: 0
   readyToJump: 0
@@ -6098,6 +6103,8 @@ MonoBehaviour:
     sliding: 0
     paragliding: 0
     sprinting: 0
+  orientation: {fileID: 3827837098921800371}
+  rotationSpeed: 6
   collectGemParticles: {fileID: 8831431543305651068}
   cape: {fileID: 0}
   debugText1: {fileID: 0}
@@ -6387,6 +6394,54 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &4874307217340201786
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7292779607995853842}
+  - component: {fileID: 4954771070719533664}
+  m_Layer: 8
+  m_Name: CameraFollow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7292779607995853842
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4874307217340201786}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2994778596285685128}
+  m_Father: {fileID: 8073086772555192299}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4954771070719533664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4874307217340201786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac9d2346d8921c04cac936f554b78838, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 8073086772555192299}
+  smoothTime: 0.1
+  trackXZ: 1
 --- !u!1 &5134780282402344757
 GameObject:
   m_ObjectHideFlags: 0

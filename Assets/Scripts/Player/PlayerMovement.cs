@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 
 // public class PlayerMovement : MonoBehaviour
@@ -588,41 +589,19 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Movement")]
-    [Tooltip("The force pushing character to walk, doesn't represent actual speed")]
-    public float moveSpeed;
     
-    [Tooltip("The force pushing character to sprint, doesn't represent actual speed")]
-    public float sprintSpeed;
-
-    [SerializeField, Tooltip("READ ONLY. Controls the max walking speed on a level surface. Vmax=moveSpeed/groundDrag")]
-    private float slideSpeedThreshold;
-
-    [Tooltip("Start slide if current speed larger than slideSpeedThreshold + slideStartSpeedOffset.")]
-    public float slideStartSpeedOffset;
+    [Header("Force Settings")]
+    [Tooltip("The force pushing character to walk")]
+    public float moveForce;
     
-    [Tooltip("Start paragliding if current speed larger than slideSpeedThreshold + paraglidingStartSpeedOffset.")]
-    public float paraglidingStartSpeedOffset;
+    [Tooltip("The force pushing character to sprint")]
+    public float sprintForce;
     
-    [Tooltip("Limit the max walking speed, Vmax=moveSpeed/groundDrag")]
-    public float groundDrag;
+    [Tooltip("Continuous horizontal force applied during flight")]
+    public float flightForce;
     
-    [Tooltip("Limit the max sprint speed, Vmax=moveSpeed/groundDragSprint")]
-    public float groundDragSprint;
-
-    [Tooltip("When the user has no direction input, applies the friction")]
-    public float friction;
-    
-    private PhysicMaterial physicMaterial;
-
-    [Tooltip("Limit the horizontal max fly speed. Vmax_fly=moveSpeed/airDragHorizontal")] 
-    public float airDragHorizontal;
-    
-    [Tooltip("Only limit the max downward velocity speed. Vmax_drop=9.81/airDragVertical")] 
-    public float airDragVertical;
-
-    [Tooltip("Resistance Force while sliding")] 
-    public float slideResistance;
+    [Tooltip("Continuous vertical force applied during flight")]
+    public float flightAscendForce;
     
     [Tooltip("Instantaneous force exerted during a jump")]
     public float jumpForce;
@@ -630,14 +609,60 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Used to avoid double jump")]
     public float jumpCooldown;
     
-    [Tooltip("Used to reduces movement speed in the air")]
-    public float airMultiplier;
     
-    [Tooltip("Continuous force applied during flight")]
-    public float flightForce;
+    [Header("Speed threshold Settings")]
+    [Tooltip("Controls the max walking speed on a level surface. Vmax=moveSpeed/groundDrag")]
+    public float slideSpeedThreshold;
+
+    [Tooltip("If player's dropping speed on ground larger than this, start sliding")]
+    public float slidingDropThreshold;
     
-    [Tooltip("Used to determine the player direction")]
-    public Transform orientation;
+    [Tooltip("Controls the max sprint speed on a level surface")]
+    public float maxSprintSpeed;
+
+    [Tooltip("Start slide if current speed larger than slideSpeedThreshold + slideStartSpeedOffset.")]
+    public float slideStartSpeedOffset;
+    
+    [Tooltip("Max speed of flight.")]
+    public float maxFlightSpeed;
+    
+    [Tooltip("Max horizontal speed of paragliding.")]
+    public float maxParaglidingSpeed;
+
+    [Tooltip("Max vertical speed of paragliding.")]
+    public float paraglidingFallingSpeed;
+    
+    [Tooltip("Start paragliding if current speed larger than slideSpeedThreshold + paraglidingStartSpeedOffset.")]
+    public float paraglidingStartSpeedOffset;
+    
+    [Header("(READ ONLY) Drag Coefficients")]
+    [SerializeField, Tooltip("READ ONLY. Limit the max walking speed, Vmax=moveSpeed/groundDrag")]
+    private float groundDrag;
+    
+    [SerializeField, Tooltip("READ ONLY. Limit the max sprint speed, Vmax=moveSpeed/groundDragSprint")]
+    private float groundDragSprint;
+    
+    [SerializeField, Tooltip("READ ONLY. Limit the horizontal max fly speed. Vmax_fly=moveSpeed/airDragHorizontal")] 
+    private float airDragHorizontal;
+
+    [SerializeField, Tooltip("READ ONLY. Limit the horizontal max paragliding speed.")] 
+    private float airDragParaglidingHorizontal;
+    
+    [SerializeField, Tooltip("Only limit the max downward velocity speed. Vmax_drop=g/airDragVertical")] 
+    private float airDragVertical;
+    
+    
+    [Header("Other Resistance")]
+    [Tooltip("When the user has no direction input, applies the friction")]
+    public float friction;
+    
+    [Tooltip("Do not apply friction if the angle of the slop is larger than this value")]
+    public float frictionSlopAngle;
+    
+    private PhysicMaterial physicMaterial;
+    
+    [Tooltip("Resistance Force while sliding")] 
+    public float slideResistance;
     
     
     [Header("Stamina Settings")]
@@ -653,7 +678,7 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Stamina consumed per second of flight")]
     public float flightStaminaDecreaseSpeed;
     
-    [Tooltip("Stamina consumed per second of springting")]
+    [Tooltip("Stamina consumed per second of sprinting")]
     public float sprintStaminaDecreaseSpeed;
 
     [Tooltip("Could not start sprinting if stamina low that this value")] 
@@ -684,10 +709,7 @@ public class PlayerMovement : MonoBehaviour
     
     private RaycastHit[] groundHits = new RaycastHit[2];
     
-    private Vector3[] normProject = new Vector3[2];
-
-    [Tooltip("Distance of ground check")]
-    public float groundCheckDistance;
+    private Vector3[] normProject = new Vector3[2];   // the normal projected to player
 
     [Tooltip("Keep player on the ground if the angular change of slope is less than this value")]
     public float slopAngularChangeTolerance;
@@ -744,14 +766,25 @@ public class PlayerMovement : MonoBehaviour
     private AnimationVars animationVars;
 
     [Header("Others")] 
+    [Tooltip("Used to determine the player direction")]
+    public Transform orientation;
+
+    [Tooltip("player turn speed")]
+    public float rotationSpeed;
+    
     [Tooltip("particle system of collecting gem")]
     public ParticleSystem collectGemParticles;
 
     [Tooltip("game object of the cape")] 
     public SimulateCapeController cape;
     
+    public event Action OnLanding;
+    
+    private Transform playerObj;
+    
     private PlayerSoundManager soundManager;
 
+    
     [Header("Debug UI Element")] 
     public TextMeshProUGUI debugText1;
     public TextMeshProUGUI debugText2;
@@ -770,10 +803,16 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
 
+        playerObj = animator.transform;
+
         readyToJump = true;
         flightStamina = maxFlightStamina;
-
-        slideSpeedThreshold = moveSpeed / groundDrag;
+        
+        groundDrag = moveForce / slideSpeedThreshold;
+        groundDragSprint = sprintForce / maxSprintSpeed;
+        airDragHorizontal = flightForce / maxFlightSpeed;
+        airDragParaglidingHorizontal = flightForce / maxParaglidingSpeed;
+        airDragVertical = Physics.gravity.magnitude / paraglidingFallingSpeed;
 
         physicMaterial = GetComponent<CapsuleCollider>().material;
 
@@ -816,12 +855,12 @@ public class PlayerMovement : MonoBehaviour
         float horizontalSpeed = new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude;
         float overAllSpeed = rb.velocity.magnitude;
         
-        debugText1.text = normProject[0] + " " + normProject[1] + "angle:" + Vector3.Angle(normProject[0], normProject[1]);
+        debugText1.text = normProject[0] + " " + normProject[1] + "slop: " + GetSlopAngle();
         debugText2.text = "Velocity:" + rb.velocity + " \nHorizontal Speed:" + horizontalSpeed + " Speed:" + overAllSpeed;
         
         // Debug.Log(normProject[0] + " " + normProject[1]);
-        Debug.DrawRay(groundHits[0].point, groundHits[0].normal, Color.blue, 0, false);
-        Debug.DrawRay(groundHits[1].point, groundHits[1].normal, Color.green, 0, false);
+        //Debug.DrawRay(groundHits[0].point, groundHits[0].normal, Color.blue, 0, false);
+        //Debug.DrawRay(groundHits[1].point, groundHits[1].normal, Color.green, 0, false);
         // cheat
         if (controls.Debug.ActivateFlight.WasPressedThisFrame())
         {
@@ -857,8 +896,13 @@ public class PlayerMovement : MonoBehaviour
         //     Debug.Log((normProject[1].z >= normProject[0].z) + " " + Vector3.Angle(normProject[0], normProject[1]));
         
         Collider[] colliders = Physics.OverlapSphere(orientation.position, 0.1f, groundMask);
-        
-        grounded = colliders.Length > 0; 
+
+        bool latestGround = grounded;
+        grounded = colliders.Length > 0;
+        if (!latestGround && grounded)
+        {
+            OnLanding?.Invoke();  // invoke landing event
+        }
         
         
         MovePlayer();
@@ -927,11 +971,13 @@ public class PlayerMovement : MonoBehaviour
         
         if (sliding)
         {
-            sliding = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude > slideSpeedThreshold && grounded && !sprinting;
+            sliding = (new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude > slideSpeedThreshold ||
+                       rb.velocity.y < -1 * slidingDropThreshold) && grounded && !sprinting;
         }
         else
         {
-            sliding = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude > slideSpeedThreshold + slideStartSpeedOffset &&
+            sliding = (new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude >
+                          slideSpeedThreshold + slideStartSpeedOffset || rb.velocity.y < -1 * slidingDropThreshold) &&
                       grounded && !sprinting;
         }
         
@@ -941,11 +987,18 @@ public class PlayerMovement : MonoBehaviour
     // called in FixedUpdate
     private void MovePlayer()
     {
-        // calculate movement direction
+        // rotate the player according to the velocity
+        
+        if (rb.velocity.magnitude >= 0.05f)
+            playerObj.forward = Vector3.Slerp(playerObj.forward, new Vector3(rb.velocity.x, 0, rb.velocity.z).normalized, Time.fixedDeltaTime * rotationSpeed);
+
+        
+        
+        // calculate input movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         
         //set friction if player has no input
-        if (moveDirection.magnitude < 0.05f && grounded)
+        if (moveDirection.magnitude < 0.05f && grounded && GetSlopAngle() <= frictionSlopAngle)
         {
             physicMaterial.dynamicFriction = friction;
             physicMaterial.staticFriction = friction;
@@ -960,13 +1013,13 @@ public class PlayerMovement : MonoBehaviour
         // on ground
         if (grounded)
         {
-            Vector3 moveForce = moveDirection.normalized * (sprinting ? sprintSpeed : moveSpeed) - CalculateResistance();
+            Vector3 moveForce = moveDirection.normalized * (sprinting ? sprintForce : this.moveForce) - CalculateResistance();
             rb.AddForce(moveForce, ForceMode.Force);
         }
         // in the air
         else if (!grounded)
         {
-            Vector3 moveForce = moveDirection.normalized * (airMultiplier * moveSpeed) - CalculateResistance();
+            Vector3 moveForce = moveDirection.normalized * flightForce - CalculateResistance();
             rb.AddForce(moveForce, ForceMode.Force);
             
             // limit descent speed if player has input
@@ -1013,7 +1066,7 @@ public class PlayerMovement : MonoBehaviour
     private void FlyUp()
     {
         rb.useGravity = false;
-        rb.AddForce(Vector3.up * flightForce, ForceMode.Acceleration);
+        rb.AddForce(Vector3.up * flightAscendForce, ForceMode.Acceleration);
     }
     
     
@@ -1031,20 +1084,31 @@ public class PlayerMovement : MonoBehaviour
         if (grounded && !sprinting)  // walking drag
         {
             // the resistance increases linearly with horizontal velocity. But has a max value
-            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * groundDrag, 0, moveSpeed + slideResistance);
+            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * groundDrag, 0, moveForce + slideResistance);
         }
         else if (grounded && sprinting)
         {
-            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * groundDragSprint, 0, sprintSpeed*2);
+            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * groundDragSprint, 0, sprintForce*2);
         }
-        else
+        else if (!grounded && !animationVars.paragliding)
         {
             resistanceMag = horizontalVelocity.magnitude * airDragHorizontal;
+        }
+        else  // !grounded && animationVars.paragliding
+        {
+            resistanceMag = horizontalVelocity.magnitude * airDragParaglidingHorizontal;
         }
         Vector3 resistanceForce = resistanceMag * horizontalVelocity.normalized;
         return resistanceForce;
         
     }
+
+    private float GetSlopAngle()
+    {
+        float slopAngle = Vector3.Angle((groundHits[0].normal + groundHits[1].normal)/2, Vector3.up);
+        return slopAngle;
+    }
+    
     
     private void OnTriggerEnter(Collider other)
     {
