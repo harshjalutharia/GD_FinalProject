@@ -63,5 +63,50 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5361428799875542787, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7893068144031928974}
   m_SourcePrefab: {fileID: 100100000, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+--- !u!136 &2188640458887655463 stripped
+CapsuleCollider:
+  m_CorrespondingSourceObject: {fileID: 8528763886393538605, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+  m_PrefabInstance: {fileID: 7495077712216803338}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2478178681915189001 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5361428799875542787, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+  m_PrefabInstance: {fileID: 7495077712216803338}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7893068144031928974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478178681915189001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5a91ea1b706d43a2b26a64f6cc5012d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_collider: {fileID: 2188640458887655463}
+  m_renderers:
+  - {fileID: 5440950134291389574}
+  - {fileID: 9108392682300110135}
+  - {fileID: 7436105393828267665}
+--- !u!23 &5440950134291389574 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2558605503083844748, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+  m_PrefabInstance: {fileID: 7495077712216803338}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7436105393828267665 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1094804630965145243, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+  m_PrefabInstance: {fileID: 7495077712216803338}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &9108392682300110135 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1613519660729417021, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+  m_PrefabInstance: {fileID: 7495077712216803338}
+  m_PrefabAsset: {fileID: 0}

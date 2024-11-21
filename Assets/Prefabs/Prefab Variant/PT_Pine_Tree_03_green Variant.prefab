@@ -63,5 +63,50 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6117071349010126079, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -8085246876468435309}
   m_SourcePrefab: {fileID: 100100000, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+--- !u!23 &4574365849993264447 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1394057832663195253, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+  m_PrefabInstance: {fileID: 3180625143227163466}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4838275328176120082 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8000319770140492376, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+  m_PrefabInstance: {fileID: 3180625143227163466}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &5581745776031357368 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7013654394060798706, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+  m_PrefabInstance: {fileID: 3180625143227163466}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &7483194237499594693 stripped
+CapsuleCollider:
+  m_CorrespondingSourceObject: {fileID: 5474824867164648591, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+  m_PrefabInstance: {fileID: 3180625143227163466}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8703182417706153909 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6117071349010126079, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+  m_PrefabInstance: {fileID: 3180625143227163466}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-8085246876468435309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8703182417706153909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5a91ea1b706d43a2b26a64f6cc5012d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_collider: {fileID: 7483194237499594693}
+  m_renderers:
+  - {fileID: 4574365849993264447}
+  - {fileID: 4838275328176120082}
+  - {fileID: 5581745776031357368}
