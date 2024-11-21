@@ -280,49 +280,54 @@ public class GrassGenerator : MonoBehaviour
         List<Vector2Int> existingGrass = m_grass.Keys.ToList();
 
         // Iterate through Y
-        for (int y = playerCoords.y - radius; y <= playerCoords.y + radius; y++){
+        for (int y = -radius; y <= radius; y++){
             
             // If y-coord is outside range, ignore
-            if (y < 0 || y >= m_terrainGenerator.heightMap.GetLength(1)) continue;
+            int yCoord = playerCoords.y + y;
+            if (yCoord < 0 || yCoord >= m_terrainGenerator.heightMap.GetLength(1)) continue;
 
             // Iterate through X
-            for (int x = playerCoords.x - radius; x <= playerCoords.x + radius; x++){
+            for (int x = -radius; x <= radius; x++){
 
                 // If x-coord is outside range, ignore
-                if (x < 0 || x >= m_terrainGenerator.heightMap.GetLength(0)) continue;
+                int xCoord = playerCoords.x + x;
+                if (xCoord < 0 || xCoord >= m_terrainGenerator.heightMap.GetLength(0)) continue;
 
                 // Generate Vector2Int for these specific coords
-                Vector2Int queryCords = new Vector2Int(x, y);
+                Vector2Int queryCords = new Vector2Int(xCoord, yCoord);
+                m_terrainGenerator.QueryHeightAtCoords(xCoord, yCoord, out Vector3 worldCoords);
                 
+                // Calculate the  normal of the current world coord
+                Vector3 currentNormal = m_terrainGenerator.QueryMapNormalAtWorldPos(
+                        worldCoords.x, worldCoords.z, 
+                        m_queryMask, 
+                        out int dum_x, out int dum_y, out float worldY);
+                
+                // Set world coords y as the worldY
+                worldCoords.y = worldY;
+
+                // Calculate rotation to align the up vector with the normal
+                Quaternion normalRotation = Quaternion.FromToRotation(Vector3.up, currentNormal);
+
                 // check: do we have a record of these coords
                 if (! m_grass.ContainsKey(queryCords)){
 
-                    // Get the world position of the new object to be spawned.
-                    float heightNoise = m_terrainGenerator.QueryHeightAtCoords(x, y, out Vector3 pixelPosition);
+                    // Calculate the offset position, rotating by the normal rotation
                     float posOffsetX = (float)m_prng.Next(0, 100) / 100f;
                     float posOffsetZ = (float)m_prng.Next(0, 100) / 100f;
-                    Vector3 posOffset = new Vector3 (posOffsetX, 0f, posOffsetZ);
+                    Vector3 posOffset = normalRotation * new Vector3 (posOffsetX, 0f, posOffsetZ);
 
-                    // Get the orientation of the planted tree
+                    // Calculate the rotation of the grass, with offset
                     float rotOffsetX = m_prng.Next(0,m_rotationOffset);
                     float rotOffsetY = m_prng.Next(0,360);
                     float rotOffsetZ = m_prng.Next(0,m_rotationOffset);
-                    Quaternion rotOffset = Quaternion.Euler(rotOffsetX, rotOffsetY, rotOffsetZ);
-
-                    // Calculate the  normal of the current point
-                    Vector3 currentNormal = m_terrainGenerator.QueryMapNormalAtWorldPos(pixelPosition.x, pixelPosition.z, m_queryMask, out int dum_x, out int dum_y, out float worldY);
-                    // Calculate rotation to align the up vector with the normal
-                    Quaternion normalRotation = Quaternion.FromToRotation(Vector3.up, currentNormal);
-
-                    // Combine the position and rotation offset with the normal alignment
-                    Vector3 finalPosition = pixelPosition + normalRotation * posOffset;
-                    Quaternion finalRotation = normalRotation * rotOffset;
+                    Quaternion rotOffset = normalRotation * Quaternion.Euler(rotOffsetX, rotOffsetY, rotOffsetZ);
 
                     // Instantiate the GameObject with the aligned rotation
-                    GameObject newGrass = Instantiate(m_prefab, finalPosition, finalRotation, m_grassParent);
+                    GameObject newGrass = Instantiate(m_prefab, worldCoords+posOffset, rotOffset, m_grassParent);
 
-
-                    m_grass.Add(queryCords, new GrassObject {grass= newGrass, pos =queryCords, age = 0});                
+                    // Add grass to our mapper
+                    m_grass.Add(queryCords, new GrassObject {grass= newGrass, pos=queryCords, age = 0});                
                 }
                 else{
                     m_grass [queryCords].age =0;
@@ -333,12 +338,8 @@ public class GrassGenerator : MonoBehaviour
         }
 
         foreach (Vector2Int agedCoords in existingGrass){
-
             m_grass [agedCoords].age++;
-
-
             if (m_grass[agedCoords].age >= m_ageUntilDie){
-
                 Destroy(m_grass[agedCoords].grass);
                 m_grass.Remove(agedCoords);
             }
