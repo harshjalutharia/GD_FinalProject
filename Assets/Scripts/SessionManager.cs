@@ -28,7 +28,9 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The gem generator to place gems")]            private GemGenerator m_gemGenerator;
 
     [SerializeField, Tooltip("The rock generator to place trees")]   private VegetationGenerator m_rockGenerator;
-    [SerializeField, Tooltip("The grass generator to place trees")]   private VegetationGenerator m_grassGenerator;
+    [SerializeField, Tooltip("The grass generator to place trees")]   private VegetationGenerator m_flowerGenerator;
+
+    [SerializeField, Tooltip("The grass generator to place trees")]   private GrassGenerator m_grassGenerator;
 
 
     [Header("=== Menus ===")]
@@ -97,6 +99,7 @@ public class SessionManager : MonoBehaviour
         Vector3 m_heldMapTarget = (m_isShowingMap) ? m_heldMapVisiblePosRef.position : m_heldMapInvisiblePosRef.position;
         m_heldMap.position = Vector3.SmoothDamp(m_heldMap.position, m_heldMapTarget, ref m_heldMapVelocity, m_heldMapTransitionTime);
         m_heldMap.gameObject.SetActive(m_isShowingMap || Vector3.Distance(m_heldMap.position, m_heldMapInvisiblePosRef.position) >= 0.1f);
+
 
     }
 
@@ -222,10 +225,12 @@ public class SessionManager : MonoBehaviour
             m_rockGenerator.SetSeed(SessionMemory.current.seed);
             m_rockGenerator.GenerateVegetation();
         }
-        if (m_grassGenerator != null) {
-            m_grassGenerator.SetSeed(SessionMemory.current.seed);
-            m_grassGenerator.GenerateVegetation();
+        if (m_flowerGenerator != null) {
+            m_flowerGenerator.SetSeed(SessionMemory.current.seed);
+            m_flowerGenerator.GenerateVegetation();
         }
+    
+
         // Teleport the player to the start postiion
         m_player.transform.position = m_playerStartPosition;
         Debug.Log(m_player.transform.position);
@@ -248,6 +253,12 @@ public class SessionManager : MonoBehaviour
     private void InitializePlayerView() {
         // Let the camera fade in
         m_playerCameraFader.FadeIn();
+        // Generate the Grass in the run time
+        if (m_grassGenerator != null) {
+            m_grassGenerator.SetSeed(SessionMemory.current.seed);
+            m_grassGenerator.Initialize();
+        }
+
         // If a gem generator exists, toggle the view cam
         if (m_gemGenerator != null) m_gemGenerator.ToggleViewCheck(true);
     }
