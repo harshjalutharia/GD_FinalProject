@@ -220,6 +220,8 @@ public class GrassGenerator : MonoBehaviour
     [SerializeField, Tooltip("Player Reference")]          private Transform m_player;
     [SerializeField, Tooltip("Radius around the player"), Range(0,20)]          private int radius = 10;
     [SerializeField, Tooltip("Reference to the noise map used for terrain generation")]  private NoiseMap m_terrainGenerator;
+
+    [SerializeField, Tooltip("Reference to the query Mask")] private LayerMask m_queryMask;
     [SerializeField, Tooltip("The parent of the generated objects. If unset, will auto-set to this game object.")]          private Transform m_grassParent;
     [SerializeField, Tooltip("Prefab used for this generator. Allows for modding of their appearance on the held map")]    private GameObject m_prefab;
 
@@ -306,7 +308,19 @@ public class GrassGenerator : MonoBehaviour
                     float rotOffsetZ = m_prng.Next(0,m_rotationOffset);
                     Quaternion rot = Quaternion.Euler(rotOffsetX, rotOffsetY, rotOffsetZ);
 
-                    GameObject newGrass = Instantiate (m_prefab, pos, rot, m_grassParent);
+                    // calculate the  normal of the current point
+                    
+                    Vector3 m_currentNormal = m_terrainGenerator.QueryMapNormalAtWorldPos(pos.x, pos.z, m_queryMask, out int dum_x, out int dum_y, out float worldY);
+
+                    // Calculate rotation to align the up vector with the normal
+                    Quaternion normalRotation = Quaternion.FromToRotation(Vector3.up, m_currentNormal);
+
+                    // Combine the random rotation offset with the normal alignment
+                    Quaternion finalRotation = normalRotation * rot;
+
+                    // Instantiate the GameObject with the aligned rotation
+                    GameObject newGrass = Instantiate(m_prefab, pos, finalRotation, m_grassParent);
+
 
                     m_grass.Add(queryCords, new GrassObject {grass= newGrass, pos =queryCords, age = 0});                
                 }
