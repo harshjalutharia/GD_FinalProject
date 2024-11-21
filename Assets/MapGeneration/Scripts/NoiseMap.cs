@@ -427,6 +427,25 @@ public class NoiseMap : MonoBehaviour
         return new Vector2Int(x,y);
     }
 
+    public virtual Vector3 QueryMapNormalAtWorldPos(float worldX, float worldZ, out int x, out int y, out float worldY) {
+        LayerMask queryMask = this.gameObject.layer;
+        return QueryMapNormalAtWorldPos(worldX, worldZ, queryMask, out x, out y, out worldY);
+    }
+    public virtual Vector3 QueryMapNormalAtWorldPos(float worldX, float worldZ, LayerMask mask, out int x, out int y, out float worldY) {
+        float mapWidth = (float)m_mapChunkSize - 1f;
+        float mapExtent = mapWidth / 2f;
+
+        x = Mathf.Clamp(Mathf.RoundToInt(worldX + mapExtent), 0, m_mapChunkSize-1);
+        y = Mathf.Clamp(Mathf.RoundToInt(worldZ + mapExtent - mapWidth)*-1, 0, m_mapChunkSize-1);
+        worldY = m_heightMap[x,y];
+        Vector3 rayStart = new Vector3(worldX, worldY+1f, worldZ);
+
+        if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 2f, mask)) return hit.normal;
+
+        // If nothing else, return up
+        return Vector3.up;
+    }
+
 
     protected virtual void OnValidate() {}
 }
