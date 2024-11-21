@@ -218,7 +218,7 @@ public class GrassGenerator : MonoBehaviour
 
     [Header("=== References ===")]
     [SerializeField, Tooltip("Player Reference")]          private Transform m_player;
-    [SerializeField, Tooltip("Radius around the player"), Range(0,20)]          private int radius = 10;
+    [SerializeField, Tooltip("Radius around the player"), Range(0,40)]          private int radius = 10;
     [SerializeField, Tooltip("Reference to the noise map used for terrain generation")]  private NoiseMap m_terrainGenerator;
 
     [SerializeField, Tooltip("Reference to the query Mask")] private LayerMask m_queryMask;

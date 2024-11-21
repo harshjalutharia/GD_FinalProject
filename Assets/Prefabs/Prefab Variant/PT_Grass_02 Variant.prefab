@@ -26,27 +26,43 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 279674049265579943, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.146
+      value: -0.22299999
       objectReference: {fileID: 0}
     - target: {fileID: 1196083080072793360, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_FadeMode
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1196083080072793360, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_AnimateCrossFading
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1196083080072793360, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
+      propertyPath: m_LocalReferencePoint.y
+      value: 0.1850115
+      objectReference: {fileID: 0}
+    - target: {fileID: 1196083080072793360, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_LODs.Array.data[0].screenRelativeHeight
-      value: 0.254736
+      value: 0.35819262
       objectReference: {fileID: 0}
     - target: {fileID: 1196083080072793360, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_LODs.Array.data[1].screenRelativeHeight
-      value: 0.11223353
+      value: 0.26092014
       objectReference: {fileID: 0}
     - target: {fileID: 1196083080072793360, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_LODs.Array.data[2].screenRelativeHeight
-      value: 0.04353223
+      value: 0.18860649
+      objectReference: {fileID: 0}
+    - target: {fileID: 1309944978084627218, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
+      propertyPath: m_ScaleInLightmap
+      value: 0.71638525
+      objectReference: {fileID: 0}
+    - target: {fileID: 5391961225124459694, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 5811990557746906380, guid: c25cdd8fa4e03f041a993873d8298408, type: 3}
+    - target: {fileID: 5828874672928699267, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
+      propertyPath: m_ScaleInLightmap
+      value: 0.5730844
       objectReference: {fileID: 0}
     - target: {fileID: 6119579431137445377, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_LocalScale.x
@@ -62,11 +78,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6119579431137445377, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.146
+      value: -0.223
       objectReference: {fileID: 0}
     - target: {fileID: 6251920492078742113, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.02
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6251920492078742113, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_LocalScale.y
@@ -74,7 +90,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6251920492078742113, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.02
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6251920492078742113, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_LocalPosition.x
@@ -120,6 +136,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PT_Grass_02 Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 7088410758827092112, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -4435434709360095332, guid: c25cdd8fa4e03f041a993873d8298408, type: 3}
     - target: {fileID: 7442711440568689961, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -138,8 +158,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7442711440568689961, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.146
+      value: -0.22299999
       objectReference: {fileID: 0}
+    - target: {fileID: 8043189345720651878, guid: 6cdd667aa0034cd4dadc8d58a65fb098, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 3836962167230424001, guid: c25cdd8fa4e03f041a993873d8298408, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
