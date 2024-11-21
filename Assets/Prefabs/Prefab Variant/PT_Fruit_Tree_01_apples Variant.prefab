@@ -63,50 +63,5 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5935278547815300987, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: -3423858523986573921}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
---- !u!23 &1358732924120726468 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 7525788340159858592, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
-  m_PrefabInstance: {fileID: 8839379671739448420}
-  m_PrefabAsset: {fileID: 0}
---- !u!136 &1506818007893767714 stripped
-CapsuleCollider:
-  m_CorrespondingSourceObject: {fileID: 7945055650042464838, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
-  m_PrefabInstance: {fileID: 8839379671739448420}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &2951424143206138655 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5935278547815300987, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
-  m_PrefabInstance: {fileID: 8839379671739448420}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &-3423858523986573921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2951424143206138655}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5a91ea1b706d43a2b26a64f6cc5012d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_collider: {fileID: 1506818007893767714}
-  m_renderers:
-  - {fileID: 9084146820975188139}
-  - {fileID: 1358732924120726468}
-  - {fileID: 2981457918540396673}
---- !u!23 &2981457918540396673 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 6038074568851490021, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
-  m_PrefabInstance: {fileID: 8839379671739448420}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &9084146820975188139 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 340751423047132367, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
-  m_PrefabInstance: {fileID: 8839379671739448420}
-  m_PrefabAsset: {fileID: 0}

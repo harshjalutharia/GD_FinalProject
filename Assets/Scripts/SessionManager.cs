@@ -22,6 +22,7 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The noise map that generates terrain.")]          private NoiseMap m_terrainGenerator;
     [SerializeField, Tooltip("The landmark generator that places buildings")]   private LandmarkGenerator m_landmarkGenerator;
     [SerializeField, Tooltip("Specific refrence to the voronoi map used")]      private VoronoiMap m_voronoiMap;
+    [SerializeField, Tooltip("The Fustrum Manager that manages fustrum chunks")]    private FustrumManager m_fustrumManager;
     [SerializeField, Tooltip("The shortest path finder for path prediction")]   private FindShortestPath m_pathFinder;
 
     [SerializeField, Tooltip("The vegetation generator to place trees")]    private VegetationGenerator m_vegetationGenerator;
@@ -216,6 +217,7 @@ public class SessionManager : MonoBehaviour
         */
 
         GenerateStartAndEnd(m_terrainGenerator, m_voronoiMap, 150f, 20, out m_playerStartPosition, out int playerStartPositionIndex, out m_playerEndPosition, out int playerEndPositionIndex);
+        if (m_fustrumManager != null) m_fustrumManager.Initialize();
         if (m_pathFinder != null) m_pathFinder.CalculatePath(m_playerStartPosition, m_playerEndPosition, false, true, out List<Vector3> pathPoints, out List<int> pathSegmentIndices);
         if (m_vegetationGenerator != null) {
             m_vegetationGenerator.SetSeed(SessionMemory.current.seed);

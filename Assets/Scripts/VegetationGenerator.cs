@@ -130,6 +130,16 @@ public class VegetationGenerator : MonoBehaviour
                     GameObject t = Instantiate (prefab, pos , rot, m_vegetationParent);
                     generatedTree.Add(t);
                     m_terrainGenerator.DrawCircleOnHeldMap(pos.x, pos.z, mapRadius, mapColor);
+                    // Check if this object has a fustrum group attached. if so, initialize it too
+                    FustrumGroup fg = t.GetComponent<FustrumGroup>();
+                    if (fg != null) fg.QueryGridParent();
+                    else if (FustrumManager.current != null) {
+                        Vector2Int coords = FustrumManager.current.GetCoordsFromWorldPosition(pos);
+                        if (FustrumManager.current.coordToChunkMap.ContainsKey(coords)) {
+                            FustrumGroup parent = FustrumManager.current.coordToChunkMap[coords];
+                            parent.AddGameObject(t);
+                        }
+                    }
                 }
 
                 // Break early of the total # of generated trees already has reached the max number possible.
@@ -172,6 +182,16 @@ public class VegetationGenerator : MonoBehaviour
                 GameObject t = Instantiate (toSpawn.prefab.prefab, toSpawn.position , toSpawn.rotation, m_vegetationParent);
                 generatedTree.Add(t);
                 m_terrainGenerator.DrawCircleOnHeldMap(toSpawn.position.x, toSpawn.position.z, toSpawn.prefab.mapRenderSize, toSpawn.prefab.mapColor);
+                // Check if this object has a fustrum group attached. if so, initialize it too
+                FustrumGroup fg = t.GetComponent<FustrumGroup>();
+                if (fg != null) fg.QueryGridParent();
+                else if (FustrumManager.current != null) {
+                    Vector2Int coords = FustrumManager.current.GetCoordsFromWorldPosition(toSpawn.position);
+                    if (FustrumManager.current.coordToChunkMap.ContainsKey(coords)) {
+                        FustrumGroup parent = FustrumManager.current.coordToChunkMap[coords];
+                        parent.AddGameObject(t);
+                    }
+                }
             }
 
 

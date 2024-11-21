@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PT_Fruit_Tree_01_pears Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 2613454675235345673, guid: b62637568d07eb141b948ab45ea8c3d4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2966750739439028892, guid: b62637568d07eb141b948ab45ea8c3d4, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0
@@ -51,6 +55,14 @@ PrefabInstance:
     - target: {fileID: 2966750739439028892, guid: b62637568d07eb141b948ab45ea8c3d4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3491555602639996928, guid: b62637568d07eb141b948ab45ea8c3d4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7765329102591482917, guid: b62637568d07eb141b948ab45ea8c3d4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8031637485679984109, guid: b62637568d07eb141b948ab45ea8c3d4, type: 3}
       propertyPath: m_FadeMode
