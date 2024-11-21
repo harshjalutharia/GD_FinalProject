@@ -264,6 +264,7 @@ public class GrassGenerator : MonoBehaviour
         m_prng = new System.Random(m_seed);
 
         m_grass = new Dictionary<Vector2Int, GrassObject>();
+        if (m_grassParent == null) m_grassParent = this.transform;
         m_initialized = true;
 
     }
@@ -300,26 +301,25 @@ public class GrassGenerator : MonoBehaviour
                     float heightNoise = m_terrainGenerator.QueryHeightAtCoords(x, y, out Vector3 pixelPosition);
                     float posOffsetX = (float)m_prng.Next(0, 100) / 100f;
                     float posOffsetZ = (float)m_prng.Next(0, 100) / 100f;
-                    Vector3 pos = pixelPosition + new Vector3 (posOffsetX, 0f, posOffsetZ);
+                    Vector3 posOffset = new Vector3 (posOffsetX, 0f, posOffsetZ);
 
                     // Get the orientation of the planted tree
                     float rotOffsetX = m_prng.Next(0,m_rotationOffset);
                     float rotOffsetY = m_prng.Next(0,360);
                     float rotOffsetZ = m_prng.Next(0,m_rotationOffset);
-                    Quaternion rot = Quaternion.Euler(rotOffsetX, rotOffsetY, rotOffsetZ);
+                    Quaternion rotOffset = Quaternion.Euler(rotOffsetX, rotOffsetY, rotOffsetZ);
 
-                    // calculate the  normal of the current point
-                    
-                    Vector3 m_currentNormal = m_terrainGenerator.QueryMapNormalAtWorldPos(pos.x, pos.z, m_queryMask, out int dum_x, out int dum_y, out float worldY);
-
+                    // Calculate the  normal of the current point
+                    Vector3 currentNormal = m_terrainGenerator.QueryMapNormalAtWorldPos(pixelPosition.x, pixelPosition.z, m_queryMask, out int dum_x, out int dum_y, out float worldY);
                     // Calculate rotation to align the up vector with the normal
-                    Quaternion normalRotation = Quaternion.FromToRotation(Vector3.up, m_currentNormal);
+                    Quaternion normalRotation = Quaternion.FromToRotation(Vector3.up, currentNormal);
 
-                    // Combine the random rotation offset with the normal alignment
-                    Quaternion finalRotation = normalRotation * rot;
+                    // Combine the position and rotation offset with the normal alignment
+                    Vector3 finalPosition = pixelPosition + normalRotation * posOffset;
+                    Quaternion finalRotation = normalRotation * rotOffset;
 
                     // Instantiate the GameObject with the aligned rotation
-                    GameObject newGrass = Instantiate(m_prefab, pos, finalRotation, m_grassParent);
+                    GameObject newGrass = Instantiate(m_prefab, finalPosition, finalRotation, m_grassParent);
 
 
                     m_grass.Add(queryCords, new GrassObject {grass= newGrass, pos =queryCords, age = 0});                
