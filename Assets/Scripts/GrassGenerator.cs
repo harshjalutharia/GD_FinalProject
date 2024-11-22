@@ -236,7 +236,7 @@ public class GrassGenerator : MonoBehaviour
 
     [SerializeField, Tooltip("Rotation Offset for rotating the prefab"), Range(0,30)]                               private int m_rotationOffset;
 
-    [SerializeField, Tooltip("Age for Grass to die of"), Range(0,3)]                               private int m_ageUntilDie;
+    [SerializeField, Tooltip("Age for Grass to die of")]                               private int m_ageUntilDie;
 
     class GrassObject {
         public GameObject grass;
@@ -324,10 +324,19 @@ public class GrassGenerator : MonoBehaviour
                     Quaternion rotOffset = normalRotation * Quaternion.Euler(rotOffsetX, rotOffsetY, rotOffsetZ);
 
                     // Instantiate the GameObject with the aligned rotation
-                    GameObject newGrass = Instantiate(m_prefab, worldCoords+posOffset, rotOffset, m_grassParent);
+                    Vector3 pos = worldCoords+posOffset;
+                    GameObject newGrass = Instantiate(m_prefab, pos, rotOffset, m_grassParent);
 
                     // Add grass to our mapper
-                    m_grass.Add(queryCords, new GrassObject {grass= newGrass, pos=queryCords, age = 0});                
+                    m_grass.Add(queryCords, new GrassObject {grass= newGrass, pos=queryCords, age = 0});
+
+                     // Check if this object has a fustrum group attached. if so, initialize it too
+                    FustrumGroup fg = newGrass.GetComponent<FustrumGroup>();
+                    if (fg != null) fg.QueryGridParent();
+                    else if (FustrumManager.current != null && FustrumManager.current.coordToChunkMap.ContainsKey(queryCords)) {
+                        FustrumGroup parent = FustrumManager.current.coordToChunkMap[queryCords];
+                        parent.AddGameObject(newGrass);
+                    }           
                 }
                 else{
                     m_grass [queryCords].age =0;

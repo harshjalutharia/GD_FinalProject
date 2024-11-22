@@ -31,7 +31,8 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The rock generator to place trees")]   private VegetationGenerator m_rockGenerator;
     [SerializeField, Tooltip("The grass generator to place trees")]   private VegetationGenerator m_flowerGenerator;
 
-    [SerializeField, Tooltip("The grass generator to place trees")]   private GrassGenerator m_grassGenerator;
+    [SerializeField, Tooltip("The grass generator to place grass")]   private VegetationGenerator m_grassGenerator;
+    [SerializeField, Tooltip("The grass generator to place grass locally around the player")]   private GrassGenerator m_localGrassGenerator;
 
 
     [Header("=== Menus ===")]
@@ -231,6 +232,11 @@ public class SessionManager : MonoBehaviour
             m_flowerGenerator.SetSeed(SessionMemory.current.seed);
             m_flowerGenerator.GenerateVegetation();
         }
+        // Generate the Grass in the run time
+        if (m_grassGenerator != null) {
+            m_grassGenerator.SetSeed(SessionMemory.current.seed);
+            m_grassGenerator.GenerateVegetation();
+        }
     
 
         // Teleport the player to the start postiion
@@ -255,10 +261,11 @@ public class SessionManager : MonoBehaviour
     private void InitializePlayerView() {
         // Let the camera fade in
         m_playerCameraFader.FadeIn();
+
         // Generate the Grass in the run time
-        if (m_grassGenerator != null) {
-            m_grassGenerator.SetSeed(SessionMemory.current.seed);
-            m_grassGenerator.Initialize();
+        if (m_localGrassGenerator != null) {
+            m_localGrassGenerator.SetSeed(SessionMemory.current.seed);
+            m_localGrassGenerator.Initialize();
         }
 
         // If a gem generator exists, toggle the view cam

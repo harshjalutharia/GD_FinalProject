@@ -9,6 +9,7 @@ public class VegetationGenerator : MonoBehaviour
         public GameObject prefab;
         public int mapRenderSize;
         public Color mapColor;
+        public bool alignWithNormal;
     }
     
     public class ToSpawn {
@@ -36,6 +37,7 @@ public class VegetationGenerator : MonoBehaviour
     [SerializeField, Tooltip("Min noise map threshold to consider a pixel cell to generate in"), Range(0f,1f)]                      private float m_minHeight = 0.3f;
     [SerializeField, Tooltip("Max noise map threshold to consider a pixel cell to generate in"), Range(0f,1f)]                      private float m_maxHeight = 0.6f;
     [SerializeField, Tooltip("Rotation Offset for rotating the prefab"), Range(0,30)]                      private int m_rotationOffset;
+    [SerializeField, Tooltip("If alignging to map terrain normal, select what layer the terrain generator is on")] private LayerMask m_normalQueryMask;
 
     [Header("=== Outputs - READ ONLY ===")]
     public List<GameObject> generatedTree;
@@ -103,18 +105,28 @@ public class VegetationGenerator : MonoBehaviour
                 GameObject prefab = m_prefabs[prefabIndex].prefab;
                 int mapRadius = m_prefabs[prefabIndex].mapRenderSize;
                 Color mapColor = m_prefabs[prefabIndex].mapColor;
+                bool alignWithNormal = m_prefabs[prefabIndex].alignWithNormal;
+
+                float heightNoise = m_terrainGenerator.QueryHeightAtCoords(x, y, out Vector3 pixelPosition);
+                Quaternion normalRotation = Quaternion.identity;
+                if (alignWithNormal) {
+                    Vector3 currentNormal = m_terrainGenerator.QueryMapNormalAtWorldPos(
+                        pixelPosition.x, pixelPosition.z, 
+                        m_normalQueryMask, 
+                        out int dum_x, out int dum_y, out float worldY);
+                    normalRotation = Quaternion.FromToRotation(Vector3.up, currentNormal);
+                }
 
                 // Get the world position of the new object to be spawned.
-                float heightNoise = m_terrainGenerator.QueryHeightAtCoords(x, y, out Vector3 pixelPosition);
                 float posOffsetX = (float)prng.Next(0, 100) / 100f;
                 float posOffsetZ = (float)prng.Next(0, 100) / 100f;
-                Vector3 pos = pixelPosition + new Vector3 (posOffsetX, 0f, posOffsetZ);
+                Vector3 pos = pixelPosition + normalRotation * new Vector3 (posOffsetX, 0f, posOffsetZ);
 
                 // Get the orientation of the planted tree
                 float rotOffsetX = prng.Next(0,m_rotationOffset);
                 float rotOffsetY = prng.Next(0,360);
                 float rotOffsetZ = prng.Next(0,m_rotationOffset);
-                Quaternion rot = Quaternion.Euler(rotOffsetX, rotOffsetY, rotOffsetZ);
+                Quaternion rot = normalRotation * Quaternion.Euler(rotOffsetX, rotOffsetY, rotOffsetZ);
 
                 // Increase the ticker for the number of generated trees
                 treeCount += 1;
@@ -129,7 +141,7 @@ public class VegetationGenerator : MonoBehaviour
                     // instantiate the object, store its reference in `generatedTree`, and add its circle to held map
                     GameObject t = Instantiate (prefab, pos , rot, m_vegetationParent);
                     generatedTree.Add(t);
-                    m_terrainGenerator.DrawCircleOnHeldMap(pos.x, pos.z, mapRadius, mapColor);
+                    if (mapRadius > 0) m_terrainGenerator.DrawCircleOnHeldMap(pos.x, pos.z, mapRadius, mapColor);
                     // Check if this object has a fustrum group attached. if so, initialize it too
                     FustrumGroup fg = t.GetComponent<FustrumGroup>();
                     if (fg != null) fg.QueryGridParent();
@@ -181,7 +193,7 @@ public class VegetationGenerator : MonoBehaviour
                 // Instantiate the necessary prefab with the given position and rotation
                 GameObject t = Instantiate (toSpawn.prefab.prefab, toSpawn.position , toSpawn.rotation, m_vegetationParent);
                 generatedTree.Add(t);
-                m_terrainGenerator.DrawCircleOnHeldMap(toSpawn.position.x, toSpawn.position.z, toSpawn.prefab.mapRenderSize, toSpawn.prefab.mapColor);
+                if (toSpawn.prefab.mapRenderSize > 0) m_terrainGenerator.DrawCircleOnHeldMap(toSpawn.position.x, toSpawn.position.z, toSpawn.prefab.mapRenderSize, toSpawn.prefab.mapColor);
                 // Check if this object has a fustrum group attached. if so, initialize it too
                 FustrumGroup fg = t.GetComponent<FustrumGroup>();
                 if (fg != null) fg.QueryGridParent();
