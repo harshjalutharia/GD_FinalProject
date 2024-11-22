@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class FustrumManager : MonoBehaviour
 {
     public static FustrumManager current;
 
+    [SerializeField, Tooltip("Ref. to the NoiseMap used for world generation")] private NoiseMap m_terrainGenerator;
     [SerializeField, Tooltip("Ref. to prefab that represents map chunk")]   private FustrumGroup m_mapChunkPrefab;
     [SerializeField, Tooltip("The map chunk size")]                         private float m_mapSize;
     [SerializeField, Tooltip("The size of each chunk")]                     private float m_chunkSize;
@@ -14,12 +18,22 @@ public class FustrumManager : MonoBehaviour
 
     private int m_gridSize;
     private float m_gridDimensions, m_gridExtents;
-    private Vector3 m_anchor;
+    [SerializeField] private Vector3 m_anchor;
     
     private Dictionary<Vector2Int, FustrumGroup> m_coordToChunkMap = new Dictionary<Vector2Int, FustrumGroup>();
     public Dictionary<Vector2Int, FustrumGroup> coordToChunkMap => m_coordToChunkMap;
     [SerializeField] private bool m_initialized = false;
     public bool initialized => m_initialized;
+
+    #if UNITY_EDITOR
+    [SerializeField] private bool m_showGizmos = false;
+    private void OnDrawGizmos() {
+        if (!m_showGizmos) return;
+        if (m_coordToChunkMap.Count == 0) return;
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(m_anchor, 5f);
+    }
+    #endif
 
     private void Awake() {
         current = this;
@@ -49,7 +63,8 @@ public class FustrumManager : MonoBehaviour
                 Vector3 chunkPosition = GetWorldPositionFromCoords(x, y);
                 Vector2Int coords = new Vector2Int(x,y);
                 // instantiate new chunk
-                FustrumGroup group = Instantiate(m_mapChunkPrefab, chunkPosition, Quaternion.identity, m_parent) as FustrumGroup;
+                FustrumGroup group = Instantiate(m_mapChunkPrefab, chunkPosition, Quaternion.identity) as FustrumGroup;
+                group.transform.parent = m_parent;
                 group.transform.localScale = new Vector3(m_chunkSize, m_chunkHeight, m_chunkSize);
                 // Add chunk to our dictionary of chunks
                 m_coordToChunkMap.Add(coords, group);
@@ -72,11 +87,12 @@ public class FustrumManager : MonoBehaviour
         int queryX = Mathf.Clamp(x, 0, m_gridSize);
         int queryY = Mathf.Clamp(y, 0, m_gridSize);
 
-        return m_anchor + new Vector3(
-            m_chunkSize * ((float)queryX + 0.5f),
-            0f,
-            m_chunkSize * ((float)queryY + 0.5f)
-        );
+        float worldX = m_anchor.x + m_chunkSize * ((float)queryX + 0.5f);
+        float worldZ = m_anchor.z + m_chunkSize * ((float)queryY + 0.5f);
+        Debug.Log($"({queryX},{queryY}) -> ({worldX},{worldZ})");
+        float worldY = m_terrainGenerator.QueryHeightAtWorldPos(worldX, worldZ, out int dumX, out int dumY);
+
+        return new Vector3(worldX, worldY, worldZ);
     }
 
     public Vector2Int GetCoordsFromWorldPosition(Vector3 position) {

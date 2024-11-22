@@ -8,12 +8,12 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: PT_Grass_Mat
-  m_Shader: {fileID: 4800000, guid: 233be0623027421449b81f7423abaf79, type: 3}
+  m_Shader: {fileID: 4800000, guid: f8527e36cfa8a43a1bc41b6662bca310, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _CAMERA_DISTANCE_CLIPPING_ON
   - _CUSTOMWIND_ON
-  - _TRANSLUCENCYONOFF_ON
   m_InvalidKeywords:
   - _ALPHAPREMULTIPLY_ON
   - _CUSTOMCOLORSTINTING_ON
@@ -74,6 +74,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _BumpScale: 1
+    - _CAMERADISTANCECLIPPING: 1
     - _CUSTOMCOLORSTINTING: 1
     - _CUSTOMWIND: 1
     - _Cutoff: 0.5
@@ -86,7 +87,11 @@ Material:
     - _GradientPower: 1
     - _LeavesThickness: 0.7
     - _MaskClipValue: 0.5
+    - _MaxCamDistance: 50
+    - _MaxDistance: 50
     - _Metallic: 0
+    - _MinCamDistance: 20
+    - _MinDistance: 40
     - _Mode: 3
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -98,7 +103,7 @@ Material:
     - _SnowGradient: 0.83
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TRANSLUCENCYONOFF: 1
+    - _TRANSLUCENCYONOFF: 0
     - _TransAmbient: 0.2
     - _TransDirect: 1
     - _TransNormalDistortion: 0.1
