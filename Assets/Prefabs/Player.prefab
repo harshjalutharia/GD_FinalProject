@@ -6067,6 +6067,8 @@ MonoBehaviour:
   friction: 8
   frictionSlopAngle: 45
   slideResistance: 0.6
+  maxAccessibleStamina: 0
+  staminaPerGem: 3
   maxFlightStamina: 3.1
   jumpStaminaConsume: 3
   flightStamina: 0
@@ -6080,7 +6082,7 @@ MonoBehaviour:
   slopAngularChangeTolerance: 18
   groundMask:
     serializedVersion: 2
-    m_Bits: 83
+    m_Bits: 64
   grounded: 0
   grabGround: 0
   readyToJump: 0
@@ -6105,6 +6107,7 @@ MonoBehaviour:
     sprinting: 0
   orientation: {fileID: 3827837098921800371}
   rotationSpeed: 6
+  gemGenerator: {fileID: 0}
   collectGemParticles: {fileID: 8831431543305651068}
   cape: {fileID: 0}
   debugText1: {fileID: 0}

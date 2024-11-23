@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -663,10 +664,16 @@ public class PlayerMovement : MonoBehaviour
     
     [Tooltip("Resistance Force while sliding")] 
     public float slideResistance;
+
+
+    [Header("Stamina Settings")] 
+    [Tooltip("READ ONLY. Maximum accessible stamina"), SerializeField]
+    public float maxAccessibleStamina;
+
+    [Tooltip("The stamina each gem gives")]
+    public float staminaPerGem;
     
-    
-    [Header("Stamina Settings")]
-    [Tooltip("Maximum stamina for flight and sprint")]
+    [Tooltip("Maximum stamina for flight and sprint at current moment")]
     public float maxFlightStamina;
     
     [Tooltip("Stamina consumed by jumping")]
@@ -771,6 +778,9 @@ public class PlayerMovement : MonoBehaviour
 
     [Tooltip("player turn speed")]
     public float rotationSpeed;
+
+    [Tooltip("Gem Generator GameObject")] 
+    public GemGenerator gemGenerator;
     
     [Tooltip("particle system of collecting gem")]
     public ParticleSystem collectGemParticles;
@@ -806,6 +816,7 @@ public class PlayerMovement : MonoBehaviour
         playerObj = animator.transform;
 
         readyToJump = true;
+        maxAccessibleStamina = maxFlightStamina;
         flightStamina = maxFlightStamina;
         
         groundDrag = moveForce / slideSpeedThreshold;
@@ -1116,9 +1127,8 @@ public class PlayerMovement : MonoBehaviour
         if (other.CompareTag("StaminaPowerUp")) // tag name might be changed
         {
             //todo get the stamina increase amount from the collider object
-            var staminaIncrease = 3;  // change later
 
-            maxFlightStamina += staminaIncrease;
+            maxFlightStamina += staminaPerGem;
             //Destroy(other.gameObject);
             
             //todo maybe some effect happens
@@ -1181,9 +1191,21 @@ public class PlayerMovement : MonoBehaviour
     {
         yield return new WaitForFixedUpdate();
         rb.isKinematic = false;
+        maxAccessibleStamina += GetGemCount() * staminaPerGem;
     }
-    
-    
+
+
+    private int GetGemCount()
+    {
+        Dictionary<Gem, GemGenerator.GemData> gemData = gemGenerator.gemData;
+        int count = 0;
+        foreach (var gem in gemData.Values)
+        {
+            if (!gem.isDestination) count++;
+        }
+
+        return count;
+    }
     
     [System.Serializable] 
     public struct AnimationVars

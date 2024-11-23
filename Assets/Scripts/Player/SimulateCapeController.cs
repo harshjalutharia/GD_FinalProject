@@ -29,7 +29,9 @@ public class SimulateCapeController : MonoBehaviour
     
     void Update()
     {
-        float offsetY = Mathf.Lerp(0.5f, 0, playerMovement.GetFlightStamina() / playerMovement.maxFlightStamina);
+        // change texture offset according to player's stamina
+        // float offsetY = Mathf.Lerp(0.5f, 0, playerMovement.GetFlightStamina() / playerMovement.maxAccessibleStamina);
+        float offsetY = Mathf.Lerp(0.5f, 0, Mathf.Log(playerMovement.GetFlightStamina(),playerMovement.maxAccessibleStamina));
         Vector2 offset = new Vector2(0, offsetY);
         capeMaterial.SetTextureOffset("_MainTex", offset);
     }
