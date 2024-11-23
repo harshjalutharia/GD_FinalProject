@@ -41,6 +41,8 @@ public class NoiseMap : MonoBehaviour
     [SerializeField, Tooltip("The length and width of the generated map, in Unity meters.")]                        protected int m_mapChunkSize = 241;
     public int mapChunkSize => m_mapChunkSize;
     [SerializeField, Range(0,6), Tooltip("The LOD level used to control the mesh fidelity.")]                       protected int m_levelOfDetail;
+    [SerializeField, Tooltip("The offset of the noise map in either X or Y direction. Not all variants will use this.")]    protected Vector2 m_offset;
+    [SerializeField, Tooltip("When generating perlin noise, how do we normalize the noise map")]                            protected Generators.NormalizeMode m_normalizeMode;
     [SerializeField, Tooltip("If set to TRUE, Unity will call `GenerateMap()` with every inspector value change.")] protected bool m_autoUpdate;
     public bool autoUpdate => m_autoUpdate;
     protected System.Random m_prng;
@@ -131,6 +133,14 @@ public class NoiseMap : MonoBehaviour
 
     public virtual void SetLevelOfDetail(int newLOD) {
         m_levelOfDetail = Mathf.Clamp(newLOD, 0, 6);
+    }
+
+    public virtual void SetOffset(Vector2 newOffset) {
+        m_offset = newOffset;
+    }
+
+    public virtual void SetNormalizeMode(Generators.NormalizeMode newMode) {
+        m_normalizeMode = newMode;
     }
 
     public virtual void GenerateMap() {

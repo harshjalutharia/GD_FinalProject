@@ -18,43 +18,37 @@ public class SessionManager : MonoBehaviour
     public Vector3 playerStartPosition => m_playerStartPosition;
     public Vector3 playerEndPosition => m_playerEndPosition;
 
-    [Header("=== Terrain Generation ===")]
+    [Header("=== Necessary Generators/Maps/Managers ===")]
     [SerializeField, Tooltip("The noise map that generates terrain.")]          private NoiseMap m_terrainGenerator;
-    [SerializeField, Tooltip("The landmark generator that places buildings")]   private LandmarkGenerator m_landmarkGenerator;
     [SerializeField, Tooltip("Specific refrence to the voronoi map used")]      private VoronoiMap m_voronoiMap;
-    [SerializeField, Tooltip("The Fustrum Manager that manages fustrum chunks")]    private FustrumManager m_fustrumManager;
-    [SerializeField, Tooltip("The shortest path finder for path prediction")]   private FindShortestPath m_pathFinder;
 
-    [SerializeField, Tooltip("The vegetation generator to place trees")]    private VegetationGenerator m_vegetationGenerator;
-    [SerializeField, Tooltip("The gem generator to place gems")]            private GemGenerator m_gemGenerator;
-
-    [SerializeField, Tooltip("The rock generator to place trees")]   private VegetationGenerator m_rockGenerator;
-    [SerializeField, Tooltip("The grass generator to place trees")]   private VegetationGenerator m_flowerGenerator;
-
-    [SerializeField, Tooltip("The grass generator to place grass")]   private VegetationGenerator m_grassGenerator;
+    [Header("=== Optional Generators/Maps/Managers ===")]
+    [SerializeField, Tooltip("The Fustrum Manager that manages fustrum chunks")]                private FustrumManager m_fustrumManager;
+    [SerializeField, Tooltip("The landmark generator that places buildings")]                   private LandmarkGenerator m_landmarkGenerator;
+    [SerializeField, Tooltip("The vegetation generator to place trees")]                        private VegetationGenerator m_vegetationGenerator;
+    [SerializeField, Tooltip("The rock generator to place trees")]                              private VegetationGenerator m_rockGenerator;
+    [SerializeField, Tooltip("The grass generator to place trees")]                             private VegetationGenerator m_flowerGenerator;
+    [SerializeField, Tooltip("The grass generator to place grass")]                             private VegetationGenerator m_grassGenerator;
     [SerializeField, Tooltip("The grass generator to place grass locally around the player")]   private GrassGenerator m_localGrassGenerator;
-
+    [SerializeField, Tooltip("The gem generator to place gems")]                                private GemGenerator m_gemGenerator;
 
     [Header("=== Menus ===")]
-    //[SerializeField, Tooltip("The input button for pause menu")]                    private KeyCode m_pauseMenuKeyCode = KeyCode.Tab;
-                                                                                    private InputAction m_pauseMenuInput;
     [SerializeField, Tooltip("The transition time for menus to appear/disappear.")] private float m_pauseMenuTransitionTime = 1f;
     [SerializeField, Tooltip("The canvas group for the pause menu")]                private CanvasGroup m_pauseMenuGroup;
     [SerializeField, Tooltip("The canvas group for the win screen")]                private CanvasGroup m_winMenuGroup;
     [SerializeField, Tooltip("The transition time for the win screen to appear")]   private float m_winMenuTransitionTime = 1f;
-    //[SerializeField, Tooltip("The input button for movement debug canvas")]         private KeyCode m_movementDebugKeyCode = KeyCode.M;
-                                                                                    private InputAction m_movementDebugInput;
     [SerializeField, Tooltip("The canvas group for the player movement debug.")]    private CanvasGroup m_movementDebugGroup;
-    
+    private InputAction m_movementDebugInput;
+    private InputAction m_pauseMenuInput;
+
     [Header("=== Held Map Settings ===")]
     [SerializeField, Tooltip("The held map object transform itself")]       private Transform m_heldMap;
     [SerializeField, Tooltip("Ref. point for the visible map position")]    private Transform m_heldMapVisiblePosRef;
     [SerializeField, Tooltip("Ref. point for the inviisble map position")]  private Transform m_heldMapInvisiblePosRef;
-    //[SerializeField, Tooltip("The key code input for holding the map")]     private KeyCode m_showMapKey = KeyCode.LeftShift;
-                                                                            private InputAction m_showMapInput;
     [SerializeField, Tooltip("The transition time for the map transition")] private float m_heldMapTransitionTime = 0.25f;
     [SerializeField, Tooltip("Is the map being shown currently?")]          private bool m_isShowingMap;
     public bool isShowingMap => m_isShowingMap;
+    private InputAction m_showMapInput;
     private Vector3 m_heldMapVelocity = Vector3.zero;
 
     [Header("=== Scene Transition Settings ===")]
@@ -71,19 +65,55 @@ public class SessionManager : MonoBehaviour
     }
 
     private void Start() {
-        // At the start, we expect to be able to read the seed info from SessionMemory and use that to generate the terrain
+        // At the start, we expect to be able to read the seed info from SessionMemory. We then apply that seed to ALL randomization engines.
+        // SetSeed() will do this for us automatically.
         SetSeed(SessionMemory.current.seed);
-
-        // Initialize terrain generation        
-        m_terrainGenerator.GenerateMap();
 
         // Hide any other menus
         ToggleCanvasGroup(m_pauseMenuGroup, false);
         ToggleCanvasGroup(m_winMenuGroup, false);
         ToggleCanvasGroup(m_movementDebugGroup, false);
+        
+        // Initialize terrain generation
+        m_terrainGenerator.GenerateMap();
 
-        // Designate the start and end positions of the player
-        Invoke(nameof(SetPlayerInitialPosition), 1f);
+        // Designate the start and end positions of the player.
+        // The start and end positions rely on a representative voronoi map to let us know which regions are safe.
+        GenerateStartAndEnd(
+            m_terrainGenerator, m_voronoiMap, 
+            150f, 20, 
+            out m_playerStartPosition, out int playerStartPositionIndex, 
+            out m_playerEndPosition, out int playerEndPositionIndex
+        );
+
+        // Teleport the player to the start postiion
+        m_player.transform.position = m_playerStartPosition;
+
+        // After generating the terrain, we can now initiate a bunch of other managers, generators, etc.
+        if (m_fustrumManager != null)       m_fustrumManager.Initialize();                                                                                  // Fustrum culling
+        if (m_landmarkGenerator != null)    m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_playerStartPosition, m_terrainGenerator);          // Landmark generation
+        if (m_vegetationGenerator != null)  m_vegetationGenerator.GenerateVegetation();                                                                     // Vegetation generation
+        if (m_rockGenerator != null)        m_rockGenerator.GenerateVegetation();                                                                           // Rock generation
+        if (m_flowerGenerator != null)      m_flowerGenerator.GenerateVegetation();                                                                         // Flower generation
+        if (m_grassGenerator != null)       m_grassGenerator.GenerateVegetation();                                                                          // Grass generation
+        if (m_localGrassGenerator != null)  m_localGrassGenerator.Initialize();                                                                             // Local grass generation
+        // Gem generation
+        if (m_gemGenerator != null) {
+            m_gemGenerator.GenerateSmallGems();
+            m_gemGenerator.GenerateDestinationGem(m_playerEndPosition);
+        }
+        if (GameTracker.current != null)    GameTracker.current.StartTracking();                                                                            // Game tracker
+
+        StartCoroutine(m_player.GetComponent<PlayerMovement>().ActivatePlayer());        
+        Invoke(nameof(InitializePlayerView), 5f);
+    }
+
+    private void InitializePlayerView() {
+        // Let the camera fade in
+        m_playerCameraFader.FadeIn();                
+
+        // If a gem generator exists, toggle the view cam
+        if (m_gemGenerator != null) m_gemGenerator.ToggleViewCheck(true);
     }
 
     private void Update() {
@@ -114,8 +144,14 @@ public class SessionManager : MonoBehaviour
         SetSeed(Random.Range(0, 1000001));
     }
     public void SetSeed(int newSeed) {
-        m_terrainGenerator.SetSeed(SessionMemory.current.seed);
         Random.InitState(newSeed);
+        m_terrainGenerator.SetSeed(newSeed);
+        if (m_vegetationGenerator != null)  m_vegetationGenerator.SetSeed(newSeed);
+        if (m_rockGenerator != null)        m_rockGenerator.SetSeed(newSeed);
+        if (m_flowerGenerator != null)      m_flowerGenerator.SetSeed(newSeed);
+        if (m_localGrassGenerator != null)  m_localGrassGenerator.SetSeed(newSeed);
+        if (m_grassGenerator != null)       m_grassGenerator.SetSeed(newSeed);
+        if (m_gemGenerator != null)         m_gemGenerator.SetSeed(newSeed);
     }
 
     public void OpenPauseMenu() {   
@@ -204,72 +240,6 @@ public class SessionManager : MonoBehaviour
 
         group.interactable = setTo;
         group.blocksRaycasts = setTo;
-    }
-
-    private void SetPlayerInitialPosition()
-    {   
-        /*
-        Debug.Log(m_player.transform.position);
-        do {
-            m_playerStartPosition = m_terrainGenerator.GetRandomPosition(false, 125);
-            m_playerEndPosition = m_terrainGenerator.GetRandomPosition(false, 125);
-            Debug.Log(m_playerStartPosition.ToString() + " | " + m_playerEndPosition.ToString());
-        } while(Vector2.Distance(m_playerStartPosition.ToVector2(), m_playerEndPosition.ToVector2()) < 50f);
-        */
-
-        GenerateStartAndEnd(m_terrainGenerator, m_voronoiMap, 150f, 20, out m_playerStartPosition, out int playerStartPositionIndex, out m_playerEndPosition, out int playerEndPositionIndex);
-        if (m_fustrumManager != null) m_fustrumManager.Initialize();
-        if (m_pathFinder != null) m_pathFinder.CalculatePath(m_playerStartPosition, m_playerEndPosition, false, true, out List<Vector3> pathPoints, out List<int> pathSegmentIndices);
-        if (m_vegetationGenerator != null) {
-            m_vegetationGenerator.SetSeed(SessionMemory.current.seed);
-            m_vegetationGenerator.GenerateVegetation();
-        }
-        if (m_rockGenerator != null) {
-            m_rockGenerator.SetSeed(SessionMemory.current.seed);
-            m_rockGenerator.GenerateVegetation();
-        }
-        if (m_flowerGenerator != null) {
-            m_flowerGenerator.SetSeed(SessionMemory.current.seed);
-            m_flowerGenerator.GenerateVegetation();
-        }
-        // Generate the Grass in the run time
-        if (m_grassGenerator != null) {
-            m_grassGenerator.SetSeed(SessionMemory.current.seed);
-            m_grassGenerator.GenerateVegetation();
-        }
-    
-
-        // Teleport the player to the start postiion
-        m_player.transform.position = m_playerStartPosition;
-        Debug.Log(m_player.transform.position);
-        StartCoroutine(m_player.GetComponent<PlayerMovement>().ActivatePlayer());
-        // Generate landmarks
-        if (m_landmarkGenerator != null) m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_playerStartPosition, m_terrainGenerator);
-        // Generate gems, initialize view check
-        if (m_gemGenerator != null) {
-            m_gemGenerator.SetSeed(SessionMemory.current.seed);
-            m_gemGenerator.GenerateSmallGems();
-            m_gemGenerator.GenerateDestinationGem(m_playerEndPosition);
-        }
-
-        // Start the tracker, if exists
-        if (GameTracker.current != null) GameTracker.current.StartTracking();
-
-        Invoke(nameof(InitializePlayerView), 5f);
-    }
-
-    private void InitializePlayerView() {
-        // Let the camera fade in
-        m_playerCameraFader.FadeIn();
-
-        // Generate the Grass in the run time
-        if (m_localGrassGenerator != null) {
-            m_localGrassGenerator.SetSeed(SessionMemory.current.seed);
-            m_localGrassGenerator.Initialize();
-        }
-
-        // If a gem generator exists, toggle the view cam
-        if (m_gemGenerator != null) m_gemGenerator.ToggleViewCheck(true);
     }
 
     private void GenerateStartAndEnd(NoiseMap terrainMap, VoronoiMap vMap, float minDistance, int numAttempts, out Vector3 startPos, out int startIndex, out Vector3 endPos, out int endIndex) {

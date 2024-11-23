@@ -9,14 +9,14 @@ public class PerlinNoiseMap : NoiseMap
     [SerializeField]                protected int m_octaves = 4;
     [SerializeField, Range(0f,1f)]  protected float m_persistance = 0.5f;
     [SerializeField]                protected float m_lacunarity;
-    [SerializeField]                protected Vector2 m_offset;
 
     public override void GenerateMap() {
         m_prng = new System.Random(m_seed);
 
         m_noiseMap = Generators.GenerateNoiseMap(
             m_mapChunkSize, m_mapChunkSize, m_noiseScale, m_prng, 
-            m_octaves, m_persistance, m_lacunarity, m_offset
+            m_octaves, m_persistance, m_lacunarity, m_offset,
+            m_normalizeMode
         );
         m_heightMap = Generators.GenerateHeightMap(m_noiseMap, m_textureHeightCurve, m_textureHeightMultiplier);
         m_heightRange = GetHeightRange(m_heightMap);

@@ -29,6 +29,7 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField, Range(0f,1f)]  private float m_persistance = 0.5f;
     [SerializeField]                private float m_lacunarity;
     [SerializeField]                private Vector2 m_offset;
+    [SerializeField]                private Generators.NormalizeMode m_normalizeMode;
 
     [Header("=== Falloff Settings ===")]
     [SerializeField, Range(0f,1f)]  private float m_falloffStart = 1f;
@@ -102,7 +103,8 @@ public class TerrainGenerator : MonoBehaviour
         float[,] noiseMap = Generators.GenerateNoiseMap(
             m_mapDimensions.x, m_mapDimensions.y, m_noiseScale,
             m_prng, 
-            m_octaves, m_persistance, m_lacunarity, m_offset
+            m_octaves, m_persistance, m_lacunarity, m_offset,
+            m_normalizeMode
         );
 
         // We also create a falloff map that controls the edges of the map, creating islands
