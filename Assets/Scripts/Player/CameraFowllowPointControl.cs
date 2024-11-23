@@ -89,7 +89,7 @@ public class CameraFowllowPointControl : MonoBehaviour
     //public float followSpeed;//0.3f
     [Tooltip("Approximately the time the camera will take to reach the player")]
     public float smoothTime;
-
+    Vector3 currentVelocity = Vector3.zero;
     public bool trackXZ;
     
     void Start()
@@ -100,7 +100,6 @@ public class CameraFowllowPointControl : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 currentVelocity = Vector3.zero;
         if (trackXZ)
         {
             transform.position = new Vector3(player.position.x, transform.position.y, player.position.z);

@@ -18,14 +18,11 @@ public class GemGenerator : MonoBehaviour
     }
 
     [Header("=== References ===")]
-    [SerializeField, Tooltip("Ref. to session manager of the scene.")]          private SessionManager m_sessionManager;
-    [SerializeField, Tooltip("Ref. to landmark generator of the scene.")]       private LandmarkGenerator m_landmarkGenerator;
-    [SerializeField, Tooltip("Ref. to the terrain generator of the scene.")]    private NoiseMap m_terrainGenerator;
-    [SerializeField, Tooltip("The prefab used for small gems")]                 private Gem m_smallGemPrefab;
-    [SerializeField, Tooltip("The prefab used for the destination gem")]        private Gem m_destinationGemPrefab;
-    [SerializeField, Tooltip("The transform parent where gems are generated. If unset, set to self.")]
-                                                                                private Transform m_gemParent = null;
-    [SerializeField, Tooltip("The camera to check for visible gems")]   private Camera m_viewCamera;
+    [SerializeField, Tooltip("Ref. to landmark generator of the scene.")]                               private LandmarkGenerator m_landmarkGenerator;
+    [SerializeField, Tooltip("Ref. to the terrain generator of the scene.")]                            private NoiseMap m_terrainGenerator;
+    [SerializeField, Tooltip("The prefab used for small gems")]                                         private Gem m_smallGemPrefab;
+    [SerializeField, Tooltip("The prefab used for the destination gem")]                                private Gem m_destinationGemPrefab;
+    [SerializeField, Tooltip("The transform parent where gems are generated. If unset, set to self.")]  private Transform m_gemParent = null;
 
     [Header("=== Check In View Settings ===")]
     [SerializeField, Tooltip("Toggle to start checking for gems")]  private bool m_checkViewInitialized = false;
@@ -141,7 +138,7 @@ public class GemGenerator : MonoBehaviour
 
         // Get the resulting destination and rotation
         Vector3 pos = destination + new Vector3(0f, m_destGemHeightOffset, 0f);
-        Quaternion rot = Quaternion.EulerAngles(0f, m_prng.Next(0,360), 0f);
+        Quaternion rot = Quaternion.Euler(0f, m_prng.Next(0,360), 0f);
 
         // Instantiate
         m_destinationGem = Instantiate(m_destinationGemPrefab, pos, rot, m_gemParent) as Gem;
@@ -221,19 +218,16 @@ public class GemGenerator : MonoBehaviour
         m_checkViewInitialized = setTo;
     }
 
-    private void Update() {
+    private void LateUpdate() {
         // Don't do anything if we haven't initialized yet or if our dictionary of gems is unset
         if (!m_checkViewInitialized) return;
         if (m_gemData == null || m_gemData.Count == 0) return;
-
-        // Initialize fustrum planes
-        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(m_viewCamera);
 
         // Loop through all gems. All gems must have a collider. If not, then we skip.
         foreach(KeyValuePair<Gem, GemData> kvp in m_gemData) {
             Collider col = kvp.Key._collider;
             if (col == null) continue;
-            if (TestPlanesAABB(planes, col.bounds) && !kvp.Value.detected) AddGemToMap(kvp.Key, kvp.Value);
+            if (FustrumManager.current.gemFustrumCamera.CheckInFustrum(col) && !kvp.Value.detected) AddGemToMap(kvp.Key, kvp.Value);
         }
     }
 

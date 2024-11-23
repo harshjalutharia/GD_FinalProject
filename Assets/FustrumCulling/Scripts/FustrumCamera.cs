@@ -4,16 +4,10 @@ using UnityEngine;
 using Unity.Mathematics;
 
 public class FustrumCamera : MonoBehaviour
-{
-    public static FustrumCamera current;
-    
+{    
     [SerializeField, Tooltip("The camera to calculate the fustrum planes")] private Camera m_camera;
     [SerializeField, Tooltip("The fustrum planes generated from the camera")] private Plane[] m_planes;
     public Plane[] planes => m_planes;
-
-    private void Awake() {
-        current = this;
-    }
 
     private void Update() {
         // Initialize fustrum planes

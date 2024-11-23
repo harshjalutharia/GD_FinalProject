@@ -216,7 +216,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""ba557ba4-89a3-48d9-a258-1235d6a50ebd"",
-                    ""path"": ""<Keyboard>/tab"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

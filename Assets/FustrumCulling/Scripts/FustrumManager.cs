@@ -9,20 +9,30 @@ public class FustrumManager : MonoBehaviour
 {
     public static FustrumManager current;
 
-    [SerializeField, Tooltip("Ref. to the NoiseMap used for world generation")] private NoiseMap m_terrainGenerator;
-    [SerializeField, Tooltip("Ref. to prefab that represents map chunk")]   private FustrumGroup m_mapChunkPrefab;
+    [Header("=== References ===")]
+    [SerializeField, Tooltip("Ref. to the NoiseMap used for world generation")]         private NoiseMap m_terrainGenerator;
+    [SerializeField, Tooltip("Ref. to prefab that represents map chunk")]               private FustrumGroup m_mapChunkPrefab;
+    [SerializeField, Tooltip("The parent transform to store chunks under")]             private Transform m_parent;
+
+    [Header("=== Fustrum Cameras ===")]
+    [SerializeField, Tooltip("The main camera representing the primary perspective")]   private FustrumCamera m_mainFustrumCamera;
+    public FustrumCamera mainFustrumCamera => m_mainFustrumCamera;
+    [SerializeField, Tooltip("The fustrum camera used when pinpointing gems")]          private FustrumCamera m_gemFustrumCamera;
+    public FustrumCamera gemFustrumCamera => m_gemFustrumCamera;
+
+    [Header("=== Map dimensions & Sizes ===")]
     [SerializeField, Tooltip("The map chunk size")]                         private float m_mapSize;
     [SerializeField, Tooltip("The size of each chunk")]                     private float m_chunkSize;
     [SerializeField, Tooltip("How tall should map chunks be?")]             private float m_chunkHeight = 20f;
-    [SerializeField, Tooltip("The parent transform to store chunks under")] private Transform m_parent;
 
-    private int m_gridSize;
-    private float m_gridDimensions, m_gridExtents;
-    [SerializeField] private Vector3 m_anchor;
-    
+    [Header("=== Outputs - READ ONLY ===")]
+    [SerializeField, Tooltip("The resulting grid-specific grid size")]              private int m_gridSize;
+    [SerializeField, Tooltip("The resulting world space size of the grid")]         private float m_gridDimensions;
+    [SerializeField, Tooltip("The resulting world space extents of the grid")]      private float m_gridExtents;
+    [SerializeField, Tooltip("The resulting world space anchor point of the grid")] private Vector3 m_anchor;
     private Dictionary<Vector2Int, FustrumGroup> m_coordToChunkMap = new Dictionary<Vector2Int, FustrumGroup>();
     public Dictionary<Vector2Int, FustrumGroup> coordToChunkMap => m_coordToChunkMap;
-    [SerializeField] private bool m_initialized = false;
+    [SerializeField, Tooltip("Has this manager been initialized?")]                 private bool m_initialized = false;
     public bool initialized => m_initialized;
 
     #if UNITY_EDITOR
@@ -41,9 +51,6 @@ public class FustrumManager : MonoBehaviour
     }
 
     public void Initialize() {
-        // We can't really initialize anything if we don't even have a fustrum camera
-        if (FustrumCamera.current == null) return;
-
         // Let's count the grid that we'll generate. Assuming a square grid, we'll calcualte the grid dimensions by calculating how many chunks will fit inside the provided map size
         m_gridSize = Mathf.CeilToInt(m_mapSize / m_chunkSize);
         

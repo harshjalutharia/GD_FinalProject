@@ -4,18 +4,26 @@ using UnityEngine;
 
 public class FustrumGroup : MonoBehaviour
 {
-    [SerializeField, Tooltip("Reference to the collider used to check for fustrum culling.")] private Collider m_collider;
-    [SerializeField, Tooltip("List of renderers to activate/deactivate")] private List<Renderer> m_renderers = new List<Renderer>();
-    [SerializeField, Tooltip("List of gameobjects to activate/deactivate")] private List<GameObject> m_gameObjects = new List<GameObject>();
+    [Header("=== References ===")]
+    [SerializeField, Tooltip("The fustrum camera used for fustrum culling this object")]        private FustrumCamera m_fustrumCamera;
+    [SerializeField, Tooltip("Reference to the collider used to check for fustrum culling.")]   private Collider m_collider;
 
-    [SerializeField, Tooltip("Am I currently visible to the camera?")]  private bool m_visible = false;
-    public bool visible => m_visible;
-    [SerializeField, Tooltip("Do we have another FustrumGroup as a parent?")]   private FustrumGroup m_fustrumParent = null;
+    [Header("=== Parent-Child References ===")]
+    [SerializeField, Tooltip("Do we have another FustrumGroup as a parent?")]                   private FustrumGroup m_fustrumParent = null;
+    [SerializeField, Tooltip("List of renderers to activate/deactivate")]                       private List<Renderer> m_renderers = new List<Renderer>();
+    [SerializeField, Tooltip("List of gameobjects to activate/deactivate")]                     private List<GameObject> m_gameObjects = new List<GameObject>();
     [SerializeField, Tooltip("Do we have any fustrum group children?")] private List<FustrumGroup> m_fustrumChildren = new List<FustrumGroup>();
 
+    [Header("=== Outputs - READ ONLY ===")]
+    [SerializeField, Tooltip("Am I currently visible to the camera?")]  private bool m_visible = false;
+    public bool visible => m_visible;
+    
     private bool m_previousVisibility = true;
 
     private void LateUpdate() {
+        // Can't do anything if we're missing a fustrum camera references
+        if (FustrumManager.current.mainFustrumCamera == null) return;
+
         // Can't do anything if we don't even have a collider
         if (m_collider == null) return;
 
@@ -23,7 +31,7 @@ public class FustrumGroup : MonoBehaviour
         if (m_renderers.Count == 0 && m_gameObjects.Count == 0 && m_fustrumChildren.Count == 0) return;
 
         // Check our visibility
-        m_visible = FustrumCamera.current.CheckInFustrum(m_collider);
+        m_visible = FustrumManager.current.mainFustrumCamera.CheckInFustrum(m_collider);
         
         if (m_visible != m_previousVisibility) {
             // If any renderers attached, enable/disable them
