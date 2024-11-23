@@ -202,7 +202,6 @@ public class GameManager : MonoBehaviour
         yield return ToggleCanvasGroupCoroutine(m_startMenuGroup, false, m_startTransitionTime);
         yield return StartCoroutine(PlaySlideshowCoroutine());
         m_startCameraFader.FadeOut();
-
         // === Move to main scene ===
         SceneManager.LoadScene(1);
     }
