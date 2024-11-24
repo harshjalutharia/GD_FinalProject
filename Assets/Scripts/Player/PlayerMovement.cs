@@ -703,6 +703,8 @@ public class PlayerMovement : MonoBehaviour
     private InputAction sprintInput;
 
     private InputAction switchSprintInput;
+
+    private InputAction mapInput;
     
     
     private float horizontalInput;
@@ -751,6 +753,9 @@ public class PlayerMovement : MonoBehaviour
     
     [SerializeField] 
     private bool requestFlight;
+
+    [SerializeField] 
+    private bool holdingMap;
     
     [SerializeField] 
     private bool flightActivated;
@@ -787,7 +792,10 @@ public class PlayerMovement : MonoBehaviour
 
     [Tooltip("game object of the cape")] 
     public SimulateCapeController cape;
-    
+
+    [Tooltip("GameObject of the map")] 
+    public GameObject mapObj;
+
     public event Action OnLanding;
     
     private Transform playerObj;
@@ -806,6 +814,7 @@ public class PlayerMovement : MonoBehaviour
         jumpInput = controls.Player.JumpFly;
         sprintInput = controls.Player.Sprint;
         switchSprintInput = controls.Player.SwitchSprint;
+        mapInput = controls.Player.Map;
     }
     
     private void Start()
@@ -814,6 +823,7 @@ public class PlayerMovement : MonoBehaviour
         rb.freezeRotation = true;
 
         playerObj = animator.transform;
+        mapObj.SetActive(false);
 
         readyToJump = true;
         maxAccessibleStamina = maxFlightStamina;
@@ -839,6 +849,9 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         DealInput();
+        
+        // set map visibility
+        mapObj.SetActive(holdingMap);
         
         // refill flight stamina when grounded
         if (grounded && !sprinting)
@@ -931,6 +944,31 @@ public class PlayerMovement : MonoBehaviour
 
     private void DealInput()
     {
+        if (sliding)
+        {
+            sliding = (new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude > slideSpeedThreshold ||
+                       rb.velocity.y < -1 * slidingDropThreshold) && grounded && !sprinting;
+        }
+        else
+        {
+            sliding = (new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude >
+                          slideSpeedThreshold + slideStartSpeedOffset || rb.velocity.y < -1 * slidingDropThreshold) &&
+                      grounded && !sprinting;
+        }
+        
+        
+        if (mapInput.IsPressed() && grounded)
+        {
+            horizontalInput = 0;
+            verticalInput = 0;
+            sprinting = false;
+            keepSprint = false;
+            holdingMap = rb.velocity.magnitude < 0.1f;
+            return;
+        }
+        holdingMap = false;
+        
+        
         // use new input system to get the input value
         Vector2 movement2D = directionInput.ReadValue<Vector2>();
         horizontalInput = movement2D.x;
@@ -976,21 +1014,8 @@ public class PlayerMovement : MonoBehaviour
         {
             sprinting = false;
         }
-
         if (!sprinting) 
             keepSprint = false;
-        
-        if (sliding)
-        {
-            sliding = (new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude > slideSpeedThreshold ||
-                       rb.velocity.y < -1 * slidingDropThreshold) && grounded && !sprinting;
-        }
-        else
-        {
-            sliding = (new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude >
-                          slideSpeedThreshold + slideStartSpeedOffset || rb.velocity.y < -1 * slidingDropThreshold) &&
-                      grounded && !sprinting;
-        }
         
     }
 
@@ -1000,11 +1025,12 @@ public class PlayerMovement : MonoBehaviour
     {
         // rotate the player according to the velocity
         
-        if (rb.velocity.magnitude >= 0.05f)
+        if (!holdingMap && rb.velocity.magnitude >= 0.05f)
             playerObj.forward = Vector3.Slerp(playerObj.forward, new Vector3(rb.velocity.x, 0, rb.velocity.z).normalized, Time.fixedDeltaTime * rotationSpeed);
-
-        
-        
+        else if (holdingMap)
+        {
+            playerObj.forward = Vector3.Slerp(playerObj.forward, orientation.forward, Time.fixedDeltaTime * rotationSpeed);
+        }
         // calculate input movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         
@@ -1149,6 +1175,7 @@ public class PlayerMovement : MonoBehaviour
         animationVars.sliding = sliding;
         animationVars.paragliding = !grounded && animationVars.verticalSpeed < 0 && animationVars.horizontalInput &&
                                     animationVars.horizontalSpeed > slideSpeedThreshold + paraglidingStartSpeedOffset && paraglidingActivated;
+        animationVars.holdingMap = holdingMap;
         
         animator.SetBool("grounded", animationVars.grounded);
         animator.SetFloat("verticalSpeed", animationVars.verticalSpeed);
@@ -1158,6 +1185,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("paragliding", animationVars.paragliding);
         animator.SetBool("horizontalInput", animationVars.horizontalInput);
         animator.SetBool("sprinting", animationVars.sprinting);
+        animator.SetBool("holdingMap", animationVars.holdingMap);
     }
 
     public AnimationVars getAnimationVars()
@@ -1167,6 +1195,10 @@ public class PlayerMovement : MonoBehaviour
 
     public float GetFlightStamina() {
         return flightStamina;
+    }
+    
+    public bool GetHoldingMap() {
+        return holdingMap;
     }
 
 
@@ -1218,5 +1250,6 @@ public class PlayerMovement : MonoBehaviour
         public bool sliding;
         public bool paragliding;
         public bool sprinting;
+        public bool holdingMap;
     }
 }

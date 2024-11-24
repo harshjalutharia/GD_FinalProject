@@ -35,5 +35,6 @@ public class FakePlayerControl : MonoBehaviour
         animator.SetBool("paragliding", animationVars.paragliding);
         animator.SetBool("horizontalInput", animationVars.horizontalInput);
         animator.SetBool("sprinting", animationVars.sprinting);
+        animator.SetBool("holdingMap", animationVars.holdingMap);
     }
 }

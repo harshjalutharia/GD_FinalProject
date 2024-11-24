@@ -125,12 +125,12 @@ public class SessionManager : MonoBehaviour
         if (m_pauseMenuInput.WasPressedThisFrame()) OpenPauseMenu();
         if (m_movementDebugInput.WasPressedThisFrame()) ToggleDebugMenu();
         
-        // Held map stuff
+        // Held map stuff =====> now moved to PlayerMovement.cs
         //m_isShowingMap = Input.GetKey(m_showMapKey);
-        m_isShowingMap = m_showMapInput.IsPressed();
-        Vector3 m_heldMapTarget = (m_isShowingMap) ? m_heldMapVisiblePosRef.position : m_heldMapInvisiblePosRef.position;
-        m_heldMap.position = Vector3.SmoothDamp(m_heldMap.position, m_heldMapTarget, ref m_heldMapVelocity, m_heldMapTransitionTime);
-        m_heldMap.gameObject.SetActive(m_isShowingMap || Vector3.Distance(m_heldMap.position, m_heldMapInvisiblePosRef.position) >= 0.1f);
+        //m_isShowingMap = m_showMapInput.IsPressed();
+        //Vector3 m_heldMapTarget = (m_isShowingMap) ? m_heldMapVisiblePosRef.position : m_heldMapInvisiblePosRef.position;
+        //m_heldMap.position = Vector3.SmoothDamp(m_heldMap.position, m_heldMapTarget, ref m_heldMapVelocity, m_heldMapTransitionTime);
+        //m_heldMap.gameObject.SetActive(m_isShowingMap || Vector3.Distance(m_heldMap.position, m_heldMapInvisiblePosRef.position) >= 0.1f);
 
 
     }

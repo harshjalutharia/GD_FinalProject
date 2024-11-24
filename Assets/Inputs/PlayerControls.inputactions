@@ -152,7 +152,7 @@
                     "id": "2e6ed541-d02e-4453-8ae1-e46dc7ded0cd",
                     "path": "<Mouse>/delta",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=0.1,y=0.2)",
                     "groups": "",
                     "action": "View",
                     "isComposite": false,
