@@ -1,0 +1,44 @@
+# Blender 4.2.0 MTL File: 'None'
+# www.blender.org
+
+newmtl M_Metal_Burnished_Steel
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.215861 0.215861 0.215861
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Bump -bm 1.000000 D:/TemDrive/Master/NYU stuff/CS-GY 4553 Game Design/game/7.Final/Blender/jordan.walker/Desktop/RocketCleanup/T_Metal_Gold_N.TGA
+
+newmtl M_Metal_Rust
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.215861 0.215861 0.215861
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl M_Stone
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.215861 0.215861 0.215861
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl M_StoneWall_Inst
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.215861 0.215861 0.215861
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Bump -bm 1.000000 D:/JandT/Castle/CastleFortress_Textures/Tiling Textures/StoneWall/StoneWall_Clean/StoneWall_N.tga
