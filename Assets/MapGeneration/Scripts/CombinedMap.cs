@@ -29,6 +29,8 @@ public class CombinedMap : NoiseMap
                 ci.map.SetDimensions(m_dimensions);
                 ci.map.SetChunkSize(m_mapChunkSize);
                 ci.map.SetLevelOfDetail(m_levelOfDetail);
+                ci.map.SetOffset(m_offset);
+                ci.map.SetNormalizeMode(m_normalizeMode);
                 ci.map.GenerateMap();
             }
             if (ci.apply == ApplyMethod.Generate) continue;

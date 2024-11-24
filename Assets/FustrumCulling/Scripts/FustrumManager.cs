@@ -17,6 +17,8 @@ public class FustrumManager : MonoBehaviour
     [Header("=== Fustrum Cameras ===")]
     [SerializeField, Tooltip("The main camera representing the primary perspective")]   private FustrumCamera m_mainFustrumCamera;
     public FustrumCamera mainFustrumCamera => m_mainFustrumCamera;
+    [SerializeField, Tooltip("The fustrum camera used when pinpointing landmarks")]          private FustrumCamera m_landmarkFustrumCamera;
+    public FustrumCamera landmarkFustrumCamera => m_landmarkFustrumCamera;
     [SerializeField, Tooltip("The fustrum camera used when pinpointing gems")]          private FustrumCamera m_gemFustrumCamera;
     public FustrumCamera gemFustrumCamera => m_gemFustrumCamera;
 

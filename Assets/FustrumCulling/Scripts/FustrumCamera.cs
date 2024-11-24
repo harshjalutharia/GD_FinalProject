@@ -17,6 +17,12 @@ public class FustrumCamera : MonoBehaviour
     public bool CheckInFustrum(Collider col) {
         return TestPlanesAABB(m_planes, col.bounds);
     }
+    public bool CheckInFustrum(Renderer renderer) {
+        return TestPlanesAABB(m_planes, renderer.bounds);
+    }
+    public bool CheckInFustrum(Bounds bounds) {
+        return TestPlanesAABB(m_planes, bounds);
+    }
 
     public static bool TestPlanesAABB(Plane[] planes, Bounds bounds) {
         for (int i = 0; i < planes.Length; i++) {

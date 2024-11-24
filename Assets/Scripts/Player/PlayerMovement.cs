@@ -590,6 +590,7 @@ using UnityEngine.Serialization;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public static PlayerMovement current;
     
     [Header("Force Settings")]
     [Tooltip("The force pushing character to walk")]
@@ -809,6 +810,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
+        current = this;
         controls = InputManager.Instance.controls;
         directionInput = controls.Player.Move;
         jumpInput = controls.Player.JumpFly;

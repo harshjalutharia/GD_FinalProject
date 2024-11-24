@@ -9,19 +9,11 @@ using Unity.VisualScripting;
 
 public class CameraFowllowPointControl : MonoBehaviour
 {
-    [System.Serializable]
-    public class VirtualCameraSettings {
-        public CinemachineVirtualCameraBase virtualCamera;
-        public bool showPlayerModel;
-    }
 
     [Header("=== Virtual Cameras ===")]
-    [SerializeField, Tooltip("The third-person camera settings")]   private VirtualCameraSettings m_thirdPersonSettings;
-    [SerializeField, Tooltip("The first-person camera settings")]   private VirtualCameraSettings m_firstPersonSettings;
     [SerializeField, Tooltip("The transform reference that the cinemachine cameras focus on")]              private Transform m_cameraFocusRef;
     [SerializeField, Tooltip("The transform reference that the camera focus tries to smooth damp towards")] private Transform m_cameraFocusDestinationRef;
     [SerializeField, Tooltip("The transform reference that the camera focus tries to follow the y-axis rotation of")]   private Transform m_cameraFocusOrientationRef;
-    private VirtualCameraSettings m_activeCameraSettings = null;
     [SerializeField, Tooltip("Renderer for the player avatar")]     private Renderer[] m_playerRenderers;
 
     [Header("=== Third Person Camera Damping Settings ===")]
@@ -58,8 +50,6 @@ public class CameraFowllowPointControl : MonoBehaviour
         m_controls = InputManager.Instance.controls;
         m_mapInput = m_controls.Player.Map;
         m_viewInput = m_controls.Player.View;
-        SetCameraSettings(m_thirdPersonSettings);
-
 
         playerMovement = gameObject.GetComponent<PlayerMovement>();
         firstPersonCamera.targetDisplay = 1;
@@ -74,11 +64,16 @@ public class CameraFowllowPointControl : MonoBehaviour
         // Vector3 myEulerAngleRotation = new Vector3(myTargetRotationX, myTargetRotationY, myTargetRotationZ);
         // m_cameraFocusRef.rotation = Quaternion.Euler(myEulerAngleRotation);
 
-        // setting the display target
-        //mapInputActive = m_mapInput.IsPressed();
+        // Update our knowledge on whether the map is active
         mapInputActive = playerMovement.GetHoldingMap();
+
+        // We actually don't translate the 1st person camera stuff here (that's in fixed update)
+        // Instead, we let the fixed update translate the cameras, and we have hooks to detect when to activate the 1st or 3rd person camera.
+
+        // If `firstPersonCameraActive` is set, then the fixed update has started moving the 1st person camera at least.
         if (firstPersonCameraActive) 
         {
+            // Switch the output display. The 3rd person display becomes subservient to the 1st person camera, which becomes the main display.
             thirdPersonCamera.targetDisplay = 1;
             firstPersonCamera.targetDisplay = 0;
             
@@ -97,44 +92,56 @@ public class CameraFowllowPointControl : MonoBehaviour
             firstPersonCameraDestination.localEulerAngles = new Vector3(currentPitch, firstPersonCameraDestination.localEulerAngles.y, firstPersonCameraDestination.localEulerAngles.z);
 
         }
+        // In this case, we ONLY activate the 3rd person camera if the fixed upddate moves the 1st-person camera safely back into position. 
+        // This is caught only at the tail end of the smooth damp of the 1st-person cam back into the 3rd-person cam position.
         else
         {
             thirdPersonCamera.targetDisplay = 0;
             firstPersonCamera.targetDisplay = 1;
         }
-        // if (mapInputActive && m_activeCameraSettings != m_firstPersonSettings) SetCameraSettings(m_firstPersonSettings);
-        // else if (!mapInputActive && m_activeCameraSettings != m_thirdPersonSettings) SetCameraSettings(m_thirdPersonSettings);
-
     }
 
     private void FixedUpdate() {
+        // `m_cameraFocusRef` is what the cinemachine camera tries to follow. We need to damp its movement, as to prevent the viewport sickness issue
+        // `m_cameraFocusRef` follows `m_cameraFocusDestinationRef`, which is a static object attached to the player. We smoothdamp `m_cameraFocusRef` to follow it.
         Vector3 targetPos = m_cameraFocusDestinationRef.position;
         float x = (m_smoothX) ? m_cameraFocusRef.position.x : targetPos.x;
         float y = (m_smoothY) ? m_cameraFocusRef.position.y : targetPos.y;
         float z = (m_smoothZ) ? m_cameraFocusRef.position.z : targetPos.z;
         m_cameraFocusRef.position = new Vector3(x,y,z);
         m_cameraFocusRef.position = Vector3.SmoothDamp(m_cameraFocusRef.position, targetPos, ref currentVelocity, m_smoothTime);
+
+        // There are technically two cameras: the cinemachine freelook 3rd person camera, and the map input 1st person camera. We need to handle what happens when we switch between the two cameras.
+        // When the map input is activated, we need to smooth damp it to the proper position - in this case, the `firstPersonCameraDestination`. So, very similar to the cinemachine 3rd person cam.
+        // When the map input is deactivated, we need to smoothdamp it to the third person camera again
         
-        //set position of first person camera
+        // Map input detected (via Update). Smoothdamp the 1st person cam to the 3rd person cam.
         if (mapInputActive)
         {
             firstPersonCameraActive = true;
+            
+            // Purely for translating the 1st-person camera to the proper 1st-person position.
             firstPersonCamera.transform.position = Vector3.SmoothDamp(firstPersonCamera.transform.position, firstPersonCameraDestination.position,
                 ref fpCameraVelocity, firstPersonSoothTime);
+            // We don't rotate the camera until we get close enough. This creates the "zoom-in" effect first when the camera starts from the 3rd-person view.
             if (Vector3.Distance(firstPersonCamera.transform.position, firstPersonCameraDestination.position) < rotationStartDistance)
             {
                 firstPersonCamera.transform.rotation = Quaternion.RotateTowards(firstPersonCamera.transform.rotation,
                     firstPersonCameraDestination.rotation, firstPersonCameraRotationSpeed * Time.fixedDeltaTime);
             }
         }
+
+        // Map input not detected. Smoothdamp the 1st person cam back to the 3rd person position
         else
         {
             if (firstPersonCameraActive)
             {
+                // We smoothdamp and rotate to match the 3rd person camera settings.
                 firstPersonCamera.transform.position = Vector3.SmoothDamp(firstPersonCamera.transform.position, thirdPersonCamera.transform.position,
                     ref fpCameraVelocity, firstPersonSoothTime);
                 firstPersonCamera.transform.rotation = Quaternion.RotateTowards(firstPersonCamera.transform.rotation,
                     thirdPersonCamera.transform.rotation, firstPersonCameraRotationSpeed * Time.fixedDeltaTime);
+                // If the distance is close enough, we toggle that the first person is no longer active. This gets noticed in the `Update` loop and switches the displays properly.
                 if (Vector3.Distance(firstPersonCamera.transform.position, thirdPersonCamera.transform.position) <
                     0.05f)
                 {
@@ -149,15 +156,6 @@ public class CameraFowllowPointControl : MonoBehaviour
             
         }
         
-    }
-
-    public void SetCameraSettings(VirtualCameraSettings settings) {
-        if (m_activeCameraSettings != null && m_activeCameraSettings != settings) {
-            m_activeCameraSettings.virtualCamera.Priority = 0;
-        }
-        settings.virtualCamera.Priority = 1;
-        foreach(Renderer r in m_playerRenderers) r.enabled = settings.showPlayerModel;
-        m_activeCameraSettings = settings;
     }
     
 }
