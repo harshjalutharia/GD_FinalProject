@@ -222,17 +222,14 @@ public class LandmarkGenerator : MonoBehaviour
 
             // Spawn landmark at destination
             //m_landmarkPositions[0].InstantiateObject( m_destinationLandmark, m_landmarkParent);
-            Landmark destinationLandmark = Instantiate(m_destinationLandmark, m_landmarkPositions[0].location, Quaternion.identity, m_landmarkParent);
-            destinationLandmark.OffsetLandmarkInYaxis(terrainMap);
+            InstantiateLandmark(m_destinationLandmark, m_landmarkPositions[0].location, Quaternion.identity, terrainMap);
 
             // Spawn all the weenies
             for (int i = 0; i < m_weeniePositions.Count; i++)
             {
                 var newPosition = OffsetPointByMaxHeight(m_weeniePositions[i], weeniePlacementOffset, terrainMap);
                 if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre)) {
-                    Landmark newWeenie = Instantiate(pre, newPosition, Quaternion.identity, m_landmarkParent) as Landmark;
-                    m_landmarks.Add(newWeenie);
-                    newWeenie.OffsetLandmarkInYaxis(terrainMap);
+                    InstantiateLandmark(pre, newPosition, Quaternion.identity, terrainMap);
                 }
             }
 
@@ -573,9 +570,7 @@ public class LandmarkGenerator : MonoBehaviour
         foreach (var spawnPoint in visionPoints)
         {
             if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre)) {
-                Landmark newWeenie = Instantiate(pre, spawnPoint, Quaternion.identity, m_landmarkParent) as Landmark;
-                m_landmarks.Add(newWeenie);
-                newWeenie.OffsetLandmarkInYaxis(terrainMap);
+                InstantiateLandmark(pre, spawnPoint, Quaternion.identity, terrainMap);
             }
         }
 
@@ -611,9 +606,7 @@ public class LandmarkGenerator : MonoBehaviour
         foreach (var spawnPoint in weenieSpawns)
         {
             if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre)) {
-                Landmark newWeenie = Instantiate(pre, spawnPoint, Quaternion.identity, m_landmarkParent) as Landmark;
-                m_landmarks.Add(newWeenie);
-                newWeenie.OffsetLandmarkInYaxis(terrainMap);
+                InstantiateLandmark(pre, spawnPoint, Quaternion.identity, terrainMap);
             }
         }
     }
@@ -713,9 +706,7 @@ public class LandmarkGenerator : MonoBehaviour
 
             if (m_weenieLandmarks.TryGetPrefabAtIndex(regionIndex, out Landmark pre))
             {
-                Debug.Log("Printing via generating between points");
-                Landmark newWeenie = Instantiate(pre, spawnPoint, Quaternion.identity, m_landmarkParent);
-                newWeenie.OffsetLandmarkInYaxis(terrainMap);
+                InstantiateLandmark(pre, spawnPoint, Quaternion.identity, terrainMap);
             }
         }
     }
@@ -762,8 +753,7 @@ public class LandmarkGenerator : MonoBehaviour
 
         foreach (var spawnPoint in ruinSpawnPoints)
         {
-            Landmark newRuin = Instantiate(m_surroundingDestinationLandmark, spawnPoint, Quaternion.identity, m_landmarkParent);
-            newRuin.OffsetLandmarkInYaxis(terrainMap);
+            InstantiateLandmark(m_surroundingDestinationLandmark, spawnPoint, Quaternion.identity, terrainMap);
         }
     }
 
@@ -948,6 +938,24 @@ public class LandmarkGenerator : MonoBehaviour
             m_landmarks = sorted;
             yield return sortDelay;
         }   
+    }
+
+    public void InstantiateLandmark(Landmark prefab, Vector3 pos, Quaternion rot, NoiseMap terrainMap, bool addToLandmarks=true) {
+        // Instantiate the landmark itself, given the prefab, position, and rotation
+        Landmark newWeenie = Instantiate(prefab, pos, rot, m_landmarkParent) as Landmark;
+        newWeenie.OffsetLandmarkInYaxis(terrainMap);
+        if (addToLandmarks) m_landmarks.Add(newWeenie);
+        
+        // Fustrum cull this guy if possible
+        FustrumGroup fg = newWeenie.gameObject.GetComponent<FustrumGroup>();
+        if (fg != null) fg.QueryGridParent();
+        else if (FustrumManager.current != null) {
+            Vector2Int coords = FustrumManager.current.GetCoordsFromWorldPosition(pos);
+            if (FustrumManager.current.coordToChunkMap.ContainsKey(coords)) {
+                FustrumGroup parentGroup = FustrumManager.current.coordToChunkMap[coords];
+                parentGroup.AddGameObject(newWeenie.gameObject);
+            }
+        }
     }
 
     private void OnDisable() {
