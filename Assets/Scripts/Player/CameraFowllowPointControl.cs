@@ -36,12 +36,12 @@ public class CameraFowllowPointControl : MonoBehaviour
     [SerializeField, Tooltip("camera vertical sensitivity")]                                        private float verticalSensitivity;
     public float pitch;
     [Tooltip("if player is holding a map")]                                                         public bool mapInputActive;
-    [SerializeField, Tooltip("if the first person camera is active")]                               private bool  m_firstPersonCameraActive;
+    [SerializeField, Tooltip("if the first person camera is active")]                               public bool  m_firstPersonCameraActive;
     public bool firstPersonCameraActive => m_firstPersonCameraActive;
     private Vector3 fpCameraVelocity = Vector3.zero;
 
     private PlayerControls m_controls;
-    private InputAction m_mapInput;
+    //private InputAction m_mapInput;
     private InputAction m_viewInput;
     private PlayerMovement playerMovement;
     
@@ -49,7 +49,7 @@ public class CameraFowllowPointControl : MonoBehaviour
         if (m_decoupleFromParentAtStart) m_cameraFocusRef.SetParent(null);
         firstPersonCamera.transform.SetParent(null);
         m_controls = InputManager.Instance.controls;
-        m_mapInput = m_controls.Player.Map;
+        //m_mapInput = m_controls.Player.Map;
         m_viewInput = m_controls.Player.View;
 
         playerMovement = gameObject.GetComponent<PlayerMovement>();

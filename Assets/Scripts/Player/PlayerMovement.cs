@@ -803,6 +803,8 @@ public class PlayerMovement : MonoBehaviour
     
     private PlayerSoundManager soundManager;
 
+    private CameraFowllowPointControl cameraFowllowPointControl;
+
     
     [Header("Debug UI Element")] 
     public TextMeshProUGUI debugText1;
@@ -845,7 +847,8 @@ public class PlayerMovement : MonoBehaviour
         sprintActivated = true;
 
         soundManager = GetComponent<PlayerSoundManager>();
-        
+        cameraFowllowPointControl = GetComponent<CameraFowllowPointControl>();
+
     }
 
     private void Update()
@@ -946,6 +949,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void DealInput()
     {
+        // update state of sliding
         if (sliding)
         {
             sliding = (new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude > slideSpeedThreshold ||
@@ -958,8 +962,8 @@ public class PlayerMovement : MonoBehaviour
                       grounded && !sprinting;
         }
         
-        
-        if (mapInput.IsPressed() && grounded)
+        // update the map state
+        if (mapInput.IsPressed() && grounded && (!sliding || rb.velocity.magnitude < 2))
         {
             horizontalInput = 0;
             verticalInput = 0;
@@ -969,6 +973,9 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
         holdingMap = false;
+        
+        if (cameraFowllowPointControl.firstPersonCameraActive) // if fp camera active, ignore all the input
+            return;
         
         
         // use new input system to get the input value

@@ -61,4 +61,33 @@ public class Landmark : MonoBehaviour
         m_bounds = new Bounds (transform.position, Vector3.one);
 	    foreach (Renderer renderer in m_renderers) m_bounds.Encapsulate (renderer.bounds);
     }
+
+    // offsets the landmark's position in the y-axis to fix it floating above ground
+    public void OffsetLandmarkInYaxis(NoiseMap terrainMap)
+    {
+        if (terrainMap == null) return;
+
+        Vector3[] bottomPoints = { m_bounds.center, m_bounds.center, m_bounds.center, m_bounds.center };
+        bottomPoints[0] -= m_bounds.extents;
+        bottomPoints[1] += new Vector3(m_bounds.extents.x, -m_bounds.extents.y, m_bounds.extents.z);
+        bottomPoints[2] += new Vector3(-m_bounds.extents.x, -m_bounds.extents.y, m_bounds.extents.z);
+        bottomPoints[3] += new Vector3(m_bounds.extents.x, -m_bounds.extents.y, -m_bounds.extents.z);
+
+        float offset = 0f;
+
+        for (int i = 0; i < bottomPoints.Length; i++)
+        {
+            float terrainHeight = terrainMap.QueryHeightAtWorldPos(bottomPoints[i].x, bottomPoints[i].z, out var x, out var y);
+            if (terrainHeight < bottomPoints[i].y && bottomPoints[i].y - terrainHeight > offset)
+                offset = bottomPoints[i].y - terrainHeight;
+        }
+
+        if (offset != 0f)
+        {
+            transform.position += Vector3.down * offset;
+            CalculateBounds();
+        }
+    }
 }
+
+

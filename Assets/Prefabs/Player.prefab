@@ -1277,7 +1277,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5
+      scalar: 3
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -6307,12 +6307,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac9d2346d8921c04cac936f554b78838, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_thirdPersonSettings:
-    virtualCamera: {fileID: 0}
-    showPlayerModel: 1
-  m_firstPersonSettings:
-    virtualCamera: {fileID: 0}
-    showPlayerModel: 0
   m_cameraFocusRef: {fileID: 2994778596285685128}
   m_cameraFocusDestinationRef: {fileID: 1944253752498683643}
   m_cameraFocusOrientationRef: {fileID: 3827837098921800371}
