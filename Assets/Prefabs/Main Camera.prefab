@@ -936,7 +936,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2237364166036636284
 Transform:
   m_ObjectHideFlags: 0
@@ -1101,7 +1101,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &52277797796186137
 Transform:
   m_ObjectHideFlags: 0
@@ -1591,8 +1591,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6367212847971756039}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.50562716, y: 0, z: 0, w: 0.86275214}
-  m_LocalPosition: {x: 0, y: 51.153, z: -4}
+  m_LocalRotation: {x: 0.042304028, y: 0.000000044678732, z: -0.0000000018917838, w: 0.99910486}
+  m_LocalPosition: {x: 0, y: 51.149998, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1678,10 +1678,10 @@ MonoBehaviour:
   m_ShowCameraFrustum: 1
   m_IgnoreTimeScale: 0
   m_WorldUpOverride: {fileID: 0}
-  m_UpdateMethod: 2
+  m_UpdateMethod: 1
   m_BlendUpdateMethod: 1
   m_DefaultBlend:
-    m_Style: 1
+    m_Style: 6
     m_Time: 1
     m_CustomCurve:
       serializedVersion: 2
