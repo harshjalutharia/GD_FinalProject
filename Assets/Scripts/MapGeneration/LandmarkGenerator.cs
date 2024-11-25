@@ -221,7 +221,9 @@ public class LandmarkGenerator : MonoBehaviour
             //}
 
             // Spawn landmark at destination
-            m_landmarkPositions[0].InstantiateObject( m_destinationLandmark, m_landmarkParent);
+            //m_landmarkPositions[0].InstantiateObject( m_destinationLandmark, m_landmarkParent);
+            Landmark destinationLandmark = Instantiate(m_destinationLandmark, m_landmarkPositions[0].location, Quaternion.identity, m_landmarkParent);
+            destinationLandmark.OffsetLandmarkInYaxis(terrainMap);
 
             // Spawn all the weenies
             for (int i = 0; i < m_weeniePositions.Count; i++)
@@ -230,6 +232,7 @@ public class LandmarkGenerator : MonoBehaviour
                 if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre)) {
                     Landmark newWeenie = Instantiate(pre, newPosition, Quaternion.identity, m_landmarkParent) as Landmark;
                     m_landmarks.Add(newWeenie);
+                    newWeenie.OffsetLandmarkInYaxis(terrainMap);
                 }
             }
 
@@ -572,6 +575,7 @@ public class LandmarkGenerator : MonoBehaviour
             if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre)) {
                 Landmark newWeenie = Instantiate(pre, spawnPoint, Quaternion.identity, m_landmarkParent) as Landmark;
                 m_landmarks.Add(newWeenie);
+                newWeenie.OffsetLandmarkInYaxis(terrainMap);
             }
         }
 
@@ -609,6 +613,7 @@ public class LandmarkGenerator : MonoBehaviour
             if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre)) {
                 Landmark newWeenie = Instantiate(pre, spawnPoint, Quaternion.identity, m_landmarkParent) as Landmark;
                 m_landmarks.Add(newWeenie);
+                newWeenie.OffsetLandmarkInYaxis(terrainMap);
             }
         }
     }
@@ -709,12 +714,13 @@ public class LandmarkGenerator : MonoBehaviour
             if (m_weenieLandmarks.TryGetPrefabAtIndex(regionIndex, out Landmark pre))
             {
                 Debug.Log("Printing via generating between points");
-                Instantiate(pre, spawnPoint, Quaternion.identity, m_landmarkParent);
+                Landmark newWeenie = Instantiate(pre, spawnPoint, Quaternion.identity, m_landmarkParent);
+                newWeenie.OffsetLandmarkInYaxis(terrainMap);
             }
         }
     }
 
-    private void GenerateRuinsAroundPoint(Vector3 point, NoiseMap voronoiMap)
+    private void GenerateRuinsAroundPoint(Vector3 point, NoiseMap terrainMap)
     {
         List<Vector3> ruinSpawnPoints = new List<Vector3>();
         m_destinationLandmark.CalculateBounds();
@@ -750,13 +756,14 @@ public class LandmarkGenerator : MonoBehaviour
                 continue;
             }
 
-            float y = voronoiMap.QueryHeightAtWorldPos((float)x, (float)z, out int gridX, out int gridY);
+            float y = terrainMap.QueryHeightAtWorldPos((float)x, (float)z, out int gridX, out int gridY);
             ruinSpawnPoints.Add(new Vector3((float)x, y, (float)z));
         }
 
         foreach (var spawnPoint in ruinSpawnPoints)
         {
-            Instantiate(m_surroundingDestinationLandmark, spawnPoint, Quaternion.identity, m_landmarkParent);
+            Landmark newRuin = Instantiate(m_surroundingDestinationLandmark, spawnPoint, Quaternion.identity, m_landmarkParent);
+            newRuin.OffsetLandmarkInYaxis(terrainMap);
         }
     }
 
