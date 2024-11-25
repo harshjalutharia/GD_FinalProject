@@ -48,6 +48,8 @@ MonoBehaviour:
   m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
+  m_offset: {x: 0, y: 0}
+  m_normalizeMode: 0
   m_autoUpdate: 0
   m_filter: {fileID: 0}
   m_renderer: {fileID: 0}
@@ -1718,6 +1720,8 @@ MonoBehaviour:
   m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
+  m_offset: {x: 0, y: 0}
+  m_normalizeMode: 0
   m_autoUpdate: 1
   m_filter: {fileID: 0}
   m_renderer: {fileID: 0}
@@ -1871,7 +1875,6 @@ MonoBehaviour:
   m_octaves: 4
   m_persistance: 0.288
   m_lacunarity: 1
-  m_offset: {x: 0, y: 0}
 --- !u!1 &1524515765440999466
 GameObject:
   m_ObjectHideFlags: 0
@@ -1920,6 +1923,8 @@ MonoBehaviour:
   m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
+  m_offset: {x: 0, y: 0}
+  m_normalizeMode: 0
   m_autoUpdate: 0
   m_filter: {fileID: 0}
   m_renderer: {fileID: 0}
@@ -2084,6 +2089,8 @@ MonoBehaviour:
   m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
+  m_offset: {x: 0, y: 0}
+  m_normalizeMode: 0
   m_autoUpdate: 0
   m_filter: {fileID: 0}
   m_renderer: {fileID: 0}
@@ -2293,6 +2300,8 @@ MonoBehaviour:
   m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
+  m_offset: {x: 0, y: 0}
+  m_normalizeMode: 0
   m_autoUpdate: 0
   m_filter: {fileID: 7283325526705958133}
   m_renderer: {fileID: 6981560625261199475}
@@ -3970,6 +3979,8 @@ MonoBehaviour:
   m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
+  m_offset: {x: 0, y: 0}
+  m_normalizeMode: 0
   m_autoUpdate: 0
   m_filter: {fileID: 0}
   m_renderer: {fileID: 0}
@@ -4183,8 +4194,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_seed: 0
   m_dimensions: {x: 100, y: 100}
-  m_mapChunkSize: 481
+  m_mapChunkSize: 401
   m_levelOfDetail: 1
+  m_offset: {x: 0, y: 0}
+  m_normalizeMode: 0
   m_autoUpdate: 0
   m_filter: {fileID: 3262293502388240520}
   m_renderer: {fileID: 5229846673049051188}
@@ -4361,6 +4374,8 @@ MonoBehaviour:
   m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
+  m_offset: {x: 0, y: 0}
+  m_normalizeMode: 0
   m_autoUpdate: 0
   m_filter: {fileID: 0}
   m_renderer: {fileID: 0}
@@ -4603,6 +4618,8 @@ MonoBehaviour:
   m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
+  m_offset: {x: 0, y: 0}
+  m_normalizeMode: 0
   m_autoUpdate: 0
   m_filter: {fileID: 1915026810612055390}
   m_renderer: {fileID: 1741872052031213021}
@@ -4770,6 +4787,8 @@ MonoBehaviour:
   m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
+  m_offset: {x: 0, y: 0}
+  m_normalizeMode: 0
   m_autoUpdate: 1
   m_filter: {fileID: 0}
   m_renderer: {fileID: 0}
@@ -4896,4 +4915,3 @@ MonoBehaviour:
   m_octaves: 4
   m_persistance: 0.187
   m_lacunarity: 1
-  m_offset: {x: 0, y: 0}

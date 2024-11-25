@@ -36,7 +36,8 @@ public class CameraFowllowPointControl : MonoBehaviour
     [SerializeField, Tooltip("camera vertical sensitivity")]                                        private float verticalSensitivity;
     public float pitch;
     [Tooltip("if player is holding a map")]                                                         public bool mapInputActive;
-    [SerializeField, Tooltip("if the first person camera is active")]                               private bool firstPersonCameraActive;
+    [SerializeField, Tooltip("if the first person camera is active")]                               private bool  m_firstPersonCameraActive;
+    public bool firstPersonCameraActive => m_firstPersonCameraActive;
     private Vector3 fpCameraVelocity = Vector3.zero;
 
     private PlayerControls m_controls;
@@ -54,7 +55,7 @@ public class CameraFowllowPointControl : MonoBehaviour
         playerMovement = gameObject.GetComponent<PlayerMovement>();
         firstPersonCamera.targetDisplay = 1;
         thirdPersonCamera.targetDisplay = 0;
-        firstPersonCameraActive = false;
+         m_firstPersonCameraActive = false;
     }
 
     private void Update() {
@@ -70,12 +71,16 @@ public class CameraFowllowPointControl : MonoBehaviour
         // We actually don't translate the 1st person camera stuff here (that's in fixed update)
         // Instead, we let the fixed update translate the cameras, and we have hooks to detect when to activate the 1st or 3rd person camera.
 
-        // If `firstPersonCameraActive` is set, then the fixed update has started moving the 1st person camera at least.
-        if (firstPersonCameraActive) 
+        // If ` m_firstPersonCameraActive` is set, then the fixed update has started moving the 1st person camera at least.
+        if ( m_firstPersonCameraActive) 
         {
             // Switch the output display. The 3rd person display becomes subservient to the 1st person camera, which becomes the main display.
             thirdPersonCamera.targetDisplay = 1;
             firstPersonCamera.targetDisplay = 0;
+
+            // Set the main terrain fustrum to the first person camera
+            FustrumManager.current.SetMainFustrumCamera(firstPersonCamera);
+
             
             // set vertical direction of the first person camera
             float viewInputY = m_viewInput.ReadValue<Vector2>().y;
@@ -98,6 +103,7 @@ public class CameraFowllowPointControl : MonoBehaviour
         {
             thirdPersonCamera.targetDisplay = 0;
             firstPersonCamera.targetDisplay = 1;
+            FustrumManager.current.SetMainFustrumCamera(thirdPersonCamera);
         }
     }
 
@@ -118,7 +124,7 @@ public class CameraFowllowPointControl : MonoBehaviour
         // Map input detected (via Update). Smoothdamp the 1st person cam to the 3rd person cam.
         if (mapInputActive)
         {
-            firstPersonCameraActive = true;
+             m_firstPersonCameraActive = true;
             
             // Purely for translating the 1st-person camera to the proper 1st-person position.
             firstPersonCamera.transform.position = Vector3.SmoothDamp(firstPersonCamera.transform.position, firstPersonCameraDestination.position,
@@ -134,7 +140,7 @@ public class CameraFowllowPointControl : MonoBehaviour
         // Map input not detected. Smoothdamp the 1st person cam back to the 3rd person position
         else
         {
-            if (firstPersonCameraActive)
+            if ( m_firstPersonCameraActive)
             {
                 // We smoothdamp and rotate to match the 3rd person camera settings.
                 firstPersonCamera.transform.position = Vector3.SmoothDamp(firstPersonCamera.transform.position, thirdPersonCamera.transform.position,
@@ -145,7 +151,7 @@ public class CameraFowllowPointControl : MonoBehaviour
                 if (Vector3.Distance(firstPersonCamera.transform.position, thirdPersonCamera.transform.position) <
                     0.05f)
                 {
-                    firstPersonCameraActive = false;
+                     m_firstPersonCameraActive = false;
                 }
             }
             else

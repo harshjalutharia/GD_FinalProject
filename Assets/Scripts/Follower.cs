@@ -4,26 +4,22 @@ using UnityEngine;
 
 public class Follower : MonoBehaviour
 {
+    public enum UpdateType { Update, LateUpdate }
 
     // When attached to an object, it makes this object attempt to follow the orientation and position of other objects
     [SerializeField] private Transform m_positionTarget;
     [SerializeField] private Transform m_orientationTarget;
-
-    [SerializeField] private float m_positionSmoothTime = 0.3f;
-    [SerializeField] private float m_orientationSmoothTime = 0.3f;
-    
-    private Vector3 m_positionVelocity = Vector3.zero;
-    private Vector3 m_positionOffset = Vector3.zero;
-
-    private Vector3 m_orientationVelocity = Vector3.zero;
-    private Vector3 m_orientationOffset = Vector3.zero;
-    
-    private void Start() {
-        m_positionOffset = m_positionTarget.position - transform.position;
-        m_orientationOffset = m_orientationTarget.forward - transform.forward;
-    }
+    [SerializeField] private UpdateType m_updateType = UpdateType.Update;
 
     private void Update() {
+        if (m_updateType == UpdateType.Update) Follow();
+    }
+
+    private void LateUpdate() {
+        if (m_updateType == UpdateType.LateUpdate) Follow();
+    }
+
+    public void Follow() {
         transform.position = m_positionTarget.position;
         transform.rotation = m_orientationTarget.rotation;
         // Update position
@@ -36,6 +32,5 @@ public class Follower : MonoBehaviour
         //+ m_orientationOffset;
         //Vector3 currentForward = Vector3.SmoothDamp(transform.forward, targetForward, ref m_orientationVelocity, m_orientationSmoothTime);
         //transform.LookAt(m_positionTarget.forward);
-
     }
 }

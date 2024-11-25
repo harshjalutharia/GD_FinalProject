@@ -21,11 +21,48 @@ using UnityEditor;
 public class LandmarkGenerator : MonoBehaviour
 {
 
+    [System.Serializable]
+    public class LandmarkGroupCounter {
+        public List<Landmark> prefabs = new List<Landmark>();
+        public int counter = 0;
+        public Landmark GetNextPrefab() {
+            if (prefabs.Count == 0) return null;
+            Landmark prefab = prefabs[counter];
+            counter++;
+            if (counter >= prefabs.Count) counter = 0;
+            return prefab;
+        }
+        public bool TryGetNextPrefab(out Landmark prefab) {
+            if (prefabs.Count == 0) {
+                prefab = null;
+                return false;
+            }
+
+            prefab = prefabs[counter];
+            counter++;
+            if (counter >= prefabs.Count) counter = 0;
+            return true;
+        }
+        public bool TryGetPrefabAtIndex(int index, out Landmark prefab) {
+            if (index >= prefabs.Count) {
+                prefab = null;
+                return false;
+            }
+            prefab = prefabs[index];
+            return true;
+        }
+    }
+
     [Header("=== References ===")]
-    [SerializeField, Tooltip("Prefab for landmarks")]                                       private Landmark landmarkPrefab;
-    [SerializeField, Tooltip("Prefab for weenies")]                                         private List<Landmark> weeniePrefab;
-    [SerializeField, Tooltip("Parent for landmarks")]                                       private Transform m_landmarkParent;
     [SerializeField, Tooltip("Voronoi Map used in combinedMap")]                            private VoronoiMap m_voronoiMap;
+    [SerializeField, Tooltip("Ref to the follow point control that dictates 1st or 3rd person camera stuff")]   private CameraFowllowPointControl m_camControl;
+    [SerializeField, Tooltip("Parent for landmarks")]                                       private Transform m_landmarkParent;
+    [Space]
+    [SerializeField, Tooltip("Prefab for the destination landmark")]                        private Landmark m_destinationLandmark;
+    [SerializeField, Tooltip("Prefabs for landmarks around the destination landmark")]      private Landmark m_surroundingDestinationLandmark;
+    [SerializeField, Tooltip("Prefabs for landmarks at weenies")]                           private LandmarkGroupCounter m_weenieLandmarks;
+    [SerializeField, Tooltip("Prefab for weenies")]                                         private List<Landmark> weeniePrefab;
+    
 
     [Header("=== Generation Settings ===")]
     [SerializeField, Tooltip("Seed integer for landmark randomization")]                    private int m_seed;
@@ -56,6 +93,7 @@ public class LandmarkGenerator : MonoBehaviour
     [SerializeField, Tooltip("List of weenie positions")]                                   private List<Vector3> m_weeniePositions;
     public List<Vector3> weeniePositions => m_weeniePositions;
     [SerializeField, Tooltip("List of positions' distances to check when spawning weenie")] private List<Vector3> m_weenieCheckPositions;
+    [SerializeField, Tooltip("The final list of landmarks generated.")]                     private List<Landmark> m_landmarks;
 
     [System.Serializable]
     public class SpawnPoint : IComparable<SpawnPoint>
@@ -96,10 +134,14 @@ public class LandmarkGenerator : MonoBehaviour
         m_seed = newSeed;
     }
 
+    private void Start() {
+        StartCoroutine(SortLandmarks());
+    }
+
     public void GenerateLandmarks(Vector3 destination, Vector3 startPosition, NoiseMap terrainMap)
     {
         // Check Flag: do we have a landmark prefab to begin with?
-        if (landmarkPrefab == null) 
+        if ( m_destinationLandmark == null) 
         {
             Debug.Log("Landmark prefab not assigned in editor");
             return;
@@ -116,6 +158,7 @@ public class LandmarkGenerator : MonoBehaviour
         ClearLandmarks();
         m_landmarkPositions = new List<SpawnPoint>();
         m_weeniePositions = new List<Vector3>();
+        m_landmarks = new List<Landmark>();
 
         if (m_voronoiMap != null)
         {
@@ -178,13 +221,16 @@ public class LandmarkGenerator : MonoBehaviour
             //}
 
             // Spawn landmark at destination
-            m_landmarkPositions[0].InstantiateObject(landmarkPrefab, m_landmarkParent);
+            m_landmarkPositions[0].InstantiateObject( m_destinationLandmark, m_landmarkParent);
 
             // Spawn all the weenies
             for (int i = 0; i < m_weeniePositions.Count; i++)
             {
                 var newPosition = OffsetPointByMaxHeight(m_weeniePositions[i], weeniePlacementOffset, terrainMap);
-                Instantiate(weeniePrefab[1], newPosition, Quaternion.identity, m_landmarkParent);
+                if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre)) {
+                    Landmark newWeenie = Instantiate(pre, newPosition, Quaternion.identity, m_landmarkParent) as Landmark;
+                    m_landmarks.Add(newWeenie);
+                }
             }
 
             // old weenie generation which spawns weenies based on path from start to destination
@@ -248,7 +294,7 @@ public class LandmarkGenerator : MonoBehaviour
             // spawn destination in the biggest region
             m_landmarkPositions.Add(new SpawnPoint(centroidPositions[maxCountIndex]));
             //if (m_placeLandmarkAtDest)
-            m_landmarkPositions[0].InstantiateObject(landmarkPrefab, m_landmarkParent);
+            m_landmarkPositions[0].InstantiateObject( m_destinationLandmark, m_landmarkParent);
             
             for (int i = 0; i < landmarkCount-1; i++)
             {
@@ -274,7 +320,7 @@ public class LandmarkGenerator : MonoBehaviour
         
         //// First generate the spawn point of the final Landmark. If we want to create a landmark at the destination, do so.
         //m_landmarkPositions.Add(new SpawnPoint(destination));
-        //if (m_placeLandmarkAtDest) m_landmarkPositions[0].InstantiateLandmark(landmarkPrefab, m_landmarkParent);
+        //if (m_placeLandmarkAtDest) m_landmarkPositions[0].InstantiateLandmark( m_destinationLandmark, m_landmarkParent);
 
         //// Stores location of last landmark
         //Vector3 lastLandmarkPosition = destination;
@@ -307,7 +353,7 @@ public class LandmarkGenerator : MonoBehaviour
         //}
 
         // After everything, spawn all landmarks. We skip the first one because that's the final spawn point
-        for(int i = 1; i < m_landmarkPositions.Count; i++) m_landmarkPositions[i].InstantiateObject(landmarkPrefab, m_landmarkParent);
+        for(int i = 1; i < m_landmarkPositions.Count; i++) m_landmarkPositions[i].InstantiateObject( m_destinationLandmark, m_landmarkParent);
 
         List<(int, int)> generatedPaths = new List<(int, int)>();
         // Generate weenies in paths between landmarks
@@ -523,7 +569,10 @@ public class LandmarkGenerator : MonoBehaviour
 
         foreach (var spawnPoint in visionPoints)
         {
-            Instantiate(weeniePrefab[2], spawnPoint, Quaternion.identity, m_landmarkParent);
+            if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre)) {
+                Landmark newWeenie = Instantiate(pre, spawnPoint, Quaternion.identity, m_landmarkParent) as Landmark;
+                m_landmarks.Add(newWeenie);
+            }
         }
 
         var possibleSpawnPoints = GeneratePointsNormalToPoints(pathPoints, visionPoints, terrainMap);
@@ -557,7 +606,10 @@ public class LandmarkGenerator : MonoBehaviour
 
         foreach (var spawnPoint in weenieSpawns)
         {
-            Instantiate(weeniePrefab[1], spawnPoint, Quaternion.identity, m_landmarkParent);
+            if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre)) {
+                Landmark newWeenie = Instantiate(pre, spawnPoint, Quaternion.identity, m_landmarkParent) as Landmark;
+                m_landmarks.Add(newWeenie);
+            }
         }
     }
 
@@ -631,15 +683,9 @@ public class LandmarkGenerator : MonoBehaviour
     private void GenerateWeeniesBetweenPoints(Vector3 point1, Vector3 point2, int weenieCount, NoiseMap terrainMap)
     {
         // Check Flag: do we have a landmark prefab to begin with?
-        if (weeniePrefab == null)
+        if (m_weenieLandmarks.prefabs.Count == 0)
         {
-            Debug.Log("Weenie prefabs not assigned in editor");
-            return;
-        }
-
-        if (weeniePrefab.Count != 3)
-        {
-            Debug.Log("3 weenie prefabs need to be assigned in editor");
+            Debug.LogError("Weenie landmark prefabs not assigned to 'weenieLandmarks' in editor!");
             return;
         }
 
@@ -660,9 +706,10 @@ public class LandmarkGenerator : MonoBehaviour
             spawnPoint.y = terrainMap.QueryHeightAtWorldPos(spawnPoint.x, spawnPoint.z, out gridX, out gridY);
             int regionIndex = m_voronoiMap.QueryRegionAtWorldPos(spawnPoint.x, spawnPoint.z, out gridX, out gridY);
 
-            if (regionIndex < weeniePrefab.Count)
+            if (m_weenieLandmarks.TryGetPrefabAtIndex(regionIndex, out Landmark pre))
             {
-                Instantiate(weeniePrefab[regionIndex], spawnPoint, Quaternion.identity, m_landmarkParent);
+                Debug.Log("Printing via generating between points");
+                Instantiate(pre, spawnPoint, Quaternion.identity, m_landmarkParent);
             }
         }
     }
@@ -670,8 +717,8 @@ public class LandmarkGenerator : MonoBehaviour
     private void GenerateRuinsAroundPoint(Vector3 point, NoiseMap voronoiMap)
     {
         List<Vector3> ruinSpawnPoints = new List<Vector3>();
-        float landmarkSize = landmarkPrefab._renderer.bounds.extents.magnitude;
-        float ruinSize = weeniePrefab[0]._renderer.bounds.extents.magnitude;
+        float landmarkSize =  m_destinationLandmark._renderer.bounds.extents.magnitude;
+        float ruinSize = m_surroundingDestinationLandmark._renderer.bounds.extents.magnitude;
 
         for (int i = 0; i < endRegionRuinCount; i++)
         {
@@ -706,7 +753,7 @@ public class LandmarkGenerator : MonoBehaviour
 
         foreach (var spawnPoint in ruinSpawnPoints)
         {
-            Instantiate(weeniePrefab[0], spawnPoint, Quaternion.identity, m_landmarkParent);
+            Instantiate(m_surroundingDestinationLandmark, spawnPoint, Quaternion.identity, m_landmarkParent);
         }
     }
 
@@ -874,5 +921,26 @@ public class LandmarkGenerator : MonoBehaviour
                 Destroy(landmark);
             #endif
         }
+    }
+
+    private IEnumerator SortLandmarks() {
+        WaitForSeconds sortDelay = new WaitForSeconds(0.5f);
+        while(true) {
+            if (!m_camControl.firstPersonCameraActive) {
+                yield return sortDelay;
+                continue;
+            }
+            if (m_landmarks.Count <= 1) {
+                yield return sortDelay;
+                continue;
+            }
+            List<Landmark> sorted = m_landmarks.OrderBy(a => a.inFustrum ? 0 : 1).ThenBy(a => a.distToCamCenter).ToList();
+            m_landmarks = sorted;
+            yield return sortDelay;
+        }   
+    }
+
+    private void OnDisable() {
+        StopAllCoroutines();
     }
 }

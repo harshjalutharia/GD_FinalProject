@@ -6,6 +6,7 @@ using Unity.Mathematics;
 public class FustrumCamera : MonoBehaviour
 {    
     [SerializeField, Tooltip("The camera to calculate the fustrum planes")] private Camera m_camera;
+    public Camera camera => m_camera;
     [SerializeField, Tooltip("The fustrum planes generated from the camera")] private Plane[] m_planes;
     public Plane[] planes => m_planes;
 

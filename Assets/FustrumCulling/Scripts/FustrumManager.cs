@@ -118,4 +118,12 @@ public class FustrumManager : MonoBehaviour
         // Then it's simply a matter of dividing the difference by chunk size, flooring to ensure we stay within grid dimensions
         return new Vector2Int(Mathf.FloorToInt(diffX/m_chunkSize), Mathf.FloorToInt(diffZ/m_chunkSize));
     }
+
+    public void SetMainFustrumCamera(FustrumCamera newMain) {
+        m_mainFustrumCamera = newMain;
+    }
+    public void SetMainFustrumCamera(Camera newMain) {
+        FustrumCamera fustrumCam = newMain.gameObject.GetComponent<FustrumCamera>();
+        if (fustrumCam != null) m_mainFustrumCamera = fustrumCam;
+    }
 }
