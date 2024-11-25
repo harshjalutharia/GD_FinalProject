@@ -72,6 +72,7 @@ public class GameManager : MonoBehaviour
         // ToggleCanvasGroup(m_winMenuGroup, false);
         // ToggleCanvasGroup(m_loseMenuGroup, false);
         // ToggleCanvasGroup(m_inGameMenuGroup, false);
+        ToggleCanvasGroup(m_slideshowCanvasGroup, false);
         StartCoroutine(ToggleCanvasGroupCoroutine(m_startMenuGroup, true, m_startTransitionTime));
         
 
