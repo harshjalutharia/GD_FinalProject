@@ -1617,6 +1617,51 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ade04619fb7b81408da6deb0d9869ff, type: 3}
+--- !u!1001 &8143918746415672865
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1762965751464167069, guid: ea0afce7e98c1dd4a878bc71a69a1fc4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3641960226265843409, guid: ea0afce7e98c1dd4a878bc71a69a1fc4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3641960226265843409, guid: ea0afce7e98c1dd4a878bc71a69a1fc4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3641960226265843409, guid: ea0afce7e98c1dd4a878bc71a69a1fc4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.68
+      objectReference: {fileID: 0}
+    - target: {fileID: 3641960226265843409, guid: ea0afce7e98c1dd4a878bc71a69a1fc4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3641960226265843409, guid: ea0afce7e98c1dd4a878bc71a69a1fc4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3641960226265843409, guid: ea0afce7e98c1dd4a878bc71a69a1fc4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4047065945150145158, guid: ea0afce7e98c1dd4a878bc71a69a1fc4, type: 3}
+      propertyPath: m_Name
+      value: BridgePillarsPrefab
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ea0afce7e98c1dd4a878bc71a69a1fc4, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1639,3 +1684,4 @@ SceneRoots:
   - {fileID: 297709288}
   - {fileID: 1338957659}
   - {fileID: 1961309028}
+  - {fileID: 8143918746415672865}

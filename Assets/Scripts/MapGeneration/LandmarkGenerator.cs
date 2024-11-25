@@ -717,8 +717,11 @@ public class LandmarkGenerator : MonoBehaviour
     private void GenerateRuinsAroundPoint(Vector3 point, NoiseMap voronoiMap)
     {
         List<Vector3> ruinSpawnPoints = new List<Vector3>();
-        float landmarkSize =  m_destinationLandmark._renderer.bounds.extents.magnitude;
-        float ruinSize = m_surroundingDestinationLandmark._renderer.bounds.extents.magnitude;
+        m_destinationLandmark.CalculateBounds();
+        m_surroundingDestinationLandmark.CalculateBounds();
+
+        float landmarkSize =  m_destinationLandmark.bounds.extents.magnitude;
+        float ruinSize = m_surroundingDestinationLandmark.bounds.extents.magnitude;
 
         for (int i = 0; i < endRegionRuinCount; i++)
         {
