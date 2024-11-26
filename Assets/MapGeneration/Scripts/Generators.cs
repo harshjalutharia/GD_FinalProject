@@ -59,6 +59,7 @@ public static class Generators {
 
         float halfWidth = mapWidth/2f;
         float halfHeight = mapHeight/2f;
+        Debug.Log(200-halfWidth + octaveOffsets[0].x);
 
         for(int y = 0; y < mapHeight; y++) {
             for(int x = 0; x < mapWidth; x++) {
