@@ -22,13 +22,28 @@ public class FustrumGroup : MonoBehaviour
 
     private void LateUpdate() {
         // Can't do anything if we're missing a fustrum camera references
-        if (FustrumManager.current.mainFustrumCamera == null) return;
+        if (FustrumManager.current.mainFustrumCamera == null) {
+            m_previousVisibility = false;
+            return;
+        }
+
+        // Don't do anything if the main fustrum camera is not active
+        if (!FustrumManager.current.mainFustrumCamera.gameObject.activeSelf) {
+            m_previousVisibility = false;
+            return; 
+        }
 
         // Can't do anything if we don't even have a collider
-        if (m_collider == null) return;
+        if (m_collider == null) {
+            m_previousVisibility = false;
+            return;
+        }
 
         // Don't do anything if we don't even have any renderers or children to consider
-        if (m_renderers.Count == 0 && m_gameObjects.Count == 0 && m_fustrumChildren.Count == 0) return;
+        if (m_renderers.Count == 0 && m_gameObjects.Count == 0 && m_fustrumChildren.Count == 0) {
+            m_previousVisibility = false;
+            return;
+        }
 
         // Check our visibility
         m_visible = FustrumManager.current.mainFustrumCamera.CheckInFustrum(m_collider);

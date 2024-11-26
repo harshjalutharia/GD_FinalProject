@@ -33,6 +33,12 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The gem generator to place gems")]                                private GemGenerator m_gemGenerator;
 
     [Header("=== Menus ===")]
+    [SerializeField, Tooltip("The camera that acts as the load screen cam, due to cam fader")]  private Camera m_loadCamera;
+    [SerializeField, Tooltip("The main camera for the main gameplay")]                          private Camera m_mainCamera;
+    [SerializeField, Tooltip("The first person camera")]                                        private Camera m_firstPersonCamera;
+    [SerializeField, Tooltip("The gem camera")]                                                 private Camera m_gemCamera;
+    [Space]
+    [SerializeField, Tooltip("The canvas group for the initial loading menu")]                  private CanvasGroup m_loadingMenuGroup;
     [SerializeField, Tooltip("The transition time for menus to appear/disappear.")] private float m_pauseMenuTransitionTime = 1f;
     [SerializeField, Tooltip("The canvas group for the pause menu")]                private CanvasGroup m_pauseMenuGroup;
     [SerializeField, Tooltip("The canvas group for the win screen")]                private CanvasGroup m_winMenuGroup;
@@ -69,6 +75,13 @@ public class SessionManager : MonoBehaviour
         // SetSeed() will do this for us automatically.
         SetSeed(SessionMemory.current.seed);
 
+        // Show the loading menu
+        ToggleCanvasGroup(m_loadingMenuGroup, true);
+        m_loadCamera.gameObject.SetActive(true);
+        m_mainCamera.gameObject.SetActive(false);
+        m_firstPersonCamera.gameObject.SetActive(false);
+        m_gemCamera.gameObject.SetActive(false);
+
         // Hide any other menus
         ToggleCanvasGroup(m_pauseMenuGroup, false);
         ToggleCanvasGroup(m_winMenuGroup, false);
@@ -102,13 +115,21 @@ public class SessionManager : MonoBehaviour
             m_gemGenerator.GenerateSmallGems();
             m_gemGenerator.GenerateDestinationGem(m_playerEndPosition);
         }
-        if (GameTracker.current != null)    GameTracker.current.StartTracking();                                                                            // Game tracker
+        // Game tracker
+        if (GameTracker.current != null)    GameTracker.current.StartTracking();     
 
         StartCoroutine(m_player.GetComponent<PlayerMovement>().ActivatePlayer());        
         Invoke(nameof(InitializePlayerView), 5f);
     }
 
     private void InitializePlayerView() {
+        // Hide the loading menu
+        ToggleCanvasGroup(m_loadingMenuGroup, false);
+        m_loadCamera.gameObject.SetActive(false);
+        m_mainCamera.gameObject.SetActive(true);
+        m_firstPersonCamera.gameObject.SetActive(true);
+        m_gemCamera.gameObject.SetActive(true);
+
         // Let the camera fade in
         m_playerCameraFader.FadeIn();                
 

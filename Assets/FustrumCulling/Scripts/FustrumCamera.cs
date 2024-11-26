@@ -26,6 +26,7 @@ public class FustrumCamera : MonoBehaviour
     }
 
     public static bool TestPlanesAABB(Plane[] planes, Bounds bounds) {
+        if (planes == null) return false;
         for (int i = 0; i < planes.Length; i++) {
             Plane plane = planes[i];
             float3 normal_sign = math.sign(plane.normal);
