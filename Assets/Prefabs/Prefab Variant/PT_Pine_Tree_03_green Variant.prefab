@@ -16,6 +16,18 @@ PrefabInstance:
       propertyPath: m_AnimateCrossFading
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1870679391148259636, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1870679391148259636, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+      propertyPath: m_LODs.Array.data[1].screenRelativeHeight
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1870679391148259636, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+      propertyPath: m_LODs.Array.data[2].screenRelativeHeight
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 6117071349010126079, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
       propertyPath: m_Name
       value: PT_Pine_Tree_03_green Variant

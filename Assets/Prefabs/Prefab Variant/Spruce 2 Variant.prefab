@@ -20,6 +20,46 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -0.19
       objectReference: {fileID: 0}
+    - target: {fileID: 2577801678900187767, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_LODs.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2577801678900187767, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_LocalReferencePoint.y
+      value: 2.2119021
+      objectReference: {fileID: 0}
+    - target: {fileID: 2577801678900187767, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_LODs.Array.data[0].renderers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2577801678900187767, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2577801678900187767, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_LODs.Array.data[1].screenRelativeHeight
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2577801678900187767, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_LODs.Array.data[2].screenRelativeHeight
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2577801678900187767, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_LODs.Array.data[3].screenRelativeHeight
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2577801678900187767, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_LODs.Array.data[0].renderers.Array.data[0].renderer
+      value: 
+      objectReference: {fileID: 1154921488085372921}
+    - target: {fileID: 2577801678900187767, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_LODs.Array.data[1].renderers.Array.data[0].renderer
+      value: 
+      objectReference: {fileID: 7493470600646546656}
+    - target: {fileID: 2577801678900187767, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_LODs.Array.data[2].renderers.Array.data[0].renderer
+      value: 
+      objectReference: {fileID: 6636346802525006572}
     - target: {fileID: 3731095390187986728, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
       propertyPath: m_Name
       value: Spruce 2 Variant
@@ -64,6 +104,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5289512668786254364, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6610538961354909891, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -85,3 +129,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+--- !u!23 &1154921488085372921 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1885280820132006513, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+  m_PrefabInstance: {fileID: 733741576917353864}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6636346802525006572 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6212658864275681124, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+  m_PrefabInstance: {fileID: 733741576917353864}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7493470600646546656 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7913072882568581480, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+  m_PrefabInstance: {fileID: 733741576917353864}
+  m_PrefabAsset: {fileID: 0}
