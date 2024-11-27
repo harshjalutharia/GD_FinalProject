@@ -69,9 +69,8 @@ public class GameManager : MonoBehaviour
         m_startCameraFader.FadeIn();
 
         // === Start Canvas ===
-        // ToggleCanvasGroup(m_winMenuGroup, false);
-        // ToggleCanvasGroup(m_loseMenuGroup, false);
-        // ToggleCanvasGroup(m_inGameMenuGroup, false);
+        CanvasManager.current.SetCanvas("StartMenu", true);
+        CanvasManager.current.SetCanvas("Backstory", false);
         ToggleCanvasGroup(m_slideshowCanvasGroup, false);
         StartCoroutine(ToggleCanvasGroupCoroutine(m_startMenuGroup, true, m_startTransitionTime));
         
@@ -192,7 +191,9 @@ public class GameManager : MonoBehaviour
         image.color = color;
     }
 
-
+    public void StartMainScene() {
+        SceneManager.LoadScene(1);
+    }
 
     public IEnumerator StartSessionCoroutine() {
         // Let the session memory system memorize the saved seed. Check that the seed is... a legit seed
