@@ -791,11 +791,17 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("particle system of collecting gem")]
     public ParticleSystem collectGemParticles;
 
+    [Tooltip("if activate cape")] 
+    public bool usingCape = false;
+    
     [Tooltip("game object of the cape")] 
     public SimulateCapeController cape;
 
     [Tooltip("GameObject of the map")] 
     public GameObject mapObj;
+    
+    [Tooltip("GameObject of the compass")] 
+    public GameObject compassObj;
 
     public event Action OnLanding;
     
@@ -828,6 +834,7 @@ public class PlayerMovement : MonoBehaviour
 
         playerObj = animator.transform;
         mapObj.SetActive(false);
+        compassObj.SetActive(false);
 
         readyToJump = true;
         maxAccessibleStamina = maxFlightStamina;
@@ -857,6 +864,7 @@ public class PlayerMovement : MonoBehaviour
         
         // set map visibility
         mapObj.SetActive(holdingMap);
+        compassObj.SetActive(holdingMap);
         
         // refill flight stamina when grounded
         if (grounded && !sprinting)
@@ -1169,7 +1177,8 @@ public class PlayerMovement : MonoBehaviour
             //todo maybe some effect happens
             soundManager.PlaySound(soundManager.collectGem);
             collectGemParticles.Play();
-            cape.CapePowerUp(3f);
+            if (usingCape)
+                cape.CapePowerUp(3f);
         }
     }
     
