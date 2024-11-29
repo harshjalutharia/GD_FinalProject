@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6552602732932897310}
   - component: {fileID: 8305633686882798002}
+  - component: {fileID: 2392259942848719930}
   m_Layer: 0
   m_Name: WatchTower
   m_TagString: Untagged
@@ -52,6 +53,27 @@ MonoBehaviour:
     m_Extent: {x: 0, y: 0, z: 0}
   m_inFustrum: 0
   m_distToCamCenter: 0
+--- !u!95 &2392259942848719930
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3928806766180299150}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d26c99a48fa20c14db97828542821730, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &8763784147279548089
 PrefabInstance:
   m_ObjectHideFlags: 0
