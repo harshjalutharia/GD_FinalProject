@@ -19,6 +19,7 @@ public class FustrumGroup : MonoBehaviour
     public bool visible => m_visible;
     
     private bool m_previousVisibility = true;
+    private IEnumerator m_gameObjectCoroutine = null;
 
     private void LateUpdate() {
         // Can't do anything if we're missing a fustrum camera references
@@ -52,13 +53,31 @@ public class FustrumGroup : MonoBehaviour
             // If any renderers attached, enable/disable them
             if (m_renderers.Count > 0) foreach(Renderer r in m_renderers) r.enabled = m_visible;
             // If any gameobjects attached, enable/disable them
-            if (m_gameObjects.Count > 0) foreach(GameObject go in m_gameObjects) go.SetActive(m_visible);
+            if (m_gameObjects.Count > 0) {
+                //foreach(GameObject go in m_gameObjects) go.SetActive(m_visible);
+                if (m_gameObjectCoroutine != null) StopCoroutine(m_gameObjectCoroutine);
+                m_gameObjectCoroutine = GameObjectVisibility();
+                StartCoroutine(m_gameObjectCoroutine);
+            }
 
             // If any FustrumGroup children, then toggle them too
             if (m_fustrumChildren.Count > 0) foreach(FustrumGroup child in m_fustrumChildren) child.enabled = m_visible;
 
             m_previousVisibility = m_visible;
         }
+    }
+
+    private IEnumerator GameObjectVisibility() {
+        int counter = 0;
+        foreach(GameObject go in m_gameObjects) {
+            counter++;
+            go.SetActive(m_visible);
+            if (counter >= 5) {
+                counter = 0;
+                yield return null;
+            }
+        }
+        m_gameObjectCoroutine = null;
     }
 
     public void QueryGridParent() {

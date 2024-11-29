@@ -9,10 +9,30 @@ public class FustrumCamera : MonoBehaviour
     public Camera camera => m_camera;
     [SerializeField, Tooltip("The fustrum planes generated from the camera")] private Plane[] m_planes;
     public Plane[] planes => m_planes;
+    private Vector3 m_prevPosition = Vector3.zero;
+    private Vector3 m_velocity = Vector3.zero;
+    public Vector3 velocity => m_velocity;
+    public float speed => m_velocity.magnitude;
+
+    [Header("=== Debug Settings ===")]
+    [SerializeField] private bool m_debugMovement = false;
+    [SerializeField] private float m_debugMovementSpeed = 10f;
+
+    private void Awake() {
+        m_prevPosition = transform.position;
+    }
 
     private void Update() {
         // Initialize fustrum planes
         m_planes = GeometryUtility.CalculateFrustumPlanes(m_camera);
+        // If debug movement toggled, then toggle
+        if (m_debugMovement) {
+            Vector3 moveVec = new Vector3( Input.GetAxis("Horizontal") , 0 , Input.GetAxis("Vertical") );
+            transform.position += moveVec * m_debugMovementSpeed * Time.deltaTime;
+        }
+        // Update speed
+        m_velocity = (transform.position - m_prevPosition) / Time.deltaTime;
+        m_prevPosition = transform.position;
     }
 
     public bool CheckInFustrum(Collider col) {

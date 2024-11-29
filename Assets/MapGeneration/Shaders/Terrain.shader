@@ -1,6 +1,9 @@
 Shader "Custom/Terrain"
 {
-    Properties {}
+    Properties {
+        _GrassTexture ("Grass Texture Height", 2D) = "white" {}
+        _ExtrusionWeight ("Extrusion Weight", Range(0,1)) = 0.5
+    }
     
     SubShader {
         Tags { "RenderType"="Opaque" }
@@ -8,7 +11,7 @@ Shader "Custom/Terrain"
 
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
-        #pragma surface surf Standard fullforwardshadows
+        #pragma surface surf Standard fullforwardshadows vert:vertex
 
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
@@ -23,12 +26,11 @@ Shader "Custom/Terrain"
         float baseColorStrength[maxLayerCount];
         float baseTextureScales[maxLayerCount];
         
-
         float minHeight;
         float maxHeight;
 
-        sampler2D testTexture;
-        float testScale;
+        sampler2D _GrassTexture;
+        float _ExtrusionWeight;
 
         UNITY_DECLARE_TEX2DARRAY(baseTextures);
 
@@ -36,6 +38,11 @@ Shader "Custom/Terrain"
         {
             float3 worldPos;
             float3 worldNormal;
+        };
+        struct v2f
+        {
+            float4 pos : SV_POSITION;
+            float2 uv : TEXCOORD0;
         };
 
         float inverseLerp(float a, float b, float value) {
@@ -51,6 +58,14 @@ Shader "Custom/Terrain"
             return xProjection + yProjection + zProjection;
         }
 
+        
+        void vert (inout appdata_full v) {
+            float noise = tex2Dlod(_GrassTexture, float4(v.texcoord.xy, 0.0, 0.0)).r; // Use the red channel of the texture for extrusion
+            float extrusion = noise * _ExtrusionWeight;
+            v.vertex.xyz += v.normal * extrusion;
+        }
+        
+
         void surf (Input IN, inout SurfaceOutputStandard o) {
             float heightPercent = inverseLerp(minHeight, maxHeight, IN.worldPos.y);
             float3 blendAxes = abs(IN.worldNormal);
@@ -65,8 +80,8 @@ Shader "Custom/Terrain"
                 o.Albedo = o.Albedo * (1-drawStrength) + (baseColor + textureColor) * drawStrength;
                 //o.Albedo = o.Albedo * (1-drawStrength) + baseColors[i] * drawStrength;
             }
-
         }
+
         ENDCG
     }
     FallBack "Diffuse"
