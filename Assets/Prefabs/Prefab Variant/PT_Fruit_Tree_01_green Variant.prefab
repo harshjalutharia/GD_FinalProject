@@ -9,16 +9,32 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 537705250742567624, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+      propertyPath: m_LODs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 537705250742567624, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
       propertyPath: m_LODs.Array.data[0].screenRelativeHeight
-      value: 0.6
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 537705250742567624, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
       propertyPath: m_LODs.Array.data[1].screenRelativeHeight
-      value: 0.3
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 537705250742567624, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
       propertyPath: m_LODs.Array.data[2].screenRelativeHeight
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 537705250742567624, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+      propertyPath: m_LODs.Array.data[0].renderers.Array.data[0].renderer
+      value: 
+      objectReference: {fileID: 9108392682300110135}
+    - target: {fileID: 537705250742567624, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+      propertyPath: m_LODs.Array.data[1].renderers.Array.data[0].renderer
+      value: 
+      objectReference: {fileID: 7436105393828267665}
+    - target: {fileID: 2187513939821381110, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4696216175943693753, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -41,3 +57,13 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+--- !u!23 &7436105393828267665 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1094804630965145243, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+  m_PrefabInstance: {fileID: 7495077712216803338}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &9108392682300110135 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1613519660729417021, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+  m_PrefabInstance: {fileID: 7495077712216803338}
+  m_PrefabAsset: {fileID: 0}
