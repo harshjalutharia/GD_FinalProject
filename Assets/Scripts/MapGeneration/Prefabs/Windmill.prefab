@@ -78,6 +78,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8164078558771037576, guid: d7f8a045231b147ae96ee93893ed9f0a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2606772140213780025}
+    - targetCorrespondingSourceObject: {fileID: 8164078558771037576, guid: d7f8a045231b147ae96ee93893ed9f0a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8679774581812355552}
   m_SourcePrefab: {fileID: 100100000, guid: d7f8a045231b147ae96ee93893ed9f0a, type: 3}
 --- !u!1 &3854441474308732916 stripped
 GameObject:
@@ -106,6 +109,31 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2432090755550338912, guid: d7f8a045231b147ae96ee93893ed9f0a, type: 3}
+--- !u!114 &8679774581812355552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3854441474308732916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 485278e6853454d40ae3e25dbf96d6c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  center: {x: 0.79, y: 3.5, z: 0}
+  rotation: {x: 0, y: 0, z: 0}
+  extents: {x: 2.75, y: 5, z: 2.5}
+  boundPoints:
+  - {x: -1.96, y: -1.5, z: -2.5}
+  - {x: -1.96, y: -1.5, z: 2.5}
+  - {x: 3.54, y: -1.5, z: -2.5}
+  - {x: 3.54, y: -1.5, z: 2.5}
+  - {x: 3.54, y: 8.5, z: 2.5}
+  - {x: -1.96, y: 8.5, z: 2.5}
+  - {x: 3.54, y: 8.5, z: -2.5}
+  - {x: -1.96, y: 8.5, z: -2.5}
+  drawGizmos: 0
 --- !u!1 &5255826080112512813 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: d7f8a045231b147ae96ee93893ed9f0a, type: 3}
@@ -123,10 +151,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c2e9d49cc4534e10a7a2076b67d5eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_renderer: {fileID: 5924766897725470993}
-  m_collider: {fileID: 2606772140213780025}
---- !u!23 &5924766897725470993 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -7635826562936255635, guid: d7f8a045231b147ae96ee93893ed9f0a, type: 3}
-  m_PrefabInstance: {fileID: 4913735231977697916}
-  m_PrefabAsset: {fileID: 0}
+  m_renderers: []
+  m_totalTimeToDetect: 5
+  m_bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  m_inFustrum: 0
+  m_distToCamCenter: 0

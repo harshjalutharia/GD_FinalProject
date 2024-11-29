@@ -127,6 +127,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3095c64968338e64d986f039e46e6201, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8529983523316765001}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3095c64968338e64d986f039e46e6201, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1492854233142479059}
   m_SourcePrefab: {fileID: 100100000, guid: 3095c64968338e64d986f039e46e6201, type: 3}
 --- !u!4 &6126311168457712345 stripped
 Transform:
@@ -160,3 +163,28 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -8952016030036634292, guid: 3095c64968338e64d986f039e46e6201, type: 3}
+--- !u!114 &1492854233142479059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6795605420353157219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 485278e6853454d40ae3e25dbf96d6c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  center: {x: -0.36, y: 4.18, z: -2.96}
+  rotation: {x: 0, y: -160, z: 0}
+  extents: {x: 10, y: 4.26, z: 3.24}
+  boundPoints:
+  - {x: 10.145071, y: -0.0800004, z: -3.3355985}
+  - {x: 7.928779, y: -0.0800004, z: -9.424806}
+  - {x: -8.648779, y: -0.0800004, z: 3.5048056}
+  - {x: -10.86507, y: -0.0800004, z: -2.5844016}
+  - {x: -10.86507, y: 8.440001, z: -2.5844016}
+  - {x: 7.928779, y: 8.440001, z: -9.424806}
+  - {x: -8.648779, y: 8.440001, z: 3.5048056}
+  - {x: 10.145071, y: 8.440001, z: -3.3355985}
+  drawGizmos: 0

@@ -39,11 +39,6 @@ Shader "Custom/Terrain"
             float3 worldPos;
             float3 worldNormal;
         };
-        struct v2f
-        {
-            float4 pos : SV_POSITION;
-            float2 uv : TEXCOORD0;
-        };
 
         float inverseLerp(float a, float b, float value) {
             return saturate((value-a)/(b-a));
@@ -65,7 +60,6 @@ Shader "Custom/Terrain"
             v.vertex.xyz += v.normal * extrusion;
         }
         
-
         void surf (Input IN, inout SurfaceOutputStandard o) {
             float heightPercent = inverseLerp(minHeight, maxHeight, IN.worldPos.y);
             float3 blendAxes = abs(IN.worldNormal);
@@ -81,7 +75,6 @@ Shader "Custom/Terrain"
                 //o.Albedo = o.Albedo * (1-drawStrength) + baseColors[i] * drawStrength;
             }
         }
-
         ENDCG
     }
     FallBack "Diffuse"

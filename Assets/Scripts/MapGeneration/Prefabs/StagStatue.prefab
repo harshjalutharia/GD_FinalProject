@@ -45,8 +45,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c2e9d49cc4534e10a7a2076b67d5eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_renderer: {fileID: 7056268573056447535}
-  m_collider: {fileID: 1115663445175051744}
+  m_renderers: []
+  m_totalTimeToDetect: 5
+  m_bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  m_inFustrum: 0
+  m_distToCamCenter: 0
 --- !u!1001 &8515589191196387499
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -106,12 +111,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 414408d9d739a4e2ab7a595b23ceccb1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1115663445175051744}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 414408d9d739a4e2ab7a595b23ceccb1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3901523355954017547}
   m_SourcePrefab: {fileID: 100100000, guid: 414408d9d739a4e2ab7a595b23ceccb1, type: 3}
---- !u!23 &7056268573056447535 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 414408d9d739a4e2ab7a595b23ceccb1, type: 3}
-  m_PrefabInstance: {fileID: 8515589191196387499}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8189736810819604288 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 414408d9d739a4e2ab7a595b23ceccb1, type: 3}
@@ -144,3 +147,28 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -662193457353288318, guid: 414408d9d739a4e2ab7a595b23ceccb1, type: 3}
+--- !u!114 &3901523355954017547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8857483779861091834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 485278e6853454d40ae3e25dbf96d6c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  center: {x: 0, y: 2, z: 0}
+  rotation: {x: 0, y: 0, z: 0}
+  extents: {x: 0.6, y: 2, z: 0.6}
+  boundPoints:
+  - {x: -0.6, y: 0, z: -0.6}
+  - {x: -0.6, y: 0, z: 0.6}
+  - {x: 0.6, y: 0, z: -0.6}
+  - {x: 0.6, y: 0, z: 0.6}
+  - {x: 0.6, y: 4, z: 0.6}
+  - {x: -0.6, y: 4, z: 0.6}
+  - {x: 0.6, y: 4, z: -0.6}
+  - {x: -0.6, y: 4, z: -0.6}
+  drawGizmos: 0
