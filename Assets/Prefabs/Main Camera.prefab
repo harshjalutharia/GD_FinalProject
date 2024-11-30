@@ -1424,7 +1424,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 887
+    m_Bits: 2935
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1464,6 +1464,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_camera: {fileID: 4410933708981751064}
+  m_debugMovement: 0
+  m_debugMovementSpeed: 10
 --- !u!114 &2918296968503333407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1642,7 +1644,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 887
+    m_Bits: 2935
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1833,6 +1835,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_camera: {fileID: 8029406328045509561}
+  m_debugMovement: 0
+  m_debugMovementSpeed: 10
 --- !u!1 &6682411389264741156
 GameObject:
   m_ObjectHideFlags: 0
@@ -2064,6 +2068,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_camera: {fileID: 3044041040606420032}
+  m_debugMovement: 0
+  m_debugMovementSpeed: 10
 --- !u!1 &7782003124772369586
 GameObject:
   m_ObjectHideFlags: 0
@@ -2430,6 +2436,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_camera: {fileID: 1888922221732296859}
+  m_debugMovement: 0
+  m_debugMovementSpeed: 10
 --- !u!1 &8659070980271537381
 GameObject:
   m_ObjectHideFlags: 0

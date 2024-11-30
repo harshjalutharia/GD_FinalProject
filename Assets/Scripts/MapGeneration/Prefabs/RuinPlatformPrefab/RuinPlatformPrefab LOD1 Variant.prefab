@@ -52,6 +52,22 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: -848225606583980973, guid: 1dc22737eb8bc1b40abf44ee92f89152, type: 3}
+    - target: {fileID: 7437952685988046743, guid: abe4f4dd9a2207f4fbcb3cd290d71ef5, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7437952685988046743, guid: abe4f4dd9a2207f4fbcb3cd290d71ef5, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1d8c99ea6082d3c4ba0d32c8b2ee3fb1, type: 2}
+    - target: {fileID: 7437952685988046743, guid: abe4f4dd9a2207f4fbcb3cd290d71ef5, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6009971bfcef6ea479dcf39099453c86, type: 2}
+    - target: {fileID: 7437952685988046743, guid: abe4f4dd9a2207f4fbcb3cd290d71ef5, type: 3}
+      propertyPath: m_Materials.Array.data[2]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8299912441526346584, guid: abe4f4dd9a2207f4fbcb3cd290d71ef5, type: 3}
       propertyPath: m_Name
       value: RuinPlatformPrefab LOD1 Variant

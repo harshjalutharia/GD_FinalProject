@@ -6199,7 +6199,7 @@ MonoBehaviour:
   slopAngularChangeTolerance: 18
   groundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 2112
   grounded: 0
   grabGround: 0
   readyToJump: 0
@@ -7331,6 +7331,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ad703a87b482754998adcd5ce0761cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  direction: {x: 0, y: 0, z: 0}
+  angle: 0
 --- !u!1 &8864105142494818673
 GameObject:
   m_ObjectHideFlags: 0
