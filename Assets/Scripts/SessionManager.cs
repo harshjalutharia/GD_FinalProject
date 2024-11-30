@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Extensions;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class SessionManager : MonoBehaviour
@@ -57,6 +58,12 @@ public class SessionManager : MonoBehaviour
     private InputAction m_showMapInput;
     private Vector3 m_heldMapVelocity = Vector3.zero;
 
+    [Header("=== Loading Slideshow Settings ===")]
+    [SerializeField, Tooltip("Image component for displaying slides")] private Image m_slideshowImage;
+    [SerializeField, Tooltip("List of slides to display")] private List<Sprite> m_slides;
+    [SerializeField, Tooltip("Time to display each slide")] private float m_slideDisplayTime = 2f;
+    [SerializeField, Tooltip("Transition time between slides")] private float m_slideTransitionTime = 1f;
+
     [Header("=== Scene Transition Settings ===")]
     [SerializeField, Tooltip("Transition time to move between scenes")]             private float m_sceneTransitionTime = 2f;
     [SerializeField, Tooltip("Is the player transitioning between scenes?")]        private bool m_isSceneTransitioning = false;
@@ -77,6 +84,7 @@ public class SessionManager : MonoBehaviour
 
         // Show the loading menu
         ToggleCanvasGroup(m_loadingMenuGroup, true);
+        StartCoroutine(PlaySlideshowCoroutine());
         m_loadCamera.gameObject.SetActive(true);
         m_mainCamera.gameObject.SetActive(false);
         m_firstPersonCamera.gameObject.SetActive(false);
@@ -117,9 +125,52 @@ public class SessionManager : MonoBehaviour
         }
         // Game tracker
         if (GameTracker.current != null)    GameTracker.current.StartTracking();     
-
         StartCoroutine(m_player.GetComponent<PlayerMovement>().ActivatePlayer());        
         Invoke(nameof(InitializePlayerView), 5f);
+
+    }
+
+    private IEnumerator PlaySlideshowCoroutine()
+    {
+
+        // Initialize the slideshow image alpha to 0
+        Color color = m_slideshowImage.color;
+        color.a = 0f;
+        m_slideshowImage.color = color;
+
+        // For each slide
+        for (int i = 0; i < m_slides.Count; i++)
+        {
+            // Set the sprite
+            m_slideshowImage.sprite = m_slides[i];
+
+            // Fade in the image
+            yield return StartCoroutine(FadeImage(m_slideshowImage, 0f, 1f, m_slideTransitionTime));
+
+            // Wait for display time
+            yield return new WaitForSeconds(m_slideDisplayTime);
+
+            // Fade out the image
+            yield return StartCoroutine(FadeImage(m_slideshowImage, 1f, 0f, m_slideTransitionTime));
+        }
+        
+    }
+
+    private IEnumerator FadeImage(Image image, float startAlpha, float endAlpha, float duration)
+    {
+        float time = 0f;
+        Color color = image.color;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+            float alpha = Mathf.Lerp(startAlpha, endAlpha, t);
+            color.a = alpha;
+            image.color = color;
+            yield return null;
+        }
+        color.a = endAlpha;
+        image.color = color;
     }
 
     private void InitializePlayerView() {

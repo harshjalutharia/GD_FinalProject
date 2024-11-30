@@ -32,15 +32,6 @@ public class GameManager : MonoBehaviour
     //  [SerializeField] private PlayerInteraction m_playerInteraction;
     //  [SerializeField] private GameTracker m_gameTracker;
     //  [SerializeField] private GameObject m_destinationRef;
-
-    [Header("=== Slideshow Settings ===")]
-    [SerializeField, Tooltip("Slideshow canvas group")] private CanvasGroup m_slideshowCanvasGroup;
-    [SerializeField, Tooltip("Image component for displaying slides")] private Image m_slideshowImage;
-    [SerializeField, Tooltip("List of slides to display")] private List<Sprite> m_slides;
-    [SerializeField, Tooltip("Time to display each slide")] private float m_slideDisplayTime = 2f;
-    [SerializeField, Tooltip("Transition time between slides")] private float m_slideTransitionTime = 1f;
-
-
     /*
     [Header("=== Generation Engines ===")]
     [SerializeField] private TerrainGenerator m_terrainGenerator;
@@ -72,7 +63,6 @@ public class GameManager : MonoBehaviour
         // ToggleCanvasGroup(m_winMenuGroup, false);
         // ToggleCanvasGroup(m_loseMenuGroup, false);
         // ToggleCanvasGroup(m_inGameMenuGroup, false);
-        ToggleCanvasGroup(m_slideshowCanvasGroup, false);
         StartCoroutine(ToggleCanvasGroupCoroutine(m_startMenuGroup, true, m_startTransitionTime));
         
 
@@ -142,55 +132,6 @@ public class GameManager : MonoBehaviour
         */
     }
 
-    private IEnumerator PlaySlideshowCoroutine()
-    {
-        // Activate the slideshow canvas group
-        ToggleCanvasGroup(m_slideshowCanvasGroup, true);
-
-        // Initialize the slideshow image alpha to 0
-        Color color = m_slideshowImage.color;
-        color.a = 0f;
-        m_slideshowImage.color = color;
-
-        // For each slide
-        for (int i = 0; i < m_slides.Count; i++)
-        {
-            // Set the sprite
-            m_slideshowImage.sprite = m_slides[i];
-
-            // Fade in the image
-            yield return StartCoroutine(FadeImage(m_slideshowImage, 0f, 1f, m_slideTransitionTime));
-
-            // Wait for display time
-            yield return new WaitForSeconds(m_slideDisplayTime);
-
-            // Fade out the image
-            yield return StartCoroutine(FadeImage(m_slideshowImage, 1f, 0f, m_slideTransitionTime));
-        }
-
-        // Deactivate the slideshow canvas group
-        ToggleCanvasGroup(m_slideshowCanvasGroup, false);
-
-        // After slideshow is complete, proceed to load the next scene
-        SceneManager.LoadScene(1);
-    }
-
-    private IEnumerator FadeImage(Image image, float startAlpha, float endAlpha, float duration)
-    {
-        float time = 0f;
-        Color color = image.color;
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            float t = time / duration;
-            float alpha = Mathf.Lerp(startAlpha, endAlpha, t);
-            color.a = alpha;
-            image.color = color;
-            yield return null;
-        }
-        color.a = endAlpha;
-        image.color = color;
-    }
 
 
 
@@ -201,10 +142,9 @@ public class GameManager : MonoBehaviour
 
         // === Fade out the start camera. Wait for the delay to occur
         yield return ToggleCanvasGroupCoroutine(m_startMenuGroup, false, m_startTransitionTime);
-        yield return StartCoroutine(PlaySlideshowCoroutine());
         m_startCameraFader.FadeOut();
         // === Move to main scene ===
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("Main");
     }
 
     /*
