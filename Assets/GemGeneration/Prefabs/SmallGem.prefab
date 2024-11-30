@@ -4875,7 +4875,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 0.9845172, g: 1, b: 0.5613208, a: 1}
   m_Intensity: 0.5
-  m_Range: 5
+  m_Range: 1
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -4913,10 +4913,10 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 1
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 1
+  m_BounceIntensity: 0.5
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
@@ -5099,7 +5099,7 @@ AudioSource:
   m_GameObject: {fileID: 2928799326942741062}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 1576769164671906042, guid: d2d09a2757535f642b2db996820d3220, type: 2}
+  OutputAudioMixerGroup: {fileID: 7347675398843631687, guid: d2d09a2757535f642b2db996820d3220, type: 2}
   m_audioClip: {fileID: 8300000, guid: 9a7b8c2a3588eb441b2b9791c649399f, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1

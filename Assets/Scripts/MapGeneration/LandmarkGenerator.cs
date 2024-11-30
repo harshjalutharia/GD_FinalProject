@@ -55,7 +55,6 @@ public class LandmarkGenerator : MonoBehaviour
 
     [Header("=== References ===")]
     [SerializeField, Tooltip("Voronoi Map used in combinedMap")]                            private VoronoiMap m_voronoiMap;
-    [SerializeField, Tooltip("Ref to the follow point control that dictates 1st or 3rd person camera stuff")]   private CameraFowllowPointControl m_camControl;
     [SerializeField, Tooltip("Parent for landmarks")]                                       private Transform m_landmarkParent;
     [Space]
     [SerializeField, Tooltip("Prefab for the destination landmark")]                        private Landmark m_destinationLandmark;
@@ -926,7 +925,7 @@ public class LandmarkGenerator : MonoBehaviour
     private IEnumerator SortLandmarks() {
         WaitForSeconds sortDelay = new WaitForSeconds(0.5f);
         while(true) {
-            if (!m_camControl.firstPersonCameraActive) {
+            if (!CameraController.current.firstPersonCameraActive) {
                 yield return sortDelay;
                 continue;
             }

@@ -147,6 +147,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2994778596285685128}
+  - component: {fileID: 8602314832694108337}
   m_Layer: 8
   m_Name: CameraFocus
   m_TagString: Untagged
@@ -169,6 +170,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8073086772555192299}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8602314832694108337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 556583233504323279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20aeecbab100e40709cda61291c3e988, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_updateType: 2
+  m_positionTarget: {fileID: 1944253752498683643}
+  m_smoothX: 1
+  m_smoothY: 1
+  m_smoothZ: 1
+  m_smoothTime: 0.5
+  m_orientationTarget: {fileID: 0}
 --- !u!1 &1003993183089225020
 GameObject:
   m_ObjectHideFlags: 0
@@ -6223,7 +6243,6 @@ MonoBehaviour:
     sliding: 0
     paragliding: 0
     sprinting: 0
-    holdingMap: 0
   orientation: {fileID: 3827837098921800371}
   rotationSpeed: 6
   gemGenerator: {fileID: 0}

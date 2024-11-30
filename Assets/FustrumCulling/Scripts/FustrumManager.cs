@@ -51,8 +51,11 @@ public class FustrumManager : MonoBehaviour
         current = this;
         if (m_parent == null) m_parent = this.transform;
     }
-
+    
     public void Initialize() {
+        // Don't do anything if we ourselves are disabled
+        if (!gameObject.activeSelf) return;
+
         // Let's count the grid that we'll generate. Assuming a square grid, we'll calcualte the grid dimensions by calculating how many chunks will fit inside the provided map size
         m_gridSize = Mathf.CeilToInt(m_mapSize / m_chunkSize);
         

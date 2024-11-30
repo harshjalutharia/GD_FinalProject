@@ -755,8 +755,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] 
     private bool requestFlight;
 
-    [SerializeField] 
-    private bool holdingMap;
+    //[SerializeField] 
+    //private bool holdingMap;
     
     [SerializeField] 
     private bool flightActivated;
@@ -797,20 +797,17 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("game object of the cape")] 
     public SimulateCapeController cape;
 
-    [Tooltip("GameObject of the map")] 
-    public GameObject mapObj;
+    //[Tooltip("GameObject of the map")] 
+    //public GameObject mapObj;
     
-    [Tooltip("GameObject of the compass")] 
-    public GameObject compassObj;
+    //[Tooltip("GameObject of the compass")] 
+    //public GameObject compassObj;
 
     public event Action OnLanding;
     
     private Transform playerObj;
     
-    private PlayerSoundManager soundManager;
-
-    private CameraFowllowPointControl cameraFowllowPointControl;
-
+    //private PlayerSoundManager soundManager;
     
     [Header("Debug UI Element")] 
     public TextMeshProUGUI debugText1;
@@ -833,8 +830,8 @@ public class PlayerMovement : MonoBehaviour
         rb.freezeRotation = true;
 
         playerObj = animator.transform;
-        mapObj.SetActive(false);
-        compassObj.SetActive(false);
+        //mapObj.SetActive(false);
+        //compassObj.SetActive(false);
 
         readyToJump = true;
         maxAccessibleStamina = maxFlightStamina;
@@ -853,8 +850,8 @@ public class PlayerMovement : MonoBehaviour
         paraglidingActivated = false;
         sprintActivated = true;
 
-        soundManager = GetComponent<PlayerSoundManager>();
-        cameraFowllowPointControl = GetComponent<CameraFowllowPointControl>();
+        //soundManager = GetComponent<PlayerSoundManager>();
+        //cameraFowllowPointControl = GetComponent<CameraFowllowPointControl>();
 
     }
 
@@ -863,8 +860,8 @@ public class PlayerMovement : MonoBehaviour
         DealInput();
         
         // set map visibility
-        mapObj.SetActive(holdingMap);
-        compassObj.SetActive(holdingMap);
+        //mapObj.SetActive(holdingMap);
+        //compassObj.SetActive(holdingMap);
         
         // refill flight stamina when grounded
         if (grounded && !sprinting)
@@ -904,7 +901,7 @@ public class PlayerMovement : MonoBehaviour
             ActivateFlight();
             ActivateSprint();
             ActivateParagliding();
-            soundManager.PlaySound(soundManager.cheat);
+            SoundManager.current.PlaySFX("Cheat");
         }
     }
 
@@ -971,18 +968,19 @@ public class PlayerMovement : MonoBehaviour
         }
         
         // update the map state
-        if (mapInput.IsPressed() && grounded && (!sliding || rb.velocity.magnitude < 2))
+        if (CameraController.current.mapInputActive && grounded && (!sliding || rb.velocity.magnitude < 2))
+        //if (mapInput.IsPressed() && grounded && (!sliding || rb.velocity.magnitude < 2))
         {
             horizontalInput = 0;
             verticalInput = 0;
             sprinting = false;
             keepSprint = false;
-            holdingMap = rb.velocity.magnitude < 0.1f;
+            //holdingMap = rb.velocity.magnitude < 0.1f;
             return;
         }
-        holdingMap = false;
+        //holdingMap = false;
         
-        if (cameraFowllowPointControl.firstPersonCameraActive) // if fp camera active, ignore all the input
+        if (CameraController.current.firstPersonCameraActive) // if fp camera active, ignore all the input
             return;
         
         
@@ -1042,9 +1040,9 @@ public class PlayerMovement : MonoBehaviour
     {
         // rotate the player according to the velocity
         
-        if (!holdingMap && rb.velocity.magnitude >= 0.05f)
+        if (!CameraController.current.firstPersonCameraActive && rb.velocity.magnitude >= 0.05f)
             playerObj.forward = Vector3.Slerp(playerObj.forward, new Vector3(rb.velocity.x, 0, rb.velocity.z).normalized, Time.fixedDeltaTime * rotationSpeed);
-        else if (holdingMap)
+        else if (CameraController.current.firstPersonCameraActive)
         {
             playerObj.forward = Vector3.Slerp(playerObj.forward, orientation.forward, Time.fixedDeltaTime * rotationSpeed);
         }
@@ -1175,7 +1173,7 @@ public class PlayerMovement : MonoBehaviour
             //Destroy(other.gameObject);
             
             //todo maybe some effect happens
-            soundManager.PlaySound(soundManager.collectGem);
+            SoundManager.current.PlaySFX("Collect Gem");
             collectGemParticles.Play();
             if (usingCape)
                 cape.CapePowerUp(3f);
@@ -1193,7 +1191,7 @@ public class PlayerMovement : MonoBehaviour
         animationVars.sliding = sliding;
         animationVars.paragliding = !grounded && animationVars.verticalSpeed < 0 && animationVars.horizontalInput &&
                                     animationVars.horizontalSpeed > slideSpeedThreshold + paraglidingStartSpeedOffset && paraglidingActivated;
-        animationVars.holdingMap = holdingMap;
+        //animationVars.holdingMap = holdingMap;
         
         animator.SetBool("grounded", animationVars.grounded);
         animator.SetFloat("verticalSpeed", animationVars.verticalSpeed);
@@ -1203,7 +1201,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("paragliding", animationVars.paragliding);
         animator.SetBool("horizontalInput", animationVars.horizontalInput);
         animator.SetBool("sprinting", animationVars.sprinting);
-        animator.SetBool("holdingMap", animationVars.holdingMap);
+        //animator.SetBool("holdingMap", animationVars.holdingMap);
     }
 
     public AnimationVars getAnimationVars()
@@ -1215,8 +1213,22 @@ public class PlayerMovement : MonoBehaviour
         return flightStamina;
     }
     
+    /*
     public bool GetHoldingMap() {
         return holdingMap;
+    }
+    */
+
+    public bool GetGrounded() {
+        return grounded;
+    }
+
+    public bool GetSliding() {
+        return sliding;
+    }
+
+    public Vector3 GetVelocity() {
+        return rb.velocity;
     }
 
 
@@ -1268,6 +1280,6 @@ public class PlayerMovement : MonoBehaviour
         public bool sliding;
         public bool paragliding;
         public bool sprinting;
-        public bool holdingMap;
+        //public bool holdingMap;
     }
 }

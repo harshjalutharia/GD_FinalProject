@@ -11,6 +11,7 @@ public class CameraFowllowPointControl : MonoBehaviour
 {
 
     [Header("=== Virtual Cameras ===")]
+    [SerializeField, Tooltip("The camera controller that manages first-person camera-ing")]                 private CameraController m_cameraController;
     [SerializeField, Tooltip("The transform reference that the cinemachine cameras focus on")]              private Transform m_cameraFocusRef;
     [SerializeField, Tooltip("The transform reference that the camera focus tries to smooth damp towards")] private Transform m_cameraFocusDestinationRef;
     [SerializeField, Tooltip("The transform reference that the camera focus tries to follow the y-axis rotation of")]   private Transform m_cameraFocusOrientationRef;
@@ -66,7 +67,7 @@ public class CameraFowllowPointControl : MonoBehaviour
         // m_cameraFocusRef.rotation = Quaternion.Euler(myEulerAngleRotation);
 
         // Update our knowledge on whether the map is active
-        mapInputActive = playerMovement.GetHoldingMap();
+        mapInputActive = m_cameraController.mapInputActive;
 
         // We actually don't translate the 1st person camera stuff here (that's in fixed update)
         // Instead, we let the fixed update translate the cameras, and we have hooks to detect when to activate the 1st or 3rd person camera.

@@ -8,6 +8,7 @@ using UnityEditor;
 public class Landmark : MonoBehaviour
 {
     [Header("=== References ===")]
+    [SerializeField, Tooltip("The camera controller that manages first-person camera-ing")] private CameraController m_cameraController;
     [SerializeField, Tooltip("Reference to this object's renderer")]    private Renderer[] m_renderers;
     public Renderer[] _renderers => m_renderers;
 
@@ -47,7 +48,7 @@ public class Landmark : MonoBehaviour
 
     private void LateUpdate() {
         // Don't do a fustrum check if we aren't evne pressed down on the map input
-        bool mapInputActive = PlayerMovement.current.GetHoldingMap();
+        bool mapInputActive = CameraController.current.firstPersonCameraActive;
         if (!mapInputActive) {
             m_inFustrum = false;
             m_distToCamCenter = -1f;

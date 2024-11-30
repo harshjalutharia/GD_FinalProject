@@ -8,6 +8,8 @@ public class FakePlayerControl : MonoBehaviour
 
     [Tooltip("The real player object")]
     public PlayerMovement realPlayerMovement;
+    [Tooltip("The held map component")]
+    public CameraController cameraController;
 
     private Transform realPlayerTransform;
     // Start is called before the first frame update
@@ -35,6 +37,6 @@ public class FakePlayerControl : MonoBehaviour
         animator.SetBool("paragliding", animationVars.paragliding);
         animator.SetBool("horizontalInput", animationVars.horizontalInput);
         animator.SetBool("sprinting", animationVars.sprinting);
-        animator.SetBool("holdingMap", animationVars.holdingMap);
+        animator.SetBool("holdingMap", cameraController.firstPersonCameraActive);
     }
 }
