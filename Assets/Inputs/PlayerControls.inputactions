@@ -216,7 +216,7 @@
                 {
                     "name": "",
                     "id": "7c73e443-97e1-4807-9527-de1c8eee3ef5",
-                    "path": "<Keyboard>/enter",
+                    "path": "<Keyboard>/m",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -280,6 +280,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "DebugFPS",
+                    "type": "Button",
+                    "id": "86225699-b534-4a64-a5cd-17328f5c6954",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -308,7 +317,7 @@
                 {
                     "name": "",
                     "id": "b786da59-f711-4a95-892d-c80ce43cf219",
-                    "path": "<Keyboard>/m",
+                    "path": "<Keyboard>/1",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -324,6 +333,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "DebugUI",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bb26bf2c-79af-45d7-be98-cc61149e7745",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DebugFPS",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d18f26ef-249c-4799-991b-aa1fc598a190",
+                    "path": "<Gamepad>/dpad/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DebugFPS",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

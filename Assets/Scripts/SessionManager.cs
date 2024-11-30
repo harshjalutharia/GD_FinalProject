@@ -45,7 +45,6 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The canvas group for the win screen")]                private CanvasGroup m_winMenuGroup;
     [SerializeField, Tooltip("The transition time for the win screen to appear")]   private float m_winMenuTransitionTime = 1f;
     [SerializeField, Tooltip("The canvas group for the player movement debug.")]    private CanvasGroup m_movementDebugGroup;
-    private InputAction m_movementDebugInput;
     private InputAction m_pauseMenuInput;
 
     [Header("=== Held Map Settings ===")]
@@ -74,7 +73,6 @@ public class SessionManager : MonoBehaviour
         var controls = InputManager.Instance.controls;
         m_pauseMenuInput = controls.Player.Menu;
         m_showMapInput = controls.Player.Map;
-        m_movementDebugInput = controls.Debug.DebugUI;
     }
 
     private void Start() {
@@ -83,17 +81,11 @@ public class SessionManager : MonoBehaviour
         SetSeed(SessionMemory.current.seed);
 
         // Show the loading menu
-        ToggleCanvasGroup(m_loadingMenuGroup, true);
         StartCoroutine(PlaySlideshowCoroutine());
         m_loadCamera.gameObject.SetActive(true);
         m_mainCamera.gameObject.SetActive(false);
         m_firstPersonCamera.gameObject.SetActive(false);
         m_gemCamera.gameObject.SetActive(false);
-
-        // Hide any other menus
-        ToggleCanvasGroup(m_pauseMenuGroup, false);
-        ToggleCanvasGroup(m_winMenuGroup, false);
-        ToggleCanvasGroup(m_movementDebugGroup, false);
         
         // Initialize terrain generation
         m_terrainGenerator.GenerateMap();
@@ -175,7 +167,7 @@ public class SessionManager : MonoBehaviour
 
     private void InitializePlayerView() {
         // Hide the loading menu
-        ToggleCanvasGroup(m_loadingMenuGroup, false);
+        CanvasController.current.ToggleLoadingScreen(false);
         m_loadCamera.gameObject.SetActive(false);
         m_mainCamera.gameObject.SetActive(true);
         m_firstPersonCamera.gameObject.SetActive(true);
@@ -186,25 +178,6 @@ public class SessionManager : MonoBehaviour
 
         // If a gem generator exists, toggle the view cam
         if (m_gemGenerator != null) m_gemGenerator.ToggleViewCheck(true);
-    }
-
-    private void Update() {
-        if (m_isSceneTransitioning) return;
-        
-        // Menu stuff
-        //if (Input.GetKeyDown(m_pauseMenuKeyCode)) OpenPauseMenu();
-        //if (Input.GetKeyDown(m_movementDebugKeyCode)) ToggleDebugMenu();
-        if (m_pauseMenuInput.WasPressedThisFrame()) OpenPauseMenu();
-        if (m_movementDebugInput.WasPressedThisFrame()) ToggleDebugMenu();
-        
-        // Held map stuff =====> now moved to PlayerMovement.cs
-        //m_isShowingMap = Input.GetKey(m_showMapKey);
-        //m_isShowingMap = m_showMapInput.IsPressed();
-        //Vector3 m_heldMapTarget = (m_isShowingMap) ? m_heldMapVisiblePosRef.position : m_heldMapInvisiblePosRef.position;
-        //m_heldMap.position = Vector3.SmoothDamp(m_heldMap.position, m_heldMapTarget, ref m_heldMapVelocity, m_heldMapTransitionTime);
-        //m_heldMap.gameObject.SetActive(m_isShowingMap || Vector3.Distance(m_heldMap.position, m_heldMapInvisiblePosRef.position) >= 0.1f);
-
-
     }
 
     public void SetSeed(string newSeed) {
@@ -226,23 +199,6 @@ public class SessionManager : MonoBehaviour
         if (m_gemGenerator != null)         m_gemGenerator.SetSeed(newSeed);
     }
 
-    public void OpenPauseMenu() {   
-        if (m_currentActiveCanvasGroup == m_pauseMenuGroup) return;
-        Debug.Log("Opening Pause Menu");
-        m_currentActiveCanvasGroup = m_pauseMenuGroup;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        StartCoroutine(ToggleCanvasGroupCoroutine(m_pauseMenuGroup, true, m_pauseMenuTransitionTime));
-    }
-    public void ClosePauseMenu() {  
-        if (m_currentActiveCanvasGroup != m_pauseMenuGroup) return;
-        Debug.Log("Closing Pause Menu");
-        m_currentActiveCanvasGroup = null;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        StartCoroutine(ToggleCanvasGroupCoroutine(m_pauseMenuGroup, false, m_pauseMenuTransitionTime));  
-    }
-
     public void OpenWinMenu() {
         Debug.Log("Openning win menu");
         m_currentActiveCanvasGroup = m_winMenuGroup;
@@ -252,11 +208,6 @@ public class SessionManager : MonoBehaviour
         StartCoroutine(ToggleCanvasGroupCoroutine(m_winMenuGroup, true, m_winMenuTransitionTime));
     }
 
-    public void ToggleDebugMenu() {
-        if (m_movementDebugGroup.alpha > 0.5f)  SetCanvasGroupAlpha(m_movementDebugGroup, 0f);
-        else                                    SetCanvasGroupAlpha(m_movementDebugGroup, 1f);
-    }
-
     public void ReturnToStart() {   StartCoroutine(ReturnToStartCoroutine());   }
     private IEnumerator ReturnToStartCoroutine() {
         // Fade out the player and their controls
@@ -264,14 +215,8 @@ public class SessionManager : MonoBehaviour
         m_playerCameraFader.FadeOut();
         
         // Fade out menues
-        if (m_currentActiveCanvasGroup != null) {
-            SetCanvasGroupInteractable(m_currentActiveCanvasGroup, false);
-            yield return ToggleCanvasGroupCoroutine(m_currentActiveCanvasGroup, false, m_sceneTransitionTime);
-        }
+        CanvasController.current.ToggleAllCanvases(false);
         yield return null;
-        ToggleCanvasGroup(m_pauseMenuGroup, false);
-        ToggleCanvasGroup(m_winMenuGroup, false);
-        ToggleCanvasGroup(m_movementDebugGroup, false);
 
         // Migrate to start
         SceneManager.LoadScene(0);
@@ -281,19 +226,6 @@ public class SessionManager : MonoBehaviour
         if (GameTracker.current != null) GameTracker.current.SaveUserData();
     }
 
-    public void ToggleCanvasGroup(CanvasGroup group, bool setTo) {
-        float setToFloat = setTo ? 1f : 0f;
-        group.alpha = setTo ? 1f : 0f;
-        group.interactable = setTo;
-        group.blocksRaycasts = setTo;
-    }
-    public void SetCanvasGroupAlpha(CanvasGroup group, float setTo) {
-        group.alpha = setTo;
-    }
-    public void SetCanvasGroupInteractable(CanvasGroup group, bool setTo) {
-        group.interactable = setTo;
-        group.blocksRaycasts = setTo;
-    }
     private IEnumerator ToggleCanvasGroupCoroutine(CanvasGroup group, bool setTo, float transitionTime) {
         float endAlpha = 1f, startAlpha = 0f, timePassed = 0f;
         if (setTo) {

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2967422222170133712}
   - component: {fileID: 8011750121076167097}
   - component: {fileID: 2428047270005576530}
+  - component: {fileID: 520428271354044423}
   - component: {fileID: 2779763817626014916}
   m_Layer: 5
   m_Name: FPS Canvas
@@ -86,6 +87,18 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
+--- !u!225 &520428271354044423
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5349081948458451750}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!114 &2779763817626014916
 MonoBehaviour:
   m_ObjectHideFlags: 0

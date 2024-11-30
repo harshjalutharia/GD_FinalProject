@@ -705,7 +705,7 @@ public class PlayerMovement : MonoBehaviour
 
     private InputAction switchSprintInput;
 
-    private InputAction mapInput;
+    //private InputAction mapInput;
     
     
     private float horizontalInput;
@@ -821,7 +821,7 @@ public class PlayerMovement : MonoBehaviour
         jumpInput = controls.Player.JumpFly;
         sprintInput = controls.Player.Sprint;
         switchSprintInput = controls.Player.SwitchSprint;
-        mapInput = controls.Player.Map;
+        //mapInput = controls.Player.Map;
     }
     
     private void Start()

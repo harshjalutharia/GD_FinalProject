@@ -238,7 +238,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""7c73e443-97e1-4807-9527-de1c8eee3ef5"",
-                    ""path"": ""<Keyboard>/enter"",
+                    ""path"": ""<Keyboard>/m"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -302,6 +302,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DebugFPS"",
+                    ""type"": ""Button"",
+                    ""id"": ""86225699-b534-4a64-a5cd-17328f5c6954"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -330,7 +339,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""b786da59-f711-4a95-892d-c80ce43cf219"",
-                    ""path"": ""<Keyboard>/m"",
+                    ""path"": ""<Keyboard>/1"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -346,6 +355,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""DebugUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bb26bf2c-79af-45d7-be98-cc61149e7745"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DebugFPS"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d18f26ef-249c-4799-991b-aa1fc598a190"",
+                    ""path"": ""<Gamepad>/dpad/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DebugFPS"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -367,6 +398,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
         m_Debug_ActivateFlight = m_Debug.FindAction("ActivateFlight", throwIfNotFound: true);
         m_Debug_DebugUI = m_Debug.FindAction("DebugUI", throwIfNotFound: true);
+        m_Debug_DebugFPS = m_Debug.FindAction("DebugFPS", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -524,12 +556,14 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private List<IDebugActions> m_DebugActionsCallbackInterfaces = new List<IDebugActions>();
     private readonly InputAction m_Debug_ActivateFlight;
     private readonly InputAction m_Debug_DebugUI;
+    private readonly InputAction m_Debug_DebugFPS;
     public struct DebugActions
     {
         private @PlayerControls m_Wrapper;
         public DebugActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @ActivateFlight => m_Wrapper.m_Debug_ActivateFlight;
         public InputAction @DebugUI => m_Wrapper.m_Debug_DebugUI;
+        public InputAction @DebugFPS => m_Wrapper.m_Debug_DebugFPS;
         public InputActionMap Get() { return m_Wrapper.m_Debug; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -545,6 +579,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @DebugUI.started += instance.OnDebugUI;
             @DebugUI.performed += instance.OnDebugUI;
             @DebugUI.canceled += instance.OnDebugUI;
+            @DebugFPS.started += instance.OnDebugFPS;
+            @DebugFPS.performed += instance.OnDebugFPS;
+            @DebugFPS.canceled += instance.OnDebugFPS;
         }
 
         private void UnregisterCallbacks(IDebugActions instance)
@@ -555,6 +592,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @DebugUI.started -= instance.OnDebugUI;
             @DebugUI.performed -= instance.OnDebugUI;
             @DebugUI.canceled -= instance.OnDebugUI;
+            @DebugFPS.started -= instance.OnDebugFPS;
+            @DebugFPS.performed -= instance.OnDebugFPS;
+            @DebugFPS.canceled -= instance.OnDebugFPS;
         }
 
         public void RemoveCallbacks(IDebugActions instance)
@@ -586,5 +626,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     {
         void OnActivateFlight(InputAction.CallbackContext context);
         void OnDebugUI(InputAction.CallbackContext context);
+        void OnDebugFPS(InputAction.CallbackContext context);
     }
 }
