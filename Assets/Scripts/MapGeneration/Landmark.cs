@@ -99,7 +99,6 @@ public class Landmark : MonoBehaviour
             // If this renderer has a custom bounds component attached, just get it from here
             CustomBounds cb = r.gameObject.GetComponent<CustomBounds>();
             if (cb != null) {
-                Debug.Log($"{r.gameObject.name} using CustomBounds");
                 bottomPoints[0] = transform.TransformPoint(cb.boundPoints[0]);
                 bottomPoints[1] = transform.TransformPoint(cb.boundPoints[1]);
                 bottomPoints[2] = transform.TransformPoint(cb.boundPoints[2]);

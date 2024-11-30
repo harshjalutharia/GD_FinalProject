@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Unity.Mathematics;
 
 public class GemGenerator : MonoBehaviour
@@ -38,6 +39,10 @@ public class GemGenerator : MonoBehaviour
     [SerializeField, Tooltip("Size of the destination gem on the held map")]        private int m_destGemMapSize = 10;
     [SerializeField, Tooltip("Color of thedestination gem on the held map")]        private Color m_destGemMapColor = Color.yellow;
     [SerializeField, Tooltip("Max height offset off the ground of the dest. gem")]  private float m_destGemHeightOffset = 0.5f;
+
+    [Header("=== Post-Generation ===")]
+    [SerializeField, Tooltip("Event to call when small gems are generated")]            private UnityEvent m_onSmallGemGenerationEnd;
+    [SerializeField, Tooltip("Event to call when the destination gem is generated")]    private UnityEvent m_onDestinationGemGenerationEnd;
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("The list of the data on small gems generated.")] private Dictionary<Gem, GemData> m_gemData = null;
@@ -121,6 +126,9 @@ public class GemGenerator : MonoBehaviour
             };
             m_gemData.Add(generatedGem, newGem);
         }     
+
+        // Events to call when small gems are generated
+        m_onSmallGemGenerationEnd?.Invoke();
     }
 
     public void GenerateDestinationGem(Vector3 destination) {
@@ -153,6 +161,9 @@ public class GemGenerator : MonoBehaviour
             isDestination=true
         };
         m_gemData.Add(m_destinationGem, destinationData);
+
+        // Events to call when finished
+        m_onDestinationGemGenerationEnd?.Invoke();
     }
 
     public void AddGemToMap(Gem gem) {

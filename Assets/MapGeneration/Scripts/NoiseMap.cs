@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using System.Linq;
 
 public class NoiseMap : MonoBehaviour
@@ -65,6 +66,9 @@ public class NoiseMap : MonoBehaviour
     [SerializeField, Tooltip("The colors rendered onto the mesh material. If Color Mode is set to 'TerrainTypes', will use only the colors and startHeight")]           protected TextureLayer[] m_meshMaterialLayers;
     [SerializeField, Tooltip("TO BE DEPRECATED")]                                                                                                                       protected TerrainType[] m_terrainTypes;
     [SerializeField, Tooltip("The color gradient used to color the mesh. Only used if Color Mode is set to 'Gradient'.")]                                               protected Gradient m_terrainColorGradient;
+
+    [Header("=== Post Generation ===")]
+    [SerializeField, Tooltip("Events to call after noise map generation")]  protected UnityEvent m_onGenerationEnd;
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField] protected float[,] m_noiseMap;
@@ -149,6 +153,7 @@ public class NoiseMap : MonoBehaviour
         m_heightMap = Generators.GenerateHeightMap(m_noiseMap, m_textureHeightCurve, m_textureHeightMultiplier);
         m_heightRange = GetHeightRange(m_heightMap);
         if (m_drawMode != DrawMode.None) RenderMap();
+        m_onGenerationEnd?.Invoke();
     }
 
     public virtual Color[] GenerateColorMap() {

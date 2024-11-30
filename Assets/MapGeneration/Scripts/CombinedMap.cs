@@ -64,6 +64,8 @@ public class CombinedMap : NoiseMap
         m_heightMap = RecenterHeightMap(m_heightMap);
         // Now draw
         if (m_drawMode != DrawMode.None) RenderMap();
+        // On generation end
+        m_onGenerationEnd?.Invoke();
     }
 
     private float[,] NormalizeNoiseMap(float[,] data) {

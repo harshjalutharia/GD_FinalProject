@@ -21,6 +21,7 @@ public class PerlinNoiseMap : NoiseMap
         m_heightMap = Generators.GenerateHeightMap(m_noiseMap, m_textureHeightCurve, m_textureHeightMultiplier);
         m_heightRange = GetHeightRange(m_heightMap);
         if (m_drawMode != DrawMode.None) RenderMap();
+        m_onGenerationEnd?.Invoke();
     }
 
     protected override void OnValidate() {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class VegetationGenerator : MonoBehaviour
 {
@@ -26,7 +27,6 @@ public class VegetationGenerator : MonoBehaviour
     
     [Header("=== Pre-Generation Settings ===")]
     [SerializeField, Tooltip("The seed used to control psuedo-rng for this map.")]                                                  private int m_seed;
-    [SerializeField, Tooltip("Use a coroutine to spawn vegetation objects. May improve initial runtime")]                           private bool m_useCoroutine = false;
     [SerializeField, Tooltip("If using a coroutine, the spawn delay between spawning.")]                                            private float m_coroutineSpawnDelay = 0.05f;
     [SerializeField, Tooltip("If using a coroutine, how many objects do you dequeue at a single time?")]                            private int m_coroutineNumItems = 3;
 
@@ -39,16 +39,19 @@ public class VegetationGenerator : MonoBehaviour
     [SerializeField, Tooltip("Rotation Offset for rotating the prefab"), Range(0,30)]                      private int m_rotationOffset;
     [SerializeField, Tooltip("If alignging to map terrain normal, select what layer the terrain generator is on")] private LayerMask m_normalQueryMask;
 
+    [Header("=== Post-Generation Events ===")]
+    [SerializeField, Tooltip("Call any functions after generating all trees")]  private UnityEvent m_onGenerationEnd;
+
     [Header("=== Outputs - READ ONLY ===")]
-    public List<GameObject> generatedTree;
-    private IEnumerator spawnCoroutine;
+    public int m_totalTreeCount;
+    public List<GameObject> m_generatedVegetation;
+    private IEnumerator m_spawnCoroutine;
     private Queue<ToSpawn> m_coroutineSpawnQueue;
 
     private void Awake() {
         if (m_vegetationParent == null) m_vegetationParent = this.transform;
     }
 
-    
     public virtual void SetSeed(string newSeed) {
         if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {
             m_seed = validNewSeed;
@@ -67,16 +70,13 @@ public class VegetationGenerator : MonoBehaviour
         // Determine some constants, counters, and the output array
         int mapChunkSize = m_terrainGenerator.mapChunkSize;
         int edgeDistance  = Mathf.FloorToInt(mapChunkSize* m_edgeBuffer);
-        int treeCount = 0;
-        generatedTree= new List<GameObject>();
+        m_totalTreeCount = 0;
+        m_generatedVegetation = new List<GameObject>();
 
-        // If we want to use a coroutine, then initialize the spawn coroutine
-        if (m_useCoroutine) {
-            // initialize the spawn queue
-            m_coroutineSpawnQueue = new Queue<ToSpawn>();
-            spawnCoroutine = SpawnCoroutine();
-            StartCoroutine(spawnCoroutine);
-        }
+        // Initialize the spawn coroutine
+        m_coroutineSpawnQueue = new Queue<ToSpawn>();
+        m_spawnCoroutine = SpawnCoroutine();
+        StartCoroutine(m_spawnCoroutine);
 
         // Iterate through each pixel
         for (int y= 0; y < mapChunkSize; y++){
@@ -129,55 +129,32 @@ public class VegetationGenerator : MonoBehaviour
                 Quaternion rot = normalRotation * Quaternion.Euler(rotOffsetX, rotOffsetY, rotOffsetZ);
 
                 // Increase the ticker for the number of generated trees
-                treeCount += 1;
+                m_totalTreeCount += 1;
 
-                // if we are using a coroutine to spawn, then we initialize a `ToSpawn` object, populate it, and add it to the spawn queue
-                if (m_useCoroutine) {
-                    ToSpawn toSpawn = new ToSpawn { prefab=m_prefabs[prefabIndex], position=pos, rotation=rot };
-                    m_coroutineSpawnQueue.Enqueue(toSpawn);
-                }
-                // Otherwise, just spawn now
-                else {
-                    // instantiate the object, store its reference in `generatedTree`, and add its circle to held map
-                    GameObject t = Instantiate (prefab, pos , rot, m_vegetationParent);
-                    generatedTree.Add(t);
-                    if (mapRadius > 0) m_terrainGenerator.DrawCircleOnHeldMap(pos.x, pos.z, mapRadius, mapColor);
-                    // Check if this object has a fustrum group attached. if so, initialize it too
-                    FustrumGroup fg = t.GetComponent<FustrumGroup>();
-                    if (fg != null) fg.QueryGridParent();
-                    else if (FustrumManager.current != null) {
-                        Vector2Int coords = FustrumManager.current.GetCoordsFromWorldPosition(pos);
-                        if (FustrumManager.current.coordToChunkMap.ContainsKey(coords)) {
-                            FustrumGroup parent = FustrumManager.current.coordToChunkMap[coords];
-                            parent.AddGameObject(t);
-                        }
-                    }
-                }
+                // Initialize a `ToSpawn` object, populate it, and add it to the spawn queue for our spawn coroutine
+                ToSpawn toSpawn = new ToSpawn { prefab=m_prefabs[prefabIndex], position=pos, rotation=rot };
+                m_coroutineSpawnQueue.Enqueue(toSpawn);
 
                 // Break early of the total # of generated trees already has reached the max number possible.
-                if (treeCount >= m_maxNumVegetation) break;
+                if (m_totalTreeCount >= m_maxNumVegetation) break;
             }
             // Break early of the total # of generated trees already has reached the max number possible.
-            if (treeCount >= m_maxNumVegetation) break;
+            if (m_totalTreeCount >= m_maxNumVegetation) break;
         }
 
     }
 
     private IEnumerator SpawnCoroutine() {
-        // Initialize queue, if it doesn't exist yet
-        if (m_coroutineSpawnQueue == null) m_coroutineSpawnQueue = new Queue<ToSpawn>();
-
         // Initialize waitforseconds delay
         WaitForSeconds spawnDelay = new WaitForSeconds(m_coroutineSpawnDelay);
 
-        // Use a counter to restrict the number of times we wait for the spawn queue to fill up. If the counter goes beyond this value, we auto-end the spawn coroutine
-        int waitCounter = 0;
+        // Let's actually wait for the spawn delay first, to give the system enough time to generate some number of trees to generate
+        yield return spawnDelay;
 
         // initiate loop
-        while(waitCounter < 100) {
+        while(m_generatedVegetation.Count < m_totalTreeCount) {
             // Check if we still have something to spawn. If not, skip
             if (m_coroutineSpawnQueue.Count == 0) {
-                waitCounter += 1;
                 yield return null;
                 continue;
             }
@@ -192,8 +169,13 @@ public class VegetationGenerator : MonoBehaviour
 
                 // Instantiate the necessary prefab with the given position and rotation
                 GameObject t = Instantiate (toSpawn.prefab.prefab, toSpawn.position , toSpawn.rotation, m_vegetationParent);
-                generatedTree.Add(t);
+                
+                // Add it to our list of generated vegetation
+                m_generatedVegetation.Add(t);
+
+                // If we indicated that we wanted to add it to the held map, then we add it
                 if (toSpawn.prefab.mapRenderSize > 0) m_terrainGenerator.DrawCircleOnHeldMap(toSpawn.position.x, toSpawn.position.z, toSpawn.prefab.mapRenderSize, toSpawn.prefab.mapColor);
+                
                 // Check if this object has a fustrum group attached. if so, initialize it too
                 FustrumGroup fg = t.GetComponent<FustrumGroup>();
                 if (fg != null) fg.QueryGridParent();
@@ -206,19 +188,20 @@ public class VegetationGenerator : MonoBehaviour
                 }
             }
 
-
             // Yield return the delay
-            waitCounter = 0;
             yield return spawnDelay;
         }
+
+        // When reaching this point, we have generated all our trees. If there's an event callback we want to call, we do so here.
+        m_onGenerationEnd?.Invoke();
     }
 
-    void OnValidate() {
+    private void OnValidate() {
         if (m_coroutineNumItems <= 0 ) m_coroutineNumItems = 1;
     }
 
     // Ensure that if the coroutine still exists, end it safely
-    void OnDestroy() {
+    private void OnDestroy() {
         StopAllCoroutines();
     }
 }

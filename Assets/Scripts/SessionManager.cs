@@ -21,7 +21,7 @@ public class SessionManager : MonoBehaviour
 
     [Header("=== Necessary Generators/Maps/Managers ===")]
     [SerializeField, Tooltip("The noise map that generates terrain.")]          private NoiseMap m_terrainGenerator;
-    [SerializeField, Tooltip("Specific refrence to the voronoi map used")]      private VoronoiMap m_voronoiMap;
+    [SerializeField, Tooltip("Specific reference to the voronoi map used")]     private VoronoiMap m_voronoiMap;
 
     [Header("=== Optional Generators/Maps/Managers ===")]
     [SerializeField, Tooltip("The Fustrum Manager that manages fustrum chunks")]                private FustrumManager m_fustrumManager;
@@ -62,7 +62,7 @@ public class SessionManager : MonoBehaviour
         // The start and end positions rely on a representative voronoi map to let us know which regions are safe.
         GenerateStartAndEnd(
             m_terrainGenerator, m_voronoiMap, 
-            150f, 20, 
+            300f, 20, 
             out m_playerStartPosition, out int playerStartPositionIndex, 
             out m_playerEndPosition, out int playerEndPositionIndex
         );
@@ -135,11 +135,15 @@ public class SessionManager : MonoBehaviour
         CameraController.current.enabled = true;
         m_gemCamera.gameObject.SetActive(true);
 
+        // Start playing BGM
+        SoundManager.current.PlayBGM();
+
         // Let the camera fade in
-        m_playerCameraFader.FadeIn();                
+        m_playerCameraFader.FadeIn();       
 
         // If a gem generator exists, toggle the view cam
         if (m_gemGenerator != null) m_gemGenerator.ToggleViewCheck(true);
+
     }
 
     public void SetSeed(string newSeed) {
@@ -216,6 +220,10 @@ public class SessionManager : MonoBehaviour
         float endHeight = terrainMap.QueryHeightAtWorldPos(vEndPos.x, vEndPos.z, out int endX, out int endY);
         startPos = new Vector3(vStartPos.x, startHeight, vStartPos.z);
         endPos = new Vector3(vEndPos.x, endHeight, vEndPos.z);
+    }
+
+    public void DebugFinishGeneration(string generatorName) {
+        Debug.Log($"Finished Generating {generatorName}");
     }
 
 }
