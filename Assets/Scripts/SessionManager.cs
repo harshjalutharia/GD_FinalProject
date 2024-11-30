@@ -27,35 +27,11 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The Fustrum Manager that manages fustrum chunks")]                private FustrumManager m_fustrumManager;
     [SerializeField, Tooltip("The landmark generator that places buildings")]                   private LandmarkGenerator m_landmarkGenerator;
     [SerializeField, Tooltip("The vegetation generator to place trees")]                        private VegetationGenerator m_vegetationGenerator;
-    [SerializeField, Tooltip("The rock generator to place trees")]                              private VegetationGenerator m_rockGenerator;
-    [SerializeField, Tooltip("The grass generator to place trees")]                             private VegetationGenerator m_flowerGenerator;
     [SerializeField, Tooltip("The grass generator to place grass")]                             private VegetationGenerator m_grassGenerator;
-    [SerializeField, Tooltip("The grass generator to place grass locally around the player")]   private GrassGenerator m_localGrassGenerator;
     [SerializeField, Tooltip("The gem generator to place gems")]                                private GemGenerator m_gemGenerator;
 
     [Header("=== Menus ===")]
-    [SerializeField, Tooltip("The camera that acts as the load screen cam, due to cam fader")]  private Camera m_loadCamera;
-    [SerializeField, Tooltip("The main camera for the main gameplay")]                          private Camera m_mainCamera;
-    [SerializeField, Tooltip("The first person camera")]                                        private Camera m_firstPersonCamera;
     [SerializeField, Tooltip("The gem camera")]                                                 private Camera m_gemCamera;
-    [Space]
-    [SerializeField, Tooltip("The canvas group for the initial loading menu")]                  private CanvasGroup m_loadingMenuGroup;
-    [SerializeField, Tooltip("The transition time for menus to appear/disappear.")] private float m_pauseMenuTransitionTime = 1f;
-    [SerializeField, Tooltip("The canvas group for the pause menu")]                private CanvasGroup m_pauseMenuGroup;
-    [SerializeField, Tooltip("The canvas group for the win screen")]                private CanvasGroup m_winMenuGroup;
-    [SerializeField, Tooltip("The transition time for the win screen to appear")]   private float m_winMenuTransitionTime = 1f;
-    [SerializeField, Tooltip("The canvas group for the player movement debug.")]    private CanvasGroup m_movementDebugGroup;
-    private InputAction m_pauseMenuInput;
-
-    [Header("=== Held Map Settings ===")]
-    [SerializeField, Tooltip("The held map object transform itself")]       private Transform m_heldMap;
-    [SerializeField, Tooltip("Ref. point for the visible map position")]    private Transform m_heldMapVisiblePosRef;
-    [SerializeField, Tooltip("Ref. point for the inviisble map position")]  private Transform m_heldMapInvisiblePosRef;
-    [SerializeField, Tooltip("The transition time for the map transition")] private float m_heldMapTransitionTime = 0.25f;
-    [SerializeField, Tooltip("Is the map being shown currently?")]          private bool m_isShowingMap;
-    public bool isShowingMap => m_isShowingMap;
-    private InputAction m_showMapInput;
-    private Vector3 m_heldMapVelocity = Vector3.zero;
 
     [Header("=== Loading Slideshow Settings ===")]
     [SerializeField, Tooltip("Image component for displaying slides")] private Image m_slideshowImage;
@@ -63,16 +39,8 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("Time to display each slide")] private float m_slideDisplayTime = 2f;
     [SerializeField, Tooltip("Transition time between slides")] private float m_slideTransitionTime = 1f;
 
-    [Header("=== Scene Transition Settings ===")]
-    [SerializeField, Tooltip("Transition time to move between scenes")]             private float m_sceneTransitionTime = 2f;
-    [SerializeField, Tooltip("Is the player transitioning between scenes?")]        private bool m_isSceneTransitioning = false;
-    private CanvasGroup m_currentActiveCanvasGroup = null;
-
     private void Awake() {
         current = this;
-        var controls = InputManager.Instance.controls;
-        m_pauseMenuInput = controls.Player.Menu;
-        m_showMapInput = controls.Player.Map;
     }
 
     private void Start() {
@@ -82,9 +50,9 @@ public class SessionManager : MonoBehaviour
 
         // Show the loading menu
         StartCoroutine(PlaySlideshowCoroutine());
-        m_loadCamera.gameObject.SetActive(true);
-        m_mainCamera.gameObject.SetActive(false);
-        m_firstPersonCamera.gameObject.SetActive(false);
+        CameraController.current.ToggleLoadingCamera(true, true);
+        CameraController.current.ToggleThirdPersonCamera(false, false);
+        CameraController.current.ToggleFirstPersonCamera(false, false);
         m_gemCamera.gameObject.SetActive(false);
         
         // Initialize terrain generation
@@ -105,18 +73,14 @@ public class SessionManager : MonoBehaviour
         // After generating the terrain, we can now initiate a bunch of other managers, generators, etc.
         //if (m_fustrumManager != null)       m_fustrumManager.Initialize();                                                                                  // Fustrum culling
         if (m_landmarkGenerator != null)    m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_playerStartPosition, m_terrainGenerator);          // Landmark generation
-        if (m_vegetationGenerator != null)  m_vegetationGenerator.GenerateVegetation();                                                                     // Vegetation generation
-        if (m_rockGenerator != null)        m_rockGenerator.GenerateVegetation();                                                                           // Rock generation
-        if (m_flowerGenerator != null)      m_flowerGenerator.GenerateVegetation();                                                                         // Flower generation
+        if (m_vegetationGenerator != null)  m_vegetationGenerator.GenerateVegetation();                                                                     // Vegetation generation                                                                        // Rock generation
         if (m_grassGenerator != null)       m_grassGenerator.GenerateVegetation();                                                                          // Grass generation
-        if (m_localGrassGenerator != null)  m_localGrassGenerator.Initialize();                                                                             // Local grass generation
         // Gem generation
         if (m_gemGenerator != null) {
             m_gemGenerator.GenerateSmallGems();
             m_gemGenerator.GenerateDestinationGem(m_playerEndPosition);
         }
         // Game tracker
-        if (GameTracker.current != null)    GameTracker.current.StartTracking();     
         StartCoroutine(m_player.GetComponent<PlayerMovement>().ActivatePlayer());        
         Invoke(nameof(InitializePlayerView), 5f);
 
@@ -168,9 +132,7 @@ public class SessionManager : MonoBehaviour
     private void InitializePlayerView() {
         // Hide the loading menu
         CanvasController.current.ToggleLoadingScreen(false);
-        m_loadCamera.gameObject.SetActive(false);
-        m_mainCamera.gameObject.SetActive(true);
-        m_firstPersonCamera.gameObject.SetActive(true);
+        CameraController.current.enabled = true;
         m_gemCamera.gameObject.SetActive(true);
 
         // Let the camera fade in
@@ -192,26 +154,13 @@ public class SessionManager : MonoBehaviour
         Random.InitState(newSeed);
         m_terrainGenerator.SetSeed(newSeed);
         if (m_vegetationGenerator != null)  m_vegetationGenerator.SetSeed(newSeed);
-        if (m_rockGenerator != null)        m_rockGenerator.SetSeed(newSeed);
-        if (m_flowerGenerator != null)      m_flowerGenerator.SetSeed(newSeed);
-        if (m_localGrassGenerator != null)  m_localGrassGenerator.SetSeed(newSeed);
         if (m_grassGenerator != null)       m_grassGenerator.SetSeed(newSeed);
         if (m_gemGenerator != null)         m_gemGenerator.SetSeed(newSeed);
-    }
-
-    public void OpenWinMenu() {
-        Debug.Log("Openning win menu");
-        m_currentActiveCanvasGroup = m_winMenuGroup;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        if (GameTracker.current != null) GameTracker.current.StopTracking();
-        StartCoroutine(ToggleCanvasGroupCoroutine(m_winMenuGroup, true, m_winMenuTransitionTime));
     }
 
     public void ReturnToStart() {   StartCoroutine(ReturnToStartCoroutine());   }
     private IEnumerator ReturnToStartCoroutine() {
         // Fade out the player and their controls
-        m_isSceneTransitioning = true;
         m_playerCameraFader.FadeOut();
         
         // Fade out menues
@@ -220,10 +169,6 @@ public class SessionManager : MonoBehaviour
 
         // Migrate to start
         SceneManager.LoadScene(0);
-    }
-
-    public void SaveGameSession() {
-        if (GameTracker.current != null) GameTracker.current.SaveUserData();
     }
 
     private IEnumerator ToggleCanvasGroupCoroutine(CanvasGroup group, bool setTo, float transitionTime) {

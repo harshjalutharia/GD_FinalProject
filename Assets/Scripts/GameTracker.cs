@@ -53,7 +53,7 @@ public class GameTracker : MonoBehaviour
             Vector3 pos = m_player.transform.position;
             Vector3 forward = m_player.transform.forward;
             Vector3 noiseMapPos = new Vector3(pos.x, m_terrainGenerator.QueryHeightAtWorldPos(pos.x, pos.z, out int coordX, out int coordY), pos.z);
-            int isHoldingMap = SessionManager.current.isShowingMap ? 1 : 0;
+            int isHoldingMap = CameraController.current.firstPersonCameraActive ? 1 : 0;
             float stamina = m_playerMovement.GetFlightStamina();
             
             m_session.AddRow(new UserRow(timestamp, pos, forward, noiseMapPos, isHoldingMap, stamina, deltaTime));

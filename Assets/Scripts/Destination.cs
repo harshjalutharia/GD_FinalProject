@@ -13,6 +13,6 @@ public class Destination : MonoBehaviour
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag != "Player") return;
         Debug.Log("Destination Reached!");
-        SessionManager.current.OpenWinMenu();
+        CanvasController.current.ToggleWinScreen(true);
     }
 }

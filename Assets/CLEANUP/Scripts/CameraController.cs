@@ -10,6 +10,7 @@ public class CameraController : MonoBehaviour
     [SerializeField, Tooltip("The action input that activates/deactivates the held map toggle.")]   private InputActionReference m_actionReference;
     [SerializeField, Tooltip("The action input that corresponds to the... view?")]                  private InputActionReference m_viewReference;
     [Space]
+    [SerializeField, Tooltip("The loading camera reference.")]      private Camera m_loadingCamera;
     [SerializeField, Tooltip("The 3rd-person camera reference.")]   private Camera m_thirdPersonCamera;
     [SerializeField, Tooltip("The 1st-person camera reference")]    private Camera m_firstPersonCamera;
     [Space]
@@ -37,25 +38,28 @@ public class CameraController : MonoBehaviour
     private Vector3 m_firstPersonCameraVelocity = Vector3.zero;
     private bool m_movingFirstPersonCamera = false;
 
+    // This gets called regardless if this component itself is enabled or not. Only doesn't run if..
+    // ,, the game object that this is attached to is not active.
     private void Awake() {
         current = this;
-        if (m_enableOnStart)  m_actionReference.action.Enable();
+
+        // Make sure the held map and compass are both inactive on start
+        m_heldMap.SetActive(false);
+        m_compass.SetActive(false);
     }
 
     private void OnEnable() {
-        // Make sure that, initially, the third person camera is active and the first person camera is disabled
-        m_thirdPersonCamera.enabled = true;
-        m_firstPersonCamera.enabled = false;
-
-        // Make sure settings are ready
-        m_heldMap.SetActive(false);
-        m_compass.SetActive(false);
-
+        // Upon enabling of this game object, we intentionally turn off loading camera and set the first and third player cameras to be active.
+        // However, we make the first person camera disabled, though we still turn it on
+        ToggleThirdPersonCamera(true, true);
+        ToggleFirstPersonCamera(true, false);
+        ToggleLoadingCamera(false, false);
         // Set the references. We attach listeners to each action reference
         m_mapInputActive = false;
         m_firstPersonCameraActive = false;
         m_actionReference.action.started += OpenMap;
         m_actionReference.action.canceled += CloseMap;
+        m_actionReference.action.Enable();
     }
 
     public void OpenMap(InputAction.CallbackContext ctx) {
@@ -74,8 +78,8 @@ public class CameraController : MonoBehaviour
         m_compass.SetActive(true);
 
         // Switch the output display.
-        m_firstPersonCamera.enabled = true;
-        m_thirdPersonCamera.enabled = false;
+        ToggleFirstPersonCamera(true, true);
+        ToggleThirdPersonCamera(true, false);
         
         // Set the main terrain fustrum to the first person camera
         FustrumManager.current.SetMainFustrumCamera(m_firstPersonCamera);
@@ -136,8 +140,8 @@ public class CameraController : MonoBehaviour
                 // This is expected to execute once, so it's safe to do it here.
                 m_heldMap.SetActive(false);
                 m_compass.SetActive(false);
-                m_thirdPersonCamera.enabled = true;
-                m_firstPersonCamera.enabled = false;
+                ToggleThirdPersonCamera(true, true);
+                ToggleFirstPersonCamera(true, false);
                 FustrumManager.current.SetMainFustrumCamera(m_thirdPersonCamera);
             }
         }
@@ -150,12 +154,23 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    public void ToggleLoadingCamera(bool active, bool enabled) {
+        m_loadingCamera.gameObject.SetActive(active);
+        m_loadingCamera.enabled = enabled;
+    }
+    public void ToggleThirdPersonCamera(bool active, bool enabled) {
+        m_thirdPersonCamera.gameObject.SetActive(active);
+        m_thirdPersonCamera.enabled = enabled;
+    }
+    public void ToggleFirstPersonCamera(bool active, bool enabled) {
+        m_firstPersonCamera.gameObject.SetActive(active);
+        m_firstPersonCamera.enabled = enabled;
+    }
+
     private void OnDisable() {
         m_actionReference.action.started -= OpenMap;
         m_actionReference.action.canceled -= CloseMap;
         m_firstPersonCameraActive = false;
         m_mapInputActive = false;
-        if (m_thirdPersonCamera != null) m_thirdPersonCamera.enabled = true;
-        if (m_firstPersonCamera != null) m_firstPersonCamera.enabled = false;
     }
 }

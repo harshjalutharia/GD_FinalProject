@@ -75,6 +75,8 @@ public class CanvasController : MonoBehaviour
     public void ToggleWinScreen(bool setTo) {
         m_winCanvasActive = setTo;
         ToggleCanvasGroup(m_winCanvasGroup, setTo);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void ToggleMenuAction(InputAction.CallbackContext ctx) { ToggleMenu(!m_menuCanvasActive); }
