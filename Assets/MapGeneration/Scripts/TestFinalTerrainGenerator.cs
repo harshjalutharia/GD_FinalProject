@@ -6,7 +6,7 @@ using UnityEngine;
 public class TestFinalTerrainGenerator : MonoBehaviour
 {
     public enum LayerType { Random, Perlin, Falloff }
-    public enum FalloffType { Box, Circle }
+    public enum FalloffType { Box, NorthSouth, EastWest, Circle }
     public enum ApplicationType { Off, Set, Add, Subtract, Multiply, Divide }
 
     [System.Serializable]
@@ -14,6 +14,9 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         public string name;
         public LayerType layerType;
         public ApplicationType applicationType;
+        [Space]
+        public AnimationCurve heightCurve;
+        public float heightMultiplier;
 
         [Header("Perlin Settings")]
         public float scale = 20f;
@@ -24,19 +27,25 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         public FalloffType falloffType;
         [Range(0f,1f)] public float centerX = 0.5f;
         [Range(0f,1f)] public float centerY = 0.5f;
-        [Range(0f,1f)] public float falloffStart;
-        [Range(0f,1f)] public float falloffEnd;
+        [Range(0f,2f)] public float falloffStart;
+        [Range(0f,2f)] public float falloffEnd;
+        public Gradient falloffGradient;
         public bool invert;
 
         public virtual float GeneratePoint(System.Random prng, int x, int y, int width, int height) { 
+            float value;
             switch(layerType) {
                 case LayerType.Perlin:
-                    return GeneratePerlin(x, y, width, height);
+                    value = GeneratePerlin(x, y, width, height);
+                    break;
                 case LayerType.Falloff:
-                    return GenerateFalloff(x, y, width, height);
+                    value = GenerateFalloff(x, y, width, height);
+                    break;
                 default:
-                    return GenerateRandom(prng);
+                    value = GenerateRandom(prng);
+                    break;
             }
+            return heightCurve.Evaluate(value) * heightMultiplier;
         }
 
         public virtual float GenerateRandom(System.Random prng) {
@@ -52,14 +61,25 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         public virtual float GenerateFalloff(int x, int y, int width, int height) {
             float xCoord = (float)x / width;
             float yCoord = (float)y / height;
-            float t = (falloffType == FalloffType.Box) 
-                ? Mathf.Max(Mathf.Abs(xCoord-centerX), Mathf.Abs(yCoord-centerY))
-                : Vector2.Distance(new Vector2(centerX, centerY), new Vector2(xCoord, yCoord));
-            if (t < falloffStart) return (invert) ? 0 : 1;
-            if (t > falloffEnd) return (invert) ? 1 : 0;
-            return (invert) 
-                ? Mathf.SmoothStep(1f,0f,Mathf.InverseLerp(falloffEnd, falloffStart, t))
-                : Mathf.SmoothStep(1f,0f,Mathf.InverseLerp(falloffStart, falloffEnd, t));
+            float t = 0f;
+            switch(falloffType) {
+                case FalloffType.NorthSouth:
+                    t = Mathf.Abs(yCoord-centerY);
+                    break;
+                case FalloffType.EastWest:
+                    t = Mathf.Abs(xCoord-centerX);
+                    break;
+                case FalloffType.Circle:
+                    t = Vector2.Distance(new Vector2(centerX, centerY), new Vector2(xCoord, yCoord));
+                    break;
+                default:
+                    t = Mathf.Max(Mathf.Abs(xCoord-centerX), Mathf.Abs(yCoord-centerY));
+                    break;
+            }
+            float v = (t < falloffStart) 
+                ? 1f : (t > falloffEnd) 
+                    ? 0f : Mathf.SmoothStep(1f,0f,Mathf.InverseLerp(falloffStart, falloffEnd, t));
+            return falloffGradient.Evaluate(v).r;
         }
     }
 
@@ -70,9 +90,8 @@ public class TestFinalTerrainGenerator : MonoBehaviour
     public int gridWidth => width+1;    // The grid map width; +1 of world width due to vertices requiring one more point at the end
     public int gridHeight => height+1;  // The grid map height;
     [SerializeField, Range(0,6), Tooltip("The LOD level used to control the mesh fidelity.")] private int m_levelOfDetail;
-    [SerializeField, Tooltip("The height curve that maps noise map to world height")]   private AnimationCurve m_heightCurve;
-    [SerializeField, Tooltip("The height multiplier")]  private float m_heightMultiplier;
     [Space]
+    [SerializeField] private AnimationCurve m_heightCurve;
     public List<TerrainLayer> m_layers;
     public System.Random m_prng;
 
@@ -81,7 +100,7 @@ public class TestFinalTerrainGenerator : MonoBehaviour
     [SerializeField] private Renderer m_renderer;
     [SerializeField] private MeshCollider m_collider;
     [SerializeField] private float[,] m_noiseMap;
-    [SerializeField] private float[,] m_heightMap;
+    //[SerializeField] private float[,] m_heightMap;
     [SerializeField] private FilterMode m_filterMode;
 
     [Header("=== Debug Settings ===")]
@@ -99,7 +118,7 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         m_prng = new System.Random(m_seed);
 
         // Generating the noise map
-        GenerateNoise(out m_noiseMap, out m_heightMap);
+        GenerateNoise(out m_noiseMap);
 
         // Generate texture and mesh data
         Texture2D tData = GenerateTexture();
@@ -121,7 +140,7 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         yield return null;
     }
 
-    private void GenerateNoise(out float[,] noiseMap, out float[,] heightMap) {
+    private void GenerateNoise(out float[,] noiseMap) {
         noiseMap = new float[gridWidth,gridHeight];
         float maxValue = float.MinValue;
         for (int x = 0; x < gridWidth; x++) {
@@ -157,13 +176,14 @@ public class TestFinalTerrainGenerator : MonoBehaviour
             }
         }
 
+        /*
         heightMap = new float[gridWidth, gridHeight];
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
                 noiseMap[x,y] /= maxValue;
-                heightMap[x,y] = m_heightCurve.Evaluate(noiseMap[x,y]) * m_heightMultiplier;
             }
         }
+        */
     }
     
     private MeshData GenerateMeshData() {
@@ -178,7 +198,7 @@ public class TestFinalTerrainGenerator : MonoBehaviour
 
         for(int y = 0; y < gridHeight; y+=meshSimplificationIncrement) {
             for(int x = 0; x < gridWidth; x+=meshSimplificationIncrement) {
-                meshData.vertices[vertexIndex] = new Vector3(x, m_heightMap[x,y], y);
+                meshData.vertices[vertexIndex] = new Vector3(x, m_noiseMap[x,y], y);
                 meshData.uvs[vertexIndex] = new Vector2(x/(float)gridWidth, y/(float)gridHeight);
                 if (x < width && y < height) {
                     meshData.AddTriangle(vertexIndex, vertexIndex+verticesPerLine, vertexIndex+verticesPerLine+1);
