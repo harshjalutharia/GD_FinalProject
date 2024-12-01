@@ -48,4 +48,28 @@ public class SoundManager : MonoBehaviour
         m_sfxMapper[name].Stop();
     }
     
+    public void FadeOutSFX(string name, float fadeDuration) {
+        if (!m_sfxMapper.ContainsKey(name)) {
+            Debug.LogError($"Cannot Stop SFX with name {name} - no sound clip registered");
+            return;
+        }
+
+        StartCoroutine(FadeOutCoroutine(name, fadeDuration));
+    }
+    
+    private IEnumerator FadeOutCoroutine(string name, float fadeDuration)
+    {
+        float startVolume = m_sfxMapper[name].volume;   //record initial volume
+        float t = 0;
+        while (m_sfxMapper[name].volume > 0.05f)
+        {
+            m_sfxMapper[name].volume = Mathf.Lerp(startVolume, 0, t / fadeDuration);
+            t += Time.deltaTime;
+            yield return null;
+        }
+        
+        m_sfxMapper[name].Stop();
+        m_sfxMapper[name].volume = startVolume; // reset the volume
+    }
+    
 }

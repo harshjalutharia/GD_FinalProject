@@ -46,12 +46,21 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Jump/Fly"",
+                    ""name"": ""Jump"",
                     ""type"": ""Button"",
                     ""id"": ""a033dacd-cb7d-4bb0-bded-c53be332e39d"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Fly"",
+                    ""type"": ""Button"",
+                    ""id"": ""1f02b888-5941-42e1-b773-4e4b4b735e48"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -69,7 +78,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""id"": ""5aade9b9-d97f-4907-a67d-831e529c8f2e"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold(duration=0.1)"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -196,7 +205,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Jump/Fly"",
+                    ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -207,7 +216,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Jump/Fly"",
+                    ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -307,6 +316,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SkipCutscene"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bbfd9bef-b4af-4d4e-ba26-15a88e258c67"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fly"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0d33c563-4c4e-4ea5-865a-8b43601254c7"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Fly"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -420,7 +451,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_View = m_Player.FindAction("View", throwIfNotFound: true);
-        m_Player_JumpFly = m_Player.FindAction("Jump/Fly", throwIfNotFound: true);
+        m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+        m_Player_Fly = m_Player.FindAction("Fly", throwIfNotFound: true);
         m_Player_SkipCutscene = m_Player.FindAction("SkipCutscene", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_SwitchSprint = m_Player.FindAction("Switch Sprint", throwIfNotFound: true);
@@ -494,7 +526,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_View;
-    private readonly InputAction m_Player_JumpFly;
+    private readonly InputAction m_Player_Jump;
+    private readonly InputAction m_Player_Fly;
     private readonly InputAction m_Player_SkipCutscene;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_SwitchSprint;
@@ -506,7 +539,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public PlayerActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @View => m_Wrapper.m_Player_View;
-        public InputAction @JumpFly => m_Wrapper.m_Player_JumpFly;
+        public InputAction @Jump => m_Wrapper.m_Player_Jump;
+        public InputAction @Fly => m_Wrapper.m_Player_Fly;
         public InputAction @SkipCutscene => m_Wrapper.m_Player_SkipCutscene;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
         public InputAction @SwitchSprint => m_Wrapper.m_Player_SwitchSprint;
@@ -527,9 +561,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @View.started += instance.OnView;
             @View.performed += instance.OnView;
             @View.canceled += instance.OnView;
-            @JumpFly.started += instance.OnJumpFly;
-            @JumpFly.performed += instance.OnJumpFly;
-            @JumpFly.canceled += instance.OnJumpFly;
+            @Jump.started += instance.OnJump;
+            @Jump.performed += instance.OnJump;
+            @Jump.canceled += instance.OnJump;
+            @Fly.started += instance.OnFly;
+            @Fly.performed += instance.OnFly;
+            @Fly.canceled += instance.OnFly;
             @SkipCutscene.started += instance.OnSkipCutscene;
             @SkipCutscene.performed += instance.OnSkipCutscene;
             @SkipCutscene.canceled += instance.OnSkipCutscene;
@@ -555,9 +592,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @View.started -= instance.OnView;
             @View.performed -= instance.OnView;
             @View.canceled -= instance.OnView;
-            @JumpFly.started -= instance.OnJumpFly;
-            @JumpFly.performed -= instance.OnJumpFly;
-            @JumpFly.canceled -= instance.OnJumpFly;
+            @Jump.started -= instance.OnJump;
+            @Jump.performed -= instance.OnJump;
+            @Jump.canceled -= instance.OnJump;
+            @Fly.started -= instance.OnFly;
+            @Fly.performed -= instance.OnFly;
+            @Fly.canceled -= instance.OnFly;
             @SkipCutscene.started -= instance.OnSkipCutscene;
             @SkipCutscene.performed -= instance.OnSkipCutscene;
             @SkipCutscene.canceled -= instance.OnSkipCutscene;
@@ -656,7 +696,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnView(InputAction.CallbackContext context);
-        void OnJumpFly(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
+        void OnFly(InputAction.CallbackContext context);
         void OnSkipCutscene(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnSwitchSprint(InputAction.CallbackContext context);

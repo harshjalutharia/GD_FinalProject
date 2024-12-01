@@ -24,12 +24,21 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Jump/Fly",
+                    "name": "Jump",
                     "type": "Button",
                     "id": "a033dacd-cb7d-4bb0-bded-c53be332e39d",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Fly",
+                    "type": "Button",
+                    "id": "1f02b888-5941-42e1-b773-4e4b4b735e48",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold",
                     "initialStateCheck": false
                 },
                 {
@@ -47,7 +56,7 @@
                     "id": "5aade9b9-d97f-4907-a67d-831e529c8f2e",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Hold(duration=0.1)",
                     "initialStateCheck": false
                 },
                 {
@@ -174,7 +183,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Jump/Fly",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -185,7 +194,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Jump/Fly",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -285,6 +294,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "SkipCutscene",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bbfd9bef-b4af-4d4e-ba26-15a88e258c67",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fly",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0d33c563-4c4e-4ea5-865a-8b43601254c7",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fly",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
