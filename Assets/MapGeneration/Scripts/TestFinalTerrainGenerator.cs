@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Renderer))]
 public class TestFinalTerrainGenerator : MonoBehaviour
 {
-    public enum LayerType { Random, Perlin, Falloff }
+    public enum LayerType { Random, Perlin, Falloff, PerlinFalloff }
     public enum FalloffType { Box, NorthSouth, EastWest, Circle }
     public enum ApplicationType { Off, Set, Add, Subtract, Multiply, Divide }
 
@@ -30,7 +30,6 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         [Range(0f,2f)] public float falloffStart;
         [Range(0f,2f)] public float falloffEnd;
         public Gradient falloffGradient;
-        public bool invert;
 
         public virtual float GeneratePoint(System.Random prng, int x, int y, int width, int height) { 
             float value;
@@ -40,6 +39,10 @@ public class TestFinalTerrainGenerator : MonoBehaviour
                     break;
                 case LayerType.Falloff:
                     value = GenerateFalloff(x, y, width, height);
+                    break;
+                case LayerType.PerlinFalloff:
+                    value = GeneratePerlin(x, y, width, height);
+                    value *= GenerateFalloff(x, y, width, height);
                     break;
                 default:
                     value = GenerateRandom(prng);
@@ -91,7 +94,7 @@ public class TestFinalTerrainGenerator : MonoBehaviour
     public int gridHeight => height+1;  // The grid map height;
     [SerializeField, Range(0,6), Tooltip("The LOD level used to control the mesh fidelity.")] private int m_levelOfDetail;
     [Space]
-    [SerializeField] private AnimationCurve m_heightCurve;
+    [SerializeField] private int m_coroutineNumThreshold = 20;
     public List<TerrainLayer> m_layers;
     public System.Random m_prng;
 
@@ -99,13 +102,18 @@ public class TestFinalTerrainGenerator : MonoBehaviour
     [SerializeField] private MeshFilter m_meshFilter;
     [SerializeField] private Renderer m_renderer;
     [SerializeField] private MeshCollider m_collider;
-    [SerializeField] private float[,] m_noiseMap;
-    //[SerializeField] private float[,] m_heightMap;
     [SerializeField] private FilterMode m_filterMode;
+    [SerializeField] private float[,] m_noiseMap;
+    [SerializeField] private Texture2D m_textureData;
+    [SerializeField] private MeshData m_meshData;
 
     [Header("=== Debug Settings ===")]
     [SerializeField] private bool m_autoUpdate = false;
     public bool autoUpdate => m_autoUpdate;
+
+    private void Start() {
+        StartCoroutine(GenerateMapCoroutine());
+    }
 
     public void GenerateMap() {
         StartCoroutine(GenerateMapCoroutine());
@@ -118,31 +126,37 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         m_prng = new System.Random(m_seed);
 
         // Generating the noise map
-        GenerateNoise(out m_noiseMap);
+        yield return GenerateNoise();
+        Debug.Log("Noise Map Generated");
 
-        // Generate texture and mesh data
-        Texture2D tData = GenerateTexture();
-        MeshData mData = GenerateMeshData();
+        // Generate texture
+        yield return GenerateTexture();
+        Debug.Log("Texture Generated");
+
+        // Generate mesh data
+        yield return GenerateMeshData();
+        Debug.Log("Mesh Generated");
 
         if (m_renderer != null) {
             //m_meshFilter.sharedMesh = mData.CreateMesh();
             //if (m_collider != null) m_collider.sharedMesh = m_meshFilter.sharedMesh;
             var tempMaterial = new Material(m_renderer.sharedMaterial);
-            tempMaterial.mainTexture = tData;
+            tempMaterial.mainTexture = m_textureData;
             m_renderer.sharedMaterial = tempMaterial;
         }
 
         if (m_meshFilter != null) {
-            m_meshFilter.sharedMesh = mData.CreateMesh();
+            m_meshFilter.sharedMesh = m_meshData.CreateMesh();
             //if (m_collider != null) m_collider.sharedMesh = m_meshFilter.sharedMesh;
         }
 
         yield return null;
     }
 
-    private void GenerateNoise(out float[,] noiseMap) {
-        noiseMap = new float[gridWidth,gridHeight];
+    private IEnumerator GenerateNoise() {
+        m_noiseMap = new float[gridWidth,gridHeight];
         float maxValue = float.MinValue;
+        int counter = 0;
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
                 float value = 0f;
@@ -170,11 +184,22 @@ public class TestFinalTerrainGenerator : MonoBehaviour
                         }
                     }
                 }
-                noiseMap[x,y] = value;
+                m_noiseMap[x,y] = value;
                 if (value > maxValue) maxValue = value;
+                counter++;
+                if (counter >= m_coroutineNumThreshold) {
+                    yield return null;
+                    counter = 0;
+                }
                 //noiseMap[x,y] = CalculateNoise(x,y,gridWidth,gridHeight);
             }
+            counter++;
+            if (counter >= m_coroutineNumThreshold) {
+                yield return null;
+                counter = 0;
+            }
         }
+        yield return null;
 
         /*
         heightMap = new float[gridWidth, gridHeight];
@@ -186,47 +211,59 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         */
     }
     
-    private MeshData GenerateMeshData() {
+    private IEnumerator GenerateMeshData() {
         float topLeftX = (float)width / -2f;
         float topLeftZ = (float)height / 2f;
 
         int meshSimplificationIncrement = (m_levelOfDetail == 0) ? 1 : m_levelOfDetail * 2;
         int verticesPerLine = width / meshSimplificationIncrement + 1;
 
-        MeshData meshData = new MeshData(verticesPerLine, verticesPerLine);
+        m_meshData = new MeshData(verticesPerLine, verticesPerLine);
         int vertexIndex = 0;
 
         for(int y = 0; y < gridHeight; y+=meshSimplificationIncrement) {
             for(int x = 0; x < gridWidth; x+=meshSimplificationIncrement) {
-                meshData.vertices[vertexIndex] = new Vector3(x, m_noiseMap[x,y], y);
-                meshData.uvs[vertexIndex] = new Vector2(x/(float)gridWidth, y/(float)gridHeight);
+                m_meshData.vertices[vertexIndex] = new Vector3(x, m_noiseMap[x,y], y);
+                m_meshData.uvs[vertexIndex] = new Vector2(x/(float)gridWidth, y/(float)gridHeight);
                 if (x < width && y < height) {
-                    meshData.AddTriangle(vertexIndex, vertexIndex+verticesPerLine, vertexIndex+verticesPerLine+1);
-                    meshData.AddTriangle(vertexIndex+verticesPerLine+1, vertexIndex+1, vertexIndex);
+                    m_meshData.AddTriangle(vertexIndex, vertexIndex+verticesPerLine, vertexIndex+verticesPerLine+1);
+                    m_meshData.AddTriangle(vertexIndex+verticesPerLine+1, vertexIndex+1, vertexIndex);
                 }
                 vertexIndex++;
+                if (vertexIndex % m_coroutineNumThreshold == 0) yield return null;
             }
+            if (vertexIndex % m_coroutineNumThreshold == 0) yield return null;
         }
-
-        return meshData;
+        yield return null;
     }
 
-    private Texture2D GenerateTexture() {
-        Texture2D texture = new Texture2D(gridWidth, gridHeight);
-        texture.filterMode = m_filterMode;
-        texture.wrapMode = TextureWrapMode.Clamp;
+    private IEnumerator GenerateTexture() {
+        m_textureData = new Texture2D(gridWidth, gridHeight);
+        m_textureData.filterMode = m_filterMode;
+        m_textureData.wrapMode = TextureWrapMode.Clamp;
 
+        int counter = 0;
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
                 float sample = m_noiseMap[x,y];
                 Color color = new Color(sample,sample,sample);
-                texture.SetPixel(x, y, color);
+                m_textureData.SetPixel(x, y, color);
+                counter++;
+                if (counter % m_coroutineNumThreshold == 0) {
+                    yield return null;
+                    counter = 0;
+                }
+            }
+            counter++;
+            if (counter % m_coroutineNumThreshold == 0) {
+                yield return null;
+                counter = 0;
             }
         }
-
-        texture.Apply();
-        return texture;
+        m_textureData.Apply();
+        yield return null;
     }
+
     /*
     private float CalculateNoise(int x, int y, int width, int height)
     {
