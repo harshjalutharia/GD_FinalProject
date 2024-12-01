@@ -18,6 +18,7 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The player's end position")]      private Vector3 m_playerEndPosition = Vector3.zero;
     public Vector3 playerStartPosition => m_playerStartPosition;
     public Vector3 playerEndPosition => m_playerEndPosition;
+    [SerializeField, Tooltip("The player's view has been initialized")] private bool m_playerViewInitialized = false;
 
     [Header("=== Necessary Generators/Maps/Managers ===")]
     [SerializeField, Tooltip("The noise map that generates terrain.")]          private NoiseMap m_terrainGenerator;
@@ -30,10 +31,19 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("The grass generator to place grass")]                             private VegetationGenerator m_grassGenerator;
     [SerializeField, Tooltip("The gem generator to place gems")]                                private GemGenerator m_gemGenerator;
 
-    [Header("=== Menus ===")]
+    [Header("=== Loading Menu Elements ===")]
+    [SerializeField, Tooltip("The input action reference that allows the player to skip the initial cutscene")] private InputActionReference m_skipCutsceneAction;
+    [SerializeField, Tooltip("The input action reference that allows the player to  jump")]                     private InputActionReference m_playerJumpAction;
+    [SerializeField, Tooltip("Did the terrain finish generating?")]   private bool m_terrainGenerated = false;
+    [SerializeField, Tooltip("Did the trees finish generating?")]   private bool m_treesGenerated = false;
+    [SerializeField, Tooltip("Did the trees finish generating?")]   private bool m_gemsGenerated = false;
+    private bool m_allGeneratorsCompleted => m_terrainGenerated && m_treesGenerated && m_gemsGenerated;
+    [Space]
     [SerializeField, Tooltip("The gem camera")]                                                 private Camera m_gemCamera;
 
     [Header("=== Loading Slideshow Settings ===")]
+    [SerializeField, Tooltip("Check to determine that the slideshow has active")]    private bool m_slideshowActive = false;
+    private IEnumerator m_slideshowCoroutine;
     [SerializeField, Tooltip("Image component for displaying slides")] private Image m_slideshowImage;
     [SerializeField, Tooltip("List of slides to display")] private List<Sprite> m_slides;
     [SerializeField, Tooltip("Time to display each slide")] private float m_slideDisplayTime = 2f;
@@ -41,22 +51,30 @@ public class SessionManager : MonoBehaviour
 
     private void Awake() {
         current = this;
+        m_skipCutsceneAction.action.performed += InitializePlayerViewAction;
     }
 
     private void Start() {
         // At the start, we expect to be able to read the seed info from SessionMemory. We then apply that seed to ALL randomization engines.
         // SetSeed() will do this for us automatically.
         SetSeed(SessionMemory.current.seed);
+        StartCoroutine(StartSession());
+    }
+
+    private IEnumerator StartSession() {
+        // Disable the player jump
+        m_playerJumpAction.action.Disable();
 
         // Show the loading menu
-        StartCoroutine(PlaySlideshowCoroutine());
+        m_slideshowCoroutine = PlaySlideshowCoroutine();
+        StartCoroutine(m_slideshowCoroutine);
         CameraController.current.ToggleLoadingCamera(true, true);
         CameraController.current.ToggleThirdPersonCamera(false, false);
         CameraController.current.ToggleFirstPersonCamera(false, false);
         m_gemCamera.gameObject.SetActive(false);
         
         // Initialize terrain generation
-        m_terrainGenerator.GenerateMap();
+        yield return m_terrainGenerator.GenerateMapCoroutine();
 
         // Designate the start and end positions of the player.
         // The start and end positions rely on a representative voronoi map to let us know which regions are safe.
@@ -81,13 +99,13 @@ public class SessionManager : MonoBehaviour
             m_gemGenerator.GenerateDestinationGem(m_playerEndPosition);
         }
         // Game tracker
-        StartCoroutine(m_player.GetComponent<PlayerMovement>().ActivatePlayer());        
-        Invoke(nameof(InitializePlayerView), 5f);
-
+        StartCoroutine(PlayerMovement.current.ActivatePlayer());
     }
 
-    private IEnumerator PlaySlideshowCoroutine()
-    {
+    private IEnumerator PlaySlideshowCoroutine() {
+
+        // Initialize the boolean that indicates that the slideshow has started
+        m_slideshowActive = true;
 
         // Initialize the slideshow image alpha to 0
         Color color = m_slideshowImage.color;
@@ -109,6 +127,12 @@ public class SessionManager : MonoBehaviour
             // Fade out the image
             yield return StartCoroutine(FadeImage(m_slideshowImage, 1f, 0f, m_slideTransitionTime));
         }
+
+        // Once reaching this point, we've completed all slideshow slides and faded out.
+        m_slideshowActive = false;
+
+        // If our generators have finished by this point, then we can simply initialize player view. If not though, we wait.
+        if (m_allGeneratorsCompleted && !m_playerViewInitialized) InitializePlayerView();
         
     }
 
@@ -129,9 +153,18 @@ public class SessionManager : MonoBehaviour
         image.color = color;
     }
 
+    private void InitializePlayerViewAction(InputAction.CallbackContext ctx) { InitializePlayerView(); }
     private void InitializePlayerView() {
+        // Disable the input action to prevent double-clicking
+        m_skipCutsceneAction.action.Disable();
+        m_playerJumpAction.action.Enable();
+        m_playerViewInitialized = true;
+
+        // Stop the slideshow coroutine, if it hasn't completed yet.
+        if (m_slideshowActive) StopCoroutine(m_slideshowCoroutine);
+
         // Hide the loading menu
-        CanvasController.current.ToggleLoadingScreen(false);
+        CanvasController.current.ToggleLoadingScreen(false, false);
         CameraController.current.enabled = true;
         m_gemCamera.gameObject.SetActive(true);
 
@@ -222,8 +255,38 @@ public class SessionManager : MonoBehaviour
         endPos = new Vector3(vEndPos.x, endHeight, vEndPos.z);
     }
 
-    public void DebugFinishGeneration(string generatorName) {
+    public void GenerationCompleted(string generatorName) {
         Debug.Log($"Finished Generating {generatorName}");
+        switch(generatorName) {
+            case "Terrain":
+                m_terrainGenerated = true;
+                break;
+            case "Trees":
+                m_treesGenerated = true;
+                break;
+            case "Gems":
+                m_gemsGenerated = true;
+                break;
+            default: break;
+        }
+        
+        if (m_allGeneratorsCompleted) {
+            Debug.Log("All generators completed! We can now proceed with loading in the player view");
+            // Two possibilities. If we're still running the slideshow, then we have to allow the player to skip the cutscene
+            if (m_slideshowActive) {
+                CanvasController.current.ToggleLoadingIconsGroup(false);
+                m_skipCutsceneAction.action.Enable();
+            }
+            // Otherwise, we simply hop to initializing the player view
+            else if (!m_playerViewInitialized) {
+                InitializePlayerView();
+            }
+        }
+    }
+
+    private void OnDestroy() {
+        StopAllCoroutines();
+        m_skipCutsceneAction.action.performed -= InitializePlayerViewAction;
     }
 
 }

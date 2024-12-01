@@ -55,6 +55,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""SkipCutscene"",
+                    ""type"": ""Button"",
+                    ""id"": ""e1c1aede-bcde-4484-b990-aca992bc44db"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold(duration=0.5,pressPoint=0.5)"",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Sprint"",
                     ""type"": ""Button"",
                     ""id"": ""5aade9b9-d97f-4907-a67d-831e529c8f2e"",
@@ -278,6 +287,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8d323b34-0ea9-4080-aad8-a91fe25b7353"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SkipCutscene"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""07975a17-fc59-4737-8b28-b5dbdf3e047b"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SkipCutscene"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -390,6 +421,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_View = m_Player.FindAction("View", throwIfNotFound: true);
         m_Player_JumpFly = m_Player.FindAction("Jump/Fly", throwIfNotFound: true);
+        m_Player_SkipCutscene = m_Player.FindAction("SkipCutscene", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_SwitchSprint = m_Player.FindAction("Switch Sprint", throwIfNotFound: true);
         m_Player_Map = m_Player.FindAction("Map", throwIfNotFound: true);
@@ -463,6 +495,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_View;
     private readonly InputAction m_Player_JumpFly;
+    private readonly InputAction m_Player_SkipCutscene;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_SwitchSprint;
     private readonly InputAction m_Player_Map;
@@ -474,6 +507,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @View => m_Wrapper.m_Player_View;
         public InputAction @JumpFly => m_Wrapper.m_Player_JumpFly;
+        public InputAction @SkipCutscene => m_Wrapper.m_Player_SkipCutscene;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
         public InputAction @SwitchSprint => m_Wrapper.m_Player_SwitchSprint;
         public InputAction @Map => m_Wrapper.m_Player_Map;
@@ -496,6 +530,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @JumpFly.started += instance.OnJumpFly;
             @JumpFly.performed += instance.OnJumpFly;
             @JumpFly.canceled += instance.OnJumpFly;
+            @SkipCutscene.started += instance.OnSkipCutscene;
+            @SkipCutscene.performed += instance.OnSkipCutscene;
+            @SkipCutscene.canceled += instance.OnSkipCutscene;
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
@@ -521,6 +558,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @JumpFly.started -= instance.OnJumpFly;
             @JumpFly.performed -= instance.OnJumpFly;
             @JumpFly.canceled -= instance.OnJumpFly;
+            @SkipCutscene.started -= instance.OnSkipCutscene;
+            @SkipCutscene.performed -= instance.OnSkipCutscene;
+            @SkipCutscene.canceled -= instance.OnSkipCutscene;
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
@@ -617,6 +657,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnView(InputAction.CallbackContext context);
         void OnJumpFly(InputAction.CallbackContext context);
+        void OnSkipCutscene(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnSwitchSprint(InputAction.CallbackContext context);
         void OnMap(InputAction.CallbackContext context);

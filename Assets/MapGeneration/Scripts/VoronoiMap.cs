@@ -135,6 +135,62 @@ public class VoronoiMap : NoiseMap
         m_onGenerationEnd?.Invoke();
     }
 
+    /// Just a copy of the `GenerateMap()` function above, but this time with yield returns embedded within
+    public override IEnumerator GenerateMapCoroutine() {
+        m_prng = new System.Random(m_seed);
+
+        if (m_numSegments <= 0) m_numSegments = 1;
+        if ((float)m_edgeBuffer >= (float)m_mapChunkSize/2f) m_edgeBuffer = Mathf.FloorToInt((float)(m_mapChunkSize-1)/2f);
+
+        float heightDenom = (m_edgeBorderSetting != BorderSetting.Off) ? (float)(m_numSegments+1) : (float)m_numSegments;
+        m_voronoiSegments = new VoronoiSegment[m_numSegments];
+        int counter = 0;
+        for(int i = 0; i < m_numSegments; i++) {
+            string name = $"Region {i+1}";
+            float startHeight = (float)(i+1)/heightDenom;
+            Color tint =  new Color(
+                (float)m_prng.Next(0, 100)/100f, 
+                (float)m_prng.Next(0, 100)/100f,
+                (float)m_prng.Next(0, 100)/100f
+            );
+            m_voronoiSegments[i] = new VoronoiSegment { name=name, startHeight=startHeight, tint=tint, isBorder=false };
+            counter++;
+            if (counter > 10) {
+                yield return null;
+                counter = 0;
+            }
+        }
+        yield return null;
+
+        Vector2Int[] centroids = GenerateVoronoiCentroids();
+        yield return null;
+        int[,] voronoiMap = GenerateVoronoiRegions(centroids);
+        yield return null;
+
+        for (int i = 0; i < m_lloydRelaxationIterations; i++) {
+            centroids = LloydRelaxation(voronoiMap);
+            voronoiMap = GenerateVoronoiRegions(centroids);
+            yield return null;
+        }
+
+        SetBorderRegions(voronoiMap);
+        yield return null;
+
+        m_voronoiSegmentToPixelsMap = GenerateRegionLookup(voronoiMap, out m_voronoiSegmentNeighborMap);
+        yield return null;
+        
+        m_voronoiCentroids = centroids;
+        m_voronoiMap = voronoiMap;
+        m_noiseMap = GenerateNoiseMapFromVoronoi(voronoiMap);
+        yield return null;
+
+        // We can generate the height map afterwards
+        m_heightMap = Generators.GenerateHeightMap(m_noiseMap, m_textureHeightCurve, m_textureHeightMultiplier);
+        m_heightRange = GetHeightRange(m_heightMap);
+        if (m_drawMode != DrawMode.None) RenderMap();
+        m_onGenerationEnd?.Invoke();
+    }
+
     private Vector2Int[] GenerateVoronoiCentroids() {        
         List<Vector2Int> existingPoints = new List<Vector2Int>();
         while(existingPoints.Count < m_numSegments) {

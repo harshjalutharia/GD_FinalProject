@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class CanvasController : MonoBehaviour
 {
@@ -12,6 +13,26 @@ public class CanvasController : MonoBehaviour
     [SerializeField, Tooltip("Reference to the canvas group for the menu screen")] private CanvasGroup m_loadingCanvasGroup;
     [SerializeField, Tooltip("Is the loading canvas active?")] private bool m_loadingCanvasActive = false;
     public bool loadingCanvasActive => m_loadingCanvasActive;
+    [Space]
+    [SerializeField, Tooltip("Reference to the 'still loading' elements, which are the loading text and various icons representing each major component.")] private CanvasGroup m_loadingIconsGroup;
+    [SerializeField, Tooltip("Is the loading icons group active?")] private bool m_loadingIconsGroupActive = false;
+    public bool loadingIconsGroupActive => m_loadingIconsGroupActive;
+    [Space]
+    [SerializeField, Tooltip("Reference to the 'all loaded' elements, which is shown once all generators are completed")] private CanvasGroup m_loadedSkipGroup;
+    [SerializeField, Tooltip("Is the loaded skip group active?")] private bool m_loadedSkipGroupActive = false;
+    public bool loadedSkipGroupActive => m_loadedSkipGroupActive;
+    [Space]
+    [SerializeField, Tooltip("The image UI element for terrain generation")]        private Image m_loadingTerrainImage;
+    [SerializeField, Tooltip("The image for the incomplete terrain generation")]    private Sprite m_loadingTerrainSprite;
+    [SerializeField, Tooltip("The image for the completed terrain generation")]     private Sprite m_loadedTerrainSprite;
+    [Space]
+    [SerializeField, Tooltip("The image UI element for tree generation")]           private Image m_loadingTreeImage;
+    [SerializeField, Tooltip("The image for the incomplete tree generation")]       private Sprite m_loadingTreeSprite;
+    [SerializeField, Tooltip("The image for the completed tree generation")]        private Sprite m_loadedTreeSprite;
+    [Space]
+    [SerializeField, Tooltip("The image UI element for gem generation")]            private Image m_loadingGemsImage;
+    [SerializeField, Tooltip("The image for the incomplete gem generation")]        private Sprite m_loadingGemsSprite;
+    [SerializeField, Tooltip("The image for the completed gem generation")]         private Sprite m_loadedGemsSprite;
 
     [Header("=== Win Canvas ===")]
     [SerializeField, Tooltip("Reference to the canvas group for the win screen")] private CanvasGroup m_winCanvasGroup;
@@ -67,9 +88,30 @@ public class CanvasController : MonoBehaviour
         m_fpsActionReference.action.started -= ToggleFPSAction;
     }
 
-    public void ToggleLoadingScreen(bool setTo) {
+    public void ToggleLoadingScreen(bool setTo, bool iconsSetTo=true) {
         m_loadingCanvasActive = setTo;
         SetCanvasGroupAlpha(m_loadingCanvasGroup, setTo);
+        ToggleLoadingIconsGroup(iconsSetTo);
+    }
+    public void ToggleLoadingIconsGroup(bool setTo) {
+        m_loadingIconsGroupActive = setTo;
+        SetCanvasGroupAlpha(m_loadingIconsGroup, setTo);
+        m_loadedSkipGroupActive = !setTo;
+        SetCanvasGroupAlpha(m_loadedSkipGroup, !setTo);
+    }
+    public void ToggleLoadedIcon(string generatorName) {
+        switch(generatorName) {
+            case "Terrain":
+                m_loadingTerrainImage.sprite = m_loadedTerrainSprite;
+                break;
+            case "Trees":
+                m_loadingTreeImage.sprite = m_loadedTreeSprite;
+                break;
+            case "Gems":
+                m_loadingGemsImage.sprite = m_loadedGemsSprite;
+                break;
+            default: break;
+        }
     }
 
     public void ToggleWinScreen(bool setTo) {

@@ -155,6 +155,10 @@ public class NoiseMap : MonoBehaviour
         if (m_drawMode != DrawMode.None) RenderMap();
         m_onGenerationEnd?.Invoke();
     }
+    public virtual IEnumerator GenerateMapCoroutine() {
+        GenerateMap();
+        yield return null;
+    }
 
     public virtual Color[] GenerateColorMap() {
         // We need to mod our behavior based on what kind of color mode we're using.
