@@ -39,4 +39,13 @@ public class SoundManager : MonoBehaviour
         }
         m_sfxMapper[name].Play();
     }
+    
+    public void StopSFX(string name) {
+        if (!m_sfxMapper.ContainsKey(name)) {
+            Debug.LogError($"Cannot Stop SFX with name {name} - no sound clip registered");
+            return;
+        }
+        m_sfxMapper[name].Stop();
+    }
+    
 }

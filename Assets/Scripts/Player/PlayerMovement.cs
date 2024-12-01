@@ -704,9 +704,6 @@ public class PlayerMovement : MonoBehaviour
     private InputAction sprintInput;
 
     private InputAction switchSprintInput;
-
-    //private InputAction mapInput;
-    
     
     private float horizontalInput;
     
@@ -757,6 +754,8 @@ public class PlayerMovement : MonoBehaviour
 
     //[SerializeField] 
     //private bool holdingMap;
+    [SerializeField] 
+    private Vector3 horizontalVelocity;
     
     [SerializeField] 
     private bool flightActivated;
@@ -766,6 +765,9 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] 
     private bool paraglidingActivated;
+
+    [SerializeField, Tooltip("Private state of SFX")]
+    private SoundFXState sfxState;
     
     private Vector3 moveDirection;
 
@@ -807,8 +809,6 @@ public class PlayerMovement : MonoBehaviour
     
     private Transform playerObj;
     
-    //private PlayerSoundManager soundManager;
-    
     [Header("Debug UI Element")] 
     public TextMeshProUGUI debugText1;
     public TextMeshProUGUI debugText2;
@@ -821,7 +821,6 @@ public class PlayerMovement : MonoBehaviour
         jumpInput = controls.Player.JumpFly;
         sprintInput = controls.Player.Sprint;
         switchSprintInput = controls.Player.SwitchSprint;
-        //mapInput = controls.Player.Map;
     }
     
     private void Start()
@@ -849,9 +848,7 @@ public class PlayerMovement : MonoBehaviour
         flightActivated = false;
         paraglidingActivated = false;
         sprintActivated = true;
-
-        //soundManager = GetComponent<PlayerSoundManager>();
-        //cameraFowllowPointControl = GetComponent<CameraFowllowPointControl>();
+        
 
     }
 
@@ -883,6 +880,8 @@ public class PlayerMovement : MonoBehaviour
         
 
         SetAnimation();
+
+        SetSound();
         
         
         // debug message
@@ -940,6 +939,7 @@ public class PlayerMovement : MonoBehaviour
         
         
         MovePlayer();
+        horizontalVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
     }
     
     private void OnEnable()
@@ -1083,7 +1083,8 @@ public class PlayerMovement : MonoBehaviour
         // end horizontal movement
         
         // begin vertical movement
-        if (grabGround)
+        
+        if (grabGround)     // stick the player to the ground
         {
             //rb.AddForce(animator.transform.TransformDirection(-0.5f * (groundHits[0].normal + groundHits[0].normal)) * 50, ForceMode.Force);
             rb.AddForce(50 * -0.5f * (groundHits[0].normal + groundHits[0].normal), ForceMode.Force);
@@ -1092,6 +1093,7 @@ public class PlayerMovement : MonoBehaviour
         rb.useGravity = true;
         if (requestJump) // jump control
         {
+            SoundManager.current.PlaySFX("Jump");   // play jump sfx one shot
             requestJump = false;
             Invoke(nameof(Jump), 0.15f);
             animationVars.requestJump = true;
@@ -1131,7 +1133,7 @@ public class PlayerMovement : MonoBehaviour
     
     private Vector3 CalculateResistance()
     {
-        Vector3 horizontalVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+        
         float resistanceMag = 0;
         if (grounded && !sprinting)  // walking drag
         {
@@ -1167,8 +1169,7 @@ public class PlayerMovement : MonoBehaviour
         // detect gem that increases stamina
         if (other.CompareTag("StaminaPowerUp")) // tag name might be changed
         {
-            //todo get the stamina increase amount from the collider object
-
+            // increase fixed amount of stamina
             maxFlightStamina += staminaPerGem;
             //Destroy(other.gameObject);
             
@@ -1207,6 +1208,48 @@ public class PlayerMovement : MonoBehaviour
     public AnimationVars getAnimationVars()
     {
         return animationVars;
+    }
+
+    public void SetSound()
+    {
+        if (sprinting && !sfxState.sprintSFXOn)     // start sprint sfx
+        {
+            SoundManager.current.PlaySFX("Sprint");
+            sfxState.sprintSFXOn = true;
+        }
+        else if (!sprinting && sfxState.sprintSFXOn)    // stop sprint sfx
+        {
+            SoundManager.current.StopSFX("Sprint");
+            sfxState.sprintSFXOn = false;
+        }
+
+        if (sliding && !sfxState.slideSFXOn)        // start slide sfx
+        {
+            SoundManager.current.PlaySFX("Slide");
+            sfxState.slideSFXOn = true;
+        }
+        else if (!sliding && sfxState.slideSFXOn)    // stop slide sfx
+        {
+            SoundManager.current.StopSFX("Slide");
+            sfxState.slideSFXOn = false;
+        }
+
+        if (grounded && !sliding && !sprinting && horizontalVelocity.magnitude > 0.8f)
+        {
+            if (!sfxState.jogSFXOn)     // start jog sfx
+            {
+                SoundManager.current.PlaySFX("Jog");
+                sfxState.jogSFXOn = true;
+            }
+        }
+        else
+        {
+            if (sfxState.jogSFXOn)      // stop jog sfx
+            {
+                SoundManager.current.StopSFX("Jog");
+                sfxState.jogSFXOn = false;
+            }
+        }
     }
 
     public float GetFlightStamina() {
@@ -1281,5 +1324,12 @@ public class PlayerMovement : MonoBehaviour
         public bool paragliding;
         public bool sprinting;
         //public bool holdingMap;
+    }
+    
+    public struct SoundFXState
+    {
+        public bool slideSFXOn;
+        public bool sprintSFXOn;
+        public bool jogSFXOn;
     }
 }
