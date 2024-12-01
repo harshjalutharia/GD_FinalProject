@@ -44,8 +44,8 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         }
 
         public virtual float GeneratePerlin(int x, int y, int width, int height) {
-            float xCoord = (float)x / width * scale + offsetX;
-            float yCoord = (float)y / height * scale - offsetY;
+            float xCoord = ((float)x / width + offsetX) * scale;
+            float yCoord = ((float)y / height + offsetY) * scale;
             return Mathf.PerlinNoise(xCoord, yCoord);
         }
 
@@ -81,6 +81,7 @@ public class TestFinalTerrainGenerator : MonoBehaviour
     [SerializeField] private Renderer m_renderer;
     [SerializeField] private MeshCollider m_collider;
     [SerializeField] private float[,] m_noiseMap;
+    [SerializeField] private float[,] m_heightMap;
     [SerializeField] private FilterMode m_filterMode;
 
     [Header("=== Debug Settings ===")]
@@ -98,7 +99,7 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         m_prng = new System.Random(m_seed);
 
         // Generating the noise map
-        m_noiseMap = GenerateNoise();
+        GenerateNoise(out m_noiseMap, out m_heightMap);
 
         // Generate texture and mesh data
         Texture2D tData = GenerateTexture();
@@ -120,8 +121,8 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         yield return null;
     }
 
-    private float[,] GenerateNoise() {
-        float[,] noiseMap = new float[gridWidth,gridHeight];
+    private void GenerateNoise(out float[,] noiseMap, out float[,] heightMap) {
+        noiseMap = new float[gridWidth,gridHeight];
         float maxValue = float.MinValue;
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
@@ -156,33 +157,32 @@ public class TestFinalTerrainGenerator : MonoBehaviour
             }
         }
 
+        heightMap = new float[gridWidth, gridHeight];
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
                 noiseMap[x,y] /= maxValue;
+                heightMap[x,y] = m_heightCurve.Evaluate(noiseMap[x,y]) * m_heightMultiplier;
             }
         }
-
-        return noiseMap;
     }
     
     private MeshData GenerateMeshData() {
-        float topLeftX = gridWidth / -2f;
-        float topLeftZ = gridHeight / 2f;
+        float topLeftX = (float)width / -2f;
+        float topLeftZ = (float)height / 2f;
 
         int meshSimplificationIncrement = (m_levelOfDetail == 0) ? 1 : m_levelOfDetail * 2;
-        int verticesPerLine = gridWidth / meshSimplificationIncrement + 1;
+        int verticesPerLine = width / meshSimplificationIncrement + 1;
 
         MeshData meshData = new MeshData(verticesPerLine, verticesPerLine);
         int vertexIndex = 0;
 
         for(int y = 0; y < gridHeight; y+=meshSimplificationIncrement) {
             for(int x = 0; x < gridWidth; x+=meshSimplificationIncrement) {
-                float worldY = m_noiseMap[x,y] * m_heightMultiplier;
-                meshData.vertices[vertexIndex] = new Vector3(topLeftX + x, worldY, topLeftZ - y);
+                meshData.vertices[vertexIndex] = new Vector3(x, m_heightMap[x,y], y);
                 meshData.uvs[vertexIndex] = new Vector2(x/(float)gridWidth, y/(float)gridHeight);
                 if (x < width && y < height) {
-                    meshData.AddTriangle(vertexIndex, vertexIndex+verticesPerLine+1, vertexIndex+verticesPerLine);
-                    meshData.AddTriangle(vertexIndex+verticesPerLine+1, vertexIndex, vertexIndex+1);
+                    meshData.AddTriangle(vertexIndex, vertexIndex+verticesPerLine, vertexIndex+verticesPerLine+1);
+                    meshData.AddTriangle(vertexIndex+verticesPerLine+1, vertexIndex+1, vertexIndex);
                 }
                 vertexIndex++;
             }
