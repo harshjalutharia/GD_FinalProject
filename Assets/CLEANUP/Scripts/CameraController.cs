@@ -14,6 +14,7 @@ public class CameraController : MonoBehaviour
     [SerializeField, Tooltip("The 3rd-person camera reference.")]   private Camera m_thirdPersonCamera;
     [SerializeField, Tooltip("The 1st-person camera reference")]    private Camera m_firstPersonCamera;
     public Camera firstPersonCamera => m_firstPersonCamera;
+    public Camera currentCamera => m_mapInputActive ? m_firstPersonCamera : m_thirdPersonCamera;
     [Space]
     [SerializeField, Tooltip("The hand-held map that must be shown when in 1st-person")]    private GameObject m_heldMap;
     [SerializeField, Tooltip("The compass that must be shown when in 1st-person")]          private GameObject m_compass;

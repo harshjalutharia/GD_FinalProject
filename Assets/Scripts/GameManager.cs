@@ -55,6 +55,10 @@ public class GameManager : MonoBehaviour
         // Given the Session Memory, set the session seed already
         SetSeed(SessionMemory.current.seed, true);
 
+        // Ensure that cursor is not locked and is visible
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         // === Start Camera ===
         m_startCameraFader.gameObject.SetActive(true);
         m_startCameraFader.FadeIn();

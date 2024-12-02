@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 64916212063497022}
   - component: {fileID: 8952646077711182993}
   - component: {fileID: 3810776810051642846}
+  - component: {fileID: 2359792996786133241}
   m_Layer: 0
   m_Name: SM_Bld_Village_02
   m_TagString: Untagged
@@ -143,8 +144,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c2e9d49cc4534e10a7a2076b67d5eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_renderer: {fileID: 2375678}
-  m_collider: {fileID: 3810776810051642846}
+  m_cameraController: {fileID: 0}
+  m_renderers: []
+  m_totalTimeToDetect: 5
+  m_mapColor: {r: 1, g: 1, b: 1, a: 1}
+  m_bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  m_inFustrum: 0
+  m_drawnOnMap: 0
+  m_viewportPoint: {x: 0, y: 0}
+  m_distToCamCenter: 0
 --- !u!65 &3810776810051642846
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -166,3 +176,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 4.093932, y: 3.294759, z: 4.0519433}
   m_Center: {x: 0.00000059604645, y: 1.6473795, z: 0}
+--- !u!114 &2359792996786133241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 103302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 485278e6853454d40ae3e25dbf96d6c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  center: {x: 0, y: 4, z: 0}
+  rotation: {x: 0, y: 0, z: 0}
+  extents: {x: 6, y: 4, z: 6}
+  boundPoints:
+  - {x: -6, y: 0, z: -6}
+  - {x: -6, y: 0, z: 6}
+  - {x: 6, y: 0, z: -6}
+  - {x: 6, y: 0, z: 6}
+  - {x: 6, y: 8, z: 6}
+  - {x: -6, y: 8, z: 6}
+  - {x: 6, y: 8, z: -6}
+  - {x: -6, y: 8, z: -6}
+  drawGizmos: 1
