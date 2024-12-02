@@ -16,6 +16,7 @@ public class CameraController : MonoBehaviour
     [Space]
     [SerializeField, Tooltip("The hand-held map that must be shown when in 1st-person")]    private GameObject m_heldMap;
     [SerializeField, Tooltip("The compass that must be shown when in 1st-person")]          private GameObject m_compass;
+    [SerializeField, Tooltip("The scroll that must be shown when in 1st-person")]          private GameObject m_scroll;
     
     [Header("=== First/Third Person Transition Settings ===")]
     [SerializeField, Tooltip("Do we initialize the listeners on enable by default?")]                   private bool m_enableOnStart = true;
@@ -46,6 +47,7 @@ public class CameraController : MonoBehaviour
         // Make sure the held map and compass are both inactive on start
         m_heldMap.SetActive(false);
         m_compass.SetActive(false);
+        m_scroll.SetActive(false);
     }
 
     private void OnEnable() {
@@ -76,6 +78,7 @@ public class CameraController : MonoBehaviour
         m_playerAnimator.SetBool("holdingMap", true);
         m_heldMap.SetActive(true);
         m_compass.SetActive(true);
+        m_scroll.SetActive(true);
 
         // Switch the output display.
         ToggleFirstPersonCamera(true, true);
@@ -140,6 +143,7 @@ public class CameraController : MonoBehaviour
                 // This is expected to execute once, so it's safe to do it here.
                 m_heldMap.SetActive(false);
                 m_compass.SetActive(false);
+                m_scroll.SetActive(false);
                 ToggleThirdPersonCamera(true, true);
                 ToggleFirstPersonCamera(true, false);
                 FustrumManager.current.SetMainFustrumCamera(m_thirdPersonCamera);
