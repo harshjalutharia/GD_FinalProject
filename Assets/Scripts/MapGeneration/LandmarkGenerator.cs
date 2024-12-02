@@ -22,18 +22,22 @@ public class LandmarkGenerator : MonoBehaviour
 {
 
     [System.Serializable]
-    public class LandmarkGroupCounter {
+    public class LandmarkGroupCounter
+    {
         public List<Landmark> prefabs = new List<Landmark>();
         public int counter = 0;
-        public Landmark GetNextPrefab() {
+        public Landmark GetNextPrefab()
+        {
             if (prefabs.Count == 0) return null;
             Landmark prefab = prefabs[counter];
             counter++;
             if (counter >= prefabs.Count) counter = 0;
             return prefab;
         }
-        public bool TryGetNextPrefab(out Landmark prefab) {
-            if (prefabs.Count == 0) {
+        public bool TryGetNextPrefab(out Landmark prefab)
+        {
+            if (prefabs.Count == 0)
+            {
                 prefab = null;
                 return false;
             }
@@ -43,8 +47,10 @@ public class LandmarkGenerator : MonoBehaviour
             if (counter >= prefabs.Count) counter = 0;
             return true;
         }
-        public bool TryGetPrefabAtIndex(int index, out Landmark prefab) {
-            if (index >= prefabs.Count) {
+        public bool TryGetPrefabAtIndex(int index, out Landmark prefab)
+        {
+            if (index >= prefabs.Count)
+            {
                 prefab = null;
                 return false;
             }
@@ -54,45 +60,50 @@ public class LandmarkGenerator : MonoBehaviour
     }
 
     [Header("=== References ===")]
-    [SerializeField, Tooltip("Voronoi Map used in combinedMap")]                            private VoronoiMap m_voronoiMap;
-    [SerializeField, Tooltip("Parent for landmarks")]                                       private Transform m_landmarkParent;
+    [SerializeField, Tooltip("Voronoi Map used in combinedMap")]                           private VoronoiMap m_voronoiMap;
+    [SerializeField, Tooltip("Parent for landmarks")]                                      private Transform m_landmarkParent;
     [Space]
-    [SerializeField, Tooltip("Prefab for the destination landmark")]                        private Landmark m_destinationLandmark;
-    [SerializeField, Tooltip("Prefabs for landmarks around the destination landmark")]      private Landmark m_surroundingDestinationLandmark;
-    [SerializeField, Tooltip("Prefabs for landmarks at weenies")]                           private LandmarkGroupCounter m_weenieLandmarks;
-    [SerializeField, Tooltip("Prefab for weenies")]                                         private List<Landmark> weeniePrefab;
-    
+    [SerializeField, Tooltip("Prefab for the destination landmark")]                       private Landmark m_destinationLandmark;
+    [SerializeField, Tooltip("Prefabs for landmarks around the destination landmark")]     private Landmark m_surroundingDestinationLandmark;
+    [SerializeField, Tooltip("Prefabs for landmarks at weenies")]                          private LandmarkGroupCounter m_weenieLandmarks;
+    [SerializeField, Tooltip("Prefab for weenies")]                                        private List<Landmark> weeniePrefab;
+    [SerializeField, Tooltip("Prefab for the arch object")]                                private Landmark m_archPrefab;
+
 
     [Header("=== Generation Settings ===")]
-    [SerializeField, Tooltip("Seed integer for landmark randomization")]                    private int m_seed;
-    [SerializeField, Tooltip("Minimum distance between any 2 landmarks")]                   private float minimumDistanceBetweenLandmarks = 50f;
-    [SerializeField, Tooltip("Maximum distance between 2 close landmarks")]                 private float maximumDistanceBetweenLandmarks = 70f;
-    [SerializeField, Tooltip("Total number of landmarks to spawn")]                         private int landmarkCount = 6;
-    [SerializeField, Tooltip("Total number of weenies between landmarks to spawn")]         private int weenieBetweenLandmarksCount = 3;
-    [SerializeField, Tooltip("Padding to avoid spawning on edge of map"), Range(0f, 0.5f)]  private float edgePadding = 0.15f;
-    [SerializeField, Tooltip("Possible spawn points for each new landmark")]                private int spawnTriesPerLandmark = 24;
-    [SerializeField, Tooltip("Maximum retries to spawn all landmarks before it gives up")]  private int maxRetries = 10;
-    [SerializeField, Tooltip("Randomization to add when generating new landmarks")]         private float randomizationFactor = 10f;
-    [SerializeField, Tooltip("Place landmark at destination?")]                             private bool m_placeLandmarkAtDest = false;
-    [SerializeField, Tooltip("Radius of the circle around end point where ruins spawn")]    private float endRegionRadius = 20f;
-    [SerializeField, Tooltip("Number of ruins to spawn in end region")]                     private int endRegionRuinCount = 10;
-    [SerializeField, Tooltip("Minimum distance between 2 ruins")]                           private float minimumDistanceBetweenRuins = 5f;
-    [SerializeField, Tooltip("Number of points in path from where 1 weenie is visible")]    private int visionPointsCount = 10;
-    [SerializeField, Tooltip("Minimum distance of weenie from path")]                       private float minimumDistanceInWeenieAndPath = 40f;
-    [SerializeField, Tooltip("Minimum distance between any 2 weenies")]                     private float minimumDistanceBetweenWeenies = 40f;
-    [SerializeField, Tooltip("Height limit of landmark/weenie spawns")]                     private float spawnHeightLimit = 40f;
-    [SerializeField, Tooltip("Total number of weenies to spawn")]                           private int weenieCount = 20;
-    [SerializeField, Tooltip("Landmark placement offset amount")]                           private float landmarkPlacementOffset = 10f;
-    [SerializeField, Tooltip("Weenie placement offset amount")]                             private float weeniePlacementOffset = 3f;
+    [SerializeField, Tooltip("Seed integer for landmark randomization")]                   private int m_seed;
+    [SerializeField, Tooltip("Minimum distance between any 2 landmarks")]                  private float minimumDistanceBetweenLandmarks = 50f;
+    [SerializeField, Tooltip("Maximum distance between 2 close landmarks")]                private float maximumDistanceBetweenLandmarks = 70f;
+    [SerializeField, Tooltip("Total number of landmarks to spawn")]                        private int landmarkCount = 6;
+    [SerializeField, Tooltip("Padding to avoid spawning on edge of map"), Range(0f, 0.5f)] private float edgePadding = 0.15f;
+    [SerializeField, Tooltip("Possible spawn points for each new landmark")]               private int spawnTriesPerLandmark = 24;
+    [SerializeField, Tooltip("Maximum retries to spawn all landmarks before it gives up")] private int maxRetries = 10;
+    [SerializeField, Tooltip("Randomization to add when generating new landmarks")]        private float randomizationFactor = 10f;
+    [SerializeField, Tooltip("Place landmark at destination?")]                            private bool m_placeLandmarkAtDest = false;
+    [SerializeField, Tooltip("Radius of the circle around end point where ruins spawn")]   private float endRegionRadius = 20f;
+    [SerializeField, Tooltip("Number of ruins to spawn in end region")]                    private int endRegionRuinCount = 10;
+    [SerializeField, Tooltip("Minimum distance between 2 ruins")]                          private float minimumDistanceBetweenRuins = 5f;
+    [SerializeField, Tooltip("Number of points in path from where 1 weenie is visible")]   private int visionPointsCount = 10;
+    [SerializeField, Tooltip("Minimum distance of weenie from path")]                      private float minimumDistanceInWeenieAndPath = 40f;
+    [SerializeField, Tooltip("Minimum distance between any 2 weenies")]                    private float minimumDistanceBetweenWeenies = 40f;
+    [SerializeField, Tooltip("Height limit of landmark/weenie spawns")]                    private float spawnHeightLimit = 40f;
+    [SerializeField, Tooltip("Total number of weenies to spawn")]                          private int weenieCount = 20;
+    [SerializeField, Tooltip("Landmark placement offset amount")]                          private float landmarkPlacementOffset = 10f;
+    [SerializeField, Tooltip("Weenie placement offset amount")]                            private float weeniePlacementOffset = 3f;
+    [SerializeField, Tooltip("Weenie path height limit")]                                  private float weeniePathHeightLimit = 30f;
+    [SerializeField, Tooltip("Weenie path (normal based) offset amount")]                  private float weeniePathMaxOffset = 10f;
+    [SerializeField, Tooltip("Minimum distance between any 2 arches")]                     private float minimumDistanceBetweenArches = 40f;
+    [SerializeField, Tooltip("Number of arches per path")]                                 private int archCountPerPath = 1;
 
 
     [Header("=== Outputs - READ ONLY ===")]
-    [SerializeField, Tooltip("List of landmark positions")]                                 private List<SpawnPoint> m_landmarkPositions;
+    [SerializeField, Tooltip("List of landmark positions")]                                private List<SpawnPoint> m_landmarkPositions;
     public List<SpawnPoint> landmarkPositions => m_landmarkPositions;
-    [SerializeField, Tooltip("List of weenie positions")]                                   private List<Vector3> m_weeniePositions;
+    [SerializeField, Tooltip("List of weenie positions")]                                  private List<Vector3> m_weeniePositions;
     public List<Vector3> weeniePositions => m_weeniePositions;
+    [SerializeField, Tooltip("List of weenie positions after being offset")]               private List<Vector3> m_weenieOffsetPositions;
     [SerializeField, Tooltip("List of positions' distances to check when spawning weenie")] private List<Vector3> m_weenieCheckPositions;
-    [SerializeField, Tooltip("The final list of landmarks generated.")]                     private List<Landmark> m_landmarks;
+    [SerializeField, Tooltip("The final list of landmarks generated.")]                    private List<Landmark> m_landmarks;
 
     [System.Serializable]
     public class SpawnPoint : IComparable<SpawnPoint>
@@ -100,11 +111,11 @@ public class LandmarkGenerator : MonoBehaviour
         public Vector3 location;
         public int weight;
         public GameObject spawnedObject;
-        public SpawnPoint(Vector3 location) 
+        public SpawnPoint(Vector3 location)
         {
             this.location = location;
         }
-        public SpawnPoint(Vector3 location, int weight) 
+        public SpawnPoint(Vector3 location, int weight)
         {
             this.location = location;
             this.weight = weight;
@@ -115,32 +126,36 @@ public class LandmarkGenerator : MonoBehaviour
             return this.weight.CompareTo(otherPoint.weight);
         }
 
-        public void InstantiateObject(Landmark prefab, Transform objectParent) 
+        public void InstantiateObject(Landmark prefab, Transform objectParent)
         {
             this.spawnedObject = Instantiate(prefab.gameObject, this.location, Quaternion.identity, objectParent);
         }
     }
 
 
-    public virtual void SetSeed(string newSeed) {
-        if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {
+    public virtual void SetSeed(string newSeed)
+    {
+        if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed))
+        {
             m_seed = validNewSeed;
             return;
         }
         m_seed = UnityEngine.Random.Range(0, 1000001);
     }
-    public virtual void SetSeed(int newSeed) {
+    public virtual void SetSeed(int newSeed)
+    {
         m_seed = newSeed;
     }
 
-    private void Start() {
+    private void Start()
+    {
         StartCoroutine(SortLandmarks());
     }
 
     public void GenerateLandmarks(Vector3 destination, Vector3 startPosition, NoiseMap terrainMap)
     {
         // Check Flag: do we have a landmark prefab to begin with?
-        if ( m_destinationLandmark == null) 
+        if (m_destinationLandmark == null)
         {
             Debug.Log("Landmark prefab not assigned in editor");
             return;
@@ -150,90 +165,146 @@ public class LandmarkGenerator : MonoBehaviour
         if (m_landmarkParent == null) m_landmarkParent = this.transform;
 
         // Pre-calculate the x_size and z_size of the provided terrain map
-        float x_size = (float)terrainMap.noiseMap.GetLength(0)/2;
-        float z_size = (float)terrainMap.noiseMap.GetLength(1)/2;
+        float x_size = (float)terrainMap.noiseMap.GetLength(0) / 2;
+        float z_size = (float)terrainMap.noiseMap.GetLength(1) / 2;
 
         // Clear our previous existing list of landmarks, if they exist.
         ClearLandmarks();
         m_landmarkPositions = new List<SpawnPoint>();
         m_weeniePositions = new List<Vector3>();
+        m_weenieOffsetPositions = new List<Vector3>();
         m_landmarks = new List<Landmark>();
+        List<(int, int)> generatedPaths = new List<(int, int)>();
 
-        if (m_voronoiMap != null)
+
+        // OFfset landmark by spawning it in 1 of 4 offsets with the highest height
+        destination = OffsetPointByMaxHeight(destination, landmarkPlacementOffset, terrainMap);
+
+        m_landmarkPositions.Add(new SpawnPoint(destination));
+        m_weenieCheckPositions.Add(destination);
+
+        GenerateRuinsAroundPoint(destination, terrainMap);
+
+        // TODO: Replace this with path from path generation
+        //List<Vector3> path = new List<Vector3>
+        //{
+        //    startPosition,
+        //    destination
+        //};
+
+        destination.y += 4f;    // doing this to make raycasts shoot from top of landmark
+
+        // First, spawn as many weenies visible from landmark as possible
+        while (GenerateWeenieFromPoint(destination, terrainMap, x_size, z_size)) ;
+
+        int weeniesCloseToLandmark = m_weeniePositions.Count;
+
+        // offset weenies
+        for (int i = 0; i < m_weeniePositions.Count; i++)
         {
-            // OFfset landmark by spawning it in 1 of 4 offsets with the highest height
-            destination = OffsetPointByMaxHeight(destination, landmarkPlacementOffset, terrainMap);
+            var newPosition = OffsetPointByMaxHeight(m_weeniePositions[i], weeniePlacementOffset, terrainMap);
+            m_weenieOffsetPositions.Add(newPosition);
+        }
 
-            m_landmarkPositions.Add(new SpawnPoint(destination));
-            m_weenieCheckPositions.Add(destination);
-            
-            GenerateRuinsAroundPoint(destination, terrainMap);
+        // Add paths between final landmark and the weenies spawned above
+        //for (int i = 0; i < m_weenieOffsetPositions.Count; i++)
+        //{
+        //    GeneratePathBetweenPoints(m_landmarkPositions[0].location, m_weenieOffsetPositions[i], terrainMap);
+        //}
 
-            // TODO: Replace this with path from path generation
-            //List<Vector3> path = new List<Vector3>
-            //{
-            //    startPosition,
-            //    destination
-            //};
-            
-            destination.y += 4f;    // doing this to make raycasts shoot from top of landmark
-
-            // First, spawn as many weenies visible from landmark as possible
-            while (GenerateWeenieFromPoint(destination, terrainMap, x_size, z_size));
-
-            //for (int i = 0; i < m_weeniePositions.Count; i++)
-            //{
-
-            //    bool weenieGenerated = GenerateWeenieFromPoint(m_weeniePositions[i], terrainMap, x_size, z_size);
-            //    if (m_weeniePositions.Count >= weenieCount)
-            //        break;
-            //}
-
-            // Try spawning weenies from other weenies
-            for (int i = 0; i < m_weeniePositions.Count; i++)
+        // Try spawning weenies from other weenies
+        for (int i = 0; i < m_weeniePositions.Count; i++)
+        {
+            if (GenerateWeenieFromPoint(m_weeniePositions[i], terrainMap, x_size, z_size))
             {
-                if (GenerateWeenieFromPoint(m_weeniePositions[i], terrainMap, x_size, z_size))
+                i--;
+                if (m_weeniePositions.Count >= weenieCount)
+                    break;
+            }
+        }
+
+        // offset weenies
+        for (int i = m_weenieOffsetPositions.Count; i < m_weeniePositions.Count; i++)
+        {
+            var newPosition = OffsetPointByMaxHeight(m_weeniePositions[i], weeniePlacementOffset, terrainMap);
+            m_weenieOffsetPositions.Add(newPosition);
+        }
+
+        //Vector3 lastWeenieLocation = destination;
+        //while (m_weeniePositions.Count < weenieCount)
+        //{
+        //    bool weenieGenerated = GenerateWeenieFromPoint(lastWeenieLocation, terrainMap, x_size, z_size);
+
+        //    // no new weenie can be generated from this point
+        //    if (!weenieGenerated)
+        //    {
+        //        if (lastWeenieLocation == destination)
+        //            break;
+        //        // start again from destination
+        //        lastWeenieLocation = destination;
+        //    }
+        //    else
+        //    {
+        //        lastWeenieLocation = m_weeniePositions[^1];
+        //    }
+        //}
+
+        // Spawn landmark at destination
+        //m_landmarkPositions[0].InstantiateObject( m_destinationLandmark, m_landmarkParent);
+        InstantiateLandmark(m_destinationLandmark, m_landmarkPositions[0].location, Quaternion.identity, terrainMap);
+
+        // Spawn all the weenies
+        for (int i = 0; i < m_weenieOffsetPositions.Count; i++)
+        {
+            if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre))
+            {
+                InstantiateLandmark(pre, m_weenieOffsetPositions[i], Quaternion.identity, terrainMap);
+            }
+        }
+
+        // old weenie generation which spawns weenies based on path from start to destination
+        //GenerateWeeniesInAllRegions(path, new List<int>(), terrainMap, x_size, z_size);
+
+        List<List<Vector3>> generatedPathV3 = new List<List<Vector3>>();
+        // Generate paths between weenies (except for the weenies close to the final landmark)
+        for (int i = 0; i < m_weenieOffsetPositions.Count; i++)
+        {
+            var closestWeenie = GetClosestWeenie(m_weenieOffsetPositions[i]);
+            int closestIndex = m_weenieOffsetPositions.IndexOf(closestWeenie);
+
+            // if path is between weenies close to landmark, continue
+            if (closestIndex < weeniesCloseToLandmark) continue;
+            // if path between them already exists, continue
+            if (generatedPaths.Contains((closestIndex, i))) continue;
+
+            generatedPaths.Add((i, closestIndex));
+
+            generatedPathV3.Add(GeneratePathBetweenPoints(m_weenieOffsetPositions[i], closestWeenie, terrainMap));
+        }
+
+        if (m_archPrefab != null)
+        {
+            List<Vector3> archPositions = new List<Vector3>();
+            // Spawn arches in the paths generated
+            foreach (var path in generatedPathV3)
+            {
+                int pointsInEachSegment = path.Count / (archCountPerPath + 1);
+                for (int i = 1; i <= archCountPerPath; i++)
                 {
-                    i--;
-                    if (m_weeniePositions.Count >= weenieCount)
-                        break;
+                    // if too close to other arches, continue
+                    if (!CheckDistanceFromPoints(path[pointsInEachSegment * i], archPositions,
+                            minimumDistanceBetweenArches,
+                            out float totalDistance))
+                        continue;
+
+                    Vector3 direction = path[(pointsInEachSegment * i) + 1] - path[(pointsInEachSegment * i)];
+                    direction.Normalize();
+                    //Debug.DrawLine(path[pointsInEachSegment * i], path[pointsInEachSegment * i] + (direction * 3), Color.yellow, 3000f, false);
+
+                    InstantiateLandmark(m_archPrefab, path[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), terrainMap, false);
+                    archPositions.Add(path[pointsInEachSegment * i]);
                 }
             }
-
-            //Vector3 lastWeenieLocation = destination;
-            //while (m_weeniePositions.Count < weenieCount)
-            //{
-            //    bool weenieGenerated = GenerateWeenieFromPoint(lastWeenieLocation, terrainMap, x_size, z_size);
-
-            //    // no new weenie can be generated from this point
-            //    if (!weenieGenerated)
-            //    {
-            //        if (lastWeenieLocation == destination)
-            //            break;
-            //        // start again from destination
-            //        lastWeenieLocation = destination;
-            //    }
-            //    else
-            //    {
-            //        lastWeenieLocation = m_weeniePositions[^1];
-            //    }
-            //}
-
-            // Spawn landmark at destination
-            //m_landmarkPositions[0].InstantiateObject( m_destinationLandmark, m_landmarkParent);
-            InstantiateLandmark(m_destinationLandmark, m_landmarkPositions[0].location, Quaternion.identity, terrainMap);
-
-            // Spawn all the weenies
-            for (int i = 0; i < m_weeniePositions.Count; i++)
-            {
-                var newPosition = OffsetPointByMaxHeight(m_weeniePositions[i], weeniePlacementOffset, terrainMap);
-                if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre)) {
-                    InstantiateLandmark(pre, newPosition, Quaternion.identity, terrainMap);
-                }
-            }
-
-            // old weenie generation which spawns weenies based on path from start to destination
-            //GenerateWeeniesInAllRegions(path, new List<int>(), terrainMap, x_size, z_size);
         }
 
         // Remove if need to spawn other landmarks
@@ -245,7 +316,7 @@ public class LandmarkGenerator : MonoBehaviour
             Dictionary<int, List<int>> neighbourMap = m_voronoiMap.GetNeighbourMap();
 
             List<int> regionLookup = new List<int>();
-            
+
             for (int i = 0; i < centroidPositions.Count; i++)
             {
                 int gridX, gridY;
@@ -293,9 +364,9 @@ public class LandmarkGenerator : MonoBehaviour
             // spawn destination in the biggest region
             m_landmarkPositions.Add(new SpawnPoint(centroidPositions[maxCountIndex]));
             //if (m_placeLandmarkAtDest)
-            m_landmarkPositions[0].InstantiateObject( m_destinationLandmark, m_landmarkParent);
-            
-            for (int i = 0; i < landmarkCount-1; i++)
+            m_landmarkPositions[0].InstantiateObject(m_destinationLandmark, m_landmarkParent);
+
+            for (int i = 0; i < landmarkCount - 1; i++)
             {
                 var possibleSpawnPoints = GetValidSpawnPoints(centroidPositions, similarNeighbourCount);
 
@@ -313,10 +384,10 @@ public class LandmarkGenerator : MonoBehaviour
                     break;
                 }
 
-                m_landmarkPositions.Add(newPoint); 
+                m_landmarkPositions.Add(newPoint);
             }
         }
-        
+
         //// First generate the spawn point of the final Landmark. If we want to create a landmark at the destination, do so.
         //m_landmarkPositions.Add(new SpawnPoint(destination));
         //if (m_placeLandmarkAtDest) m_landmarkPositions[0].InstantiateLandmark( m_destinationLandmark, m_landmarkParent);
@@ -352,24 +423,7 @@ public class LandmarkGenerator : MonoBehaviour
         //}
 
         // After everything, spawn all landmarks. We skip the first one because that's the final spawn point
-        for(int i = 1; i < m_landmarkPositions.Count; i++) m_landmarkPositions[i].InstantiateObject( m_destinationLandmark, m_landmarkParent);
-
-        List<(int, int)> generatedPaths = new List<(int, int)>();
-        // Generate weenies in paths between landmarks
-        for (int i = 0; i < m_landmarkPositions.Count; i++)
-        {
-            Vector3 point1 = m_landmarkPositions[i].location;
-            var closestLandmark = GetClosestLandmark(point1);
-            int closestIndex = m_landmarkPositions.IndexOf(closestLandmark);
-
-            // if path between them already exists, continue
-            if (generatedPaths.Contains((closestIndex, i))) continue;
-
-            generatedPaths.Add((i, closestIndex));
-            Vector3 point2 = closestLandmark.location;
-            
-            GenerateWeeniesBetweenPoints(point1, point2, weenieBetweenLandmarksCount, terrainMap);
-        }
+        for (int i = 1; i < m_landmarkPositions.Count; i++) m_landmarkPositions[i].InstantiateObject(m_destinationLandmark, m_landmarkParent);
     }
 
     // Generates a weenie from a point and returns whether a weenie was generated or not
@@ -489,7 +543,7 @@ public class LandmarkGenerator : MonoBehaviour
     {
         List<SpawnPoint> spawnLocations = new List<SpawnPoint>();
 
-        for (int i = 0; i<possibleSpawns.Count; i++)
+        for (int i = 0; i < possibleSpawns.Count; i++)
         {
             // spawn point does not have region index = 2
             if (spawnSimilarNeighbourCount[i] == -1)
@@ -498,11 +552,37 @@ public class LandmarkGenerator : MonoBehaviour
             float totalDistance;
             if (CheckDistanceFromLandmarks(possibleSpawns[i], out totalDistance))
             {
-                spawnLocations.Add(new SpawnPoint(possibleSpawns[i], 2*spawnSimilarNeighbourCount[i]));
+                spawnLocations.Add(new SpawnPoint(possibleSpawns[i], 2 * spawnSimilarNeighbourCount[i]));
             }
         }
 
         return spawnLocations;
+    }
+
+    private Vector3 GetClosestWeenie(Vector3 position)
+    {
+        float closestDistance = float.MaxValue;
+        Vector3 closestWeenie = Vector3.zero;
+
+        // checks distance of new point from other landmarks
+        foreach (var weenie in m_weenieOffsetPositions)
+        {
+            if (weenie == position)
+                continue;
+
+            if (weenie.y >= weeniePathHeightLimit)
+                continue;
+
+            float distance = Vector3.Distance(position, weenie);
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestWeenie = weenie;
+            }
+        }
+
+        return closestWeenie;
     }
 
     private SpawnPoint GetClosestLandmark(Vector3 position)
@@ -530,7 +610,7 @@ public class LandmarkGenerator : MonoBehaviour
 
     public void GenerateWeeniesInAllRegions(List<Vector3> pathPoints, List<int> pathThroughSegments, NoiseMap terrainMap, float x_size, float z_size)
     {
-        
+
         // Check Flag: do we have a landmark prefab to begin with?
         if (weeniePrefab == null)
         {
@@ -568,7 +648,8 @@ public class LandmarkGenerator : MonoBehaviour
 
         foreach (var spawnPoint in visionPoints)
         {
-            if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre)) {
+            if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre))
+            {
                 InstantiateLandmark(pre, spawnPoint, Quaternion.identity, terrainMap);
             }
         }
@@ -604,7 +685,8 @@ public class LandmarkGenerator : MonoBehaviour
 
         foreach (var spawnPoint in weenieSpawns)
         {
-            if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre)) {
+            if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre))
+            {
                 InstantiateLandmark(pre, spawnPoint, Quaternion.identity, terrainMap);
             }
         }
@@ -677,37 +759,55 @@ public class LandmarkGenerator : MonoBehaviour
         }
     }
 
-    private void GenerateWeeniesBetweenPoints(Vector3 point1, Vector3 point2, int weenieCount, NoiseMap terrainMap)
+    private List<Vector3> GeneratePathBetweenPoints(Vector3 point1, Vector3 point2, NoiseMap terrainMap)
     {
-        // Check Flag: do we have a landmark prefab to begin with?
-        if (m_weenieLandmarks.prefabs.Count == 0)
-        {
-            Debug.LogError("Weenie landmark prefabs not assigned to 'weenieLandmarks' in editor!");
-            return;
-        }
+        List<Vector3> pointsInPath = new List<Vector3>();
 
-        Vector3 direction = point2 - point1;
-        direction.Normalize();
-        float distance = Vector3.Distance(point1, point2);
-        float weenieDistance = distance / (weenieCount+1);
-        float randomness = weenieDistance * 0.2f;
-        float currentDistance = 0f;
-        for (int i = 0; i < weenieCount; i++)
-        {
-            currentDistance += weenieDistance;
-            Vector3 spawnPoint = point1 + (direction * currentDistance);
-            spawnPoint.x += Random.Range(-randomness, randomness);
-            spawnPoint.z += Random.Range(-randomness, randomness);
+        Vector2 point1v2 = new Vector2(point1.x, point1.z);
+        Vector2 point2v2 = new Vector2(point2.x, point2.z);
+        Vector2 directionv2 = point2v2 - point1v2;
+        directionv2.Normalize();
 
-            int gridX, gridY;
+        float distance = Vector2.Distance(point1v2, point2v2);
+        Vector2 lastPointv2 = point1v2;
+        Vector3 lastPoint = point1;
+
+        while (distance >= 6f)
+        {
+            Vector2 spawnPointv2 = lastPointv2 + (directionv2 * 3f);
+            Vector3 spawnPoint = new Vector3(spawnPointv2.x, 0f, spawnPointv2.y);
+
+            Vector3 normal = terrainMap.QueryMapNormalAtWorldPos(spawnPointv2.x, spawnPointv2.y, LayerMask.GetMask("Ground"), out int gridX, out int gridY, out spawnPoint.y);
+
+            directionv2 = point2v2 - spawnPointv2;
+            directionv2.Normalize();
+
+            Vector3 offsetDirection = normal - (Vector3.Dot(normal, Vector3.up) * Vector3.up);
+            Vector2 offsetV2 = new Vector2(offsetDirection.x, offsetDirection.z);
+
+            //Debug.DrawLine(spawnPoint, spawnPoint + (new Vector3(directionv2.x, 0f, directionv2.y) * 3), Color.gray, 3000f, false);
+            //Debug.DrawLine(spawnPoint, spawnPoint + (new Vector3(offsetV2.x, 0f, offsetV2.y) * 3), Color.yellow, 3000f, false);
+            //Debug.DrawLine(spawnPoint, spawnPoint + (normal * 3), Color.red, 3000f, false);
+
+            float angle = Vector2.Angle(directionv2, offsetV2);
+            spawnPointv2 += weeniePathMaxOffset * MathF.Sin((angle * Mathf.PI) / 180) * offsetV2;
+
+            spawnPoint.x = spawnPointv2.x;
+            spawnPoint.z = spawnPointv2.y;
             spawnPoint.y = terrainMap.QueryHeightAtWorldPos(spawnPoint.x, spawnPoint.z, out gridX, out gridY);
-            int regionIndex = m_voronoiMap.QueryRegionAtWorldPos(spawnPoint.x, spawnPoint.z, out gridX, out gridY);
 
-            if (m_weenieLandmarks.TryGetPrefabAtIndex(regionIndex, out Landmark pre))
-            {
-                InstantiateLandmark(pre, spawnPoint, Quaternion.identity, terrainMap);
-            }
+            pointsInPath.Add(spawnPoint);
+            //Debug.DrawLine(lastPoint, spawnPoint, lastPoint == point1 ? Color.blue : Color.red, 3000f, false);
+
+            directionv2 = point2v2 - spawnPointv2;
+            directionv2.Normalize();
+
+            lastPointv2 = spawnPointv2;
+            lastPoint = spawnPoint;
+            distance = Vector2.Distance(spawnPointv2, point2v2);
         }
+
+        return pointsInPath;
     }
 
     private void GenerateRuinsAroundPoint(Vector3 point, NoiseMap terrainMap)
@@ -716,7 +816,7 @@ public class LandmarkGenerator : MonoBehaviour
         m_destinationLandmark.CalculateBounds();
         m_surroundingDestinationLandmark.CalculateBounds();
 
-        float landmarkSize =  m_destinationLandmark.bounds.extents.magnitude;
+        float landmarkSize = m_destinationLandmark.bounds.extents.magnitude;
         float ruinSize = m_surroundingDestinationLandmark.bounds.extents.magnitude;
 
         for (int i = 0; i < endRegionRuinCount; i++)
@@ -733,7 +833,7 @@ public class LandmarkGenerator : MonoBehaviour
             {
                 // makes sure new point is not too close to other ruins
                 if (Vector3.Distance(new Vector3(ruinSpawn.x, 0f, ruinSpawn.z), new Vector3((float)x, 0f, (float)z)) <
-                    minimumDistanceBetweenRuins + (2*ruinSize))
+                    minimumDistanceBetweenRuins + (2 * ruinSize))
                 {
                     validPoint = false;
                     break;
@@ -818,7 +918,7 @@ public class LandmarkGenerator : MonoBehaviour
             }
             totalDistance += distance;
         }
-        
+
         return isValidPoint;
     }
 
@@ -830,12 +930,12 @@ public class LandmarkGenerator : MonoBehaviour
         float closestDistance = float.MaxValue;
 
         // checks distance of new point from other landmarks
-        foreach(SpawnPoint landmark in m_landmarkPositions) 
+        foreach (SpawnPoint landmark in m_landmarkPositions)
         {
             float distance = Vector3.Distance(point, landmark.location);
 
             // if the new point is too close to any landmark, discard it
-            if (distance < minimumDistanceBetweenLandmarks) 
+            if (distance < minimumDistanceBetweenLandmarks)
             {
                 isValidPoint = false;
                 break;
@@ -870,10 +970,10 @@ public class LandmarkGenerator : MonoBehaviour
         int maxWeight = int.MinValue;
         SpawnPoint maxPoint = null;
 
-        foreach (var point in spawnPoints) 
+        foreach (var point in spawnPoints)
         {
             totalWeight += point.weight;
-            if(point.weight < minWeight)
+            if (point.weight < minWeight)
                 minWeight = point.weight;
 
             if (point.weight > maxWeight)
@@ -894,7 +994,7 @@ public class LandmarkGenerator : MonoBehaviour
         minWeight -= 1;
         totalWeight = totalWeight - (minWeight * spawnPoints.Count);
 
-        int randomWeight = Random.Range(1, totalWeight+1);
+        int randomWeight = Random.Range(1, totalWeight + 1);
         int processedWeight = 0;
         foreach (var point in spawnPoints)
         {
@@ -910,54 +1010,63 @@ public class LandmarkGenerator : MonoBehaviour
 
     public void ClearLandmarks()
     {
-        while(m_landmarkPositions.Count > 0) {
+        while (m_landmarkPositions.Count > 0)
+        {
             GameObject landmark = m_landmarkPositions[0].spawnedObject;
             m_landmarkPositions.RemoveAt(0);
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
                 if (!EditorApplication.isPlaying)   DestroyImmediate(landmark);
                 else                                Destroy(landmark);
-            #else
-                Destroy(landmark);
-            #endif
+#else
+            Destroy(landmark);
+#endif
         }
     }
 
-    private IEnumerator SortLandmarks() {
+    private IEnumerator SortLandmarks()
+    {
         WaitForSeconds sortDelay = new WaitForSeconds(0.5f);
-        while(true) {
-            if (!CameraController.current.firstPersonCameraActive) {
+        while (true)
+        {
+            if (!CameraController.current.firstPersonCameraActive)
+            {
                 yield return sortDelay;
                 continue;
             }
-            if (m_landmarks.Count <= 1) {
+            if (m_landmarks.Count <= 1)
+            {
                 yield return sortDelay;
                 continue;
             }
             List<Landmark> sorted = m_landmarks.OrderBy(a => a.inFustrum ? 0 : 1).ThenBy(a => a.distToCamCenter).ToList();
             m_landmarks = sorted;
             yield return sortDelay;
-        }   
+        }
     }
 
-    public void InstantiateLandmark(Landmark prefab, Vector3 pos, Quaternion rot, NoiseMap terrainMap, bool addToLandmarks=true) {
+    public void InstantiateLandmark(Landmark prefab, Vector3 pos, Quaternion rot, NoiseMap terrainMap, bool addToLandmarks = true)
+    {
         // Instantiate the landmark itself, given the prefab, position, and rotation
         Landmark newWeenie = Instantiate(prefab, pos, rot, m_landmarkParent) as Landmark;
         newWeenie.OffsetLandmarkInYaxis(terrainMap);
         if (addToLandmarks) m_landmarks.Add(newWeenie);
-        
+
         // Fustrum cull this guy if possible
         FustrumGroup fg = newWeenie.gameObject.GetComponent<FustrumGroup>();
         if (fg != null) fg.QueryGridParent();
-        else if (FustrumManager.current != null) {
+        else if (FustrumManager.current != null)
+        {
             Vector2Int coords = FustrumManager.current.GetCoordsFromWorldPosition(pos);
-            if (FustrumManager.current.coordToChunkMap.ContainsKey(coords)) {
+            if (FustrumManager.current.coordToChunkMap.ContainsKey(coords))
+            {
                 FustrumGroup parentGroup = FustrumManager.current.coordToChunkMap[coords];
                 parentGroup.AddGameObject(newWeenie.gameObject);
             }
         }
     }
 
-    private void OnDisable() {
+    private void OnDisable()
+    {
         StopAllCoroutines();
     }
 }
