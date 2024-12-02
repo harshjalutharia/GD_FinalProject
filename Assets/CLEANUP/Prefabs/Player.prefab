@@ -5325,6 +5325,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ad703a87b482754998adcd5ce0761cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  forwardTransformRef: {fileID: 4749836451531745328}
   direction: {x: 0, y: 0, z: 0}
   angle: 0
 --- !u!1 &1264231839399142102
@@ -6916,12 +6917,16 @@ MonoBehaviour:
   preparingJump: 0
   sprinting: 0
   sliding: 0
-  keepSprint: 0
   requestFlight: 0
   horizontalVelocity: {x: 0, y: 0, z: 0}
   flightActivated: 0
   sprintActivated: 0
   paraglidingActivated: 0
+  sfxState:
+    slideSFXOn: 0
+    sprintSFXOn: 0
+    jogSFXOn: 0
+    paraglidingSFXOn: 0
   animator: {fileID: 1660389838353707594}
   animationVars:
     grounded: 0
