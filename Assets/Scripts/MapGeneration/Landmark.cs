@@ -98,22 +98,12 @@ public class Landmark : MonoBehaviour
             // This is to handle the situation of rotations and the like.
             // If this renderer has a custom bounds component attached, just get it from here
             CustomBounds cb = r.gameObject.GetComponent<CustomBounds>();
-            if (cb != null) {
-                bottomPoints[0] = transform.TransformPoint(cb.boundPoints[0]);
-                bottomPoints[1] = transform.TransformPoint(cb.boundPoints[1]);
-                bottomPoints[2] = transform.TransformPoint(cb.boundPoints[2]);
-                bottomPoints[3] = transform.TransformPoint(cb.boundPoints[3]);
-            } else {
-                Bounds localBounds = r.localBounds;
-                // Because some local bounds may actually be misaligned due to the fact that the models themselves are sideways...
-                // .. we have to calculate the min/max x, min/max z, and min y
-                
-                //{ r.bounds.center, r.bounds.center, r.bounds.center, r.bounds.center };
-                bottomPoints[0] = r.transform.TransformPoint(-localBounds.extents);
-                bottomPoints[1] = r.transform.TransformPoint(new Vector3(localBounds.extents.x, -localBounds.extents.y, localBounds.extents.z));
-                bottomPoints[2] = r.transform.TransformPoint(new Vector3(-localBounds.extents.x, -localBounds.extents.y, localBounds.extents.z));
-                bottomPoints[3] = r.transform.TransformPoint(new Vector3(localBounds.extents.x, -localBounds.extents.y, -localBounds.extents.z));
-            }
+            if (cb == null) continue;
+            
+            bottomPoints[0] = transform.TransformPoint(cb.boundPoints[0]);
+            bottomPoints[1] = transform.TransformPoint(cb.boundPoints[1]);
+            bottomPoints[2] = transform.TransformPoint(cb.boundPoints[2]);
+            bottomPoints[3] = transform.TransformPoint(cb.boundPoints[3]);
             m_toDrawGizmos.AddRange(bottomPoints);
 
             float finalOffset = float.MaxValue;

@@ -471,6 +471,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c2e9d49cc4534e10a7a2076b67d5eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_cameraController: {fileID: 0}
   m_renderers: []
   m_totalTimeToDetect: 5
   m_bounds:
