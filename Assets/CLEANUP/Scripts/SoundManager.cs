@@ -13,7 +13,7 @@ public class SoundManager : MonoBehaviour
     }
     
     [Header("=== Sound Effects ===")]
-    [SerializeField, Tooltip("Ref. to the BGM Audio source, which is separate from SFX")]   private AudioSource m_BMGAudioSource;
+    [SerializeField, Tooltip("Ref. to the BGM Audio source, which is separate from SFX")]   private List<AudioSource> m_BMGAudioSource;
     [SerializeField, Tooltip("Audio clips to use during the game")] private List<SoundClip> m_sfxClips;
     private Dictionary<string, AudioSource> m_sfxMapper;
 
@@ -26,10 +26,17 @@ public class SoundManager : MonoBehaviour
     }
 
     public void PlayBGM() {
-        if (!m_BMGAudioSource.isPlaying) m_BMGAudioSource.Play();
+
+        foreach(AudioSource bgm in m_BMGAudioSource){
+            if (!bgm.isPlaying) bgm.Play();
+        }
+        
     }
     public void StopBMG() {
-        if (m_BMGAudioSource.isPlaying) m_BMGAudioSource.Stop();
+        //if (m_BMGAudioSource.isPlaying) m_BMGAudioSource.Stop();
+        foreach(AudioSource bgm in m_BMGAudioSource){
+            if (!bgm.isPlaying) bgm.Stop();
+        }
     }
 
     public void PlaySFX(string name) {
