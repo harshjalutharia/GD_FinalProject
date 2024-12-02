@@ -57,6 +57,7 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Start paragliding if current speed larger than slideSpeedThreshold + paraglidingStartSpeedOffset.")]
     public float paraglidingStartSpeedOffset;
     
+    
     [Header("(READ ONLY) Drag Coefficients")]
     [SerializeField, Tooltip("READ ONLY. Limit the max walking speed, Vmax=moveSpeed/groundDrag")]
     private float groundDrag;
@@ -129,23 +130,18 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Tooltip("The action input of player toggle to sprint.")]
     private InputActionReference SprintSwitchActionReference;
     
-    
     private PlayerControls controls; 
 
     private InputAction directionInput;
     
-    //private InputAction jumpInput;
-    
-    //private InputAction sprintInput;
-
-    //private InputAction switchSprintInput;
-    
     private float horizontalInput;
     
     private float verticalInput;
-
-    [Header("Ground Check")]
     
+    private Vector3 moveDirection;
+
+    
+    [Header("Ground Check")]
     [Tooltip("Positions to perform ground detect")]
     public Transform[] groundDetections = new Transform[2];
     
@@ -181,14 +177,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] 
     private bool sliding;
 
-    // [SerializeField] 
-    // private bool keepSprint;
+    [SerializeField] 
+    private bool accelerating;
     
     [SerializeField] 
     private bool requestFlight;
-
-    //[SerializeField] 
-    //private bool holdingMap;
+    
     [SerializeField] 
     private Vector3 horizontalVelocity;
     
@@ -203,11 +197,10 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField, Tooltip("Private state of SFX")]
     private SoundFXState sfxState;
-    
-    private Vector3 moveDirection;
 
     private Rigidbody rb;
 
+    
     [Header("Animation")]
     [Tooltip("Animation Controller")]
     public Animator animator;
@@ -215,6 +208,22 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Tooltip("READ ONLY. Variables bind for animation control")]
     private AnimationVars animationVars;
 
+    
+    [Header("Accelerator Settings")] 
+    [Tooltip("Force that propels player to move")]
+    public float acceleratorForce;
+    
+    [Tooltip("how long the force is applied.")]
+    public float acceleratorDuration;
+
+    [Tooltip("The trail Object")] 
+    public GameObject acceleratorTrail;
+
+    private Vector3 acceleratorOriginalDirection; // record the initial horizontal direction 
+
+    private Coroutine currentAccelerationCoroutine = null;
+
+    
     [Header("Others")] 
     [Tooltip("Used to determine the player direction")]
     public Transform orientation;
@@ -282,6 +291,8 @@ public class PlayerMovement : MonoBehaviour
         airDragVertical = Physics.gravity.magnitude / paraglidingFallingSpeed;
 
         physicMaterial = GetComponent<CapsuleCollider>().material;
+        
+        acceleratorTrail.SetActive(false);
 
         // initially do not have special movement
         flightActivated = false;
@@ -339,6 +350,12 @@ public class PlayerMovement : MonoBehaviour
             ActivateSprint();
             ActivateParagliding();
             SoundManager.current.PlaySFX("Cheat");
+            // start acceleration
+            if (currentAccelerationCoroutine != null)
+            {
+                StopCoroutine(currentAccelerationCoroutine);
+            }
+            currentAccelerationCoroutine = StartCoroutine(ExtraAccelerate());
         }
     }
 
@@ -589,7 +606,7 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         
         //set friction if player has no input
-        if (moveDirection.magnitude < 0.05f && grounded && GetSlopAngle() <= frictionSlopAngle)
+        if (moveDirection.magnitude < 0.05f && grounded && GetSlopAngle() <= frictionSlopAngle && !accelerating)
         {
             physicMaterial.dynamicFriction = friction;
             physicMaterial.staticFriction = friction;
@@ -719,7 +736,73 @@ public class PlayerMovement : MonoBehaviour
             collectGemParticles.Play();
             if (usingCape)
                 cape.CapePowerUp(3f);
+            return;
         }
+        
+        // in case of accelerator collider
+        if (other.CompareTag("Accelerator"))
+        {
+            if (currentAccelerationCoroutine != null)
+            {
+                StopCoroutine(currentAccelerationCoroutine);
+            }
+            currentAccelerationCoroutine = StartCoroutine(ExtraAccelerate());
+            
+        }
+    }
+
+
+    private IEnumerator ExtraAccelerate()
+    {
+        // set the accelerator direction based on input direction
+        acceleratorOriginalDirection = moveDirection.normalized;
+        // in case player is not moving
+        while (acceleratorOriginalDirection.magnitude < 0.05f)
+        {
+            yield return new WaitForFixedUpdate();
+            // if player has no input but is moving, using moving direction instead or wait until got a input
+            if (horizontalVelocity.magnitude > 0.05f)
+            {
+                acceleratorOriginalDirection = horizontalVelocity.normalized;
+            }
+            else
+            {
+                acceleratorOriginalDirection = moveDirection.normalized;
+            }
+        }
+        
+        acceleratorTrail.SetActive(true);
+        accelerating = true;
+
+        TrailRenderer trailRenderer = acceleratorTrail.GetComponent<TrailRenderer>();
+        trailRenderer.time = 1;
+        
+        float startTime = Time.time;
+        while (Time.time - startTime <= acceleratorDuration)
+        {
+            yield return new WaitForFixedUpdate();
+            
+            // apply acceleration according to the ground slop
+            // Ground Normal Direction
+            Vector3 groundNormal = (0.5f * (groundHits[0].normal + groundHits[0].normal)).normalized;
+            // the normal of the plane formed by acceleration direction and world.up
+            Vector3 accDirNormal = Vector3.Cross(Vector3.up, acceleratorOriginalDirection);
+            // project ground Nomral to the plane
+            Vector3 projectedGroundNormal = Vector3.ProjectOnPlane(groundNormal, accDirNormal).normalized;
+            // get the right accelerate direction 
+            float angle = Vector3.SignedAngle(Vector3.up, projectedGroundNormal, accDirNormal); 
+            Vector3 direction = Quaternion.AngleAxis(angle, accDirNormal) * acceleratorOriginalDirection;
+
+            float t = (Time.time - startTime) / acceleratorDuration;
+            //Debug.DrawRay(transform.position, direction);
+            float forceMagnitude = Mathf.Lerp(acceleratorForce, 0, t); // gradually reduce force intensity
+            rb.AddForce(forceMagnitude * direction, ForceMode.Force);
+
+            trailRenderer.time = Mathf.Lerp(1, 0, t);
+        }
+        accelerating = false;
+        acceleratorTrail.SetActive(false);
+        currentAccelerationCoroutine = null;
     }
     
 
@@ -817,12 +900,6 @@ public class PlayerMovement : MonoBehaviour
     public float GetMaxAccessibleFlightStamina() {
         return maxAccessibleStamina;
     }
-    
-    /*
-    public bool GetHoldingMap() {
-        return holdingMap;
-    }
-    */
 
     public bool GetGrounded() {
         return grounded;
