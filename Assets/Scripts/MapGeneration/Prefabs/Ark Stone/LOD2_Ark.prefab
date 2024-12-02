@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1212079545396343442}
   m_Layer: 0
-  m_Name: Ark Stone LOD2
+  m_Name: LOD2_Ark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
