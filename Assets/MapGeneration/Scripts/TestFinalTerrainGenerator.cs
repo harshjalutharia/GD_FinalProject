@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 [RequireComponent(typeof(Renderer))]
 public class TestFinalTerrainGenerator : MonoBehaviour
@@ -8,6 +9,9 @@ public class TestFinalTerrainGenerator : MonoBehaviour
     public enum LayerType { Random, Perlin, Falloff, PerlinFalloff }
     public enum FalloffType { Box, NorthSouth, EastWest, Circle }
     public enum ApplicationType { Off, Set, Add, Subtract, Multiply, Divide }
+
+    const int textureSize = 512;
+    const TextureFormat textureFormat = TextureFormat.RGB565;
 
     [System.Serializable]
     public class TerrainLayer {
@@ -86,77 +90,121 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         }
     }
 
+    [System.Serializable]
+    public class TextureLayer {
+        public string name;
+        public Texture2D texture;
+        public Color tint;
+        [Range(0f,1f)] public float tintStrength;
+        [Range(0f,1f)] public float blendStrength;
+        public float startHeight;
+        public float textureScale;
+    }
+
+    [System.Serializable]
+    public class MinMax {
+        public float min;
+        public float max;
+    }
+
     [Header("=== Map Settings ===")]
     [SerializeField] private int m_seed;
     [SerializeField, Tooltip("The visual (world) width of this map")]   private int width = 256;
     [SerializeField, Tooltip("The visual (world) height of this map")]  private int height = 256;
     public int gridWidth => width+1;    // The grid map width; +1 of world width due to vertices requiring one more point at the end
     public int gridHeight => height+1;  // The grid map height;
-    [SerializeField, Range(0,6), Tooltip("The LOD level used to control the mesh fidelity.")] private int m_levelOfDetail;
-    [Space]
-    [SerializeField] private int m_coroutineNumThreshold = 20;
-    public List<TerrainLayer> m_layers;
-    public System.Random m_prng;
+    [SerializeField, Tooltip("The LOD level used to control the mesh fidelity."), Range(0,6)] private int m_levelOfDetail;
+    [SerializeField, Tooltip("The terrain layers that generate the resulting nosie map")] private List<TerrainLayer> m_layers;
+    [SerializeField, Tooltip("Do we use a custom noise map range or allow the system to estimate?")]    private bool m_manualNoiseRange = false;
+    private System.Random m_prng;
 
     [Header("=== Renderer Settings ===")]
+    [SerializeField] private Material m_meshMaterialSrc;
+    private Material m_meshMaterial;
+    [SerializeField] private List<TextureLayer> m_meshMaterialLayers;
+    [Space]
     [SerializeField] private MeshFilter m_meshFilter;
     [SerializeField] private Renderer m_renderer;
     [SerializeField] private MeshCollider m_collider;
     [SerializeField] private FilterMode m_filterMode;
+
+    [Header("=== Outputs - READ ONLY ==")]
     [SerializeField] private float[,] m_noiseMap;
+    [SerializeField] private MinMax m_noiseRange;
     [SerializeField] private Texture2D m_textureData;
     [SerializeField] private MeshData m_meshData;
 
     [Header("=== Debug Settings ===")]
+    [SerializeField] private bool m_generateOnStart = false;
+    [SerializeField] private int m_coroutineNumThreshold = 20;
     [SerializeField] private bool m_autoUpdate = false;
     public bool autoUpdate => m_autoUpdate;
 
     private void Start() {
-        StartCoroutine(GenerateMapCoroutine());
+        if (m_generateOnStart) StartCoroutine(GenerateMapCoroutine());
     }
 
     public void GenerateMap() {
-        StartCoroutine(GenerateMapCoroutine());
-    }
-
-    public IEnumerator GenerateMapCoroutine() {
-        Debug.Log("Generating map");
+        Debug.Log("Generating map via Function");
 
         // Initialize randomization seed
         m_prng = new System.Random(m_seed);
 
         // Generating the noise map
-        yield return GenerateNoise();
+        GenerateNoise();
         Debug.Log("Noise Map Generated");
 
         // Generate texture
-        yield return GenerateTexture();
+        GenerateMaterial();
         Debug.Log("Texture Generated");
 
         // Generate mesh data
-        yield return GenerateMeshData();
+        GenerateMeshData();
         Debug.Log("Mesh Generated");
 
-        if (m_renderer != null) {
-            //m_meshFilter.sharedMesh = mData.CreateMesh();
-            //if (m_collider != null) m_collider.sharedMesh = m_meshFilter.sharedMesh;
-            var tempMaterial = new Material(m_renderer.sharedMaterial);
-            tempMaterial.mainTexture = m_textureData;
-            m_renderer.sharedMaterial = tempMaterial;
+        if (m_meshMaterial != null && m_renderer != null) {
+            m_renderer.sharedMaterial = m_meshMaterial;
         }
 
         if (m_meshFilter != null) {
             m_meshFilter.sharedMesh = m_meshData.CreateMesh();
-            //if (m_collider != null) m_collider.sharedMesh = m_meshFilter.sharedMesh;
+            if (m_collider != null) m_collider.sharedMesh = m_meshFilter.sharedMesh;
+        }
+    }
+
+    public IEnumerator GenerateMapCoroutine() {
+        Debug.Log("Generating map via Coroutine");
+
+        // Initialize randomization seed
+        m_prng = new System.Random(m_seed);
+
+        // Generating the noise map
+        yield return GenerateNoiseCoroutine();
+        Debug.Log("Noise Map Generated");
+
+        // Generate texture
+        yield return GenerateMaterialCoroutine();
+        Debug.Log("Texture Generated");
+
+        // Generate mesh data
+        yield return GenerateMeshDataCoroutine();
+        Debug.Log("Mesh Generated");
+
+        if (m_meshMaterial != null && m_renderer != null) {
+            m_renderer.sharedMaterial = m_meshMaterial;
+        }
+
+        if (m_meshFilter != null) {
+            m_meshFilter.sharedMesh = m_meshData.CreateMesh();
+            if (m_collider != null) m_collider.sharedMesh = m_meshFilter.sharedMesh;
         }
 
         yield return null;
     }
 
-    private IEnumerator GenerateNoise() {
+    private void GenerateNoise() {
         m_noiseMap = new float[gridWidth,gridHeight];
-        float maxValue = float.MinValue;
-        int counter = 0;
+        if (!m_manualNoiseRange) m_noiseRange = new MinMax { min=float.MaxValue, max=float.MinValue };
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
                 float value = 0f;
@@ -185,20 +233,70 @@ public class TestFinalTerrainGenerator : MonoBehaviour
                     }
                 }
                 m_noiseMap[x,y] = value;
-                if (value > maxValue) maxValue = value;
+                if (!m_manualNoiseRange) {
+                    if (value > m_noiseRange.max) m_noiseRange.max = value;
+                    if (value < m_noiseRange.min) m_noiseRange.min = value;
+                }
+            }
+        }
+    }
+
+    private IEnumerator GenerateNoiseCoroutine() {
+        // Initialize the noise map array
+        m_noiseMap = new float[gridWidth,gridHeight];
+
+        // Initialize the minmax
+        if (!m_manualNoiseRange) m_noiseRange = new MinMax { min=float.MaxValue, max=float.MinValue };
+
+        // Initialize the loop. We use a counter due to this being a coroutine
+        int counter = 0;
+        for (int x = 0; x < gridWidth; x++) {
+            for (int y = 0; y < gridHeight; y++) {
+                
+                // With an initial value of 0, we consecutively add layers on top of it based on the terrain layers
+                float value = 0f;
+                for(int i = 0; i < m_layers.Count; i++) {
+                    TerrainLayer layer = m_layers[i];
+                    if (layer.applicationType != ApplicationType.Off) {
+                        float v = layer.GeneratePoint(m_prng, x, y, width, height);
+                        switch(layer.applicationType) {
+                            case ApplicationType.Add:
+                                value += v;
+                                break;
+                            case ApplicationType.Subtract:
+                                value -= v;
+                                break;
+                            case ApplicationType.Multiply:
+                                value *= v;
+                                break;
+                            case ApplicationType.Divide:
+                                if (v == 0f) v = 0.00001f;
+                                value /= v;
+                                break;
+                            default: // Set
+                                value = v;
+                                break;
+                        }
+                    }
+                }
+                m_noiseMap[x,y] = value;
+
+                // Set min and max values
+                if (!m_manualNoiseRange) {
+                    if (value > m_noiseRange.max) m_noiseRange.max = value;
+                    if (value < m_noiseRange.min) m_noiseRange.min = value;
+                }
+                
+                // Coroutine logic
                 counter++;
-                if (counter >= m_coroutineNumThreshold) {
+                if (counter % m_coroutineNumThreshold == 0) {
                     yield return null;
                     counter = 0;
                 }
-                //noiseMap[x,y] = CalculateNoise(x,y,gridWidth,gridHeight);
-            }
-            counter++;
-            if (counter >= m_coroutineNumThreshold) {
-                yield return null;
-                counter = 0;
             }
         }
+
+        // End
         yield return null;
 
         /*
@@ -210,8 +308,144 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         }
         */
     }
-    
-    private IEnumerator GenerateMeshData() {
+
+    private void GenerateMaterial() {
+        m_meshMaterial = new Material(m_meshMaterialSrc);
+        m_meshMaterial.SetInt("layerCount", m_meshMaterialLayers.Count);
+        m_meshMaterial.SetColorArray("baseColors", m_meshMaterialLayers.Select(x => x.tint).ToArray());
+        m_meshMaterial.SetFloatArray("baseStartHeights", m_meshMaterialLayers.Select(x => x.startHeight).ToArray());
+        m_meshMaterial.SetFloatArray("baseBlends", m_meshMaterialLayers.Select(x => x.blendStrength).ToArray());
+        m_meshMaterial.SetFloatArray("baseColorStrength", m_meshMaterialLayers.Select(x => x.tintStrength).ToArray());
+        m_meshMaterial.SetFloatArray("baseTextureScales", m_meshMaterialLayers.Select(x => x.textureScale).ToArray());
+
+        Texture2DArray texturesArray = GenerateTextureArray(m_meshMaterialLayers.Select(x => x.texture).ToArray());
+        m_meshMaterial.SetTexture("baseTextures", texturesArray);
+        m_meshMaterial.SetFloat("minHeight", m_noiseRange.min);
+        m_meshMaterial.SetFloat("maxHeight", m_noiseRange.max);
+
+        m_textureData = new Texture2D(gridWidth, gridHeight);
+        m_textureData.filterMode = m_filterMode;
+        m_textureData.wrapMode = TextureWrapMode.Clamp;
+
+        for (int x = 0; x < gridWidth; x++) {
+            for (int y = 0; y < gridHeight; y++) {
+                float currentHeight = m_noiseMap[x,y];
+                Color currentColor = Color.white;
+                for(int i = m_meshMaterialLayers.Count-1; i >= 0 ; i--) {
+                    if (currentHeight >= Mathf.Lerp(m_noiseRange.min, m_noiseRange.max, m_meshMaterialLayers[i].startHeight)) {
+                        currentColor = m_meshMaterialLayers[i].tint;
+                        break;
+                    }
+                }
+                m_textureData.SetPixel(x, y, currentColor);
+            }
+        }
+        m_textureData.Apply();
+    }
+
+    private IEnumerator GenerateMaterialCoroutine() {
+        // Initialize the material by making an instance of it, so that we don't accidentally override it.
+        m_meshMaterial = new Material(m_meshMaterialSrc);
+
+        // We prep its variables
+        m_meshMaterial.SetInt("layerCount", m_meshMaterialLayers.Count);
+        m_meshMaterial.SetColorArray("baseColors", m_meshMaterialLayers.Select(x => x.tint).ToArray());
+        m_meshMaterial.SetFloatArray("baseStartHeights", m_meshMaterialLayers.Select(x => x.startHeight).ToArray());
+        m_meshMaterial.SetFloatArray("baseBlends", m_meshMaterialLayers.Select(x => x.blendStrength).ToArray());
+        m_meshMaterial.SetFloatArray("baseColorStrength", m_meshMaterialLayers.Select(x => x.tintStrength).ToArray());
+        m_meshMaterial.SetFloatArray("baseTextureScales", m_meshMaterialLayers.Select(x => x.textureScale).ToArray());
+
+        // Initialize the texture array
+        Texture2DArray texturesArray = GenerateTextureArray(m_meshMaterialLayers.Select(x => x.texture).ToArray());
+        m_meshMaterial.SetTexture("baseTextures", texturesArray);
+        m_meshMaterial.SetFloat("minHeight", m_noiseRange.min);
+        m_meshMaterial.SetFloat("maxHeight", m_noiseRange.max);
+
+        // Initialize the texture we'll be applying to this material
+        m_textureData = new Texture2D(gridWidth, gridHeight);
+        m_textureData.filterMode = m_filterMode;
+        m_textureData.wrapMode = TextureWrapMode.Clamp;
+
+        // We need to apply pixels and colors to the texture
+        int counter = 0;
+        for (int x = 0; x < gridWidth; x++) {
+            for (int y = 0; y < gridHeight; y++) {
+                
+                // What's the noise map value here?
+                float currentHeight = m_noiseMap[x,y];
+                Color currentColor = Color.white;
+
+                // Colors are determined by start height. As long as the noise map is above the start height, we apply it
+                for(int i = m_meshMaterialLayers.Count-1; i >= 0 ; i--) {
+                    if (currentHeight >= Mathf.Lerp(m_noiseRange.min, m_noiseRange.max, m_meshMaterialLayers[i].startHeight)) {
+                        currentColor = m_meshMaterialLayers[i].tint;
+                        break;
+                    }
+                }
+
+                // Given the color, let's apply it
+                m_textureData.SetPixel(x, y, currentColor);
+
+                // Coroutine stuff
+                counter++;
+                if (counter % m_coroutineNumThreshold == 0) {
+                    yield return null;
+                    counter = 0;
+                }
+            }
+        }
+
+        // Apply the texture to set its colors
+        m_textureData.Apply();
+        yield return null;
+
+        // Now apply the texture
+        /*
+        int counter = 0;
+        for (int x = 0; x < gridWidth; x++) {
+            for (int y = 0; y < gridHeight; y++) {
+                float sample = m_noiseMap[x,y];
+                Color color = new Color(sample,sample,sample);
+                m_textureData.SetPixel(x, y, color);
+                counter++;
+                if (counter % m_coroutineNumThreshold == 0) {
+                    yield return null;
+                    counter = 0;
+                }
+            }
+            counter++;
+            if (counter % m_coroutineNumThreshold == 0) {
+                yield return null;
+                counter = 0;
+            }
+        }
+        */
+    }
+
+    private void GenerateMeshData() {
+        float topLeftX = (float)width / -2f;
+        float topLeftZ = (float)height / 2f;
+
+        int meshSimplificationIncrement = (m_levelOfDetail == 0) ? 1 : m_levelOfDetail * 2;
+        int verticesPerLine = width / meshSimplificationIncrement + 1;
+
+        m_meshData = new MeshData(verticesPerLine, verticesPerLine);
+        int vertexIndex = 0;
+
+        for(int y = 0; y < gridHeight; y+=meshSimplificationIncrement) {
+            for(int x = 0; x < gridWidth; x+=meshSimplificationIncrement) {
+                m_meshData.vertices[vertexIndex] = new Vector3(x, m_noiseMap[x,y], y);
+                m_meshData.uvs[vertexIndex] = new Vector2(x/(float)gridWidth, y/(float)gridHeight);
+                if (x < width && y < height) {
+                    m_meshData.AddTriangle(vertexIndex, vertexIndex+verticesPerLine, vertexIndex+verticesPerLine+1);
+                    m_meshData.AddTriangle(vertexIndex+verticesPerLine+1, vertexIndex+1, vertexIndex);
+                }
+                vertexIndex++;
+            }
+        }
+    }
+
+    private IEnumerator GenerateMeshDataCoroutine() {
         float topLeftX = (float)width / -2f;
         float topLeftZ = (float)height / 2f;
 
@@ -237,42 +471,14 @@ public class TestFinalTerrainGenerator : MonoBehaviour
         yield return null;
     }
 
-    private IEnumerator GenerateTexture() {
-        m_textureData = new Texture2D(gridWidth, gridHeight);
-        m_textureData.filterMode = m_filterMode;
-        m_textureData.wrapMode = TextureWrapMode.Clamp;
-
-        int counter = 0;
-        for (int x = 0; x < gridWidth; x++) {
-            for (int y = 0; y < gridHeight; y++) {
-                float sample = m_noiseMap[x,y];
-                Color color = new Color(sample,sample,sample);
-                m_textureData.SetPixel(x, y, color);
-                counter++;
-                if (counter % m_coroutineNumThreshold == 0) {
-                    yield return null;
-                    counter = 0;
-                }
-            }
-            counter++;
-            if (counter % m_coroutineNumThreshold == 0) {
-                yield return null;
-                counter = 0;
-            }
+    public virtual Texture2DArray GenerateTextureArray(Texture2D[] textures) {
+        Texture2DArray textureArray = new Texture2DArray(textureSize, textureSize, textures.Length, textureFormat, true);
+        for(int i =0; i < textures.Length; i++) {
+            textureArray.SetPixels(textures[i].GetPixels(), i);
         }
-        m_textureData.Apply();
-        yield return null;
+        textureArray.Apply();
+        return textureArray;
     }
-
-    /*
-    private float CalculateNoise(int x, int y, int width, int height)
-    {
-        float xCoord = (float)x / width * scale + offsetX;
-        float yCoord = (float)y / height * scale + offsetY;
-        Debug.Log(xCoord);
-        return Mathf.PerlinNoise(xCoord, yCoord);
-    }
-    */
 
     private void OnValidate() {
         foreach(TerrainLayer layer in m_layers) if (layer.scale <= 1f) layer.scale = 1f;
