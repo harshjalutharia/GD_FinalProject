@@ -483,13 +483,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c2e9d49cc4534e10a7a2076b67d5eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_cameraController: {fileID: 0}
   m_renderers:
   - {fileID: 6304976271528325554}
   - {fileID: 2567506874740541499}
   - {fileID: 8848511963154533097}
   m_totalTimeToDetect: 5
+  m_mapColor: {r: 0.9811321, g: 0.42930695, b: 0.27305093, a: 0}
   m_bounds:
     m_Center: {x: -0.06465149, y: 1.9303987, z: 0.34303558}
     m_Extent: {x: 2.1712635, y: 2.9957843, z: 1.8121603}
   m_inFustrum: 0
+  m_drawnOnMap: 0
+  m_viewportPoint: {x: 0, y: 0}
   m_distToCamCenter: 0

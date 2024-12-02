@@ -319,6 +319,17 @@ public class NoiseMap : MonoBehaviour
         Texture2D original = (Texture2D)m_heldRenderer.sharedMaterial.mainTexture;
         m_heldRenderer.sharedMaterial.mainTexture = Generators.DrawCircleOnTexture(original, coords.x, coords.y, radius, color);
     }
+    public virtual void DrawBoxOnHeldMap(float x, float z, float minX, float minZ, float maxX, float maxZ, Color color) {
+        if (m_heldRenderer == null) return;
+        Vector2Int coords = QueryCoordsAtWorldPos(x, z, true);
+        Vector2Int minCoords = QueryCoordsAtWorldPos(minX, minZ, true);
+        Vector2Int maxCoords = QueryCoordsAtWorldPos(maxX, maxZ, true);
+        int w = Mathf.Abs(maxCoords.x - minCoords.x);
+        int h = Mathf.Abs(maxCoords.y - minCoords.y);
+        Debug.Log($"Drawing box at {coords.x},{coords.y} with w={w}, h={h}");
+        Texture2D original = (Texture2D)m_heldRenderer.sharedMaterial.mainTexture;
+        m_heldRenderer.sharedMaterial.mainTexture = Generators.DrawBoxOnTexture(original, coords.x, coords.y, w, h, color);
+    }
 
     public virtual Vector2 GetMapExtents() {
         float l = (float)(m_mapChunkSize-1)/2f;

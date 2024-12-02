@@ -399,6 +399,19 @@ public static class Generators {
         // Set the new pixels
         return TextureFromColorMap(width, rows, original.GetPixels(), original.filterMode);
     }
+    public static Texture2D DrawBoxOnTexture(Texture2D original, int x, int y, int w, int h, Color color) {
+        var width = original.width;
+        var rows = original.height;
+        // Mod it so that it draws a big, fat circle at the destination point.
+        for (int u = x - w; u < x + w + 1; u++) {
+            for (int v = y - h; v < y + h + 1; v++) {
+                if (u >= 0 && u < width && v >= 0 && v < rows) original.SetPixel(u, v, color);
+            }
+        }
+
+        // Set the new pixels
+        return TextureFromColorMap(width, rows, original.GetPixels(), original.filterMode);
+    }
 }
 
 public class MeshData {

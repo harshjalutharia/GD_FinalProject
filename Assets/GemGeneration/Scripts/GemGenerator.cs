@@ -229,6 +229,7 @@ public class GemGenerator : MonoBehaviour
         m_checkViewInitialized = setTo;
     }
 
+    /*
     private void LateUpdate() {
         // Don't do anything if we haven't initialized yet or if our dictionary of gems is unset
         if (!m_checkViewInitialized) return;
@@ -252,4 +253,5 @@ public class GemGenerator : MonoBehaviour
         }
         return true;
     }
+    */
 }

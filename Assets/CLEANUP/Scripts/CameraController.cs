@@ -13,10 +13,11 @@ public class CameraController : MonoBehaviour
     [SerializeField, Tooltip("The loading camera reference.")]      private Camera m_loadingCamera;
     [SerializeField, Tooltip("The 3rd-person camera reference.")]   private Camera m_thirdPersonCamera;
     [SerializeField, Tooltip("The 1st-person camera reference")]    private Camera m_firstPersonCamera;
+    public Camera firstPersonCamera => m_firstPersonCamera;
     [Space]
     [SerializeField, Tooltip("The hand-held map that must be shown when in 1st-person")]    private GameObject m_heldMap;
     [SerializeField, Tooltip("The compass that must be shown when in 1st-person")]          private GameObject m_compass;
-    [SerializeField, Tooltip("The scroll that must be shown when in 1st-person")]          private GameObject m_scroll;
+    [SerializeField, Tooltip("The scroll that must be shown when in 1st-person")]           private GameObject m_scroll;
     
     [Header("=== First/Third Person Transition Settings ===")]
     [SerializeField, Tooltip("Do we initialize the listeners on enable by default?")]                   private bool m_enableOnStart = true;
@@ -72,7 +73,7 @@ public class CameraController : MonoBehaviour
         if (!PlayerMovement.current.GetGrounded() || PlayerMovement.current.GetSliding() || PlayerMovement.current.GetVelocity().magnitude >= 2f) return;
 
         // Assuming the player movement check is satisfied, we can safely proceed
-        m_firstPersonCameraActive = true;
+        //m_firstPersonCameraActive = true;
 
         // Set the animator to show the map
         m_playerAnimator.SetBool("holdingMap", true);
@@ -112,7 +113,7 @@ public class CameraController : MonoBehaviour
 
     private void FixedUpdate() {
         // If we switched to holding the map, then we need to smooth damp the first person camear to its destination reference
-        if (m_mapInputActive && m_firstPersonCameraActive) {
+        if (m_mapInputActive) {
 
             // Purely for translating the 1st-person camera to the proper 1st-person position.
             m_firstPersonCamera.transform.position = Vector3.SmoothDamp(m_firstPersonCamera.transform.position, m_firstPersonDestination.position, ref m_firstPersonCameraVelocity, m_firstPersonSmoothingTime);
@@ -125,6 +126,9 @@ public class CameraController : MonoBehaviour
                 m_firstPersonCamera.transform.rotation = Quaternion.RotateTowards(m_firstPersonCamera.transform.rotation, m_firstPersonDestination.rotation, m_firstPersonRotationSpeed * Time.fixedDeltaTime);
             }
 
+            if (firstPersonDistance < 0.05f && !m_firstPersonCameraActive) {
+                m_firstPersonCameraActive = true;
+            }
         }
 
         // If we switched out of holding the map, then we need to move the first person camera back to the third person camera

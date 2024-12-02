@@ -447,10 +447,13 @@ MonoBehaviour:
   m_cameraController: {fileID: 0}
   m_renderers: []
   m_totalTimeToDetect: 5
+  m_mapColor: {r: 0.37878248, g: 0.39353523, b: 0.6037736, a: 1}
   m_bounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
   m_inFustrum: 0
+  m_drawnOnMap: 0
+  m_viewportPoint: {x: 0, y: 0}
   m_distToCamCenter: 0
 --- !u!1 &5837894940567149518
 GameObject:

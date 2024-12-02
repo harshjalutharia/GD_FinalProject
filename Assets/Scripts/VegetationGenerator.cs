@@ -174,7 +174,7 @@ public class VegetationGenerator : MonoBehaviour
                 m_generatedVegetation.Add(t);
 
                 // If we indicated that we wanted to add it to the held map, then we add it
-                if (toSpawn.prefab.mapRenderSize > 0) m_terrainGenerator.DrawCircleOnHeldMap(toSpawn.position.x, toSpawn.position.z, toSpawn.prefab.mapRenderSize, toSpawn.prefab.mapColor);
+                if (toSpawn.prefab.mapRenderSize > 0 && toSpawn.prefab.mapColor.a > 0f) m_terrainGenerator.DrawCircleOnHeldMap(toSpawn.position.x, toSpawn.position.z, toSpawn.prefab.mapRenderSize, toSpawn.prefab.mapColor);
                 
                 // Check if this object has a fustrum group attached. if so, initialize it too
                 FustrumGroup fg = t.GetComponent<FustrumGroup>();
