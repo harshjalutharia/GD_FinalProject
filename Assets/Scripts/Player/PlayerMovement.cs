@@ -750,6 +750,15 @@ public class PlayerMovement : MonoBehaviour
     public float GetFlightStamina() {
         return flightStamina;
     }
+
+    public float GetMaxFlightStamina()
+    {
+        return maxFlightStamina;
+    }
+    
+    public float GetMaxAccessibleFlightStamina() {
+        return maxAccessibleStamina;
+    }
     
     /*
     public bool GetHoldingMap() {

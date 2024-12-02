@@ -56,6 +56,12 @@ public class CanvasController : MonoBehaviour
     [SerializeField, Tooltip("Reference to the fps canvas group")]      private CanvasGroup m_fpsCanvasGroup;
     [SerializeField, Tooltip("Is the fps canvas active?")]              private bool m_fpsCanvasActive = false;
     public bool fpsCanvasActive => m_fpsCanvasActive;
+    
+    [Header("=== Player Stamina ===")]
+    [SerializeField, Tooltip("Reference to the Stamina canvas group")]  private CanvasGroup m_staminaCanvasGroup;
+    [SerializeField, Tooltip("Is the fps canvas active?")]              private bool m_staminaCanvasActive = false;
+    public bool staminaCanvasActive => m_staminaCanvasActive;
+    
 
     private void Awake() {
         // Set current reference
@@ -67,6 +73,7 @@ public class CanvasController : MonoBehaviour
         m_menuCanvasActive = m_menuCanvasGroup.alpha > 0f;
         m_movementCanvasActive = m_movementCanvasGroup.alpha > 0f;
         m_fpsCanvasActive = m_fpsCanvasGroup.alpha > 0f;
+        m_staminaCanvasActive = m_staminaCanvasGroup.alpha > 0f;
 
         // Enable all actions if toggled
         if (m_enableOnStart) {
@@ -142,12 +149,18 @@ public class CanvasController : MonoBehaviour
         SetCanvasGroupAlpha(m_fpsCanvasGroup, setTo);
     }
     
+    public void ToggleStamina(bool setTo) {
+        m_staminaCanvasActive = setTo;
+        SetCanvasGroupAlpha(m_staminaCanvasGroup, setTo);
+    }
+    
     public void ToggleAllCanvases(bool setTo) {
         ToggleLoadingScreen(setTo);
         ToggleWinScreen(setTo);
         ToggleMenu(setTo);
         ToggleMovement(setTo);
         ToggleFPS(setTo);
+        ToggleStamina(setTo);
     }
 
     // === STATIC CLASS FUNCTIONS === //

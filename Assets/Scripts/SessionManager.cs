@@ -167,6 +167,9 @@ public class SessionManager : MonoBehaviour
         CanvasController.current.ToggleLoadingScreen(false, false);
         CameraController.current.enabled = true;
         m_gemCamera.gameObject.SetActive(true);
+        
+        // Show the stamina UI
+        CanvasController.current.ToggleStamina(true);
 
         // Start playing BGM
         SoundManager.current.PlayBGM();
