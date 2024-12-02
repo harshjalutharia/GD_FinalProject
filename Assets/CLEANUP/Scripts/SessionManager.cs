@@ -180,7 +180,7 @@ public class SessionManager : MonoBehaviour
 
         // If a gem generator exists, toggle the view cam
         if (m_gemGenerator != null) m_gemGenerator.ToggleViewCheck(true);
-
+        StartCoroutine(PlayerMovement.current.Tutorial());
     }
 
     public void SetSeed(string newSeed) {

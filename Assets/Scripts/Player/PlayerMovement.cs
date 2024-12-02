@@ -248,6 +248,13 @@ public class PlayerMovement : MonoBehaviour
     public TextMeshProUGUI debugText1;
     public TextMeshProUGUI debugText2;
 
+    [Header("Tutorial Variables")]
+    public TutorialIconManager iconManager;
+    private bool hasMoved = false;
+    private bool hasJumped = false;
+    // private bool hasSprinted = false;
+    private bool hasMapped = false;
+
     private void Awake()
     {
         current = this;
@@ -280,8 +287,14 @@ public class PlayerMovement : MonoBehaviour
         flightActivated = false;
         paraglidingActivated = false;
         sprintActivated = true;
-        
-
+        if (iconManager == null)
+        {
+            iconManager = GetComponentInChildren<TutorialIconManager>();
+            if (iconManager == null)
+            {
+                Debug.LogWarning("TutorialIconManager not assigned in PlayerMovement!");
+            }
+        }
     }
 
     private void Update()
@@ -416,6 +429,7 @@ public class PlayerMovement : MonoBehaviour
             horizontalInput = 0;
             verticalInput = 0;
             sprinting = false;
+            if (hasMoved && hasJumped) hasMapped = true;
             //keepSprint = false;
             return;
         }
@@ -427,21 +441,65 @@ public class PlayerMovement : MonoBehaviour
         Vector2 movement2D = directionInput.ReadValue<Vector2>();
         horizontalInput = movement2D.x;
         verticalInput = movement2D.y;
-        
-        
+
+        if (!hasMoved && (horizontalInput != 0 || verticalInput != 0))
+        {
+            hasMoved = true;
+        }
+
         // update the sprinting state
         if (sprintActivated && grounded && sprinting && moveDirection.magnitude > 0.02f && !sliding)
         {
             sprinting = flightStamina > 0;  // end sprinting if stamina less than 0
+            // hasSprinted = true;
         }
         else
         {
             sprinting = false;
         }
+
+
         
     }
 
-    
+    public IEnumerator Tutorial()
+    {
+        iconManager.ShowMoveIcon();
+        while (!hasMoved)
+        {
+            Debug.Log("Use movement controls to move around.");
+            yield return new WaitForSeconds(1f);
+        }
+        iconManager.HideIcon();
+
+        // Step 2: Jump
+        iconManager.ShowJumpIcon();
+        while (!hasJumped)
+        {
+            Debug.Log("Press the jump button to jump.");
+            yield return new WaitForSeconds(1f);
+        }
+        iconManager.HideIcon();
+
+        // Step 3: Sprint
+        /*while (!hasSprinted)
+        {
+            Debug.Log("Hold the sprint button to sprint.");
+            yield return new WaitForSeconds(1f);
+        }*/
+        iconManager.ShowMapIcon();
+        while (!hasMapped)
+        {
+            Debug.Log("Open the map.");
+            yield return new WaitForSeconds(1f);
+        }
+        iconManager.HideIcon();
+        // Tutorial complete
+        Debug.Log("Tutorial complete!");
+    }
+
+
+
     //------------------ Event for the inputs---------------------
     // event of jump input triggered
     private void OnJumpInput(InputAction.CallbackContext ctx)
@@ -591,7 +649,7 @@ public class PlayerMovement : MonoBehaviour
     private void Jump()
     {
         animationVars.requestJump = false;
-        
+        if (hasMoved) hasJumped = true;
         flightStamina -= jumpStaminaConsume;
         flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
         // reset y velocity
@@ -801,6 +859,7 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForFixedUpdate();
         rb.isKinematic = false;
         maxAccessibleStamina += GetGemCount() * staminaPerGem;
+        // StartCoroutine(Tutorial());
     }
 
 
