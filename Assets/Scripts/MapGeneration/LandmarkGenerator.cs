@@ -165,8 +165,8 @@ public class LandmarkGenerator : MonoBehaviour
         if (m_landmarkParent == null) m_landmarkParent = this.transform;
 
         // Pre-calculate the x_size and z_size of the provided terrain map
-        float x_size = (float)terrainMap.noiseMap.GetLength(0) / 2;
-        float z_size = (float)terrainMap.noiseMap.GetLength(1) / 2;
+        float x_size = (float)terrainMap.noiseMap.GetLength(0)-1;
+        float z_size = (float)terrainMap.noiseMap.GetLength(1)-1;
 
         // Clear our previous existing list of landmarks, if they exist.
         ClearLandmarks();
@@ -859,7 +859,7 @@ public class LandmarkGenerator : MonoBehaviour
     // Generates spawn points in a circle around a location
     private List<SpawnPoint> GenerateSpawnPoints(Vector3 location, List<Vector3> checkPoints, float minimumDistance, NoiseMap terrainMap, float x_size, float z_size)
     {
-        float spawnBorderPadding = x_size * edgePadding * 2;
+        float spawnBorderPadding = x_size * edgePadding;
         List<SpawnPoint> spawnLocations = new List<SpawnPoint>();
         double angle = 0;
         while (angle < 2 * Math.PI)
@@ -870,8 +870,9 @@ public class LandmarkGenerator : MonoBehaviour
             z += location.z + Random.Range(-randomizationFactor, randomizationFactor);
 
             // If new point is within bounds of map
-            if (x < x_size - spawnBorderPadding && x > -x_size + spawnBorderPadding && z < z_size - spawnBorderPadding && z > -z_size + spawnBorderPadding)
+            if (x < x_size - spawnBorderPadding && x > spawnBorderPadding && z < z_size - spawnBorderPadding && z > spawnBorderPadding)
             {
+                Debug.Log($"Possible spawn: {x},{z}");
                 float y = terrainMap.QueryHeightAtWorldPos((float)x, (float)z, out int gridX, out int gridY);
                 float yNoise = terrainMap.QueryNoiseAtWorldPos((float)x, (float)z, out gridX, out gridY);
 

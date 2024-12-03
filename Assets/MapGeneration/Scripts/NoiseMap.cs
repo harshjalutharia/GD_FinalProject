@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 using System.Linq;
 
 public class NoiseMap : MonoBehaviour
@@ -53,6 +54,8 @@ public class NoiseMap : MonoBehaviour
     [SerializeField, Tooltip("The Mesh Renderer component.")]                                                               protected MeshRenderer m_renderer;
     [SerializeField, Tooltip("The Mesh Collider component.")]                                                               protected MeshCollider m_collider;
     [SerializeField, Tooltip("The Mesh Renderer for the held map.")]                                                        protected MeshRenderer m_heldRenderer;
+    [SerializeField, Tooltip("The UI Raw Image element for presenting on a canvas")]                                        protected RawImage m_canvasImage;
+    [SerializeField, Tooltip("The Held Map component that we pass the texture to")]                                         protected HeldMap m_heldMap;
     [SerializeField, Tooltip("If set, will replace the materials in the Mesh Renderer and Collider with this material.")]   protected Material m_meshMaterial;
 
     [Header("=== Global Render Settings ===")]
@@ -222,11 +225,16 @@ public class NoiseMap : MonoBehaviour
 
         for(int y = 0; y < height; y+=meshSimplificationIncrement) {
             for(int x = 0; x < width; x+=meshSimplificationIncrement) {
-                meshData.vertices[vertexIndex] = new Vector3(topLeftX + x, mapData[x,y], topLeftZ - y);
+                //meshData.vertices[vertexIndex] = new Vector3(topLeftX + x, mapData[x,y], topLeftZ - y);
+                meshData.vertices[vertexIndex] = new Vector3(x, mapData[x,y], y);
                 meshData.uvs[vertexIndex] = new Vector2(x/(float)width, y/(float)height);
                 if (x < m_mapChunkSize-1 && y < m_mapChunkSize-1) {
+                    /*
                     meshData.AddTriangle(vertexIndex, vertexIndex+verticesPerLine+1, vertexIndex+verticesPerLine);
                     meshData.AddTriangle(vertexIndex+verticesPerLine+1, vertexIndex, vertexIndex+1);
+                    */
+                    meshData.AddTriangle(vertexIndex, vertexIndex+verticesPerLine, vertexIndex+verticesPerLine+1);
+                    meshData.AddTriangle(vertexIndex+verticesPerLine+1, vertexIndex+1, vertexIndex);
                 }
                 vertexIndex++;
             }
@@ -305,30 +313,58 @@ public class NoiseMap : MonoBehaviour
         if (texture != null) {
             if (m_renderer != null)     m_renderer.sharedMaterial.mainTexture = texture;
             if (m_heldRenderer != null) m_heldRenderer.sharedMaterial.mainTexture = Generators.FlipTextureHorizontally(texture);
+            if (m_canvasImage != null) m_canvasImage.texture = Generators.FlipTextureHorizontally(texture);
+            if (m_heldMap != null) m_heldMap.SetMapGroupTexture("Terrain", texture);
         }
     }
 
     public virtual void DrawCircleOnHeldMap(int x, int y, int radius, Color color) {
-        if (m_heldRenderer == null) return;
-        Texture2D original = (Texture2D)m_heldRenderer.sharedMaterial.mainTexture;
-        m_heldRenderer.sharedMaterial.mainTexture = Generators.DrawCircleOnTexture(original, x, y, radius, color);
+        Texture2D original, modified;
+        if (m_heldRenderer != null) {
+            original = (Texture2D)m_heldRenderer.sharedMaterial.mainTexture;
+            modified = Generators.DrawCircleOnTexture(original, x, y, radius, color);
+            m_heldRenderer.sharedMaterial.mainTexture = modified;
+        }
+        if (m_heldMap != null && m_heldMap.TryGetMapGroup("Gems", out HeldMap.MapGroup group)) {
+            group.AddCircleToTexture(x,y,radius,color);
+        }
     }
     public virtual void DrawCircleOnHeldMap(float x, float z, int radius, Color color) {
-        if (m_heldRenderer == null) return;
-        Vector2Int coords = QueryCoordsAtWorldPos(x, z, true);
-        Texture2D original = (Texture2D)m_heldRenderer.sharedMaterial.mainTexture;
-        m_heldRenderer.sharedMaterial.mainTexture = Generators.DrawCircleOnTexture(original, coords.x, coords.y, radius, color);
+        Texture2D original, modified;
+        Vector2Int coords;
+        if (m_heldRenderer != null) {
+            coords = QueryCoordsAtWorldPos(x, z, true);
+            original = (Texture2D)m_heldRenderer.sharedMaterial.mainTexture;
+            modified = Generators.DrawCircleOnTexture(original, coords.x, coords.y, radius, color);
+            m_heldRenderer.sharedMaterial.mainTexture = modified;
+        }
+        if (m_heldMap != null && m_heldMap.TryGetMapGroup("Gems", out HeldMap.MapGroup group)) {
+            coords = QueryCoordsAtWorldPos(x, z, false, false);
+            group.AddCircleToTexture(coords.x, coords.y, radius, color);
+        }
     }
     public virtual void DrawBoxOnHeldMap(float x, float z, float minX, float minZ, float maxX, float maxZ, Color color) {
-        if (m_heldRenderer == null) return;
-        Vector2Int coords = QueryCoordsAtWorldPos(x, z, true);
-        Vector2Int minCoords = QueryCoordsAtWorldPos(minX, minZ, true);
-        Vector2Int maxCoords = QueryCoordsAtWorldPos(maxX, maxZ, true);
-        int w = Mathf.Abs(maxCoords.x - minCoords.x);
-        int h = Mathf.Abs(maxCoords.y - minCoords.y);
-        Debug.Log($"Drawing box at {coords.x},{coords.y} with w={w}, h={h}");
-        Texture2D original = (Texture2D)m_heldRenderer.sharedMaterial.mainTexture;
-        m_heldRenderer.sharedMaterial.mainTexture = Generators.DrawBoxOnTexture(original, coords.x, coords.y, w, h, color);
+        Texture2D original, modified;
+        Vector2Int coords, minCoords, maxCoords;
+        int w,h;
+        if (m_heldRenderer != null) {
+            coords = QueryCoordsAtWorldPos(x, z, true);
+            minCoords = QueryCoordsAtWorldPos(minX, minZ, true);
+            maxCoords = QueryCoordsAtWorldPos(maxX, maxZ, true);
+            w = Mathf.Abs(maxCoords.x - minCoords.x);
+            h = Mathf.Abs(maxCoords.y - minCoords.y);
+            original = (Texture2D)m_heldRenderer.sharedMaterial.mainTexture;
+            modified = Generators.DrawBoxOnTexture(original, coords.x, coords.y, w, h, color);
+            m_heldRenderer.sharedMaterial.mainTexture = modified;
+        }
+        if (m_heldMap != null && m_heldMap.TryGetMapGroup("Landmarks", out HeldMap.MapGroup group)) {
+            coords = QueryCoordsAtWorldPos(x, z, false, false);
+            minCoords = QueryCoordsAtWorldPos(minX, minZ, false, false);
+            maxCoords = QueryCoordsAtWorldPos(maxX, maxZ, false, false);
+            w = Mathf.Abs(maxCoords.x - minCoords.x);
+            h = Mathf.Abs(maxCoords.y - minCoords.y);
+            group.AddBoxToTexture(coords.x, coords.y, w, h, color);
+        }
     }
 
     public virtual Vector2 GetMapExtents() {
@@ -373,41 +409,31 @@ public class NoiseMap : MonoBehaviour
         float mapWidth = (float)m_mapChunkSize - 1f;
         float mapExtent = mapWidth / 2f;
 
-        float worldX = (float)x - mapExtent;
+        float worldX = (float)x;
         float worldY = m_heightMap[x,y];
-        float worldZ = mapWidth - (float)y - mapExtent;
+        float worldZ = (float)y;
 
         worldPosition = new Vector3(worldX, worldY, worldZ);
         return worldY;
     }
 
     public virtual float QueryHeightAtWorldPos(float worldX, float worldZ, out int x, out int y) {
-        Vector3 worldPos = new Vector3(worldX, transform.position.y, worldZ) - transform.position;
-        float mapWidth = (float)m_mapChunkSize - 1f;
-        float mapExtent = mapWidth / 2f;
-
-        x = Mathf.Clamp(Mathf.RoundToInt(worldPos.x + mapExtent), 0, m_mapChunkSize-1);
-        y = Mathf.Clamp(Mathf.RoundToInt(worldPos.z + mapExtent - mapWidth)*-1, 0, m_mapChunkSize-1);
+        x = Mathf.Clamp(Mathf.RoundToInt(worldX), 0, m_mapChunkSize-1);
+        y = Mathf.Clamp(Mathf.RoundToInt(worldZ), 0, m_mapChunkSize-1);
         return m_heightMap[x,y];
     }
 
     public virtual float QueryNoiseAtCoords(int x, int y, out Vector3 worldPosition) {
-        float mapWidth = (float)m_mapChunkSize - 1f;
-        float mapExtent = mapWidth / 2f;
-
-        float noiseX = (float)x - mapExtent;
+        float noiseX = (float)x;
         float noiseY = m_noiseMap[x,y];
-        float noiseZ = mapWidth - (float)y - mapExtent;
+        float noiseZ = (float)y;
 
         worldPosition = new Vector3(noiseX, noiseY, noiseZ);
         return noiseY;
     }
     public virtual float QueryNoiseAtWorldPos(float worldX, float worldZ, out int x, out int y) {
-        float mapWidth = (float)m_mapChunkSize - 1f;
-        float mapExtent = mapWidth / 2f;
-
-        x = Mathf.Clamp(Mathf.RoundToInt(worldX + mapExtent), 0, m_mapChunkSize-1);
-        y = Mathf.Clamp(Mathf.RoundToInt(worldZ + mapExtent - mapWidth)*-1, 0, m_mapChunkSize-1);
+        x = Mathf.Clamp(Mathf.RoundToInt(worldX), 0, m_mapChunkSize-1);
+        y = Mathf.Clamp(Mathf.RoundToInt(worldZ), 0, m_mapChunkSize-1);
         return m_noiseMap[x,y];
     }
 
@@ -448,12 +474,11 @@ public class NoiseMap : MonoBehaviour
         return regionIndex;
     }
 
-    public virtual Vector2Int QueryCoordsAtWorldPos(float worldX, float worldZ, bool flipX=false) {
-        float mapWidth = (float)m_mapChunkSize - 1f;
-        float mapExtent = mapWidth / 2f;
-        int x = Mathf.Clamp(Mathf.RoundToInt(worldX + mapExtent), 0, m_mapChunkSize-1);
+    public virtual Vector2Int QueryCoordsAtWorldPos(float worldX, float worldZ, bool flipX=false, bool flipY=false) {
+        int x = Mathf.Clamp(Mathf.RoundToInt(worldX), 0, m_mapChunkSize-1);
+        int y = Mathf.Clamp(Mathf.RoundToInt(worldZ), 0, m_mapChunkSize-1);
         if (flipX) x = (m_mapChunkSize-1) - x;
-        int y = Mathf.Clamp(Mathf.RoundToInt(worldZ + mapExtent - mapWidth)*-1, 0, m_mapChunkSize-1);
+        if (flipY) y = (m_mapChunkSize-1) - y;
         return new Vector2Int(x,y);
     }
 
@@ -462,15 +487,12 @@ public class NoiseMap : MonoBehaviour
         return QueryMapNormalAtWorldPos(worldX, worldZ, queryMask, out x, out y, out worldY);
     }
     public virtual Vector3 QueryMapNormalAtWorldPos(float worldX, float worldZ, LayerMask mask, out int x, out int y, out float worldY) {
-        float mapWidth = (float)m_mapChunkSize - 1f;
-        float mapExtent = mapWidth / 2f;
-
-        x = Mathf.Clamp(Mathf.RoundToInt(worldX + mapExtent), 0, m_mapChunkSize-1);
-        y = Mathf.Clamp(Mathf.RoundToInt(worldZ + mapExtent - mapWidth)*-1, 0, m_mapChunkSize-1);
+        x = Mathf.Clamp(Mathf.RoundToInt(worldX), 0, m_mapChunkSize-1);
+        y = Mathf.Clamp(Mathf.RoundToInt(worldZ), 0, m_mapChunkSize-1);
         worldY = m_heightMap[x,y];
-        Vector3 rayStart = new Vector3(worldX, worldY+1f, worldZ);
 
-        if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 2f, mask)) return hit.normal;
+        Vector3 rayStart = new Vector3(worldX, 100f, worldZ);
+        if (Physics.Raycast(rayStart, Vector3.down, out RaycastHit hit, 100f, mask)) return hit.normal;
 
         // If nothing else, return up
         return Vector3.up;
