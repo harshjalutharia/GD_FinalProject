@@ -131,7 +131,7 @@ MonoBehaviour:
   - {x: 7.928779, y: 8.440001, z: -9.424806}
   - {x: -8.648779, y: 8.440001, z: 3.5048056}
   - {x: 10.145071, y: 8.440001, z: -3.3355985}
-  drawGizmos: 0
+  drawGizmos: 1
 --- !u!1 &638402862468592513
 GameObject:
   m_ObjectHideFlags: 0
