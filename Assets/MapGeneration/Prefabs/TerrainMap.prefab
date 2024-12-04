@@ -55,6 +55,8 @@ MonoBehaviour:
   m_renderer: {fileID: 0}
   m_collider: {fileID: 0}
   m_heldRenderer: {fileID: 0}
+  m_canvasImage: {fileID: 0}
+  m_heldMap: {fileID: 0}
   m_meshMaterial: {fileID: 2100000, guid: 93f0a9e875fee304ba30662d9f49fc2f, type: 2}
   m_drawMode: 0
   m_textureFilterMode: 0
@@ -151,6 +153,9 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  m_onGenerationEnd:
+    m_PersistentCalls:
+      m_Calls: []
   m_heightRange:
     min: 0.19149517
     max: 0.85319394
@@ -1727,6 +1732,8 @@ MonoBehaviour:
   m_renderer: {fileID: 0}
   m_collider: {fileID: 0}
   m_heldRenderer: {fileID: 0}
+  m_canvasImage: {fileID: 0}
+  m_heldMap: {fileID: 0}
   m_meshMaterial: {fileID: 2100000, guid: 9cfa5c2eca410114c8e3fdd94e4f57fa, type: 2}
   m_drawMode: 0
   m_textureFilterMode: 0
@@ -1863,6 +1870,9 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
+  m_onGenerationEnd:
+    m_PersistentCalls:
+      m_Calls: []
   m_heightRange:
     min: 0
     max: 30
@@ -1930,6 +1940,8 @@ MonoBehaviour:
   m_renderer: {fileID: 0}
   m_collider: {fileID: 0}
   m_heldRenderer: {fileID: 0}
+  m_canvasImage: {fileID: 0}
+  m_heldMap: {fileID: 0}
   m_meshMaterial: {fileID: 2100000, guid: c220406a34a551149818fdbd23d157a3, type: 2}
   m_drawMode: 0
   m_textureFilterMode: 0
@@ -2026,6 +2038,9 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  m_onGenerationEnd:
+    m_PersistentCalls:
+      m_Calls: []
   m_heightRange:
     min: 0
     max: 111.89008
@@ -2096,6 +2111,8 @@ MonoBehaviour:
   m_renderer: {fileID: 0}
   m_collider: {fileID: 0}
   m_heldRenderer: {fileID: 0}
+  m_canvasImage: {fileID: 0}
+  m_heldMap: {fileID: 0}
   m_meshMaterial: {fileID: 2100000, guid: 40a76a25fe4121a4baef1e37f014ff37, type: 2}
   m_drawMode: 0
   m_textureFilterMode: 0
@@ -2163,6 +2180,9 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  m_onGenerationEnd:
+    m_PersistentCalls:
+      m_Calls: []
   m_heightRange:
     min: 0
     max: 1
@@ -2307,6 +2327,8 @@ MonoBehaviour:
   m_renderer: {fileID: 6981560625261199475}
   m_collider: {fileID: 8064151537551963733}
   m_heldRenderer: {fileID: 0}
+  m_canvasImage: {fileID: 0}
+  m_heldMap: {fileID: 0}
   m_meshMaterial: {fileID: 2100000, guid: 3bccfe2562dd7754b92b7f246f454412, type: 2}
   m_drawMode: 0
   m_textureFilterMode: 0
@@ -2410,6 +2432,9 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  m_onGenerationEnd:
+    m_PersistentCalls:
+      m_Calls: []
   m_heightRange:
     min: 0
     max: 1
@@ -3986,6 +4011,8 @@ MonoBehaviour:
   m_renderer: {fileID: 0}
   m_collider: {fileID: 0}
   m_heldRenderer: {fileID: 0}
+  m_canvasImage: {fileID: 0}
+  m_heldMap: {fileID: 0}
   m_meshMaterial: {fileID: 2100000, guid: d0af5845f358ab44e886f225b9516e74, type: 2}
   m_drawMode: 0
   m_textureFilterMode: 0
@@ -4053,6 +4080,9 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  m_onGenerationEnd:
+    m_PersistentCalls:
+      m_Calls: []
   m_heightRange:
     min: 0
     max: 1
@@ -4194,7 +4224,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_seed: 0
   m_dimensions: {x: 100, y: 100}
-  m_mapChunkSize: 401
+  m_mapChunkSize: 501
   m_levelOfDetail: 1
   m_offset: {x: 0, y: 0}
   m_normalizeMode: 0
@@ -4203,6 +4233,8 @@ MonoBehaviour:
   m_renderer: {fileID: 5229846673049051188}
   m_collider: {fileID: 1903497957913835595}
   m_heldRenderer: {fileID: 0}
+  m_canvasImage: {fileID: 0}
+  m_heldMap: {fileID: 0}
   m_meshMaterial: {fileID: 2100000, guid: 217fde7098daa504c8fc91ac7824bda1, type: 2}
   m_drawMode: 3
   m_textureFilterMode: 0
@@ -4299,6 +4331,9 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  m_onGenerationEnd:
+    m_PersistentCalls:
+      m_Calls: []
   m_heightRange:
     min: 0
     max: 112.91925
@@ -4381,6 +4416,8 @@ MonoBehaviour:
   m_renderer: {fileID: 0}
   m_collider: {fileID: 0}
   m_heldRenderer: {fileID: 0}
+  m_canvasImage: {fileID: 0}
+  m_heldMap: {fileID: 0}
   m_meshMaterial: {fileID: 2100000, guid: 021db879a78de5747bec5868faa8cdb4, type: 2}
   m_drawMode: 0
   m_textureFilterMode: 0
@@ -4477,6 +4514,9 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  m_onGenerationEnd:
+    m_PersistentCalls:
+      m_Calls: []
   m_heightRange:
     min: 0
     max: 31.771656
@@ -4625,6 +4665,8 @@ MonoBehaviour:
   m_renderer: {fileID: 1741872052031213021}
   m_collider: {fileID: 1099124857006548736}
   m_heldRenderer: {fileID: 0}
+  m_canvasImage: {fileID: 0}
+  m_heldMap: {fileID: 0}
   m_meshMaterial: {fileID: 2100000, guid: 96217eeea4bcf1a459166e280baa2f81, type: 2}
   m_drawMode: 0
   m_textureFilterMode: 0
@@ -4721,6 +4763,9 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  m_onGenerationEnd:
+    m_PersistentCalls:
+      m_Calls: []
   m_heightRange:
     min: 0
     max: 34.835964
@@ -4794,10 +4839,12 @@ MonoBehaviour:
   m_renderer: {fileID: 0}
   m_collider: {fileID: 0}
   m_heldRenderer: {fileID: 0}
+  m_canvasImage: {fileID: 0}
+  m_heldMap: {fileID: 0}
   m_meshMaterial: {fileID: 2100000, guid: f16db0cbcb3fffd43a9fdcaa004d9510, type: 2}
   m_drawMode: 0
   m_textureFilterMode: 0
-  m_textureHeightMultiplier: 10
+  m_textureHeightMultiplier: 5
   m_textureHeightCurve:
     serializedVersion: 2
     m_Curve:
@@ -4903,6 +4950,9 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
+  m_onGenerationEnd:
+    m_PersistentCalls:
+      m_Calls: []
   m_heightRange:
     min: 0
     max: 10

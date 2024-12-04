@@ -125,6 +125,9 @@ public class GemGenerator : MonoBehaviour
                 isDestination=false
             };
             m_gemData.Add(generatedGem, newGem);
+
+            // Add this gem to the map
+            AddSmallGemToMap(pos);
         }     
 
         // Events to call when small gems are generated
@@ -162,6 +165,9 @@ public class GemGenerator : MonoBehaviour
         };
         m_gemData.Add(m_destinationGem, destinationData);
 
+        // Add destination gem to map
+        AddDestinationGemToMap(pos);
+
         // Events to call when finished
         m_onDestinationGemGenerationEnd?.Invoke();
     }
@@ -194,12 +200,20 @@ public class GemGenerator : MonoBehaviour
     }
 
     public void AddSmallGemToMap(Vector3 pos) {
+        /*
         m_terrainGenerator.DrawCircleOnHeldMap(pos.x, pos.z, m_smallGemMapSize+1, Color.black);
         m_terrainGenerator.DrawCircleOnHeldMap(pos.x, pos.z, m_smallGemMapSize, m_smallGemMapColor);
+        */
+        HeldMap.current.TryAddCircleToMap("Gems", pos, m_smallGemMapSize+1, Color.black);
+        HeldMap.current.TryAddCircleToMap("Gems", pos, m_smallGemMapSize, m_smallGemMapColor);
     }
     public void AddDestinationGemToMap(Vector3 pos) {
+        /*
         m_terrainGenerator.DrawCircleOnHeldMap(pos.x, pos.z, m_destGemMapSize+1, Color.black);
         m_terrainGenerator.DrawCircleOnHeldMap(pos.x, pos.z, m_destGemMapSize, m_destGemMapColor);
+        */
+        HeldMap.current.TryAddCircleToMap("Gems", pos, m_destGemMapSize+1, Color.black);
+        HeldMap.current.TryAddCircleToMap("Gems", pos, m_destGemMapSize, m_destGemMapColor);
     }
 
     public void CollectSmallGemToMap(Vector3 pos) {

@@ -13,8 +13,10 @@ public class CameraController : MonoBehaviour
     [SerializeField, Tooltip("The loading camera reference.")]      private Camera m_loadingCamera;
     [SerializeField, Tooltip("The 3rd-person camera reference.")]   private Camera m_thirdPersonCamera;
     [SerializeField, Tooltip("The 1st-person camera reference")]    private Camera m_firstPersonCamera;
+    [SerializeField, Tooltip("The map camera for minimap")]         private Camera m_mapCamera;
     public Camera firstPersonCamera => m_firstPersonCamera;
     public Camera currentCamera => m_mapInputActive ? m_firstPersonCamera : m_thirdPersonCamera;
+    public Camera mapCamera => m_mapCamera;
     [Space]
     [SerializeField, Tooltip("The hand-held map that must be shown when in 1st-person")]    private GameObject m_heldMap;
     [SerializeField, Tooltip("The compass that must be shown when in 1st-person")]          private GameObject m_compass;
@@ -58,6 +60,7 @@ public class CameraController : MonoBehaviour
         ToggleThirdPersonCamera(true, true);
         ToggleFirstPersonCamera(true, false);
         ToggleLoadingCamera(false, false);
+        ToggleMapCamera(true, true);
         // Set the references. We attach listeners to each action reference
         m_mapInputActive = false;
         m_firstPersonCameraActive = false;
@@ -174,6 +177,10 @@ public class CameraController : MonoBehaviour
     public void ToggleFirstPersonCamera(bool active, bool enabled) {
         m_firstPersonCamera.gameObject.SetActive(active);
         m_firstPersonCamera.enabled = enabled;
+    }
+    public void ToggleMapCamera(bool active, bool enabled) {
+        m_mapCamera.gameObject.SetActive(active);
+        m_mapCamera.enabled = enabled;
     }
 
     private void OnDisable() {

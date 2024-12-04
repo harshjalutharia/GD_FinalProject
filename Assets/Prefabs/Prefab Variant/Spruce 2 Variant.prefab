@@ -99,13 +99,55 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3731095390187986728, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6915151178105236374}
   m_SourcePrefab: {fileID: 100100000, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
 --- !u!23 &1154921488085372921 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1885280820132006513, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
   m_PrefabInstance: {fileID: 733741576917353864}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4172942871073692320 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3731095390187986728, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+  m_PrefabInstance: {fileID: 733741576917353864}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6915151178105236374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4172942871073692320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a31377be259019f4d8cc9bca28948273, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_numPoints: 15
+  m_radius: 10
+  m_pivotPoint: {x: 0, y: 0, z: 0}
+  m_renderCamera: {fileID: 0}
+  m_points:
+  - {x: 0, y: 0, z: 10}
+  - {x: 4.0673666, y: 0, z: 9.135454}
+  - {x: 7.431448, y: 0, z: 6.6913056}
+  - {x: 9.510566, y: 0, z: 3.09017}
+  - {x: 9.945219, y: 0, z: -1.0452855}
+  - {x: 8.660254, y: 0, z: -5.000001}
+  - {x: 5.8778524, y: 0, z: -8.090171}
+  - {x: 2.079116, y: 0, z: -9.781476}
+  - {x: -2.0791178, y: 0, z: -9.781476}
+  - {x: -5.877852, y: 0, z: -8.090171}
+  - {x: -8.660255, y: 0, z: -5}
+  - {x: -9.94522, y: 0, z: -1.0452843}
+  - {x: -9.510565, y: 0, z: 3.0901718}
+  - {x: -7.4314475, y: 0, z: 6.691307}
+  - {x: -4.0673647, y: 0, z: 9.135455}
+  m_drawGizmos: 1
+  m_pointColor: {r: 0, g: 0, b: 1, a: 1}
 --- !u!23 &7493470600646546656 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 7913072882568581480, guid: 04054a3651be51d4193414f850cf6bde, type: 3}

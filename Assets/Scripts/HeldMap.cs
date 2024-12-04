@@ -11,20 +11,19 @@ public class HeldMap : MonoBehaviour
     [System.Serializable]
     public class MapGroup {
         public string name;
-        public int width, height;
         public FilterMode filterMode;
         public TextureWrapMode wrapMode;
         public Color baseColor = Color.clear;
         [Space]
-        public Renderer renderer;
-        public RawImage image;
-        public Material material;
-        public Texture2D texture;
+        // public Renderer renderer;
+        public List<RawImage> images = new List<RawImage>();
+        //[HideInInspector] public Material material;
+        [HideInInspector] public Texture2D texture;
         
         public void SetTexture(Texture2D texture) {
             this.texture = texture;
-            if (this.renderer != null)  this.renderer.sharedMaterial.mainTexture = FlipTexture(texture, true, true);
-            if (this.image != null)     this.image.texture = texture;
+            //if (this.renderer != null)  this.renderer.sharedMaterial.mainTexture = FlipTexture(texture, true, true);
+            foreach(RawImage image in this.images) image.texture = texture;
         }
 
         public void AddCircleToTexture(int x, int y, int radius, Color color) {
@@ -39,8 +38,8 @@ public class HeldMap : MonoBehaviour
             }
             this.texture.Apply();
 
-            if (this.renderer != null) this.renderer.sharedMaterial.mainTexture = FlipTexture(this.texture, true, true);
-            if (this.image != null) this.image.texture = this.texture;
+            //if (this.renderer != null) this.renderer.sharedMaterial.mainTexture = FlipTexture(this.texture, true, true);
+            foreach(RawImage image in this.images) image.texture = this.texture;
         }
         public void AddCircleToTexture(float x, float y, float radius, Color color) {
             this.AddCircleToTexture(Mathf.RoundToInt(x), Mathf.RoundToInt(y), Mathf.RoundToInt(radius), color);
@@ -50,8 +49,8 @@ public class HeldMap : MonoBehaviour
         }
 
         public void AddBoxToTexture(int x, int y, int w, int h, Color color) {
-            var width = this.texture.width;
-            var rows = this.texture.height;
+            int width = this.texture.width;
+            int rows = this.texture.height;
     
             for (int u = x - w; u < x + w + 1; u++) {
                 for (int v = y - h; v < y + h + 1; v++) {
@@ -60,17 +59,35 @@ public class HeldMap : MonoBehaviour
             }
             this.texture.Apply();
 
-            if (this.renderer != null) this.renderer.sharedMaterial.mainTexture = FlipTexture(this.texture, true, true);
-            if (this.image != null) this.image.texture = this.texture;
+            //if (this.renderer != null) this.renderer.sharedMaterial.mainTexture = FlipTexture(this.texture, true, true);
+            foreach (RawImage image in this.images) image.texture = this.texture;
         }
     }
 
     [Header("=== Global settings ===")]
-    [SerializeField, Tooltip("The material used as a baseline")]        private Material m_baseMaterial;
+    [SerializeField, Tooltip("Output texture width")]   private int m_width;
+    [SerializeField, Tooltip("Output texture height")]  private int m_height;
+    //[SerializeField, Tooltip("The material used as a baseline")]    private Material m_baseMaterial;
+    [SerializeField, Tooltip("The canvas parent of all images")]    private RectTransform m_imageParent;
+    private Vector2 m_pivotPosition;
+    
+
+    [Header("=== Smoothdamp Lerp ===")]
+    [SerializeField, Tooltip("Should we lerp the images with respect to the player's speed?")]  private bool m_lerpWithPlayerSpeed = true;
+    [SerializeField, Tooltip("Animation curve to control the position of the image parent w.r.t. speed")]   private AnimationCurve m_lerpCurve;
+    [SerializeField, Tooltip("The max speed threshold to consider for the lerp")]   private float m_maxLerpSpeed = 15f;
+    [SerializeField, Tooltip("Because Player Movement hides everything aobut speed, we need to check ourselves")]    private Rigidbody m_playerRigidbody;
+    [SerializeField, Tooltip("Smoother transition by weighted averaging between previous speed and current speed. 0 = previous speed, 1 = current speed"), Range(0f,1f)]    private float m_lerpWeight = 0.5f;
+    private float m_prevRatio = 0f;
+
+    [Header("=== Rotation ===")]
+    [SerializeField, Tooltip("Should the map rotate to always point in the same direction as the player's orientation?")]   private bool m_rotateWithPlayer = false;
+    [SerializeField, Tooltip("The transform reference that represents the forward direction")]                              private Transform m_forwardRef;
 
     [Header("=== Maps ===")]
     [SerializeField, Tooltip("The list of maps we want to render")] private List<MapGroup> m_mapGroups;
     private Dictionary<string, MapGroup> m_groupDictionary;
+    private List<RawImage> m_images;
 
     private void Awake() {
         current = this;
@@ -79,25 +96,46 @@ public class HeldMap : MonoBehaviour
     private void OnEnable() {
         // Set up the dictionary that stores all our map groups for reference
         m_groupDictionary = new Dictionary<string, MapGroup>();
+        m_images = new List<RawImage>();
+
+        // Get the pivot position of the parent of the images
+        m_pivotPosition = m_imageParent.anchoredPosition;
 
         foreach(MapGroup group in m_mapGroups) {
             if (!m_groupDictionary.ContainsKey(group.name)) {
                 m_groupDictionary.Add(group.name, group);
                 InitializeMapGroup(group);
+                m_images.AddRange(group.images);
             }
         }
     }
 
     private void InitializeMapGroup(MapGroup group) {
         // Initialize material and texture
-        group.material = new Material(m_baseMaterial);
-        group.texture = GenerateColorTexture(group.width, group.height, group.baseColor, group.filterMode, group.wrapMode);
+        //group.material = new Material(m_baseMaterial);
+        group.texture = GenerateColorTexture(m_width, m_height, group.baseColor, group.filterMode, group.wrapMode);
         // Populate renderer and image, if present
+        /*
         if (group.renderer != null) {
             group.renderer.sharedMaterial = group.material;
             group.renderer.sharedMaterial.mainTexture = group.texture;
         }
-        if (group.image != null) group.image.texture = group.texture;
+        */
+        if (group.images.Count > 0) foreach(RawImage image in group.images) image.texture = group.texture;
+    }
+
+    private void LateUpdate() {
+        if (m_lerpWithPlayerSpeed) {
+            Vector2 horizontalVelocity = new Vector2(m_playerRigidbody.velocity.x, m_playerRigidbody.velocity.z);
+            float currentSpeed = horizontalVelocity.magnitude;
+            float currentRatio = m_lerpCurve.Evaluate(currentSpeed/m_maxLerpSpeed);
+            m_imageParent.anchoredPosition = Vector2.Lerp(m_pivotPosition, Vector2.zero, currentRatio*m_lerpWeight + m_prevRatio*(1f-m_lerpWeight));
+            m_prevRatio = currentRatio;
+        }
+        if (m_rotateWithPlayer) {
+            Quaternion rotation = Quaternion.Euler(0f, 0f, Vector3.SignedAngle(Vector3.forward, m_forwardRef.forward, Vector3.up));
+            foreach(RawImage image in m_images) image.rectTransform.rotation = rotation;
+        }
     }
 
     public void SetMapGroupTexture(string groupName, Texture2D texture) {
@@ -114,6 +152,15 @@ public class HeldMap : MonoBehaviour
             return false;
         }
         group = m_groupDictionary[groupName];
+        return true;
+    }
+
+    public bool TryAddCircleToMap(string groupName, Vector3 position, int radius, Color color) {
+        if (!m_groupDictionary.ContainsKey(groupName)) {
+            Debug.Log($"Cannot add circle to group {groupName}");
+            return false;
+        }
+        m_groupDictionary[groupName].AddCircleToTexture(position.x, position.z, radius, color);
         return true;
     }
 
@@ -152,8 +199,7 @@ public class HeldMap : MonoBehaviour
     }
 
     // Create a new texture with the same dimensions as the original texture
-    public static Texture2D FlipTexture(Texture2D originalTexture, bool horizontal, bool vertical)
-    {
+    public static Texture2D FlipTexture(Texture2D originalTexture, bool horizontal, bool vertical) {
         // Create a new texture with the same dimensions as the original texture
         Texture2D flippedTexture = new Texture2D(originalTexture.width, originalTexture.height, originalTexture.format, false);
 
