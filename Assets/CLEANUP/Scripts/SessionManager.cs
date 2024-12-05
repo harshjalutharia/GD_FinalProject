@@ -98,7 +98,6 @@ public class SessionManager : MonoBehaviour
         yield return m_terrainGenerator.GenerateMapCoroutine();
 
         // Designate the start and end positions of the player.
-        // The start and end positions rely on a representative voronoi map to let us know which regions are safe.
         GenerateStartAndEnd(out m_playerStartPosition, out m_playerEndPosition);
 
         // Teleport the player to the start postiion
