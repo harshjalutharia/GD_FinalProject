@@ -6,6 +6,9 @@ using Extensions;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class SessionManager : MonoBehaviour
 {
@@ -14,6 +17,10 @@ public class SessionManager : MonoBehaviour
     [Header("=== Player Settings ===")]
     [SerializeField, Tooltip("The player themselves")]          private GameObject m_player;
     [SerializeField, Tooltip("Player camera")]                  private CameraFader m_playerCameraFader;
+    [SerializeField, Tooltip("The radius from map center where we place the destination and start points for the player")]
+                                                                private float m_spawnRadius = 100f;
+    [SerializeField, Tooltip("Given a spawn point for either player or destination, the radius of checking for flattest area")]
+                                                                private float m_spawnFlatRadius = 10f;
     [SerializeField, Tooltip("The player's start position")]    private Vector3 m_playerStartPosition = Vector3.zero;
     [SerializeField, Tooltip("The player's end position")]      private Vector3 m_playerEndPosition = Vector3.zero;
     public Vector3 playerStartPosition => m_playerStartPosition;
@@ -23,6 +30,7 @@ public class SessionManager : MonoBehaviour
     [Header("=== Necessary Generators/Maps/Managers ===")]
     [SerializeField, Tooltip("The noise map that generates terrain.")]          private NoiseMap m_terrainGenerator;
     public NoiseMap terrainGenerator => m_terrainGenerator;
+    [SerializeField, Tooltip("Layer Mask for the terrain")]                     private LayerMask m_terrainGroundMask;
     [SerializeField, Tooltip("Specific reference to the voronoi map used")]     private VoronoiMap m_voronoiMap;
 
     [Header("=== Optional Generators/Maps/Managers ===")]
@@ -49,6 +57,18 @@ public class SessionManager : MonoBehaviour
     [SerializeField, Tooltip("List of slides to display")] private List<Sprite> m_slides;
     [SerializeField, Tooltip("Time to display each slide")] private float m_slideDisplayTime = 2f;
     [SerializeField, Tooltip("Transition time between slides")] private float m_slideTransitionTime = 1f;
+
+    #if UNITY_EDITOR
+    [SerializeField] private bool m_drawGizmos = false;
+    private void OnDrawGizmos() {
+        if (m_terrainGenerator == null) return;
+        Vector2 debugMapCenter = m_terrainGenerator.mapCenter;
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(m_terrainGenerator.transform.position + new Vector3(debugMapCenter.x, 50f, debugMapCenter.y), m_spawnRadius);
+
+    }
+    #endif
 
     private void Awake() {
         current = this;
@@ -79,12 +99,7 @@ public class SessionManager : MonoBehaviour
 
         // Designate the start and end positions of the player.
         // The start and end positions rely on a representative voronoi map to let us know which regions are safe.
-        GenerateStartAndEnd(
-            m_terrainGenerator, m_voronoiMap, 
-            300f, 20, 
-            out m_playerStartPosition, out int playerStartPositionIndex, 
-            out m_playerEndPosition, out int playerEndPositionIndex
-        );
+        GenerateStartAndEnd(out m_playerStartPosition, out m_playerEndPosition);
 
         // Teleport the player to the start postiion
         m_player.transform.position = m_playerStartPosition;
@@ -232,7 +247,65 @@ public class SessionManager : MonoBehaviour
         group.blocksRaycasts = setTo;
     }
 
-    private void GenerateStartAndEnd(NoiseMap terrainMap, VoronoiMap vMap, float minDistance, int numAttempts, out Vector3 startPos, out int startIndex, out Vector3 endPos, out int endIndex) {
+    private void GenerateStartAndEnd(out Vector3 startPos, out Vector3 endPos) {
+        // Step 1: Generate a random angle between 0 and 360. Also determine the map center
+        float randomAngle = Random.Range(0f,360f);
+        Vector3 mapCenter = m_terrainGenerator.mapCenter3D;
+
+        // Step 2. Determine the direction where the direction is heading based on the provided angle
+        Vector3 direction = Quaternion.Euler(0f, randomAngle, 0f) * Vector3.right * m_spawnRadius;
+
+        // Step 3. Given the direction, Determine the flat end point
+        Vector3 tempDestination = mapCenter + direction;
+        endPos = new Vector3(
+            tempDestination.x,
+            m_terrainGenerator.QueryHeightAtWorldPos(tempDestination.x, tempDestination.z),
+            tempDestination.z
+        );
+
+        // Step 3.5. Determine the optimal place to put the destination point - aka the flattest point.
+        int minDX = Mathf.RoundToInt(tempDestination.x - m_spawnFlatRadius);
+        int maxDX = Mathf.RoundToInt(tempDestination.x + m_spawnFlatRadius);
+        int minDY = Mathf.RoundToInt(tempDestination.z - m_spawnFlatRadius);
+        int maxDY = Mathf.RoundToInt(tempDestination.z + m_spawnFlatRadius);
+        float destinationNormalDot = -1f;
+        for(int dx = minDX; dx <= maxDX; dx++) {
+            for(int dy = minDY; dy <= maxDY; dy++) {
+                Vector3 destNormal = m_terrainGenerator.QueryMapNormalAtWorldPos(dx, dy, m_terrainGroundMask, out int coordDX, out int coordDY, out float queryDestY);
+                float destDot = Vector3.Dot(Vector3.up, destNormal);
+                if (destDot > destinationNormalDot) {
+                    destinationNormalDot = destDot;
+                    endPos = new Vector3(coordDX, queryDestY, coordDY);
+                }
+            }
+        }
+
+        // Step 4. Given the direction, Determine the flat end point
+        Vector3 tempStart = mapCenter - direction;
+        startPos = new Vector3(
+            tempStart.x,
+            m_terrainGenerator.QueryHeightAtWorldPos(tempStart.x, tempStart.z),
+            tempStart.z
+        );
+        // Step 3.5. Determine the optimal place to put the destination point - aka the flattest point.
+        int minSX = Mathf.RoundToInt(tempStart.x - m_spawnFlatRadius);
+        int maxSX = Mathf.RoundToInt(tempStart.x + m_spawnFlatRadius);
+        int minSY = Mathf.RoundToInt(tempStart.z - m_spawnFlatRadius);
+        int maxSY = Mathf.RoundToInt(tempStart.z + m_spawnFlatRadius);
+        float startNormalDot = -1f;
+        for(int sx = minSX; sx <= maxSX; sx++) {
+            for(int sy = minSY; sy <= maxSY; sy++) {
+                Vector3 startNormal = m_terrainGenerator.QueryMapNormalAtWorldPos(sx, sy, m_terrainGroundMask, out int coordSX, out int coordSY, out float queryStartY);
+                float startDot = Vector3.Dot(Vector3.up, startNormal);
+                if (startDot > startNormalDot) {
+                    startNormalDot = startDot;
+                    startPos = new Vector3(coordSX, queryStartY, coordSY);
+                }
+            }
+        }
+
+        
+        /*
         VoronoiMap.VoronoiSegment[] segments = vMap.voronoiSegments;
         Vector2Int[] centroids = vMap.voronoiCentroids;
 
@@ -257,6 +330,7 @@ public class SessionManager : MonoBehaviour
         float endHeight = terrainMap.QueryHeightAtWorldPos(vEndPos.x, vEndPos.z, out int endX, out int endY);
         startPos = new Vector3(vStartPos.x, startHeight, vStartPos.z);
         endPos = new Vector3(vEndPos.x, endHeight, vEndPos.z);
+        */
     }
 
     public void GenerationCompleted(string generatorName) {

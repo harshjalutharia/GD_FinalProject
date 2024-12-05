@@ -39,9 +39,10 @@ public class NoiseMap : MonoBehaviour
 
     [Header("=== Map Settings ===")]
     [SerializeField, Tooltip("The seed used to control psuedo-rng for this map.")]                                  protected int m_seed;
-    [SerializeField, Tooltip("TO BE DEPRECATED")]                                                                   protected Vector2Int m_dimensions = new Vector2Int(100,100);
     [SerializeField, Tooltip("The length and width of the generated map, in Unity meters.")]                        protected int m_mapChunkSize = 241;
     public int mapChunkSize => m_mapChunkSize;
+    public Vector2 mapCenter => new Vector2((m_mapChunkSize-1)/2f, (m_mapChunkSize-1)/2f);
+    public Vector3 mapCenter3D => new Vector3((m_mapChunkSize-1)/2f, 0f, (m_mapChunkSize-1)/2f);
     [SerializeField, Range(0,6), Tooltip("The LOD level used to control the mesh fidelity.")]                       protected int m_levelOfDetail;
     [SerializeField, Tooltip("The offset of the noise map in either X or Y direction. Not all variants will use this.")]    protected Vector2 m_offset;
     [SerializeField, Tooltip("When generating perlin noise, how do we normalize the noise map")]                            protected Generators.NormalizeMode m_normalizeMode;
@@ -125,13 +126,6 @@ public class NoiseMap : MonoBehaviour
     }
     public virtual void SetSeed(int newSeed) {
         m_seed = newSeed;
-    }
-
-    public virtual void SetDimensions(int x, int y) {
-        m_dimensions = new Vector2Int(x,y);
-    }
-    public virtual void SetDimensions(Vector2Int xy) {
-        m_dimensions = xy;
     }
 
     public virtual void SetChunkSize(int newSize) {
@@ -420,6 +414,11 @@ public class NoiseMap : MonoBehaviour
     public virtual float QueryHeightAtWorldPos(float worldX, float worldZ, out int x, out int y) {
         x = Mathf.Clamp(Mathf.RoundToInt(worldX), 0, m_mapChunkSize-1);
         y = Mathf.Clamp(Mathf.RoundToInt(worldZ), 0, m_mapChunkSize-1);
+        return m_heightMap[x,y];
+    }
+    public virtual float QueryHeightAtWorldPos(float worldX, float worldZ) {
+        int x = Mathf.Clamp(Mathf.RoundToInt(worldX), 0, m_mapChunkSize-1);
+        int y = Mathf.Clamp(Mathf.RoundToInt(worldZ), 0, m_mapChunkSize-1);
         return m_heightMap[x,y];
     }
 

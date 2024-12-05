@@ -26,18 +26,15 @@ public class LandmarkGenerator : MonoBehaviour
     {
         public List<Landmark> prefabs = new List<Landmark>();
         public int counter = 0;
-        public Landmark GetNextPrefab()
-        {
+        public Landmark GetNextPrefab() {
             if (prefabs.Count == 0) return null;
             Landmark prefab = prefabs[counter];
             counter++;
             if (counter >= prefabs.Count) counter = 0;
             return prefab;
         }
-        public bool TryGetNextPrefab(out Landmark prefab)
-        {
-            if (prefabs.Count == 0)
-            {
+        public bool TryGetNextPrefab(out Landmark prefab) {
+            if (prefabs.Count == 0) {
                 prefab = null;
                 return false;
             }
@@ -47,10 +44,8 @@ public class LandmarkGenerator : MonoBehaviour
             if (counter >= prefabs.Count) counter = 0;
             return true;
         }
-        public bool TryGetPrefabAtIndex(int index, out Landmark prefab)
-        {
-            if (index >= prefabs.Count)
-            {
+        public bool TryGetPrefabAtIndex(int index, out Landmark prefab) {
+            if (index >= prefabs.Count) {
                 prefab = null;
                 return false;
             }
@@ -106,8 +101,7 @@ public class LandmarkGenerator : MonoBehaviour
     [SerializeField, Tooltip("The final list of landmarks generated.")]                    private List<Landmark> m_landmarks;
 
     [System.Serializable]
-    public class SpawnPoint : IComparable<SpawnPoint>
-    {
+    public class SpawnPoint : IComparable<SpawnPoint> {
         public Vector3 location;
         public int weight;
         public GameObject spawnedObject;
@@ -133,30 +127,24 @@ public class LandmarkGenerator : MonoBehaviour
     }
 
 
-    public virtual void SetSeed(string newSeed)
-    {
-        if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed))
-        {
+    public virtual void SetSeed(string newSeed) {
+        if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {
             m_seed = validNewSeed;
             return;
         }
         m_seed = UnityEngine.Random.Range(0, 1000001);
     }
-    public virtual void SetSeed(int newSeed)
-    {
+    public virtual void SetSeed(int newSeed) {
         m_seed = newSeed;
     }
 
-    private void Start()
-    {
+    private void Start() {
         StartCoroutine(SortLandmarks());
     }
 
-    public void GenerateLandmarks(Vector3 destination, Vector3 startPosition, NoiseMap terrainMap)
-    {
+    public void GenerateLandmarks(Vector3 destination, Vector3 startPosition, NoiseMap terrainMap) {
         // Check Flag: do we have a landmark prefab to begin with?
-        if (m_destinationLandmark == null)
-        {
+        if (m_destinationLandmark == null) {
             Debug.Log("Landmark prefab not assigned in editor");
             return;
         }

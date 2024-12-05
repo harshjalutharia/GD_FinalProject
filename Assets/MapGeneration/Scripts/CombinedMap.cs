@@ -26,7 +26,6 @@ public class CombinedMap : NoiseMap
             if (ci.apply == ApplyMethod.Off) continue;
             if (ci.apply != ApplyMethod.Apply) {
                 ci.map.SetSeed(m_seed);
-                ci.map.SetDimensions(m_dimensions);
                 ci.map.SetChunkSize(m_mapChunkSize);
                 ci.map.SetLevelOfDetail(m_levelOfDetail);
                 ci.map.SetOffset(m_offset);
@@ -80,7 +79,6 @@ public class CombinedMap : NoiseMap
             if (ci.apply == ApplyMethod.Off) continue;
             if (ci.apply != ApplyMethod.Apply) {
                 ci.map.SetSeed(m_seed);
-                ci.map.SetDimensions(m_dimensions);
                 ci.map.SetChunkSize(m_mapChunkSize);
                 ci.map.SetLevelOfDetail(m_levelOfDetail);
                 ci.map.SetOffset(m_offset);
