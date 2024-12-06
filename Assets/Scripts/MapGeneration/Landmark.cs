@@ -49,6 +49,10 @@ public class Landmark : MonoBehaviour
     #endif
 
     private void Start() {
+        // Find all renderers associated with this object
+        m_renderers = GetComponentsInChildren<Renderer>();
+
+        // Offset Landmark
         OffsetLandmarkInYaxis();
     }
 
