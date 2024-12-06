@@ -138,6 +138,151 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4749836451531745328}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &356236334813145678
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9050150596939834972}
+  - component: {fileID: 3369458317999008368}
+  m_Layer: 8
+  m_Name: Boost Trail
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9050150596939834972
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 356236334813145678}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.32, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4749836451531745328}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!96 &3369458317999008368
+TrailRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 356236334813145678}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Time: 0
+  m_PreviewTimeScale: 1
+  m_Parameters:
+    serializedVersion: 3
+    widthMultiplier: 1
+    widthCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.082451835
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    colorGradient:
+      serializedVersion: 2
+      key0: {r: 1, g: 0.8090067, b: 0, a: 0}
+      key1: {r: 1, g: 0.8078432, b: 0, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 0
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 3161
+      atime2: 65535
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_ColorSpace: 0
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 3
+    numCornerVertices: 0
+    numCapVertices: 0
+    alignment: 0
+    textureMode: 0
+    textureScale: {x: 1, y: 1}
+    shadowBias: 0.5
+    generateLightingData: 0
+  m_MinVertexDistance: 0.1
+  m_MaskInteraction: 0
+  m_Autodestruct: 0
+  m_Emitting: 1
+  m_ApplyActiveColorSpace: 1
 --- !u!1 &452504811610167961
 GameObject:
   m_ObjectHideFlags: 0
@@ -6127,7 +6272,7 @@ GameObject:
   - component: {fileID: 463888128880708619}
   - component: {fileID: 130678758101973217}
   m_Layer: 8
-  m_Name: Trail
+  m_Name: Accelerate Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7015,39 +7160,46 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveForce: 8
   sprintForce: 14
-  flightForce: 4
+  boostImpulse: 1
+  boostForce: 12
+  flightForce: 8
   flightAscendForce: 1
   jumpForce: 3.5
   jumpCooldown: 0.8
-  slideSpeedThreshold: 1.666667
-  slidingDropThreshold: 1
+  slideSpeedThreshold: 3.2
+  slidingDropThreshold: 3.2
   maxSprintSpeed: 3
-  slideStartSpeedOffset: 1
-  maxFlightSpeed: 2.1
+  maxBoostingSpeed: 10
+  slideStartSpeedOffset: 0
+  maxFlightSpeed: 3.3
   maxParaglidingSpeed: 10
   paraglidingFallingSpeed: 3
-  paraglidingStartSpeedOffset: 0.3333333
+  paraglidingStartSpeedOffset: 0
   groundDrag: 0
   groundDragSprint: 0
   airDragHorizontal: 0
   airDragParaglidingHorizontal: 0
   airDragVertical: 0
+  boostingDrag: 0
   friction: 8
   frictionSlopAngle: 45
-  slideResistance: 0.6
+  slideResistance: 2.1
   maxAccessibleStamina: 0
-  staminaPerGem: 3
-  maxFlightStamina: 3.1
+  staminaPerGem: 2.5
+  maxFlightStamina: 6
   jumpStaminaConsume: 3
   flightStamina: 0
   flightStaminaDecreaseSpeed: 3
-  sprintStaminaDecreaseSpeed: 3
-  sprintMinStamina: 5
-  flightStaminaRefillSpeed: 5
+  sprintStaminaDecreaseSpeed: 0
+  boostingStaminaDecreaseSpeed: 5
+  boostingStartMinStamina: 5.9
+  sprintMinStamina: 0
+  flightStaminaRefillSpeed: 4
   jumpActionReference: {fileID: 1297723305485046813, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
   flyActionReference: {fileID: 9078852185209867360, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
-  SprintActionReference: {fileID: -9023399260662952479, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
-  SprintSwitchActionReference: {fileID: 6816212286609151897, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+  sprintActionReference: {fileID: -9023399260662952479, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+  boostSwitchActionReference: {fileID: 6816212286609151897, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+  boostActionReference: {fileID: -7162708240651820031, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
   groundDetections:
   - {fileID: 2475998147394676031}
   - {fileID: 3951621513663608044}
@@ -7063,11 +7215,13 @@ MonoBehaviour:
   sprinting: 0
   sliding: 0
   accelerating: 0
+  boosting: 0
   requestFlight: 0
   horizontalVelocity: {x: 0, y: 0, z: 0}
   flightActivated: 0
   sprintActivated: 0
   paraglidingActivated: 0
+  boostingActivated: 0
   sfxState:
     slideSFXOn: 0
     sprintSFXOn: 0
@@ -7092,8 +7246,10 @@ MonoBehaviour:
   collectGemParticles: {fileID: 1050984376907890951}
   usingCape: 0
   cape: {fileID: 0}
+  boostingTrail: {fileID: 3369458317999008368}
   debugText1: {fileID: 0}
   debugText2: {fileID: 0}
+  iconManager: {fileID: 0}
 --- !u!114 &1655585082693902188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7162,6 +7318,7 @@ MonoBehaviour:
   m_loadingCamera: {fileID: 0}
   m_thirdPersonCamera: {fileID: 0}
   m_firstPersonCamera: {fileID: 0}
+  m_mapCamera: {fileID: 0}
   m_heldMap: {fileID: 8382451533911262909}
   m_compass: {fileID: 6483165358774771360}
   m_scroll: {fileID: 7678845556067471803}
@@ -8390,6 +8547,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 24fc2c3e62c52bf4e9e63fd980b8e85d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 463888128880708619}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 24fc2c3e62c52bf4e9e63fd980b8e85d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9050150596939834972}
     - targetCorrespondingSourceObject: {fileID: -2525213446790289079, guid: 24fc2c3e62c52bf4e9e63fd980b8e85d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1704550225289716738}

@@ -78,15 +78,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""id"": ""5aade9b9-d97f-4907-a67d-831e529c8f2e"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Hold(duration=0.1)"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Switch Sprint"",
-                    ""type"": ""Button"",
-                    ""id"": ""f4d4341c-2527-4d10-9fe8-e61d5c7cd759"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },
@@ -106,6 +97,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Switch Boost"",
+                    ""type"": ""Button"",
+                    ""id"": ""f4d4341c-2527-4d10-9fe8-e61d5c7cd759"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Boost"",
+                    ""type"": ""Button"",
+                    ""id"": ""8a4838fa-8b35-4ddc-aa3b-fd8a6bc13d66"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold(duration=0.1)"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -266,31 +275,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""3d9f2b39-77f9-4ac4-8933-c8854635ae04"",
-                    ""path"": ""<Gamepad>/leftStickPress"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Switch Sprint"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""bc4f8026-c538-473e-8b8f-ac451eda80ed"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Sprint"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""8cab654d-a508-4782-8268-d4eb0c30838b"",
                     ""path"": ""<Keyboard>/leftShift"",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold(duration=0.1)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Sprint"",
@@ -338,6 +325,39 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Fly"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4b1c76c3-cc6a-445d-9f97-3ff7adae8807"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Boost"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5448d421-f1b4-4c35-94bc-36c29712c08f"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Boost"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3d9f2b39-77f9-4ac4-8933-c8854635ae04"",
+                    ""path"": ""<Gamepad>/leftStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Boost"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -455,9 +475,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Fly = m_Player.FindAction("Fly", throwIfNotFound: true);
         m_Player_SkipCutscene = m_Player.FindAction("SkipCutscene", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
-        m_Player_SwitchSprint = m_Player.FindAction("Switch Sprint", throwIfNotFound: true);
         m_Player_Map = m_Player.FindAction("Map", throwIfNotFound: true);
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
+        m_Player_SwitchBoost = m_Player.FindAction("Switch Boost", throwIfNotFound: true);
+        m_Player_Boost = m_Player.FindAction("Boost", throwIfNotFound: true);
         // Debug
         m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
         m_Debug_ActivateFlight = m_Debug.FindAction("ActivateFlight", throwIfNotFound: true);
@@ -530,9 +551,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Fly;
     private readonly InputAction m_Player_SkipCutscene;
     private readonly InputAction m_Player_Sprint;
-    private readonly InputAction m_Player_SwitchSprint;
     private readonly InputAction m_Player_Map;
     private readonly InputAction m_Player_Menu;
+    private readonly InputAction m_Player_SwitchBoost;
+    private readonly InputAction m_Player_Boost;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -543,9 +565,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Fly => m_Wrapper.m_Player_Fly;
         public InputAction @SkipCutscene => m_Wrapper.m_Player_SkipCutscene;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
-        public InputAction @SwitchSprint => m_Wrapper.m_Player_SwitchSprint;
         public InputAction @Map => m_Wrapper.m_Player_Map;
         public InputAction @Menu => m_Wrapper.m_Player_Menu;
+        public InputAction @SwitchBoost => m_Wrapper.m_Player_SwitchBoost;
+        public InputAction @Boost => m_Wrapper.m_Player_Boost;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -573,15 +596,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
-            @SwitchSprint.started += instance.OnSwitchSprint;
-            @SwitchSprint.performed += instance.OnSwitchSprint;
-            @SwitchSprint.canceled += instance.OnSwitchSprint;
             @Map.started += instance.OnMap;
             @Map.performed += instance.OnMap;
             @Map.canceled += instance.OnMap;
             @Menu.started += instance.OnMenu;
             @Menu.performed += instance.OnMenu;
             @Menu.canceled += instance.OnMenu;
+            @SwitchBoost.started += instance.OnSwitchBoost;
+            @SwitchBoost.performed += instance.OnSwitchBoost;
+            @SwitchBoost.canceled += instance.OnSwitchBoost;
+            @Boost.started += instance.OnBoost;
+            @Boost.performed += instance.OnBoost;
+            @Boost.canceled += instance.OnBoost;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -604,15 +630,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
-            @SwitchSprint.started -= instance.OnSwitchSprint;
-            @SwitchSprint.performed -= instance.OnSwitchSprint;
-            @SwitchSprint.canceled -= instance.OnSwitchSprint;
             @Map.started -= instance.OnMap;
             @Map.performed -= instance.OnMap;
             @Map.canceled -= instance.OnMap;
             @Menu.started -= instance.OnMenu;
             @Menu.performed -= instance.OnMenu;
             @Menu.canceled -= instance.OnMenu;
+            @SwitchBoost.started -= instance.OnSwitchBoost;
+            @SwitchBoost.performed -= instance.OnSwitchBoost;
+            @SwitchBoost.canceled -= instance.OnSwitchBoost;
+            @Boost.started -= instance.OnBoost;
+            @Boost.performed -= instance.OnBoost;
+            @Boost.canceled -= instance.OnBoost;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -700,9 +729,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnFly(InputAction.CallbackContext context);
         void OnSkipCutscene(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
-        void OnSwitchSprint(InputAction.CallbackContext context);
         void OnMap(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
+        void OnSwitchBoost(InputAction.CallbackContext context);
+        void OnBoost(InputAction.CallbackContext context);
     }
     public interface IDebugActions
     {

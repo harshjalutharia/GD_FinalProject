@@ -56,15 +56,6 @@
                     "id": "5aade9b9-d97f-4907-a67d-831e529c8f2e",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Hold(duration=0.1)",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Switch Sprint",
-                    "type": "Button",
-                    "id": "f4d4341c-2527-4d10-9fe8-e61d5c7cd759",
-                    "expectedControlType": "Button",
-                    "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
@@ -84,6 +75,24 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Switch Boost",
+                    "type": "Button",
+                    "id": "f4d4341c-2527-4d10-9fe8-e61d5c7cd759",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Boost",
+                    "type": "Button",
+                    "id": "8a4838fa-8b35-4ddc-aa3b-fd8a6bc13d66",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold(duration=0.1)",
                     "initialStateCheck": false
                 }
             ],
@@ -244,31 +253,9 @@
                 },
                 {
                     "name": "",
-                    "id": "3d9f2b39-77f9-4ac4-8933-c8854635ae04",
-                    "path": "<Gamepad>/leftStickPress",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Switch Sprint",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "bc4f8026-c538-473e-8b8f-ac451eda80ed",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Sprint",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "8cab654d-a508-4782-8268-d4eb0c30838b",
                     "path": "<Keyboard>/leftShift",
-                    "interactions": "",
+                    "interactions": "Hold(duration=0.1)",
                     "processors": "",
                     "groups": "",
                     "action": "Sprint",
@@ -316,6 +303,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "Fly",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4b1c76c3-cc6a-445d-9f97-3ff7adae8807",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Boost",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5448d421-f1b4-4c35-94bc-36c29712c08f",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Boost",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3d9f2b39-77f9-4ac4-8933-c8854635ae04",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Switch Boost",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

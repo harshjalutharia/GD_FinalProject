@@ -19,6 +19,12 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("The force pushing character to sprint")]
     public float sprintForce;
     
+    [Tooltip("The impulse pushing character to start boost")]
+    public float boostImpulse;
+    
+    [Tooltip("The force pushing character to boost")]
+    public float boostForce;
+    
     [Tooltip("Continuous horizontal force applied during flight")]
     public float flightForce;
     
@@ -41,6 +47,9 @@ public class PlayerMovement : MonoBehaviour
     
     [Tooltip("Controls the max sprint speed on a level surface")]
     public float maxSprintSpeed;
+    
+    [Tooltip("Controls the max boosting speed on a level surface")]
+    public float maxBoostingSpeed;
 
     [Tooltip("Start slide if current speed larger than slideSpeedThreshold + slideStartSpeedOffset.")]
     public float slideStartSpeedOffset;
@@ -73,6 +82,9 @@ public class PlayerMovement : MonoBehaviour
     
     [SerializeField, Tooltip("Only limit the max downward velocity speed. Vmax_drop=g/airDragVertical")] 
     private float airDragVertical;
+    
+    [SerializeField, Tooltip("READ ONLY. Limit the horizontal max boosting speed.")] 
+    private float boostingDrag;
     
     
     [Header("Other Resistance")]
@@ -110,6 +122,12 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Stamina consumed per second of sprinting")]
     public float sprintStaminaDecreaseSpeed;
 
+    [Tooltip("Stamina consumed per second of boosting")]
+    public float boostingStaminaDecreaseSpeed;
+    
+    [Tooltip("The minimum Stamina for starting boosting")]
+    public float boostingStartMinStamina;
+
     [Tooltip("Could not start sprinting if stamina low that this value")] 
     public float sprintMinStamina;
     
@@ -125,10 +143,13 @@ public class PlayerMovement : MonoBehaviour
     private InputActionReference flyActionReference;
     
     [SerializeField, Tooltip("The action input of player sprinting.")]
-    private InputActionReference SprintActionReference;
+    private InputActionReference sprintActionReference;
     
-    [SerializeField, Tooltip("The action input of player toggle to sprint.")]
-    private InputActionReference SprintSwitchActionReference;
+    [SerializeField, Tooltip("The action input of player toggle to boost mode.")]
+    private InputActionReference boostSwitchActionReference;
+    
+    [SerializeField, Tooltip("The action input of player boosting.")]
+    private InputActionReference boostActionReference;
     
     private PlayerControls controls; 
 
@@ -179,6 +200,9 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] 
     private bool accelerating;
+
+    [SerializeField] 
+    private bool boosting;
     
     [SerializeField] 
     private bool requestFlight;
@@ -194,6 +218,9 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] 
     private bool paraglidingActivated;
+
+    [SerializeField] 
+    private bool boostingActivated;
 
     [SerializeField, Tooltip("Private state of SFX")]
     private SoundFXState sfxState;
@@ -242,6 +269,9 @@ public class PlayerMovement : MonoBehaviour
     
     [Tooltip("game object of the cape")] 
     public SimulateCapeController cape;
+    
+    [Tooltip("The boosting trail TrailRenderer componet")] 
+    public TrailRenderer boostingTrail;
 
     //[Tooltip("GameObject of the map")] 
     //public GameObject mapObj;
@@ -289,6 +319,7 @@ public class PlayerMovement : MonoBehaviour
         airDragHorizontal = flightForce / maxFlightSpeed;
         airDragParaglidingHorizontal = flightForce / maxParaglidingSpeed;
         airDragVertical = Physics.gravity.magnitude / paraglidingFallingSpeed;
+        boostingDrag = boostForce / maxBoostingSpeed;
 
         physicMaterial = GetComponent<CapsuleCollider>().material;
         
@@ -298,6 +329,8 @@ public class PlayerMovement : MonoBehaviour
         flightActivated = false;
         paraglidingActivated = false;
         sprintActivated = true;
+        boostingActivated = false;
+        
         if (iconManager == null)
         {
             iconManager = GetComponentInChildren<TutorialIconManager>();
@@ -313,7 +346,7 @@ public class PlayerMovement : MonoBehaviour
         DealInput();  // actually it now deals with different states rather than input
         
         // Refill stamina when grounded
-        if (grounded && !sprinting)
+        if (grounded /*&& !sprinting*/ && !boosting)
         {
             flightStamina += flightStaminaRefillSpeed * Time.deltaTime;
             flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
@@ -328,17 +361,22 @@ public class PlayerMovement : MonoBehaviour
             flightStamina -= flightStaminaDecreaseSpeed * Time.deltaTime;
             flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
         }
+        if(boosting)
+        {
+            flightStamina -= boostingStaminaDecreaseSpeed * Time.deltaTime;
+            flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
+        }
         
         SetAnimation();
 
         SetSound();
         
         // debug message
-        float horizontalSpeed = new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude;
+        //float horizontalSpeed = new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude;
         float overAllSpeed = rb.velocity.magnitude;
         
         debugText1.text = normProject[0] + " " + normProject[1] + "slop: " + GetSlopAngle();
-        debugText2.text = "Velocity:" + rb.velocity + " \nHorizontal Speed:" + horizontalSpeed + " Speed:" + overAllSpeed;
+        debugText2.text = "Velocity:" + rb.velocity + " \nHorizontal Speed:" + horizontalVelocity + " Speed:" + overAllSpeed;
         
         // Debug.Log(normProject[0] + " " + normProject[1]);
         //Debug.DrawRay(groundHits[0].point, groundHits[0].normal, Color.blue, 0, false);
@@ -349,6 +387,7 @@ public class PlayerMovement : MonoBehaviour
             ActivateFlight();
             ActivateSprint();
             ActivateParagliding();
+            ActivatePBoosting();
             SoundManager.current.PlaySFX("Cheat");
             // start acceleration
             if (currentAccelerationCoroutine != null)
@@ -405,11 +444,14 @@ public class PlayerMovement : MonoBehaviour
         flyActionReference.action.performed += OnFlightInput;   
         flyActionReference.action.canceled += OffFlightInput;   
         flyActionReference.action.Enable();
-        SprintActionReference.action.performed += OnSprintInput;
-        SprintActionReference.action.canceled += OffSprintInput;
-        SprintActionReference.action.Enable();
-        SprintSwitchActionReference.action.started += OnSprintSwitchInput;
-        SprintSwitchActionReference.action.Enable();
+        sprintActionReference.action.performed += OnSprintInput;
+        sprintActionReference.action.canceled += OffSprintInput;
+        sprintActionReference.action.Enable();
+        boostSwitchActionReference.action.started += OnBoostingInput;
+        boostSwitchActionReference.action.Enable();
+        boostActionReference.action.performed += OnBoostingInput;
+        boostActionReference.action.canceled += OffBoostingInput;
+        boostActionReference.action.Enable();
     }
 
     private void OnDisable()
@@ -418,27 +460,30 @@ public class PlayerMovement : MonoBehaviour
         jumpActionReference.action.started -= OnJumpInput;
         flyActionReference.action.performed -= OnFlightInput;   
         flyActionReference.action.canceled -= OffFlightInput;  
-        SprintActionReference.action.performed -= OnSprintInput;
-        SprintActionReference.action.canceled -= OffSprintInput;
-        SprintSwitchActionReference.action.started -= OnSprintSwitchInput;
+        sprintActionReference.action.performed -= OnSprintInput;
+        sprintActionReference.action.canceled -= OffSprintInput;
+        boostSwitchActionReference.action.started -= OnBoostingInput;
+        boostActionReference.action.performed -= OnBoostingInput;
+        boostActionReference.action.canceled -= OffBoostingInput;
     }
 
     private void DealInput()
     {
-        // update state of sliding
+        // ====== update state of sliding
         if (sliding)
         {
-            sliding = (new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude > slideSpeedThreshold ||
-                       rb.velocity.y < -1 * slidingDropThreshold) && grounded && !sprinting;
+            sliding = (horizontalVelocity.magnitude > slideSpeedThreshold ||
+                       rb.velocity.y < -1 * slidingDropThreshold) && grounded /*&& !sprinting*/;
         }
         else
         {
-            sliding = (new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude >
+            sliding = (horizontalVelocity.magnitude >
                           slideSpeedThreshold + slideStartSpeedOffset || rb.velocity.y < -1 * slidingDropThreshold) &&
-                      grounded && !sprinting;
+                      grounded /*&& !sprinting*/;
         }
         
-        // update the map state
+        
+        // ====== update the map state
         //if (mapInput.IsPressed() && grounded && (!sliding || rb.velocity.magnitude < 2))
         if (CameraController.current.mapInputActive && grounded && (!sliding || rb.velocity.magnitude < 2))
         {
@@ -454,8 +499,23 @@ public class PlayerMovement : MonoBehaviour
         if (CameraController.current.firstPersonCameraActive) // if fp camera active, ignore all the input
             return;
         
-        // use new input system to get the input value
+        
+        // ======= =use new input system to get the input value
         Vector2 movement2D = directionInput.ReadValue<Vector2>();
+        if (directionInput.activeControl != null && directionInput.activeControl.device.name != "Keyboard")
+        {
+            // if using gamepad, determine sprint by the amount of joystick displacement
+            if (movement2D.magnitude > 0.9f)    
+            {
+                OnSprintInput(new InputAction.CallbackContext());
+            }
+            else
+            {
+                OffSprintInput(new InputAction.CallbackContext());
+            }
+            //Debug.Log(movement2D.magnitude + directionInput.activeControl.device.name + " ");
+        }
+        
         horizontalInput = movement2D.x;
         verticalInput = movement2D.y;
 
@@ -464,18 +524,25 @@ public class PlayerMovement : MonoBehaviour
             hasMoved = true;
         }
 
-        // update the sprinting state
+        // ======== update the sprinting state
         if (sprintActivated && grounded && sprinting && moveDirection.magnitude > 0.02f && !sliding)
         {
-            sprinting = flightStamina > 0;  // end sprinting if stamina less than 0
-            // hasSprinted = true;
+            //sprinting = flightStamina > 0;  // end sprinting if stamina less than 0
         }
         else
         {
             sprinting = false;
         }
 
-
+        // ======== update the boosting state
+        if (boosting && flightStamina <= 0)
+        {
+            OffBoostingInput(new InputAction.CallbackContext());
+        }
+        if (boostActionReference.action.phase == InputActionPhase.Performed)
+        {
+            OnBoostingInput(new InputAction.CallbackContext());
+        }
         
     }
 
@@ -553,14 +620,16 @@ public class PlayerMovement : MonoBehaviour
         if (sprintActivated && grounded && moveDirection.magnitude > 0.02f && !sliding &&
             !CameraController.current.mapInputActive)
         {
-            if (sprinting)
+            /*if (sprinting)
             {
                 sprinting = flightStamina > 0;  // end sprinting if stamina less than 0
             }
             else
             {
                 sprinting = flightStamina > sprintMinStamina;  // could only start sprint if stamina larger than certain value
-            }
+            }*/
+            // now sprint dont consume stamina
+            sprinting = true;
         }
     }
 
@@ -568,25 +637,23 @@ public class PlayerMovement : MonoBehaviour
     {
         sprinting = false;
     }
-    
-    private void OnSprintSwitchInput(InputAction.CallbackContext ctx)
+
+    private void OnBoostingInput(InputAction.CallbackContext ctx)
     {
-        if (sprintActivated && grounded && moveDirection.magnitude > 0.02f && !sliding &&
-            !CameraController.current.mapInputActive)
+        if (boostingActivated && flightStamina > boostingStartMinStamina && moveDirection.magnitude > 0.05f && !boosting)
         {
-            if (sprinting)
-            {
-                sprinting = flightStamina > 0;  // end sprinting if stamina less than 0
-            }
-            else
-            {
-                sprinting = flightStamina > sprintMinStamina;  // could only start sprint if stamina larger than certain value
-                // if (sprinting)
-                // {
-                //     keepSprint = true;
-                // }
-            }
+            boosting = true;
+            boostingTrail.time = 1;
+            StartCoroutine(BoostOneShot()); // Applying an instantaneous acceleration
         }
+    }
+    
+    private void OffBoostingInput(InputAction.CallbackContext ctx)
+    {
+        if (!boosting)
+            return;
+        boosting = false;
+        StartCoroutine(FadeoutBoostTrail());
     }
     
     //------------------ End Event for the inputs---------------------
@@ -594,16 +661,21 @@ public class PlayerMovement : MonoBehaviour
     // called in FixedUpdate
     private void MovePlayer()
     {
-        // rotate the player according to the velocity
+        // calculate input movement direction
+        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         
+        // rotate the player according to the velocity
         if (!CameraController.current.firstPersonCameraActive && rb.velocity.magnitude >= 0.05f)
-            playerObj.forward = Vector3.Slerp(playerObj.forward, new Vector3(rb.velocity.x, 0, rb.velocity.z).normalized, Time.fixedDeltaTime * rotationSpeed);
+        {
+            //playerObj.forward = Vector3.Slerp(playerObj.forward, new Vector3(rb.velocity.x, 0, rb.velocity.z).normalized, Time.fixedDeltaTime * rotationSpeed);
+            // rotate the player according to input
+            playerObj.forward = Vector3.Slerp(playerObj.forward, moveDirection.normalized, Time.deltaTime * rotationSpeed);
+        }
         else if (CameraController.current.firstPersonCameraActive)
         {
             playerObj.forward = Vector3.Slerp(playerObj.forward, orientation.forward, Time.fixedDeltaTime * rotationSpeed);
         }
-        // calculate input movement direction
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        
         
         //set friction if player has no input
         if (moveDirection.magnitude < 0.05f && grounded && GetSlopAngle() <= frictionSlopAngle && !accelerating)
@@ -635,6 +707,13 @@ public class PlayerMovement : MonoBehaviour
             {
                 rb.AddForce(airDragVertical * rb.velocity.y * Vector3.down, ForceMode.Force);
             }
+        }
+        
+        // boost movement
+        if (boosting)
+        {
+            Vector3 moveForce = moveDirection.normalized * boostForce - CalculateBoostingResistance();
+            rb.AddForce(moveForce, ForceMode.Force);
         }
         // end horizontal movement
         
@@ -698,21 +777,28 @@ public class PlayerMovement : MonoBehaviour
             // the resistance increases linearly with horizontal velocity. But has a max value
             resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * groundDrag, 0, moveForce + slideResistance);
         }
-        else if (grounded && sprinting)
+        else if (grounded && sprinting)  // sprinting drag
         {
             resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * groundDragSprint, 0, sprintForce*2);
         }
-        else if (!grounded && !animationVars.paragliding)
+        else if (!grounded && !animationVars.paragliding)  // free-fall drag
         {
-            resistanceMag = horizontalVelocity.magnitude * airDragHorizontal;
+            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * airDragHorizontal, 0, flightForce*2);
         }
-        else  // !grounded && animationVars.paragliding
+        else  // !grounded && animationVars.paragliding  // paragliding drag
         {
-            resistanceMag = horizontalVelocity.magnitude * airDragParaglidingHorizontal;
+            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * airDragParaglidingHorizontal, 0, flightForce*2);
         }
         Vector3 resistanceForce = resistanceMag * horizontalVelocity.normalized;
         return resistanceForce;
         
+    }
+
+    private Vector3 CalculateBoostingResistance()
+    {
+        float resistanceMag = Mathf.Clamp(rb.velocity.magnitude * boostingDrag, 0, 1.5f * boostForce);
+        Vector3 resistanceForce = resistanceMag * horizontalVelocity.normalized;
+        return resistanceForce;
     }
 
     private float GetSlopAngle()
@@ -782,7 +868,7 @@ public class PlayerMovement : MonoBehaviour
         {
             yield return new WaitForFixedUpdate();
             
-            // apply acceleration according to the ground slop
+            // Apply acceleration parallel to the slope
             // Ground Normal Direction
             Vector3 groundNormal = (0.5f * (groundHits[0].normal + groundHits[0].normal)).normalized;
             // the normal of the plane formed by acceleration direction and world.up
@@ -803,6 +889,32 @@ public class PlayerMovement : MonoBehaviour
         accelerating = false;
         acceleratorTrail.SetActive(false);
         currentAccelerationCoroutine = null;
+    }
+
+
+    private IEnumerator BoostOneShot()
+    {
+        yield return new WaitForFixedUpdate();
+        rb.AddForce(boostImpulse * moveDirection.normalized, ForceMode.Impulse);
+    }
+    
+    private IEnumerator FadeoutBoostTrail()
+    {
+        float duration = 1;
+        float startTime = Time.time;
+        while (Time.time - startTime <= duration)
+        {
+            yield return new WaitForFixedUpdate();
+            if (!boosting)
+            {
+                float t = (Time.time - startTime) / duration;
+                boostingTrail.time = Mathf.Clamp(Mathf.Lerp(1, 0, t), 0, 1);
+            }
+            else
+            {
+                yield break;
+            }
+        }
     }
     
 
@@ -929,6 +1041,11 @@ public class PlayerMovement : MonoBehaviour
     public void ActivateParagliding()
     {
         paraglidingActivated = true;
+    }
+
+    public void ActivatePBoosting()
+    {
+        boostingActivated = true;
     }
 
     public IEnumerator ActivatePlayer()
