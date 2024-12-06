@@ -54,8 +54,8 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Controls the max boosting speed on a level surface")]
     public float maxBoostingSpeed;
 
-    [Tooltip("Start slide if current speed larger than slideSpeedThreshold + slideStartSpeedOffset.")]
-    public float slideStartSpeedOffset;
+    [Tooltip("Stop sliding if current speed less than slideStopSpeed.")]
+    public float slideStopSpeed;
     
     [Tooltip("Max speed of flight.")]
     public float maxFlightSpeed;
@@ -475,13 +475,13 @@ public class PlayerMovement : MonoBehaviour
         // ====== update state of sliding
         if (sliding)
         {
-            sliding = (horizontalVelocity.magnitude > slideSpeedThreshold ||
+            sliding = (horizontalVelocity.magnitude > slideStopSpeed ||
                        rb.velocity.y < -1 * slidingDropThreshold) && grounded /*&& !sprinting*/;
         }
         else
         {
             sliding = (horizontalVelocity.magnitude >
-                          slideSpeedThreshold + slideStartSpeedOffset || rb.velocity.y < -1 * slidingDropThreshold) &&
+                          slideSpeedThreshold || rb.velocity.y < -1 * slidingDropThreshold) &&
                       grounded /*&& !sprinting*/;
         }
         

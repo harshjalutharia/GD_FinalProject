@@ -7171,7 +7171,7 @@ MonoBehaviour:
   slidingDropThreshold: 3.2
   maxSprintSpeed: 3
   maxBoostingSpeed: 10
-  slideStartSpeedOffset: 0
+  slideStopSpeed: 1.7
   maxFlightSpeed: 3.3
   maxParaglidingSpeed: 10
   paraglidingFallingSpeed: 3
