@@ -544,6 +544,12 @@ public class PlayerMovement : MonoBehaviour
             OnBoostingInput(new InputAction.CallbackContext());
         }
         
+        // ==== update flight state
+        if (requestFlight && flightStamina <= 0)
+        {
+            OffFlightInput(new InputAction.CallbackContext());
+        }
+        
     }
 
     public IEnumerator Tutorial()
