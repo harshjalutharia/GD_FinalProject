@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,7 +42,9 @@ public class Voronoi : MonoBehaviour
     [Header("=== Debug Settings ===")]
     [SerializeField, Tooltip("Print debug?")] protected bool m_showDebug = false;
     [SerializeField, Tooltip("The gizmos width and height")] protected Vector2 m_gizmosDimensions = new Vector2(100f,100f);
-    
+    [SerializeField, Tooltip("The sphere size for region centroids")] protected float m_gizmosCentroidSize = 1f;
+    [SerializeField, Tooltip("The width/height size for region centroids")] protected float m_gizmosDimension = 1f;
+    [SerializeField, Tooltip("The height size for region centroids")] protected float m_gizmosHeightMultiplier = 1f;
     protected virtual void OnDrawGizmos() {
         if (!m_showDebug) return;
 
@@ -51,9 +54,12 @@ public class Voronoi : MonoBehaviour
         
         if (m_centroids == null || m_centroids.Length == 0 || m_clusters == null || m_clusters.Count == 0 || m_centroidToClusterMap == null || m_centroidToClusterMap.Length == 0) return;
         for(int i = 0; i < m_centroids.Length; i++) {
-            Gizmos.color = m_clusters[m_centroidToClusterMap[i]].color;
+            int clusterIndex = m_centroidToClusterMap[i];
+            DBScanCluster cluster = m_clusters[clusterIndex];
+            Gizmos.color = cluster.color;
             Vector3 p = transform.position + new Vector3(m_centroids[i].x * m_gizmosDimensions.x, 0f, m_centroids[i].y * m_gizmosDimensions.y);
-            Gizmos.DrawSphere(p, 1f);
+            Gizmos.DrawSphere(p, m_gizmosCentroidSize);
+            Gizmos.DrawCube(p + new Vector3(0f,m_gizmosHeightMultiplier*clusterIndex/2f,0f), new Vector3(m_gizmosDimension, m_gizmosHeightMultiplier*clusterIndex, m_gizmosDimension));
         }
     }
     #endif
@@ -186,7 +192,7 @@ public class Voronoi : MonoBehaviour
             clusters.Add(c);
             c.id = clusters.Count-1;
             c.points.Add(i);
-            c.color = new Color(Random.Range(0f,1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
+            c.color = new Color(UnityEngine.Random.Range(0f,1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
             // Add ref to this cluster via mapper
             centroidToClusterMap[i] = c.id;
             // Among all other points, check if they're a core point and can be density-connected to current point
@@ -225,6 +231,9 @@ public class Voronoi : MonoBehaviour
             centroidToClusterMap[i] = clusters[centroidToClusterMap[smallestIndex]].id;
         }
 
+        // Step 4: sort the clusters by size
+        m_clusters.Sort();
+
         // DEBUG
         m_clusters = clusters;
         m_centroidToClusterMap = centroidToClusterMap;
@@ -232,9 +241,14 @@ public class Voronoi : MonoBehaviour
     }
 
     [System.Serializable]
-    public class DBScanCluster {
+    public class DBScanCluster : IComparable<DBScanCluster> {
         public int id = 0;
         public Color color = Color.black;
         public List<int> points = new List<int>();
+        public int CompareTo(DBScanCluster other) {		
+            // A null value means that this object is greater. 
+		    if (other == null) return 1;	
+			return this.points.Count.CompareTo(other.points.Count);
+	    }
     }
 }
