@@ -7166,6 +7166,7 @@ MonoBehaviour:
   flightAscendForce: 1
   jumpForce: 3.5
   jumpCooldown: 0.8
+  walkSpeed: 1.666
   slideSpeedThreshold: 3.2
   slidingDropThreshold: 3.2
   maxSprintSpeed: 3

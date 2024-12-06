@@ -36,10 +36,13 @@ public class PlayerMovement : MonoBehaviour
     
     [Tooltip("Used to avoid double jump")]
     public float jumpCooldown;
-    
-    
+
+
     [Header("Speed threshold Settings")]
     [Tooltip("Controls the max walking speed on a level surface. Vmax=moveSpeed/groundDrag")]
+    public float walkSpeed;
+    
+    [Tooltip("Threshold for starting sliding")]
     public float slideSpeedThreshold;
 
     [Tooltip("If player's dropping speed on ground larger than this, start sliding")]
@@ -314,7 +317,7 @@ public class PlayerMovement : MonoBehaviour
         maxAccessibleStamina = maxFlightStamina;
         flightStamina = maxFlightStamina;
         
-        groundDrag = moveForce / slideSpeedThreshold;
+        groundDrag = moveForce / walkSpeed;
         groundDragSprint = sprintForce / maxSprintSpeed;
         airDragHorizontal = flightForce / maxFlightSpeed;
         airDragParaglidingHorizontal = flightForce / maxParaglidingSpeed;
