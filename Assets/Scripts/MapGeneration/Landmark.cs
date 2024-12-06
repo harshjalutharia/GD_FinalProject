@@ -48,7 +48,7 @@ public class Landmark : MonoBehaviour
     }
     #endif
 
-    private void OnEnable() {
+    private void Start() {
         OffsetLandmarkInYaxis();
     }
 
