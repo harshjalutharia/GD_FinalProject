@@ -92,7 +92,7 @@ public class TestFinalTerrainManager : MonoBehaviour
                 chunk.SetLevelOfDetail(2);
                 chunk.SetOffset(x,y);
                 // Initialize its coroutine
-                StartCoroutine(chunk.GenerateMapCoroutine());
+                StartCoroutine(chunk.GenerateMapCoroutine(true));
                 // Save a reference to it in our chunks dictionary
                 m_chunks.Add(index, chunk);
             }
@@ -133,7 +133,7 @@ public class TestFinalTerrainManager : MonoBehaviour
         if (m_prevHalfCoords != halfCoords) {
             m_timeSinceLastChange += Time.deltaTime;
             if (m_timeSinceLastChange >= m_timeToChangeLOD) {
-                RecalculateLODs(chunkCoords, m_halfChunks[halfCoords]);
+                //RecalculateLODs(chunkCoords, m_halfChunks[halfCoords]);
                 m_prevChunkCoords = chunkCoords;
                 m_prevHalfCoords = halfCoords;
                 m_timeSinceLastChange = 0f;
@@ -156,7 +156,7 @@ public class TestFinalTerrainManager : MonoBehaviour
             }
             if (kvp.Value.levelOfDetail != newLevelOfDetail) {
                 kvp.Value.SetLevelOfDetail(newLevelOfDetail);
-                StartCoroutine(kvp.Value.GenerateMapCoroutine());
+                StartCoroutine(kvp.Value.GenerateMapCoroutine(false));
             }
         }
     }

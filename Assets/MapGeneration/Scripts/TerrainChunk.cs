@@ -132,6 +132,7 @@ public class TerrainChunk : MonoBehaviour
     [SerializeField] private FilterMode m_filterMode;
 
     [Header("=== Outputs - READ ONLY ==")]
+    [SerializeField] private int[] m_lodLevels;
     [SerializeField] private float[,] m_noiseMap;
     [SerializeField] private MinMax m_noiseRange;
     [SerializeField] private Texture2D m_textureData;
@@ -178,11 +179,15 @@ public class TerrainChunk : MonoBehaviour
         m_offsetY = y;
     }
 
+    private void Awake() {
+        CalculateLODLevels();
+    }
+
     private void Start() {
         if (m_generateOnStart) StartCoroutine(GenerateMapCoroutine());
     }
 
-    public void GenerateMap() {
+    public void GenerateMap(bool recalculateLODs=true) {
         Debug.Log("Generating map via Function");
 
         // Initialize randomization seed
@@ -195,6 +200,9 @@ public class TerrainChunk : MonoBehaviour
         // Generate texture
         GenerateMaterial();
         Debug.Log("Texture Generated");
+
+        // If we are to recalculate LOD levels, then sure
+        if (recalculateLODs) CalculateLODLevels();
 
         // Generate mesh data
         GenerateMeshData();
@@ -215,7 +223,7 @@ public class TerrainChunk : MonoBehaviour
         }
     }
 
-    public IEnumerator GenerateMapCoroutine() {
+    public IEnumerator GenerateMapCoroutine(bool recalculateLODs=true) {
         Debug.Log("Generating map via Coroutine");
 
         // Initialize randomization seed
@@ -228,6 +236,9 @@ public class TerrainChunk : MonoBehaviour
         // Generate texture
         yield return GenerateMaterialCoroutine();
         Debug.Log("Texture Generated");
+
+        // If we are to recalculate LOD levels, then sure
+        if (recalculateLODs) CalculateLODLevels();
 
         // Generate mesh data
         yield return GenerateMeshDataCoroutine();
@@ -473,7 +484,8 @@ public class TerrainChunk : MonoBehaviour
         float topLeftX = (float)m_width / -2f;
         float topLeftZ = (float)m_height / 2f;
 
-        int meshSimplificationIncrement = (m_levelOfDetail == 0) ? 1 : m_levelOfDetail * 2;
+        //int meshSimplificationIncrement = (m_levelOfDetail == 0) ? 1 : m_levelOfDetail * 2;
+        int meshSimplificationIncrement = m_lodLevels[m_levelOfDetail];
         int verticesPerLine = m_width / meshSimplificationIncrement + 1;
 
         m_meshData = new MeshData(verticesPerLine, verticesPerLine);
@@ -496,8 +508,9 @@ public class TerrainChunk : MonoBehaviour
         float topLeftX = (float)m_width / -2f;
         float topLeftZ = (float)m_height / 2f;
 
-        int meshSimplificationIncrement = (m_levelOfDetail == 0) ? 1 : m_levelOfDetail * 2;
-        int verticesPerLine = m_width / meshSimplificationIncrement + 1;
+        //int meshSimplificationIncrement = (m_levelOfDetail == 0) ? 1 : m_levelOfDetail * 2;
+        int meshSimplificationIncrement = m_lodLevels[m_levelOfDetail];
+        int verticesPerLine = gridWidth / meshSimplificationIncrement + 1;
 
         m_meshData = new MeshData(verticesPerLine, verticesPerLine);
         int vertexIndex = 0;
@@ -527,7 +540,43 @@ public class TerrainChunk : MonoBehaviour
         return textureArray;
     }
 
+    private void CalculateLODLevels() {
+        m_lodLevels = new int[7];
+        m_lodLevels[0] = 1;
+        int previousFactor = 1;
+        for(int i = 1; i < 7; i++) {
+            // The issue with LODs is that there is no guarantee that LOD2, which typically responds to (width/(LOD*2) + 1) vertices per line,
+            // will actually BE divible by the intended mesh size.
+            // For example, let's say you have a 50x50 mesh. This means your grid dimensions are 51x51. LOD0, which produces (50/1)+1=51 vertices per line, will still fit within 51x51.
+            //  Similarly, for LOD1, there will be (50/(1*2) + 1) = 26 vertices per line, will still align with 50x50 because your mesh will ultimately occupy 25x25, 25 neatly dividing 50 by 2.
+            //  However, if you have LOD2, there will be (50/(2*2)+1) = 13.5 vertices per line, which rounds to 14 by integer rounding. 14 does NOT divide 50 neatly. This becomes an issue...
+            //  Therefore, an alternative is to, for each LOD level, determine what's the next optimal amount of vertices you can maintain in your given mesh size that will still end up neatly dividing your intended dimensions.
+            //  The best chance you have is to look at factors of your intended dimension size. In this case, the factors of 50 are 1,2,5,25,50... which only gives you LOD levels of upwards to 3 lods (0-2), with LOD2 = divisor of 5.
+            //  Another example: consider 500x500. The factors of this are 1-500, 2-250, 4-125, 5-100, 10-50, and 20-25
+            
+            // Case: if we're STILL going on an we've passed the halfway mark for factors, then it's no good. Just increment based on the previous LOD
+            if (previousFactor > Mathf.Min(m_width, m_height)) {
+                m_lodLevels[i] = m_lodLevels[i-1];
+                continue;
+            }
+
+            // What's the current factor we want to check?
+            int factor = previousFactor+1;
+            // If successful check, add to `m_lodLevels` and increment `i`
+            if (m_width % factor == 0 && m_height % factor == 0) {
+                m_lodLevels[i] = factor;
+            } 
+            // Otherwise, decrement `i` so that we move onto the next factor without incrementing LOD
+            else {
+                i--;
+            }
+            previousFactor = factor;
+        }
+        // By this point, LOD levels should be set between 0 to 6.
+    }
+
     private void OnValidate() {
         foreach(TerrainLayer layer in m_layers) if (layer.scale <= 1f) layer.scale = 1f;
+        CalculateLODLevels();
     }
 }
