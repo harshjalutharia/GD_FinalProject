@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1364140487277398309, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
       propertyPath: m_Layer
-      value: 11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1364140487277398309, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
       propertyPath: m_IsActive
@@ -58,15 +58,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2951424143206138655, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
       propertyPath: m_Name
-      value: PT_Fruit_Tree_01_apples Variant Variant
+      value: PT_Fruit_Tree_01_apples Variant Billboard
       objectReference: {fileID: 0}
     - target: {fileID: 2951424143206138655, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
       propertyPath: m_Layer
-      value: 11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5163804584661914675, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
       propertyPath: m_Layer
-      value: 11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5163804584661914675, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
       propertyPath: m_IsActive
@@ -126,7 +126,7 @@ PrefabInstance:
       objectReference: {fileID: 6985501065140438758}
     - target: {fileID: 8712446114433690669, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
       propertyPath: m_Layer
-      value: 11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8712446114433690669, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
       propertyPath: m_IsActive

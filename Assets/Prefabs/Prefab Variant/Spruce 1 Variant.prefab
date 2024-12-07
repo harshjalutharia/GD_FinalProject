@@ -24,6 +24,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -0.62
       objectReference: {fileID: 0}
+    - target: {fileID: 3437744339443665193, guid: 1f9036ec905b920479091aca9ba81305, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4025988222033845712, guid: 1f9036ec905b920479091aca9ba81305, type: 3}
       propertyPath: m_Name
       value: Spruce 1 Variant
@@ -86,7 +90,7 @@ PrefabInstance:
       objectReference: {fileID: 1599125949853307025}
     - target: {fileID: 9219559333794251449, guid: 1f9036ec905b920479091aca9ba81305, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
