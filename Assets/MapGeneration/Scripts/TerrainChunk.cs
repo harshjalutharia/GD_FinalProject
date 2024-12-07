@@ -212,15 +212,6 @@ public class TerrainChunk : MonoBehaviour
         if (m_repositionOnGenerate) {
             transform.position = new Vector3(m_offsetX*m_width, 0f, m_offsetY*m_height);
         }
-
-        if (m_meshMaterial != null && m_renderer != null) {
-            m_renderer.sharedMaterial = m_meshMaterial;
-        }
-
-        if (m_meshFilter != null) {
-            m_meshFilter.sharedMesh = m_meshData.CreateMesh();
-            if (m_collider != null) m_collider.sharedMesh = m_meshFilter.sharedMesh;
-        }
     }
 
     public IEnumerator GenerateMapCoroutine(bool recalculateLODs=true) {
@@ -244,13 +235,9 @@ public class TerrainChunk : MonoBehaviour
         yield return GenerateMeshDataCoroutine();
         Debug.Log("Mesh Generated");
 
-        if (m_meshMaterial != null && m_renderer != null) {
-            m_renderer.sharedMaterial = m_meshMaterial;
-        }
-
-        if (m_meshFilter != null) {
-            m_meshFilter.sharedMesh = m_meshData.CreateMesh();
-            if (m_collider != null) m_collider.sharedMesh = m_meshFilter.sharedMesh;
+        // If toggled to reposition, do so
+        if (m_repositionOnGenerate) {
+            transform.position = new Vector3(m_offsetX*m_width, 0f, m_offsetY*m_height);
         }
 
         yield return null;
@@ -399,6 +386,7 @@ public class TerrainChunk : MonoBehaviour
             }
         }
         m_textureData.Apply();
+        if (m_meshMaterial != null && m_renderer != null) m_renderer.sharedMaterial = m_meshMaterial;
     }
 
     private IEnumerator GenerateMaterialCoroutine() {
@@ -455,6 +443,7 @@ public class TerrainChunk : MonoBehaviour
 
         // Apply the texture to set its colors
         m_textureData.Apply();
+        if (m_meshMaterial != null && m_renderer != null) m_renderer.sharedMaterial = m_meshMaterial;
         yield return null;
 
         // Now apply the texture
@@ -480,7 +469,7 @@ public class TerrainChunk : MonoBehaviour
         */
     }
 
-    private void GenerateMeshData() {
+    public void GenerateMeshData() {
         float topLeftX = (float)m_width / -2f;
         float topLeftZ = (float)m_height / 2f;
 
@@ -502,9 +491,14 @@ public class TerrainChunk : MonoBehaviour
                 vertexIndex++;
             }
         }
+
+        if (m_meshFilter != null) {
+            m_meshFilter.sharedMesh = m_meshData.CreateMesh();
+            if (m_collider != null) m_collider.sharedMesh = m_meshFilter.sharedMesh;
+        }
     }
 
-    private IEnumerator GenerateMeshDataCoroutine() {
+    public IEnumerator GenerateMeshDataCoroutine() {
         float topLeftX = (float)m_width / -2f;
         float topLeftZ = (float)m_height / 2f;
 
@@ -527,6 +521,11 @@ public class TerrainChunk : MonoBehaviour
                 if (vertexIndex % m_coroutineNumThreshold == 0) yield return null;
             }
             if (vertexIndex % m_coroutineNumThreshold == 0) yield return null;
+        }
+
+        if (m_meshFilter != null) {
+            m_meshFilter.sharedMesh = m_meshData.CreateMesh();
+            if (m_collider != null) m_collider.sharedMesh = m_meshFilter.sharedMesh;
         }
         yield return null;
     }

@@ -29,12 +29,13 @@ public class TestFinalTerrainManager : MonoBehaviour
     */
     [Space]
     public Transform viewerRef; 
-    [Range(0,3)] public int maxLOD = 3;
+    [Range(0,6)] public int maxLOD = 6;
     public float m_timeToChangeLOD = 5f;
 
     private Dictionary<Vector2Int, TerrainChunk> m_chunkPrefabByDirection;
     private Dictionary<Vector2Int, TerrainChunk> m_chunks;
     private Dictionary<Vector2Int, List<Vector2Int>> m_halfChunks;
+    private Dictionary<Vector2Int, bool> m_chunkUpdating;
     public List<HalfChunk> m_halfChunksDebug;
     public Vector2Int m_prevChunkCoords = Vector2Int.zero, m_prevHalfCoords = Vector2Int.zero;
     private float m_timeSinceLastChange = 0f;
@@ -77,6 +78,13 @@ public class TestFinalTerrainManager : MonoBehaviour
 
         ClearChildrenChunks();
         m_chunks = new Dictionary<Vector2Int, TerrainChunk>();
+        m_chunkUpdating = new Dictionary<Vector2Int, bool>();
+
+        Vector2Int viewerCoords = Vector2Int.zero;
+        if (viewerRef != null) {
+            viewerCoords = GetIndicesFromWorldPosition(viewerRef.position);
+        }
+
         for(int x = 0; x < numCols; x++) {
             int prefabXIndex = (x == 0) ? 0 : (x == numCols-1) ? 2 : 1;
             for(int y = 0; y < numRows; y++) {
@@ -91,19 +99,25 @@ public class TestFinalTerrainManager : MonoBehaviour
                 // Instantiate new chunk at this location.
                 //TerrainChunk chunk = Instantiate(prefab, worldPosition, Quaternion.identity, this.transform) as TerrainChunk;
                 TerrainChunk chunk = Instantiate(chunkPrefab, worldPosition, Quaternion.identity, this.transform) as TerrainChunk;
-                // Initialize its seed, width and height, and offsets
+                // Initialize its seed, width and height, offsets, LODs, etc.
                 chunk.gameObject.name = $"CHUNK {x},{y}";
                 chunk.SetSeed(seed);
                 chunk.SetDimensions(cellWidth, cellHeight);
-                chunk.SetLevelOfDetail(2);
+                int chunkLOD = (viewerRef != null) 
+                    ? Mathf.Clamp(Mathf.Max(Mathf.Abs(index.x-viewerCoords.x), Mathf.Abs(index.y - viewerCoords.y)) - 1, 0, maxLOD) 
+                    : maxLOD;
+                chunk.SetLevelOfDetail(chunkLOD);
                 chunk.SetOffset(x,y);
                 // Initialize its coroutine
-                StartCoroutine(chunk.GenerateMapCoroutine(true));
+                chunk.GenerateMap(true);
                 // Save a reference to it in our chunks dictionary
                 m_chunks.Add(index, chunk);
+                // Update update dict
+                m_chunkUpdating.Add(index, false);
             }
         }
 
+        /*
         // Generate a sub-graph, given half the cell size
         m_halfWidth = cellWidth / 2;
         m_halfHeight = cellHeight / 2;
@@ -130,11 +144,36 @@ public class TestFinalTerrainManager : MonoBehaviour
                 m_halfChunksDebug.Add(hc);
             }
         }
+        */
+
         chunksInitialized = true;
     }
 
     private void Update() {
         if (viewerRef == null || !chunksInitialized) return;
+
+        // Get the current chunk coords of the viewer
+        Vector2Int playerChunkCoords = GetIndicesFromWorldPosition(viewerRef.position);
+        
+        // For each Terrain Chunk, calculate the intended LOD level. If the LOD level ahs changed, we run the coroutien to update it
+        foreach(KeyValuePair<Vector2Int, TerrainChunk> kvp in m_chunks) {
+            // Get chunk details
+            Vector2Int chunkCoords = kvp.Key;
+            TerrainChunk chunk = kvp.Value;
+            int chunkLOD = chunk.levelOfDetail;
+            // Distance. Clamp between 0 and max LOD
+            int distance = Mathf.Max(Mathf.Abs(chunkCoords.x - playerChunkCoords.x), Mathf.Abs(chunkCoords.y - playerChunkCoords.y)) - 1;
+            int clampedDistance = Mathf.Clamp(distance, 0, maxLOD);
+
+            // Check if the LOD is different or not. If so, run the coroutine to update
+            if (chunkLOD != clampedDistance && !m_chunkUpdating[chunkCoords]) {
+                // If we're currently updating, we must stop it and re-update it
+                //StartCoroutine(UpdateChunk(chunkCoords, chunk, clampedDistance));
+                chunk.SetLevelOfDetail(clampedDistance);
+                chunk.GenerateMeshData();
+            }
+        }
+        /*
         GetIndicesFromWorldPosition(viewerRef.position, out Vector2Int chunkCoords, out Vector2Int halfCoords);
         if (m_prevHalfCoords != halfCoords) {
             m_timeSinceLastChange += Time.deltaTime;
@@ -148,8 +187,10 @@ public class TestFinalTerrainManager : MonoBehaviour
         } else {
             m_timeSinceLastChange = 0f;
         }
+        */
     }
 
+    /*
     public void RecalculateLODs(Vector2Int chunkCoords, List<Vector2Int> forceLOD0Coords) {
         foreach(KeyValuePair<Vector2Int, TerrainChunk> kvp in m_chunks) {
             int newLevelOfDetail;
@@ -165,6 +206,14 @@ public class TestFinalTerrainManager : MonoBehaviour
                 StartCoroutine(kvp.Value.GenerateMapCoroutine(false));
             }
         }
+    }
+    */
+
+    private IEnumerator UpdateChunk(Vector2Int coord, TerrainChunk chunk, int lod) {
+        m_chunkUpdating[coord] = true;
+        chunk.SetLevelOfDetail(lod);
+        yield return chunk.GenerateMeshDataCoroutine();
+        m_chunkUpdating[coord] = false;
     }
 
     public void HalfToChunkIndexConversion(Vector2Int halfIndices, out Vector2Int xRange, out Vector2Int yRange) {
@@ -184,6 +233,12 @@ public class TestFinalTerrainManager : MonoBehaviour
             : new Vector2Int(Mathf.Clamp(hhY,0,numRows-1), Mathf.Clamp(hhY,0,numRows-1));   // Odd
     }
 
+    public Vector2Int GetIndicesFromWorldPosition(Vector3 queryPosition) {
+        return new Vector2Int(
+            Mathf.FloorToInt(queryPosition.x/cellWidth), 
+            Mathf.FloorToInt(queryPosition.z/cellHeight)
+        );
+    }
     public void GetIndicesFromWorldPosition(Vector3 queryPosition, out Vector2Int chunk, out Vector2Int half) {
         int hhWidth = m_halfWidth/2;
         int hhHeight = m_halfHeight/2;
