@@ -57,12 +57,11 @@ public class Voronoi : MonoBehaviour
         for(int i = 0; i < m_clusters.Count; i++) {
             DBScanCluster cluster = m_clusters[i];
             Gizmos.color = cluster.color;
-            Gizmos.DrawSphere(transform.position + new Vector3(cluster.centroid.x * m_gizmosDimensions.x, 0f, cluster.centroid.y*m_gizmosDimensions.y), m_gizmosCentroidSize);
+            Gizmos.DrawSphere(transform.position + new Vector3(cluster.centroid.x * m_gizmosDimensions.x, cluster.scaledCentroid.y * m_gizmosHeightMultiplier, cluster.centroid.y * m_gizmosDimensions.y), m_gizmosCentroidSize);
 
             foreach(int pi in cluster.points) {
-                Vector3 p = transform.position + new Vector3(m_centroids[pi].x * m_gizmosDimensions.x, 0f, m_centroids[pi].y * m_gizmosDimensions.y);
+                Vector3 p = transform.position + new Vector3(m_centroids[pi].x * m_gizmosDimensions.x, cluster.scaledCentroid.y * m_gizmosHeightMultiplier, m_centroids[pi].y * m_gizmosDimensions.y);
                 Gizmos.DrawSphere(p, m_gizmosPointSize);
-                Gizmos.DrawCube(p + new Vector3(0f,m_gizmosHeightMultiplier*i/2f,0f), new Vector3(m_gizmosDimension, m_gizmosHeightMultiplier*i, m_gizmosDimension));
             }
         }
     }
@@ -257,8 +256,17 @@ public class Voronoi : MonoBehaviour
                 cluster.centroid += centroids[i];
             }
             cluster.centroid /= cluster.points.Count;
+            cluster.scaledCentroid = new Vector3(cluster.centroid.x, 1f-((float)cluster.points.Count/centroids.Length), cluster.centroid.y);
         }
+    }
 
+    public void SetScale(float width, float height) {
+        foreach(DBScanCluster cluster in m_clusters) {
+            cluster.scaledCentroid = new Vector3(
+                cluster.centroid.x * width,
+                cluster.scaledCentroid.y,
+                cluster.centroid.y * height);
+        }
     }
 
     [System.Serializable]
@@ -267,6 +275,7 @@ public class Voronoi : MonoBehaviour
         public Color color = Color.black;
         public List<int> points = new List<int>();
         public Vector2 centroid;
+        public Vector3 scaledCentroid;
         public int CompareTo(DBScanCluster other) {		
             // A null value means that this object is greater. 
 		    if (other == null) return 1;	

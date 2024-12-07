@@ -36,6 +36,13 @@ public class TestFinalTerrainManager : MonoBehaviour
         Vector2Int viewerCoords = Vector2Int.zero;
         if (m_playerRef != null) viewerCoords = GetIndicesFromWorldPosition(m_playerRef.position);
 
+        // If we have a voronoi tessellation set up, then we generate
+        if (m_voronoi != null) {
+            m_voronoi.SetSeed(m_seed);
+            m_voronoi.GenerateTessellation();
+            m_voronoi.SetScale(width, height);
+        }
+
         for(int x = 0; x < m_numCols; x++) {
             for(int y = 0; y < m_numRows; y++) {
                 // Generate Vector2Int index for this chunk
@@ -58,12 +65,6 @@ public class TestFinalTerrainManager : MonoBehaviour
                 // Save a reference to it in our chunks dictionary
                 m_chunks.Add(index, chunk);
             }
-        }
-
-        // If we have a voronoi tessellation set up, then we generate
-        if (m_voronoi != null) {
-            m_voronoi.SetSeed(m_seed);
-            m_voronoi.GenerateTessellation();
         }
 
         chunksInitialized = true;
