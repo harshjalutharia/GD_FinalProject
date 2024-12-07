@@ -14,6 +14,8 @@ public class TestFinalTerrainManager : MonoBehaviour
     public int cellHeight = 150;
     private int m_halfWidth, m_halfHeight;
     [Space]
+    public TerrainChunk chunkPrefab;
+    /*
     public TerrainChunk m_northChunkPrefab;
     public TerrainChunk m_southChunkPrefab;
     public TerrainChunk m_eastChunkPrefab;
@@ -24,6 +26,7 @@ public class TestFinalTerrainManager : MonoBehaviour
     public TerrainChunk m_southEastChunkPrefab;
     public TerrainChunk m_northWestChunkPrefab;
     public TerrainChunk m_southWestChunkPrefab;
+    */
     [Space]
     public Transform viewerRef; 
     [Range(0,3)] public int maxLOD = 3;
@@ -52,6 +55,7 @@ public class TestFinalTerrainManager : MonoBehaviour
     #endif
 
     private void Awake() {
+        /*
         m_chunkPrefabByDirection = new Dictionary<Vector2Int, TerrainChunk>() {
             {new Vector2Int(0,0), m_southWestChunkPrefab},
             {new Vector2Int(0,1), m_westChunkPrefab},
@@ -63,6 +67,7 @@ public class TestFinalTerrainManager : MonoBehaviour
             {new Vector2Int(2,1), m_eastChunkPrefab},
             {new Vector2Int(2,2), m_northEastChunkPrefab}
         };
+        */
     }
 
     private void Start() {
@@ -78,13 +83,14 @@ public class TestFinalTerrainManager : MonoBehaviour
                 // Generate the prefab index we'll be using, based on our position in our grid.
                 int prefabYIndex = (y == 0) ? 0 : (y == numRows-1) ? 2 : 1;
                 Vector2Int prefabIndex = new Vector2Int(prefabXIndex, prefabYIndex);
-                TerrainChunk prefab = m_chunkPrefabByDirection[prefabIndex];
+                //TerrainChunk prefab = m_chunkPrefabByDirection[prefabIndex];
                 // Generate Vector2Int index for this chunk
                 Vector2Int index = new Vector2Int(x,y);
                 // The world position of this chunk is x=(x*cellWidth), y=(y*cellHeight);
                 Vector3 worldPosition = new Vector3(x*cellWidth, 0f, y*cellHeight);
                 // Instantiate new chunk at this location.
-                TerrainChunk chunk = Instantiate(prefab, worldPosition, Quaternion.identity, this.transform) as TerrainChunk;
+                //TerrainChunk chunk = Instantiate(prefab, worldPosition, Quaternion.identity, this.transform) as TerrainChunk;
+                TerrainChunk chunk = Instantiate(chunkPrefab, worldPosition, Quaternion.identity, this.transform) as TerrainChunk;
                 // Initialize its seed, width and height, and offsets
                 chunk.gameObject.name = $"CHUNK {x},{y}";
                 chunk.SetSeed(seed);

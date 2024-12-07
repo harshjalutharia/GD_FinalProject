@@ -42,7 +42,8 @@ public class Voronoi : MonoBehaviour
     [Header("=== Debug Settings ===")]
     [SerializeField, Tooltip("Print debug?")] protected bool m_showDebug = false;
     [SerializeField, Tooltip("The gizmos width and height")] protected Vector2 m_gizmosDimensions = new Vector2(100f,100f);
-    [SerializeField, Tooltip("The sphere size for region centroids")] protected float m_gizmosCentroidSize = 1f;
+    [SerializeField, Tooltip("The sphere size for region centroids")] protected float m_gizmosCentroidSize = 2f;
+    [SerializeField, Tooltip("The sphere size for region centroids")] protected float m_gizmosPointSize = 1f;
     [SerializeField, Tooltip("The width/height size for region centroids")] protected float m_gizmosDimension = 1f;
     [SerializeField, Tooltip("The height size for region centroids")] protected float m_gizmosHeightMultiplier = 1f;
     protected virtual void OnDrawGizmos() {
@@ -53,13 +54,16 @@ public class Voronoi : MonoBehaviour
         Gizmos.DrawWireCube(worldCenter, new Vector3(m_gizmosDimensions.x, 0f, m_gizmosDimensions.y));
         
         if (m_centroids == null || m_centroids.Length == 0 || m_clusters == null || m_clusters.Count == 0 || m_centroidToClusterMap == null || m_centroidToClusterMap.Length == 0) return;
-        for(int i = 0; i < m_centroids.Length; i++) {
-            int clusterIndex = m_centroidToClusterMap[i];
-            DBScanCluster cluster = m_clusters[clusterIndex];
+        for(int i = 0; i < m_clusters.Count; i++) {
+            DBScanCluster cluster = m_clusters[i];
             Gizmos.color = cluster.color;
-            Vector3 p = transform.position + new Vector3(m_centroids[i].x * m_gizmosDimensions.x, 0f, m_centroids[i].y * m_gizmosDimensions.y);
-            Gizmos.DrawSphere(p, m_gizmosCentroidSize);
-            Gizmos.DrawCube(p + new Vector3(0f,m_gizmosHeightMultiplier*clusterIndex/2f,0f), new Vector3(m_gizmosDimension, m_gizmosHeightMultiplier*clusterIndex, m_gizmosDimension));
+            Gizmos.DrawSphere(transform.position + new Vector3(cluster.centroid.x * m_gizmosDimensions.x, 0f, cluster.centroid.y*m_gizmosDimensions.y), m_gizmosCentroidSize);
+
+            foreach(int pi in cluster.points) {
+                Vector3 p = transform.position + new Vector3(m_centroids[pi].x * m_gizmosDimensions.x, 0f, m_centroids[pi].y * m_gizmosDimensions.y);
+                Gizmos.DrawSphere(p, m_gizmosPointSize);
+                Gizmos.DrawCube(p + new Vector3(0f,m_gizmosHeightMultiplier*i/2f,0f), new Vector3(m_gizmosDimension, m_gizmosHeightMultiplier*i, m_gizmosDimension));
+            }
         }
     }
     #endif
@@ -180,37 +184,44 @@ public class Voronoi : MonoBehaviour
         // Step 2: Among all unclustered core points, 1) create a new cluster, and 2) add all points that are unclustered and density-connected to the current point
         List<DBScanCluster> clusters = new List<DBScanCluster>();
         // First cluster contains all noise points
+        DBScanCluster initialCluster = new DBScanCluster();
+        initialCluster.id = 0;
         clusters.Add(new DBScanCluster());
         int[] centroidToClusterMap = new int[centroids.Length];
         for(int i = 0; i < centroids.Length; i++) {
             // Ignore any that are not core points
-            if (pointClassification[i] != 2) continue;
+            if (pointClassification[i] != 2)    continue;
             // Ignore if this point already is in a cluster
-            if (centroidToClusterMap[i] != 0) continue;
+            if (centroidToClusterMap[i] != 0)   continue;
             // Create its own cluster
             DBScanCluster c = new DBScanCluster();
             clusters.Add(c);
             c.id = clusters.Count-1;
-            c.points.Add(i);
             c.color = new Color(UnityEngine.Random.Range(0f,1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
-            // Add ref to this cluster via mapper
+            c.points.Add(i);
             centroidToClusterMap[i] = c.id;
             // Among all other points, check if they're a core point and can be density-connected to current point
-            for(int j = 0; j < centroids.Length; j++) {
+            for(int j = i+1; j < centroids.Length; j++) {
                 if (i == j) continue;
-                if (pointClassification[j] != 2) continue;  // Ignore if not core poijnt
-                if (centroidToClusterMap[j] != 0) continue; // ignore if this is already classified
+                if (pointClassification[j] != 2)    continue;  // Ignore if not core poijnt
+                if (centroidToClusterMap[j] != 0)   continue; // ignore if this is already classified
                 HashSet<int> visitedPoints = new HashSet<int>();
                 foreach(int nI in pointNeighbors[j]) {
                     if (pointClassification[nI] != 2) continue;
                     visitedPoints.Add(nI);
                 }
-                if (visitedPoints.Contains(i)) {
+                if (visitedPoints.Contains(i) && !c.points.Contains(j)) {
                     c.points.Add(j);
                     centroidToClusterMap[j] = c.id;
                 }
             }
         }
+
+        int totalPointsCount = 0;
+        foreach(DBScanCluster cluster in clusters) {
+            totalPointsCount += cluster.points.Count;
+        }
+        Debug.Log($"Total points in clusters: {totalPointsCount}");
 
         // Step 3: For each unclustered border point, assign it the cluster of the nearest core point
         for(int i = 0; i < centroids.Length; i++) {
@@ -231,12 +242,22 @@ public class Voronoi : MonoBehaviour
             centroidToClusterMap[i] = clusters[centroidToClusterMap[smallestIndex]].id;
         }
 
-        // Step 4: sort the clusters by size
-        m_clusters.Sort();
-
-        // DEBUG
+        // Step 4: sort the clusters by size.
+        clusters.Sort();
         m_clusters = clusters;
-        m_centroidToClusterMap = centroidToClusterMap;
+       
+        // Step 5: for each cluster, map their points to their cluster in `m_centroidToClusterMap`
+        // We cannot use already-generated `centroidToClusterMap` due to sorting, which has messed up the mapping already
+        // Simultaneously, we use this opportunity to estimate the centroid of the cluster itself.
+        m_centroidToClusterMap = new int[centroids.Length];
+        foreach(DBScanCluster cluster in m_clusters) {
+            cluster.centroid = Vector2.zero;
+            foreach(int i in cluster.points) {
+                m_centroidToClusterMap[i] = cluster.id;
+                cluster.centroid += centroids[i];
+            }
+            cluster.centroid /= cluster.points.Count;
+        }
 
     }
 
@@ -245,10 +266,11 @@ public class Voronoi : MonoBehaviour
         public int id = 0;
         public Color color = Color.black;
         public List<int> points = new List<int>();
+        public Vector2 centroid;
         public int CompareTo(DBScanCluster other) {		
             // A null value means that this object is greater. 
 		    if (other == null) return 1;	
-			return this.points.Count.CompareTo(other.points.Count);
+			return other.points.Count.CompareTo(this.points.Count);
 	    }
     }
 }
