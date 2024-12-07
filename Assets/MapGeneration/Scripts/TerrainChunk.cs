@@ -117,8 +117,8 @@ public class TerrainChunk : MonoBehaviour
     public int levelOfDetail => m_levelOfDetail;
     [SerializeField, Tooltip("The horizontal offset. Also is equivalent to its column index in the terrain grid")]  private int m_offsetX = 0;
     [SerializeField, Tooltip("The vertical offset. Also is equivalent to its row index in the terrain grid")]       private int m_offsetY = 0;
-    [SerializeField, Tooltip("The terrain layers that generate the resulting nosie map")] private List<TerrainLayer> m_layers;
-    [SerializeField, Tooltip("Do we use a custom noise map range or allow the system to estimate?")]    private bool m_manualNoiseRange = false;
+    [SerializeField, Tooltip("The terrain layers that generate the resulting nosie map")]                           private List<TerrainLayer> m_layers;
+    [SerializeField, Tooltip("Do we use a custom noise map range or allow the system to estimate?")]                private bool m_manualNoiseRange = false;
     private System.Random m_prng;
 
     [Header("=== Renderer Settings ===")]
@@ -136,7 +136,7 @@ public class TerrainChunk : MonoBehaviour
     [SerializeField] private float[,] m_noiseMap;
     [SerializeField] private MinMax m_noiseRange;
     [SerializeField] private Texture2D m_textureData;
-    [SerializeField] private MeshData m_meshData;
+    [SerializeField] private Mesh[] m_meshes;
 
     [Header("=== Debug Settings ===")]
     [SerializeField] private bool m_generateOnStart = false;
@@ -157,119 +157,80 @@ public class TerrainChunk : MonoBehaviour
         m_seed = newSeed;
     }
 
-    public void SetDimensions(Vector2Int wh) {
-        m_width = wh.x;
-        m_height = wh.y;
-    }
     public void SetDimensions(int w, int h) {
         m_width = w;
         m_height = h;
     }
+    public void SetDimensions(Vector2Int wh) { SetDimensions(wh.x, wh.y); }
 
     public void SetLevelOfDetail(int newLOD) {
         m_levelOfDetail = Mathf.Clamp(newLOD, 0, 6);
     }
 
-    public void SetOffset(Vector2Int newOffset) {
-        m_offsetX = newOffset.x;
-        m_offsetY = newOffset.y;
-    }
     public void SetOffset(int x, int y) {
         m_offsetX = x;
         m_offsetY = y;
     }
+    public void SetOffset(Vector2Int newOffset) { SetOffset(newOffset.x, newOffset.y); }
 
     private void Awake() {
+        // This MUST be called, no matter how this is used.
         CalculateLODLevels();
     }
 
     private void Start() {
-        if (m_generateOnStart) StartCoroutine(GenerateMapCoroutine());
+        if (m_generateOnStart) GenerateMap();
     }
 
     public void GenerateMap(bool recalculateLODs=true) {
-        Debug.Log("Generating map via Function");
-
-        // Initialize randomization seed
-        m_prng = new System.Random(m_seed);
-
-        // Generating the noise map
-        GenerateNoise();
-        Debug.Log("Noise Map Generated");
-
-        // Generate texture
-        GenerateMaterial();
-        Debug.Log("Texture Generated");
-
-        // If we are to recalculate LOD levels, then sure
-        if (recalculateLODs) CalculateLODLevels();
-
-        // Generate mesh data
-        GenerateMeshData();
-        Debug.Log("Mesh Generated");
-
         // If toggled to reposition, do so
-        if (m_repositionOnGenerate) {
-            transform.position = new Vector3(m_offsetX*m_width, 0f, m_offsetY*m_height);
-        }
+        if (m_repositionOnGenerate) transform.position = new Vector3(m_offsetX*m_width, 0f, m_offsetY*m_height);
+        // If we are to recalculate LOD levels, then sure
+        if (recalculateLODs)        CalculateLODLevels();
+
+        m_prng = new System.Random(m_seed);     // Initialize randomization seed
+        GenerateNoise();                        // Generating the noise map
+        GenerateMaterial();                     // Generate texture
+        GenerateMeshData();                     // Generate mesh data
     }
 
     public IEnumerator GenerateMapCoroutine(bool recalculateLODs=true) {
-        Debug.Log("Generating map via Coroutine");
-
-        // Initialize randomization seed
-        m_prng = new System.Random(m_seed);
-
-        // Generating the noise map
-        yield return GenerateNoiseCoroutine();
-        Debug.Log("Noise Map Generated");
-
-        // Generate texture
-        yield return GenerateMaterialCoroutine();
-        Debug.Log("Texture Generated");
-
-        // If we are to recalculate LOD levels, then sure
-        if (recalculateLODs) CalculateLODLevels();
-
-        // Generate mesh data
-        yield return GenerateMeshDataCoroutine();
-        Debug.Log("Mesh Generated");
-
         // If toggled to reposition, do so
-        if (m_repositionOnGenerate) {
-            transform.position = new Vector3(m_offsetX*m_width, 0f, m_offsetY*m_height);
-        }
+        if (m_repositionOnGenerate) transform.position = new Vector3(m_offsetX*m_width, 0f, m_offsetY*m_height);
+        // If we are to recalculate LOD levels, then sure
+        if (recalculateLODs)        CalculateLODLevels();
 
+        m_prng = new System.Random(m_seed);         // Initialize randomization seed
+        yield return GenerateNoiseCoroutine();      // Generating the noise map
+        yield return GenerateMaterialCoroutine();   // Generate texture
+        yield return GenerateMeshDataCoroutine();   // Generate mesh data
         yield return null;
     }
 
     private void GenerateNoise() {
-        float[,] data = new float[gridWidth,gridHeight];
-        MinMax dataRange = (!m_manualNoiseRange) ? new MinMax { min=float.MaxValue, max=float.MinValue } : m_noiseRange;
+        float[,] data = new float[gridWidth,gridHeight];    // Initialize the noise map array
+        MinMax dataRange = (!m_manualNoiseRange)            // Initialize the minmax
+            ? new MinMax { min=float.MaxValue, max=float.MinValue } 
+            : m_noiseRange;
+
+         // Initialize the loop.
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
+                // Sequentially add onto the value based on the layer types
                 float value = 0f;
                 for(int i = 0; i < m_layers.Count; i++) {
                     TerrainLayer layer = m_layers[i];
                     if (layer.applicationType != ApplicationType.Off) {
                         float v = layer.GeneratePoint(m_prng, x, y, m_width, m_height, m_offsetX, m_offsetY);
                         switch(layer.applicationType) {
-                            case ApplicationType.Add:
-                                value += v;
-                                break;
-                            case ApplicationType.Subtract:
-                                value -= v;
-                                break;
-                            case ApplicationType.Multiply:
-                                value *= v;
-                                break;
-                            case ApplicationType.Divide:
+                            case ApplicationType.Add:       value += v;     break;
+                            case ApplicationType.Subtract:  value -= v;     break;
+                            case ApplicationType.Multiply:  value *= v;     break;
+                            case ApplicationType.Divide:    
                                 if (v == 0f) v = 0.00001f;
                                 value /= v;
                                 break;
-                            default: // Set
-                                value = v;
-                                break;
+                            default:                        value = v;      break;
                         }
                     }
                 }
@@ -285,52 +246,39 @@ public class TerrainChunk : MonoBehaviour
     }
 
     private IEnumerator GenerateNoiseCoroutine() {
-        // Initialize the noise map array
-        float[,] data = new float[gridWidth,gridHeight];
-
-        // Initialize the minmax
-        MinMax dataRange = (!m_manualNoiseRange) ? new MinMax { min=float.MaxValue, max=float.MinValue } : m_noiseRange;
+        float[,] data = new float[gridWidth,gridHeight];    // Initialize the noise map array
+        MinMax dataRange = (!m_manualNoiseRange)            // Initialize the minmax
+            ? new MinMax { min=float.MaxValue, max=float.MinValue } 
+            : m_noiseRange;
 
         // Initialize the loop. We use a counter due to this being a coroutine
         int counter = 0;
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
-                
-                // With an initial value of 0, we consecutively add layers on top of it based on the terrain layers
+                // Sequentially add onto the value based on the layer types
                 float value = 0f;
                 for(int i = 0; i < m_layers.Count; i++) {
                     TerrainLayer layer = m_layers[i];
                     if (layer.applicationType != ApplicationType.Off) {
                         float v = layer.GeneratePoint(m_prng, x, y, m_width, m_height, m_offsetX, m_offsetY);
                         switch(layer.applicationType) {
-                            case ApplicationType.Add:
-                                value += v;
-                                break;
-                            case ApplicationType.Subtract:
-                                value -= v;
-                                break;
-                            case ApplicationType.Multiply:
-                                value *= v;
-                                break;
+                            case ApplicationType.Add:       value += v;     break;
+                            case ApplicationType.Subtract:  value -= v;     break;
+                            case ApplicationType.Multiply:  value *= v;     break;
                             case ApplicationType.Divide:
                                 if (v == 0f) v = 0.00001f;
                                 value /= v;
                                 break;
-                            default: // Set
-                                value = v;
-                                break;
+                            default:                        value = v;      break;
                         }
                     }
                 }
                 data[x,y] = value;
-
-                // Set min and max values
                 if (!m_manualNoiseRange) {
                     if (value > dataRange.max) dataRange.max = value;
                     if (value < dataRange.min) dataRange.min = value;
                 }
                 
-                // Coroutine logic
                 counter++;
                 if (counter % m_coroutineNumThreshold == 0) {
                     yield return null;
@@ -339,19 +287,9 @@ public class TerrainChunk : MonoBehaviour
             }
         }
 
-        // End
         m_noiseMap = data;
         m_noiseRange = dataRange;
         yield return null;
-
-        /*
-        heightMap = new float[gridWidth, gridHeight];
-        for (int x = 0; x < gridWidth; x++) {
-            for (int y = 0; y < gridHeight; y++) {
-                noiseMap[x,y] /= maxValue;
-            }
-        }
-        */
     }
 
     private void GenerateMaterial() {
@@ -445,88 +383,56 @@ public class TerrainChunk : MonoBehaviour
         m_textureData.Apply();
         if (m_meshMaterial != null && m_renderer != null) m_renderer.sharedMaterial = m_meshMaterial;
         yield return null;
-
-        // Now apply the texture
-        /*
-        int counter = 0;
-        for (int x = 0; x < gridWidth; x++) {
-            for (int y = 0; y < gridHeight; y++) {
-                float sample = m_noiseMap[x,y];
-                Color color = new Color(sample,sample,sample);
-                m_textureData.SetPixel(x, y, color);
-                counter++;
-                if (counter % m_coroutineNumThreshold == 0) {
-                    yield return null;
-                    counter = 0;
-                }
-            }
-            counter++;
-            if (counter % m_coroutineNumThreshold == 0) {
-                yield return null;
-                counter = 0;
-            }
-        }
-        */
     }
 
     public void GenerateMeshData() {
-        float topLeftX = (float)m_width / -2f;
-        float topLeftZ = (float)m_height / 2f;
-
-        //int meshSimplificationIncrement = (m_levelOfDetail == 0) ? 1 : m_levelOfDetail * 2;
-        int meshSimplificationIncrement = m_lodLevels[m_levelOfDetail];
-        int verticesPerLine = m_width / meshSimplificationIncrement + 1;
-
-        m_meshData = new MeshData(verticesPerLine, verticesPerLine);
-        int vertexIndex = 0;
-
-        for(int y = 0; y < gridHeight; y+=meshSimplificationIncrement) {
-            for(int x = 0; x < gridWidth; x+=meshSimplificationIncrement) {
-                m_meshData.vertices[vertexIndex] = new Vector3(x, m_noiseMap[x,y], y);
-                m_meshData.uvs[vertexIndex] = new Vector2(x/(float)gridWidth, y/(float)gridHeight);
-                if (x < m_width && y < m_height) {
-                    m_meshData.AddTriangle(vertexIndex, vertexIndex+verticesPerLine, vertexIndex+verticesPerLine+1);
-                    m_meshData.AddTriangle(vertexIndex+verticesPerLine+1, vertexIndex+1, vertexIndex);
+        for(int i = 0; i < m_meshes.Length; i++) {
+            int meshSimplificationIncrement = m_lodLevels[i];
+            int verticesPerLine = m_width / meshSimplificationIncrement + 1;
+            MeshData meshData = new MeshData(verticesPerLine, verticesPerLine);
+            int vertexIndex = 0;
+            for(int y = 0; y < gridHeight; y+=meshSimplificationIncrement) {
+                for(int x = 0; x < gridWidth; x+=meshSimplificationIncrement) {
+                    meshData.vertices[vertexIndex] = new Vector3(x, m_noiseMap[x,y], y);
+                    meshData.uvs[vertexIndex] = new Vector2(x/(float)gridWidth, y/(float)gridHeight);
+                    if (x < m_width && y < m_height) {
+                        meshData.AddTriangle(vertexIndex, vertexIndex+verticesPerLine, vertexIndex+verticesPerLine+1);
+                        meshData.AddTriangle(vertexIndex+verticesPerLine+1, vertexIndex+1, vertexIndex);
+                    }
+                    vertexIndex++;
                 }
-                vertexIndex++;
             }
+
+            m_meshes[i] = meshData.CreateMesh();
         }
 
-        if (m_meshFilter != null) {
-            m_meshFilter.sharedMesh = m_meshData.CreateMesh();
-            if (m_collider != null) m_collider.sharedMesh = m_meshFilter.sharedMesh;
-        }
+        SetLODMesh(m_levelOfDetail);
     }
 
     public IEnumerator GenerateMeshDataCoroutine() {
-        float topLeftX = (float)m_width / -2f;
-        float topLeftZ = (float)m_height / 2f;
-
-        //int meshSimplificationIncrement = (m_levelOfDetail == 0) ? 1 : m_levelOfDetail * 2;
-        int meshSimplificationIncrement = m_lodLevels[m_levelOfDetail];
-        int verticesPerLine = gridWidth / meshSimplificationIncrement + 1;
-
-        m_meshData = new MeshData(verticesPerLine, verticesPerLine);
-        int vertexIndex = 0;
-
-        for(int y = 0; y < gridHeight; y+=meshSimplificationIncrement) {
-            for(int x = 0; x < gridWidth; x+=meshSimplificationIncrement) {
-                m_meshData.vertices[vertexIndex] = new Vector3(x, m_noiseMap[x,y], y);
-                m_meshData.uvs[vertexIndex] = new Vector2(x/(float)gridWidth, y/(float)gridHeight);
-                if (x < m_width && y < m_height) {
-                    m_meshData.AddTriangle(vertexIndex, vertexIndex+verticesPerLine, vertexIndex+verticesPerLine+1);
-                    m_meshData.AddTriangle(vertexIndex+verticesPerLine+1, vertexIndex+1, vertexIndex);
+        for(int i = 0; i < m_meshes.Length; i++) {
+            int meshSimplificationIncrement = m_lodLevels[i];
+            int verticesPerLine = gridWidth / meshSimplificationIncrement + 1;
+            MeshData meshData = new MeshData(verticesPerLine, verticesPerLine);
+            int vertexIndex = 0;
+            for(int y = 0; y < gridHeight; y+=meshSimplificationIncrement) {
+                for(int x = 0; x < gridWidth; x+=meshSimplificationIncrement) {
+                    meshData.vertices[vertexIndex] = new Vector3(x, m_noiseMap[x,y], y);
+                    meshData.uvs[vertexIndex] = new Vector2(x/(float)gridWidth, y/(float)gridHeight);
+                    if (x < m_width && y < m_height) {
+                        meshData.AddTriangle(vertexIndex, vertexIndex+verticesPerLine, vertexIndex+verticesPerLine+1);
+                        meshData.AddTriangle(vertexIndex+verticesPerLine+1, vertexIndex+1, vertexIndex);
+                    }
+                    vertexIndex++;
+                    if (vertexIndex % m_coroutineNumThreshold == 0) yield return null;
                 }
-                vertexIndex++;
                 if (vertexIndex % m_coroutineNumThreshold == 0) yield return null;
             }
-            if (vertexIndex % m_coroutineNumThreshold == 0) yield return null;
+
+            m_meshes[i] = meshData.CreateMesh();
         }
 
-        if (m_meshFilter != null) {
-            m_meshFilter.sharedMesh = m_meshData.CreateMesh();
-            if (m_collider != null) m_collider.sharedMesh = m_meshFilter.sharedMesh;
-        }
+        SetLODMesh(m_levelOfDetail);
         yield return null;
     }
 
@@ -572,6 +478,16 @@ public class TerrainChunk : MonoBehaviour
             previousFactor = factor;
         }
         // By this point, LOD levels should be set between 0 to 6.
+        // Last thing we do is instantiate the meshes array
+        m_meshes = new Mesh[7];
+    }
+
+    public void SetLODMesh(int setTo) {
+        m_levelOfDetail = setTo;
+        if (m_meshFilter != null) {
+            m_meshFilter.sharedMesh = m_meshes[setTo];
+            if (m_collider != null) m_collider.sharedMesh = m_meshes[setTo];
+        }
     }
 
     private void OnValidate() {
