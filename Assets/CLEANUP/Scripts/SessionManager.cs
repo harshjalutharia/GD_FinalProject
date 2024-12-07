@@ -143,12 +143,16 @@ public class SessionManager : MonoBehaviour
             yield return StartCoroutine(FadeImage(m_slideshowImage, 1f, 0f, m_slideTransitionTime));
         }
 
-        // Once reaching this point, we've completed all slideshow slides and faded out.
+        // After finishing the slideshow:
         m_slideshowActive = false;
+        // If everything else is done, just enable skip instead of auto-initializing.
+        if (m_allGeneratorsCompleted && !m_playerViewInitialized)
+        {
+            // Enable the skip action so the user must press it
+            m_skipCutsceneAction.action.Enable();
+        }
 
-        // If our generators have finished by this point, then we can simply initialize player view. If not though, we wait.
-        if (m_allGeneratorsCompleted && !m_playerViewInitialized) InitializePlayerView();
-        
+
     }
 
     private IEnumerator FadeImage(Image image, float startAlpha, float endAlpha, float duration)
@@ -346,19 +350,25 @@ public class SessionManager : MonoBehaviour
                 break;
             default: break;
         }
-        
-        if (m_allGeneratorsCompleted) {
-            Debug.Log("All generators completed! We can now proceed with loading in the player view");
-            // Two possibilities. If we're still running the slideshow, then we have to allow the player to skip the cutscene
-            if (m_slideshowActive) {
+
+        if (m_allGeneratorsCompleted)
+        {
+            Debug.Log("All generators completed!");
+            // If slideshow already finished and player view is not initialized, enable skip.
+            if (m_slideshowActive)
+            {
                 CanvasController.current.ToggleLoadingIconsGroup(false);
                 m_skipCutsceneAction.action.Enable();
             }
             // Otherwise, we simply hop to initializing the player view
-            else if (!m_playerViewInitialized) {
+            else if (!m_playerViewInitialized)
+            {
+                CanvasController.current.ToggleLoadingIconsGroup(false);
+                m_skipCutsceneAction.action.Enable();
                 InitializePlayerView();
             }
         }
+
     }
 
     private void OnDestroy() {
