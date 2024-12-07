@@ -117,6 +117,9 @@ public class TerrainChunk : MonoBehaviour
     public int levelOfDetail => m_levelOfDetail;
     [SerializeField, Tooltip("The horizontal offset. Also is equivalent to its column index in the terrain grid")]  private int m_offsetX = 0;
     [SerializeField, Tooltip("The vertical offset. Also is equivalent to its row index in the terrain grid")]       private int m_offsetY = 0;
+
+    [Header("=== Layering & Noise Calculation ===")]
+    [SerializeField, Tooltip("Voronoi map, if we want to apply it")]                                                private Voronoi m_regionVoronoi = null;
     [SerializeField, Tooltip("The terrain layers that generate the resulting nosie map")]                           private List<TerrainLayer> m_layers;
     [SerializeField, Tooltip("Do we use a custom noise map range or allow the system to estimate?")]                private bool m_manualNoiseRange = false;
     private System.Random m_prng;
@@ -173,6 +176,10 @@ public class TerrainChunk : MonoBehaviour
     }
     public void SetOffset(Vector2Int newOffset) { SetOffset(newOffset.x, newOffset.y); }
 
+    public void SetVoronoi(Voronoi voronoi=null) {
+        m_regionVoronoi = voronoi;
+    }
+
     private void Awake() {
         // This MUST be called, no matter how this is used.
         CalculateLODLevels();
@@ -218,6 +225,10 @@ public class TerrainChunk : MonoBehaviour
             for (int y = 0; y < gridHeight; y++) {
                 // Sequentially add onto the value based on the layer types
                 float value = 0f;
+                // If the voronoi map exists, we set the base value to the closest cluster's world height
+                if (m_regionVoronoi != null) {
+                    value = m_regionVoronoi.QueryHeightFromCluster(new Vector3(x+(m_offsetX*m_width), 0f, y+(m_offsetY*m_height)));
+                }
                 for(int i = 0; i < m_layers.Count; i++) {
                     TerrainLayer layer = m_layers[i];
                     if (layer.applicationType != ApplicationType.Off) {

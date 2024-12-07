@@ -27,6 +27,16 @@ public class TestFinalTerrainManager : MonoBehaviour
     private Dictionary<Vector2Int, TerrainChunk> m_chunks;
     private bool chunksInitialized = false;
 
+    #if UNITY_EDITOR
+    void OnDrawGizmos() {
+        if (!chunksInitialized || m_voronoi == null || m_playerRef == null) return;
+        Voronoi.DBScanCluster closestCluster = m_voronoi.QueryCluster(m_playerRef.position);
+        Vector3 clusterPos = new Vector3(closestCluster.centroid.x * width, 0f, closestCluster.centroid.z * height);
+        Gizmos.color = Color.black;
+        Gizmos.DrawCube(clusterPos, Vector3.one * 20);
+    }
+    #endif
+
     private void Start() {
         // CLear all existing chunks, and initialize the chunk collection
         ClearChildrenChunks();
@@ -39,8 +49,8 @@ public class TestFinalTerrainManager : MonoBehaviour
         // If we have a voronoi tessellation set up, then we generate
         if (m_voronoi != null) {
             m_voronoi.SetSeed(m_seed);
-            m_voronoi.GenerateTessellation();
             m_voronoi.SetScale(width, height);
+            m_voronoi.GenerateTessellation();
         }
 
         for(int x = 0; x < m_numCols; x++) {
@@ -60,6 +70,7 @@ public class TestFinalTerrainManager : MonoBehaviour
                     : m_maxLOD;
                 chunk.SetLevelOfDetail(chunkLOD);
                 chunk.SetOffset(x,y);
+                chunk.SetVoronoi(m_voronoi);
                 // Initialize its coroutine
                 chunk.GenerateMap(true);
                 // Save a reference to it in our chunks dictionary

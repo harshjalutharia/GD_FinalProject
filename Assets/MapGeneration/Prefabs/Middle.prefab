@@ -125,6 +125,7 @@ MonoBehaviour:
   m_levelOfDetail: 0
   m_offsetX: 1
   m_offsetY: 1
+  m_regionVoronoi: {fileID: 0}
   m_layers:
   - name: Falloff
     layerType: 2
@@ -463,10 +464,19 @@ MonoBehaviour:
   m_renderer: {fileID: 1443572427384837443}
   m_collider: {fileID: 237216597605213681}
   m_filterMode: 0
+  m_lodLevels: 01000000020000000300000005000000060000000a0000000f000000
   m_noiseRange:
     min: 0
     max: 60
   m_textureData: {fileID: 0}
+  m_meshes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   m_generateOnStart: 0
   m_repositionOnGenerate: 1
   m_coroutineNumThreshold: 20
