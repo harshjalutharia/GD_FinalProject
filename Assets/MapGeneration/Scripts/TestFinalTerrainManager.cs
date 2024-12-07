@@ -17,11 +17,13 @@ public class TestFinalTerrainManager : MonoBehaviour
     public float height => (float)m_numRows * m_cellHeight;
     [SerializeField, Tooltip("The maximum LOD we want to enforce for terrain chunks"), Range(0,6)]  private int m_maxLOD = 6;
 
-    [Header("=== References ===")]
+    [Header("=== Core References ===")]
     [SerializeField, Tooltip("The TerrainChunk prefab")]    private TerrainChunk m_chunkPrefab;
     [SerializeField, Tooltip("Reference to the player")]    private Transform m_playerRef; 
 
-    private Dictionary<Vector2Int, TerrainChunk> m_chunkPrefabByDirection;
+    [Header("=== Region Determination ===")]
+    [SerializeField, Tooltip("Voronoi region tessellation for region determination")]   private Voronoi m_voronoi;
+
     private Dictionary<Vector2Int, TerrainChunk> m_chunks;
     private bool chunksInitialized = false;
 
@@ -57,6 +59,13 @@ public class TestFinalTerrainManager : MonoBehaviour
                 m_chunks.Add(index, chunk);
             }
         }
+
+        // If we have a voronoi tessellation set up, then we generate
+        if (m_voronoi != null) {
+            m_voronoi.SetSeed(m_seed);
+            m_voronoi.GenerateTessellation();
+        }
+
         chunksInitialized = true;
     }
 
