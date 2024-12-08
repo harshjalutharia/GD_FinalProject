@@ -3,15 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DataStructures.ViliWonka.KDTree;
+using UnityEngine.Events;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 public class Voronoi : MonoBehaviour
 {
+    public static Voronoi current;
 
     [Header("=== Voronoi Tessellation Settings ===")]
     [SerializeField, Tooltip("The seed used for pseudo random generation")] protected int m_seed;
+    public int seed => m_seed;
     [SerializeField, Tooltip("How many segments do we want?")]      protected int m_numSegments = 50;
     [SerializeField, Tooltip("Buffer ratio from horizontal edges"), Range(0f,0.5f)] protected float m_horizontalBuffer = 0.1f;
     [SerializeField, Tooltip("Buffer ratio from vertical edges"), Range(0f, 0.5f)]  protected float m_verticalBuffer = 0.1f;
@@ -22,6 +25,24 @@ public class Voronoi : MonoBehaviour
     [Header("=== DBScan Clustering Settings ===")]
     [SerializeField, Tooltip("The epsilon distance required for DBScan"), Range(0f,1f)] protected float m_dbscanEpsilon = 0.1f;
     [SerializeField, Tooltip("The minimum number of points for core point classification"), Range(0,20)] protected int m_dbscanMinPoints = 10;
+
+    [Header("=== Region Determination ===")]
+    [SerializeField] private RegionAttributes m_grasslandsAttributes;
+    [SerializeField] private RegionAttributes m_oakAttributes;
+    [SerializeField] private RegionAttributes m_birchAttributes;
+    [SerializeField] private RegionAttributes m_spruceAttributes;
+    [SerializeField] private RegionAttributes m_defaultAttributes;
+
+    [Header("=== Outputs - READ ONLY ===")]
+    [SerializeField, Tooltip("The voronoi segment centroids")]  protected Vector3[] m_centroids;
+    [SerializeField] private List<DBScanCluster> m_clusters;
+    [SerializeField] private List<Region> m_regions;
+    [Space]
+    [SerializeField] private Region m_grasslandsRegion;
+    [SerializeField] private Region m_oakRegion;
+    [SerializeField] private Region m_birchRegion;
+    [SerializeField] private Region m_spruceRegion;
+    [SerializeField] private Region m_defaultRegion;
     
     [Header("=== Noise Map Interactions ===")]
     [SerializeField, Tooltip("The world width of the resulting voronoi map. Used in gizmos rendering + for cluster querying when provided world positions")]    protected float m_worldWidth = 1f;
@@ -30,16 +51,17 @@ public class Voronoi : MonoBehaviour
     [SerializeField, Tooltip("The height multiplier when converting from noise height to world height")]    protected float m_heightMultiplier = 1f;
 
     [Header("=== Inspector tools ===")]
+    [SerializeField, Tooltip("Do we use a coroutine?")] private bool m_useCoroutine = false;
+    [SerializeField, Tooltip("If using a coroutine, then how many for-loop iterations do we wait for each frame?")] private int m_coroutineNumThreshold = 20;
+    [SerializeField, Tooltip("Should we generate on start?")]   private bool m_generateOnStart = true;
     [SerializeField, Tooltip("Should we auto-updated per change?")] protected bool m_autoUpdate = true;
     public bool autoUpdate => m_autoUpdate;
 
-    [Header("=== Outputs - READ ONLY ===")]
-    [SerializeField, Tooltip("The voronoi segment centroids")]  protected Vector3[] m_centroids;
-    [SerializeField] private List<DBScanCluster> m_clusters;
-    
-    private int[] m_pointClass;
-    private int[] m_centroidToClusterMap;
+    [Header("=== On Completion ===")]
+    public UnityEvent onCompletion;
+
     private KDTree m_centroidTree;
+    private int[] m_centroidToClusterMap;
     private Vector3[] m_clusterCentroids;
     private KDTree m_clusterCentroidTree;
     private Vector3[] m_clusterWorldCentroids;
@@ -56,18 +78,25 @@ public class Voronoi : MonoBehaviour
     protected virtual void OnDrawGizmos() {
         if (!m_showDebug) return;
 
-        Gizmos.color = Color.white;
+        Gizmos.color = Color.black;
         Vector3 worldCenter = transform.position + new Vector3(m_worldWidth/2f,0f,m_worldHeight/2f);
-        Gizmos.DrawWireCube(worldCenter, new Vector3(m_worldWidth, 0f, m_worldHeight));
+        Vector3 world1 = transform.rotation * transform.position;
+        Vector3 world2 = transform.rotation * (transform.position + new Vector3(m_worldWidth, 0f, 0f));
+        Vector3 world3 = transform.rotation * (transform.position + new Vector3(0f, 0f, m_worldHeight));
+        Vector3 world4 = transform.rotation * (transform.position + new Vector3(m_worldWidth, 0f, m_worldHeight));
+        Gizmos.DrawLine(world1, world2);
+        Gizmos.DrawLine(world1, world3);
+        Gizmos.DrawLine(world2, world4);
+        Gizmos.DrawLine(world3, world4);
         
         if (m_centroids == null || m_centroids.Length == 0 || m_clusters == null || m_clusters.Count == 0 || m_centroidToClusterMap == null || m_centroidToClusterMap.Length == 0) return;
         for(int i = 0; i < m_clusters.Count; i++) {
             DBScanCluster cluster = m_clusters[i];
             Gizmos.color = cluster.color;
-            Gizmos.DrawSphere(cluster.worldCentroid, m_gizmosCentroidSize);
+            Gizmos.DrawSphere(transform.rotation * (transform.position + cluster.worldCentroid), m_gizmosCentroidSize);
 
             foreach(int pi in cluster.points) {
-                Vector3 p = transform.position + new Vector3(m_centroids[pi].x * m_worldWidth, cluster.worldCentroid.y, m_centroids[pi].z * m_worldHeight);
+                Vector3 p = transform.rotation * (transform.position + new Vector3(m_centroids[pi].x * m_worldWidth, cluster.worldCentroid.y, m_centroids[pi].z * m_worldHeight));
                 Gizmos.DrawSphere(p, m_gizmosPointSize);
             }
         }
@@ -75,13 +104,13 @@ public class Voronoi : MonoBehaviour
     #endif
 
     public virtual void SetSeed(string newSeed) {
-        if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {
-            m_seed = validNewSeed;
-            return;
+        if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {    
+            m_seed = validNewSeed;  
+            return; 
         }
         m_seed = UnityEngine.Random.Range(0, 1000001);
     }
-    public virtual void SetSeed(int newSeed) {
+    public virtual void SetSeed(int newSeed) {  
         m_seed = newSeed;
     }
 
@@ -90,18 +119,49 @@ public class Voronoi : MonoBehaviour
         m_worldHeight = height;
     }
 
-    public virtual void GenerateTessellation() {
-        m_prng = new System.Random(m_seed);
-        m_clusterCentroidQuery = new KDQuery();
+    private void Awake() {
+        current = this;
+    }
+    private void Start() {
+        // If there is a terrain manager that is active in the world, then get its elements
+        if (TerrainManager.current != null) {
+            SetSeed(TerrainManager.current.seed);
+            SetScale(TerrainManager.current.width, TerrainManager.current.height);
+        }
 
-        m_centroids = GenerateCentroids(m_numSegments);
-        if (m_numRelaxations > 0) m_centroids = LloydRelaxation(m_centroids, m_numRelaxations);
-        m_centroidTree = new KDTree(m_centroids, 32);
-
-        DBScanClusterRegions(m_centroids, m_dbscanEpsilon, m_dbscanMinPoints);
+        if (m_generateOnStart) {
+            if (m_useCoroutine) StartCoroutine(GenerateCoroutine());
+            else Generate();
+        }
     }
 
-    public virtual Vector3[] GenerateCentroids(int n) {
+    public void Generate() {
+        m_prng = new System.Random(m_seed);         // Initialize the randomization
+        m_clusterCentroidQuery = new KDQuery();     // This is a query class that interacts with any KDTrees we formulate.
+        GenerateCentroids(m_numSegments);                   // Generate the initial list of centroids.
+        if (m_numRelaxations > 0) {
+            LloydRelaxation(m_centroids, m_numRelaxations); // We modify the centroid positions via Lloyd Relaxation.
+        }
+        m_centroidTree = new KDTree(m_centroids, 32);       // Generate a KD tree with all the centroids. At this point, the centroids will no longer be modified
+        DBScanClusterRegions(m_centroids, m_dbscanEpsilon, m_dbscanMinPoints);  // Use DBScan to generate clusters, which can be interpreted as regions
+        DetermineRegions(m_clusters);
+        onCompletion?.Invoke();
+    }
+
+    public IEnumerator GenerateCoroutine() {
+        m_prng = new System.Random(m_seed);             // Initialize the randomization
+        m_clusterCentroidQuery = new KDQuery();         // This is a query class that interacts with any KDTrees we formulate.
+        yield return GenerateCentroidsCoroutine(m_numSegments);             // Generate the initial list of centroids.
+        if (m_numRelaxations > 0) {
+            yield return LloydRelaxationCoroutine(m_centroids, m_numRelaxations);    // We modify the centroid positions via Lloyd Relaxation.
+        }
+        m_centroidTree = new KDTree(m_centroids, 32);                       // Generate a KD tree with all the centroids. At this point, the centroids will no longer be modified
+        DBScanClusterRegions(m_centroids, m_dbscanEpsilon, m_dbscanMinPoints);  // Use DBScan to generate clusters, which can be interpreted as regions
+        yield return DetermineRegionsCoroutine(m_clusters);
+        onCompletion?.Invoke();
+    }
+
+    public void GenerateCentroids(int n) {
         List<Vector3> centers = new List<Vector3>();
         int horBound = (int)(100f*m_horizontalBuffer);
         int verBound = (int)(100f*m_verticalBuffer);
@@ -111,10 +171,26 @@ public class Voronoi : MonoBehaviour
             Vector3 c = new Vector3(x,0f,z);
             if (!centers.Contains(c)) centers.Add(c);
         }
-        return centers.ToArray();
+        m_centroids = centers.ToArray();
+    }
+    public IEnumerator GenerateCentroidsCoroutine(int n) {
+        List<Vector3> centers = new List<Vector3>();
+        int horBound = (int)(100f*m_horizontalBuffer);
+        int verBound = (int)(100f*m_verticalBuffer);
+        int counter = 0;
+        while(centers.Count < n) {
+            float x = (float)m_prng.Next(horBound,101-horBound)/100f;
+            float z = (float)m_prng.Next(verBound,101-verBound)/100f;
+            Vector3 c = new Vector3(x,0f,z);
+            if (!centers.Contains(c)) centers.Add(c);
+            counter++;
+            if ((float)counter % m_coroutineNumThreshold == 0) yield return null;
+        }
+        m_centroids = centers.ToArray();
+        yield return null;
     }
 
-    public virtual Vector3[] LloydRelaxation(Vector3[] centroids, int n, int fidelity = 100) {
+    public void LloydRelaxation(Vector3[] centroids, int n, int fidelity = 100) {
         Vector3[] relaxedCentroids = centroids;
         for(int iter = 0; iter < n; iter++) {
             Vector3[] centroidTotals = new Vector3[centroids.Length];
@@ -139,10 +215,41 @@ public class Voronoi : MonoBehaviour
             for(int i = 0; i < centroids.Length; i++) centroidTotals[i] /= (float)centroidCounts[i];
             relaxedCentroids = centroidTotals;
         }
-        return relaxedCentroids;
+        m_centroids = relaxedCentroids;
+    }
+    public IEnumerator LloydRelaxationCoroutine(Vector3[] centroids, int n, int fidelity = 100) {
+        Vector3[] relaxedCentroids = centroids;
+        int counter = 0;
+        for(int iter = 0; iter < n; iter++) {
+            Vector3[] centroidTotals = new Vector3[centroids.Length];
+            int[] centroidCounts = new int[centroids.Length];
+            for(int y = 0; y < fidelity; y++) {
+                for(int x = 0; x < fidelity; x++) {
+                    Vector3 p = new Vector3(x,0f,y) / (float)fidelity;
+                    float smallestDistance = float.MaxValue;
+                    int smallestIndex = 0;
+                    for(int i = 0; i < centroids.Length; i++) {
+                        Vector3 c = relaxedCentroids[i];
+                        float distance = Vector3.Distance(c,p);
+                        if (distance < smallestDistance) {
+                            smallestDistance = distance;
+                            smallestIndex = i;
+                        }
+                        counter++;
+                        if ((float)counter % m_coroutineNumThreshold == 0) yield return null;
+                    }
+                    centroidTotals[smallestIndex] += p;
+                    centroidCounts[smallestIndex] += 1;
+                }
+            }
+            for(int i = 0; i < centroids.Length; i++) centroidTotals[i] /= (float)centroidCounts[i];
+            relaxedCentroids = centroidTotals;
+        }
+        m_centroids = relaxedCentroids;
+        yield return null;
     }
 
-    public virtual void DBScanClusterRegions(Vector3[] centroids, float eps, int minPoints) {
+    public void DBScanClusterRegions(Vector3[] centroids, float eps, int minPoints) {
         //  - core point = any point who, given a radius of epsilon, has at least minPoints number of neighbors.
         //  - border point = not a core point (aka fewer than minPoints neighbors within epsilon radius) but is a neighbor of a core point (aka is within epsilon distance to a core point)
         //  - noise point = neither a core or a border point
@@ -166,15 +273,8 @@ public class Voronoi : MonoBehaviour
             // Get current point
             Vector3 p = centroids[i];
             pointNeighbors[i] = new List<int>();
-            // Iterate through other centroids
-            for(int j = 0; j < centroids.Length; j++) {
-                // Ignore self
-                if (i == j) continue;
-                // Check the distance between p and this centroid
-                float d = Vector3.Distance(p, centroids[j]);
-                // If the distance is no more than epsilon, we consider this a neighbor
-                if (d <= eps) pointNeighbors[i].Add(j);
-            }
+            // Query all neighbors using KDTree
+            m_clusterCentroidQuery.Radius(m_centroidTree, p, eps, pointNeighbors[i]);
             // Check if nNeighbors >= minPoints. If so, this is a core point.
             if (pointNeighbors[i].Count >= minPoints) {
                 pointClassification[i] = 2;
@@ -191,8 +291,6 @@ public class Voronoi : MonoBehaviour
                 }
             }
         }
-        // DEBUG
-        m_pointClass = pointClassification;
 
         // Step 2: Among all unclustered core points, 1) create a new cluster, and 2) add all points that are unclustered and density-connected to the current point
         List<DBScanCluster> clusters = new List<DBScanCluster>();
@@ -202,10 +300,9 @@ public class Voronoi : MonoBehaviour
         clusters.Add(new DBScanCluster());
         int[] centroidToClusterMap = new int[centroids.Length];
         for(int i = 0; i < centroids.Length; i++) {
-            // Ignore any that are not core points
-            if (pointClassification[i] != 2)    continue;
-            // Ignore if this point already is in a cluster
-            if (centroidToClusterMap[i] != 0)   continue;
+            if (pointClassification[i] != 2)    continue;   // Ignore any that are not core points
+            if (centroidToClusterMap[i] != 0)   continue;   // Ignore if this point already is in a cluster
+            
             // Create its own cluster
             DBScanCluster c = new DBScanCluster();
             clusters.Add(c);
@@ -213,11 +310,12 @@ public class Voronoi : MonoBehaviour
             c.color = new Color(UnityEngine.Random.Range(0f,1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
             c.points.Add(i);
             centroidToClusterMap[i] = c.id;
+
             // Among all other points, check if they're a core point and can be density-connected to current point
             for(int j = i+1; j < centroids.Length; j++) {
                 if (i == j) continue;
-                if (pointClassification[j] != 2)    continue;  // Ignore if not core poijnt
-                if (centroidToClusterMap[j] != 0)   continue; // ignore if this is already classified
+                if (pointClassification[j] != 2)    continue;   // Ignore if not core poijnt
+                if (centroidToClusterMap[j] != 0)   continue;   // ignore if this is already classified
                 HashSet<int> visitedPoints = new HashSet<int>();
                 foreach(int nI in pointNeighbors[j]) {
                     if (pointClassification[nI] != 2) continue;
@@ -259,11 +357,8 @@ public class Voronoi : MonoBehaviour
         m_centroidToClusterMap = new int[centroids.Length];
         m_clusterCentroids = new Vector3[m_clusters.Count];
         m_clusterWorldCentroids = new Vector3[m_clusters.Count];
-        float maxPointCountRatio = (float)clusters[0].points.Count/centroids.Length;
-        float minPointCountRatio = (float)clusters[clusters.Count-1].points.Count/centroids.Length;
         for(int ci = 0; ci < m_clusters.Count; ci++) {
             DBScanCluster cluster = m_clusters[ci];
-            //cluster.noiseHeight = 1f-Mathf.InverseLerp(minPointCountRatio, maxPointCountRatio, (float)cluster.points.Count/centroids.Length);
             cluster.noiseHeight = (float)ci/m_clusters.Count;
             cluster.centroid = Vector3.zero;
             foreach(int i in cluster.points) {
@@ -275,10 +370,111 @@ public class Voronoi : MonoBehaviour
             cluster.worldCentroid = transform.position + new Vector3(cluster.centroid.x * m_worldWidth, m_heightCurve.Evaluate(cluster.noiseHeight) * m_heightMultiplier, cluster.centroid.z * m_worldHeight);
             m_clusterCentroids[ci] = cluster.centroid;
             m_clusterWorldCentroids[ci] = cluster.worldCentroid;
-            
         }
         m_clusterCentroidTree = new KDTree(m_clusterCentroids, 32);
         m_clusterWorldCentroidTree = new KDTree(m_clusterWorldCentroids, 16);
+    }
+
+    public void DetermineRegions(List<DBScanCluster> clusters, int numMajorRegions=4, float edgeRatio=0.25f) {
+        Vector2 normalizedCenter = Vector2.one * 0.5f;
+        float maxDistance = 0.5f * Mathf.Sqrt(2f);
+        List<Region> regions = new List<Region>();
+        TerrainChunk.MinMax edgeRange = new TerrainChunk.MinMax { min = edgeRatio, max = 1f-edgeRatio };
+        
+        for(int i = 0; i < clusters.Count; i++) {
+            DBScanCluster cluster = clusters[i];
+            Vector3 clusterCentroid = cluster.worldCentroid;
+            float normalizedX = Mathf.Clamp(clusterCentroid.x / m_worldWidth, 0f, 1f);
+            float normalizedY = Mathf.Clamp(clusterCentroid.z / m_worldHeight, 0f, 1f);
+            int distanceToCenter = Mathf.RoundToInt(Mathf.InverseLerp(maxDistance, 0f, Vector2.Distance(new Vector2(normalizedX, normalizedY), normalizedCenter)) * 10f);
+            int size = Mathf.RoundToInt((float)cluster.points.Count / m_numSegments * 10f);
+            Region region = new Region { majorRegionWeight=distanceToCenter*size };
+            region.clusters = new List<DBScanCluster>();
+            region.clusters.Add(cluster);
+            regions.Add(region);
+        }
+        regions.Sort();
+        // First region: grassland
+        m_grasslandsRegion = regions[0];
+        m_grasslandsRegion.attributes = m_grasslandsAttributes;
+        m_grasslandsRegion.clusters[0].regionIndex = 0;
+        // Second region: oak
+        m_oakRegion = regions[1];
+        m_oakRegion.attributes = m_oakAttributes;
+        m_oakRegion.clusters[0].regionIndex = 1;
+        m_birchRegion = regions[2];
+        m_birchRegion.attributes = m_birchAttributes;
+        m_birchRegion.clusters[0].regionIndex = 2;
+        // Fourth region: spruce
+        m_spruceRegion = regions[3];
+        m_spruceRegion.attributes = m_spruceAttributes;
+        m_spruceRegion.clusters[0].regionIndex = 3;
+        // Final region: Deadlands
+        m_defaultRegion = new Region { majorRegionWeight=0, attributes=m_defaultAttributes };
+        m_defaultRegion.clusters = new List<DBScanCluster>();
+        for(int i = 4; i < regions.Count; i++) {
+            foreach(DBScanCluster cluster in regions[i].clusters) {
+                m_defaultRegion.clusters.Add(cluster);
+                cluster.regionIndex = 4;
+            }
+        } 
+        // Set `m_regions`
+        m_regions = new List<Region>() { m_grasslandsRegion, m_oakRegion, m_birchRegion, m_spruceRegion, m_defaultRegion };
+    }
+    public IEnumerator DetermineRegionsCoroutine(List<DBScanCluster> clusters, int numMajorRegions=4, float edgeRatio=0.25f) {
+        Vector2 normalizedCenter = Vector2.one * 0.5f;
+        float maxDistance = 0.5f * Mathf.Sqrt(2f);
+        List<Region> regions = new List<Region>();
+        TerrainChunk.MinMax edgeRange = new TerrainChunk.MinMax { min = edgeRatio, max = 1f-edgeRatio };
+        int counter = 0;
+
+        for(int i = 0; i < clusters.Count; i++) {
+            DBScanCluster cluster = clusters[i];
+            Vector3 clusterCentroid = cluster.worldCentroid;
+            float normalizedX = Mathf.Clamp(clusterCentroid.x / m_worldWidth, 0f, 1f);
+            float normalizedY = Mathf.Clamp(clusterCentroid.z / m_worldHeight, 0f, 1f);
+            int distanceToCenter = Mathf.RoundToInt(Mathf.InverseLerp(maxDistance, 0f, Vector2.Distance(new Vector2(normalizedX, normalizedY), normalizedCenter)) * 10f);
+            int size = Mathf.RoundToInt((float)cluster.points.Count / m_numSegments * 10f);
+            Region region = new Region { majorRegionWeight=distanceToCenter*size };
+            region.clusters = new List<DBScanCluster>();
+            region.clusters.Add(cluster);
+            regions.Add(region);
+            counter++;
+            if ((float)counter % m_coroutineNumThreshold == 0) yield return null;
+        }
+        regions.Sort();
+        yield return null;
+
+        // First region: grassland
+        m_grasslandsRegion = regions[0];
+        m_grasslandsRegion.attributes = m_grasslandsAttributes;
+        m_grasslandsRegion.clusters[0].regionIndex = 0;
+        // Second region: oak
+        m_oakRegion = regions[1];
+        m_oakRegion.attributes = m_oakAttributes;
+        m_oakRegion.clusters[0].regionIndex = 1;
+        m_birchRegion = regions[2];
+        m_birchRegion.attributes = m_birchAttributes;
+        m_birchRegion.clusters[0].regionIndex = 2;
+        // Fourth region: spruce
+        m_spruceRegion = regions[3];
+        m_spruceRegion.attributes = m_spruceAttributes;
+        m_spruceRegion.clusters[0].regionIndex = 3;
+        // Final region: Deadlands
+        m_defaultRegion = new Region { majorRegionWeight=0, attributes=m_defaultAttributes };
+        m_defaultRegion.clusters = new List<DBScanCluster>();
+        counter = 0;
+        for(int i = 4; i < regions.Count; i++) {
+            foreach(DBScanCluster cluster in regions[i].clusters) {
+                m_defaultRegion.clusters.Add(cluster);
+                cluster.regionIndex = 4;
+                counter++;
+                if ((float)counter % m_coroutineNumThreshold == 0) yield return null;
+            }
+        } 
+        // Set `m_regions`
+        m_regions = new List<Region>() { m_grasslandsRegion, m_oakRegion, m_birchRegion, m_spruceRegion, m_defaultRegion };
+        yield return null;
     }
 
     public DBScanCluster QueryCluster(Vector3 query) {
@@ -287,60 +483,33 @@ public class Voronoi : MonoBehaviour
         m_clusterCentroidQuery.ClosestPoint(m_clusterWorldCentroidTree, flattened, results);
         return m_clusters[results[0]];
     }
-    public float QueryHeightFromCluster(Vector3 query) {
-        Vector3 normalized = new Vector3(Mathf.Clamp(query.x/m_worldWidth, 0f, 1f), 0f, Mathf.Clamp(query.z/m_worldHeight, 0f, 1f));
-        List<int> results = new List<int>();
-        m_clusterCentroidQuery.ClosestPoint(m_clusterCentroidTree, normalized, results);
-        return  m_clusters[results[0]].worldCentroid.y;
-    }
-    public float QueryHeightFromKNearest(Vector3 query, int k=10) {
-        Vector3 normalized = new Vector3(Mathf.Clamp(query.x/m_worldWidth, 0f, 1f), 0f, Mathf.Clamp(query.z/m_worldHeight, 0f, 1f));
-        List<int> results = new List<int>();
-        m_clusterCentroidQuery.KNearest(m_centroidTree, normalized, k, results);
+}
 
-        // Get the height based on the distribution of clusters derived fron the centroids
-        Dictionary<DBScanCluster, int> detectedClusters = new Dictionary<DBScanCluster, int>();
-        foreach(int i in results) {
-            DBScanCluster cluster = m_clusters[m_centroidToClusterMap[i]];
-            if (!detectedClusters.ContainsKey(cluster)) detectedClusters.Add(cluster, 0);
-            detectedClusters[cluster] += 1; 
-        }
-        float height = 0f;
-        foreach(KeyValuePair<DBScanCluster, int> kvp in detectedClusters) height += kvp.Key.worldCentroid.y * (float)kvp.Value/k;
-        return height;
-    }
-    public float QueryHeightFromRadius(Vector3 query, float radius=10f) {
-        Vector3 normalized = new Vector3(Mathf.Clamp(query.x/m_worldWidth, 0f, 1f), 0f, Mathf.Clamp(query.z/m_worldHeight, 0f, 1f));
-        List<int> results = new List<int>();
-        m_clusterCentroidQuery.Radius(m_centroidTree, normalized, radius, results);
+[System.Serializable]
+public class DBScanCluster : IComparable<DBScanCluster> {
+    public int id = 0;
+    public Color color = Color.black;
+    public List<int> points = new List<int>();
+    public float noiseHeight;
+    public Vector3 centroid;
+    public Vector3 worldCentroid;
+    public int regionIndex;
+    public int CompareTo(DBScanCluster other) {		
+        // A null value means that this object is greater. 
+	    if (other == null) return 1;	
+		return other.points.Count.CompareTo(this.points.Count);
+	}
+}
 
-        // Get the height based on the distribution of clusters derived fron the centroids
-        Dictionary<DBScanCluster, int> detectedClusters = new Dictionary<DBScanCluster, int>();
-        int totalPoints = 0;
-        foreach(int i in results) {
-            DBScanCluster cluster = m_clusters[m_centroidToClusterMap[i]];
-            if (!detectedClusters.ContainsKey(cluster)) detectedClusters.Add(cluster, 0);
-            detectedClusters[cluster] += 1; 
-            totalPoints += 1;
-        }
-        float height = 0f;
-        if (totalPoints == 0) totalPoints = 100;
-        foreach(KeyValuePair<DBScanCluster, int> kvp in detectedClusters) height += kvp.Key.worldCentroid.y * (float)kvp.Value/totalPoints;
-        return height;
-    }
-
-    [System.Serializable]
-    public class DBScanCluster : IComparable<DBScanCluster> {
-        public int id = 0;
-        public Color color = Color.black;
-        public List<int> points = new List<int>();
-        public float noiseHeight;
-        public Vector3 centroid;
-        public Vector3 worldCentroid;
-        public int CompareTo(DBScanCluster other) {		
-            // A null value means that this object is greater. 
-		    if (other == null) return 1;	
-			return other.points.Count.CompareTo(this.points.Count);
-	    }
-    }
+[System.Serializable]
+public class Region : IComparable<Region> {
+    public RegionAttributes attributes;
+    public List<DBScanCluster> clusters;
+    [HideInInspector] public int majorRegionWeight;
+    
+    public int CompareTo(Region other) {		
+        // A null value means that this object is greater. 
+	    if (other == null) return 1;
+		return other.majorRegionWeight.CompareTo(this.majorRegionWeight);
+	}
 }

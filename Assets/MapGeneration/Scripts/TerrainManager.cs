@@ -8,20 +8,24 @@ using UnityEditor;
 
 public class TerrainManager : MonoBehaviour
 {
+    public static TerrainManager current;
     public enum FalloffType { Box, NorthSouth, EastWest, Circle }
     public enum LODMethod { Off, Grid, Angle, Both }
 
     [Header("=== Terrrain Grid Settings ===")]
     [SerializeField, Tooltip("The seed used for generation. Passed down to all terrain chunks")]    private int m_seed;
+    public int seed => m_seed;
     [SerializeField, Tooltip("The number of columns (along X-axis) along the chunk grid")]          private int m_numCols = 4;
     [SerializeField, Tooltip("The number of rows (along Z-axis) along the chunk grid")]             private int m_numRows = 4;
     [SerializeField, Tooltip("The width (along X-axis) of each individual chunk")]                  private int m_cellWidth = 150;
     [SerializeField, Tooltip("The height (along Z-axis) of each individual chunk")]                 private int m_cellHeight = 150;
     public float width => (float)m_numCols * m_cellWidth;
     public float height => (float)m_numRows * m_cellHeight;
+    [Space]
     [SerializeField, Tooltip("The maximum LOD we want to enforce for terrain chunks"), Range(0,6)]  private int m_maxLOD = 6;
     [SerializeField, Tooltip("How do chunks determine their LOD? If 'Off', then will default to max LOD level")]    private LODMethod m_lodMethod = LODMethod.Grid;
     [SerializeField, Tooltip("If using angle-based LOD determiantion, what is the angle discretization?")]          private float m_lodAngleThreshold = 30f;
+    [Space]
     [SerializeField, Tooltip("Do we want to randomize the offsets used for terrain generation?")]   private bool m_randomizeOffsets = true;
     [SerializeField, Tooltip("The offsets for perlin noise generation")]                            private Vector2 m_offsets = Vector2.zero;
     private System.Random m_prng;
@@ -29,6 +33,7 @@ public class TerrainManager : MonoBehaviour
     [Header("=== Core References ===")]
     [SerializeField, Tooltip("The TerrainChunk prefab")]    private TerrainChunk m_chunkPrefab;
     [SerializeField, Tooltip("Reference to the player")]    private Transform m_playerRef; 
+    [SerializeField, Tooltip("What layer should we assign to each child?")] private LayerMask m_terrainLayer;
 
     [Header("=== Generation Layers ===")]
     [SerializeField] private bool m_applyValleys = true;
@@ -40,10 +45,6 @@ public class TerrainManager : MonoBehaviour
     [SerializeField, Tooltip("The falloff representation for border terrain")]      private Falloff m_borderFalloff;
     [SerializeField, Tooltip("READ ONLY")]  private TerrainChunk.MinMax m_noiseRange;
 
-    [Header("=== Region Determination ===")]
-    [SerializeField, Tooltip("Do we even apply the voronoi tessellation?")]             private bool m_applyVoronoi = false;
-    [SerializeField, Tooltip("Voronoi region tessellation for region determination")]   private Voronoi m_voronoi;
-
     [Header("=== On Completion ===")]
     public UnityEvent onGenerationEnd;
 
@@ -52,6 +53,7 @@ public class TerrainManager : MonoBehaviour
     private bool chunksInitialized = false;
 
     #if UNITY_EDITOR
+    /*
     void OnDrawGizmos() {
         if (!chunksInitialized || m_voronoi == null || m_playerRef == null) return;
         Voronoi.DBScanCluster closestCluster = m_voronoi.QueryCluster(m_playerRef.position);
@@ -59,6 +61,7 @@ public class TerrainManager : MonoBehaviour
         Gizmos.color = Color.black;
         Gizmos.DrawCube(clusterPos, Vector3.one * 20);
     }
+    */
     #endif
 
     public void SetSeed(string newSeed) {
@@ -71,6 +74,10 @@ public class TerrainManager : MonoBehaviour
     }
     public void SetSeed(int newSeed) {
         m_seed = newSeed;
+    }
+
+    private void Awake() {
+        current = this;
     }
 
     private void Start() {
@@ -87,13 +94,6 @@ public class TerrainManager : MonoBehaviour
         m_prng = new System.Random(m_seed);
         if (m_randomizeOffsets) m_offsets = new Vector2(m_prng.Next(-100000, 100000), m_prng.Next(-100000, 100000));
 
-        // If we have a voronoi tessellation set up, then we generate
-        if (m_voronoi != null) {
-            m_voronoi.SetSeed(m_seed);
-            m_voronoi.SetScale(width, height);
-            m_voronoi.GenerateTessellation();
-        }
-
         for(int x = 0; x < m_numCols; x++) {
             for(int y = 0; y < m_numRows; y++) {
                 // Generate Vector2Int index for this chunk
@@ -102,8 +102,9 @@ public class TerrainManager : MonoBehaviour
                 Vector3 worldPosition = new Vector3(x*m_cellWidth, 0f, y*m_cellHeight);
                 // Instantiate new chunk at this location.
                 TerrainChunk chunk = Instantiate(m_chunkPrefab, worldPosition, Quaternion.identity, this.transform) as TerrainChunk;
-                // Initialize its m_seed, width and height, offsets, LODs, etc.
+                // Initialize its m_seed, layer, width and height, offsets, LODs, etc.
                 chunk.gameObject.name = $"CHUNK {x},{y}";
+                chunk.gameObject.layer = (int)Mathf.Log(m_terrainLayer.value, 2);
                 chunk.SetParent(this);
                 chunk.SetDimensions(m_cellWidth, m_cellHeight);
                 int chunkLOD = (m_playerRef != null) 
@@ -167,13 +168,6 @@ public class TerrainManager : MonoBehaviour
             if (chunkLOD != clampedDistance) chunk.SetLODMesh(clampedDistance);
         
         }
-    }
-
-    public Vector2Int GetIndicesFromWorldPosition(Vector3 queryPosition) {
-        return new Vector2Int(
-            Mathf.FloorToInt(queryPosition.x/m_cellWidth), 
-            Mathf.FloorToInt(queryPosition.z/m_cellHeight)
-        );
     }
     
     public float GetTerrainValueFromWorldPosition(float x, float z) {
@@ -270,6 +264,31 @@ public class TerrainManager : MonoBehaviour
         // If any events are tied to on generation end, invoke them
         onGenerationEnd?.Invoke();
     }
+
+
+    public Vector2Int GetIndicesFromWorldPosition(Vector3 queryPosition) {
+        return new Vector2Int(
+            Mathf.FloorToInt(queryPosition.x/m_cellWidth), 
+            Mathf.FloorToInt(queryPosition.z/m_cellHeight)
+        );
+    }
+
+    public bool TryGetPointOnTerrain(float queryX, float queryZ, out Vector3 point, out Vector3 normal) {
+        // We need to do a raycast. We COULD use mesh.triangles and all that hullaballoo, but it's easier to use physics for this one.
+        float verticalDistance = m_noiseRange.max+10f;
+        Vector3 start = new Vector3(queryX, verticalDistance, queryZ);
+        if (Physics.Raycast(start, Vector3.down, out RaycastHit hit, verticalDistance, m_terrainLayer)) {
+            point = hit.point;
+            normal = hit.normal;
+            return true;
+        }
+        // In the case where we can't get a raycast hit, we'll just return upward normal and start
+        point = start;
+        normal = Vector3.up;
+        return false;
+    }
+    public bool TryGetPointOnTerrain(int queryX, int queryZ, out Vector3 point, out Vector3 normal) {   return TryGetPointOnTerrain((float)queryX, (float)queryZ, out point, out normal); }
+    public bool TryGetPointOnTerrain(Vector3 queryPosition, out Vector3 point, out Vector3 normal) {    return TryGetPointOnTerrain(queryPosition.x, queryPosition.z, out point, out normal); }
 
     public void ClearChunks() {
         if (m_chunks != null && m_chunks.Count > 0) foreach(TerrainChunk chunk in m_chunks.Values) if (chunk != null) DestroyImmediate(chunk.gameObject);

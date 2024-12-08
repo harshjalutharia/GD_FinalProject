@@ -227,7 +227,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8703182417706153909, guid: d6cb9742c7afa0040a770ab5cc7f0c5b, type: 3}
       propertyPath: m_Name
-      value: PT_Pine_Tree_03_green Variant Variant
+      value: PT_Pine_Tree_03_green Variant with Billboard
       objectReference: {fileID: 0}
     - target: {fileID: 8703182417706153909, guid: d6cb9742c7afa0040a770ab5cc7f0c5b, type: 3}
       propertyPath: m_Layer
@@ -239,48 +239,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8326094548010577167, guid: d6cb9742c7afa0040a770ab5cc7f0c5b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 342300519927797557}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8703182417706153909, guid: d6cb9742c7afa0040a770ab5cc7f0c5b, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7261755592478210794}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d6cb9742c7afa0040a770ab5cc7f0c5b, type: 3}
 --- !u!4 &1192727275936598876 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8326094548010577167, guid: d6cb9742c7afa0040a770ab5cc7f0c5b, type: 3}
-  m_PrefabInstance: {fileID: 7134073186456594003}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &2001493310600810982 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8703182417706153909, guid: d6cb9742c7afa0040a770ab5cc7f0c5b, type: 3}
-  m_PrefabInstance: {fileID: 7134073186456594003}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &7261755592478210794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2001493310600810982}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a31377be259019f4d8cc9bca28948273, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_numPoints: 3
-  m_radius: 10
-  m_pivotPoint: {x: 0, y: 4, z: 0}
-  m_renderCamera: {fileID: 0}
-  m_rendererRef: {fileID: 6663700458154285932}
-  m_renderTextureRef: {fileID: 8400000, guid: 303a08e8a0e086e468d60b8c41189a1f, type: 2}
-  m_points:
-  - {x: 0, y: 4, z: 10}
-  - {x: 8.660254, y: 4, z: -5.000001}
-  - {x: -8.660255, y: 4, z: -5}
-  m_cameraRotation: 0.802
-  m_drawGizmos: 1
-  m_pointColor: {r: 0, g: 0, b: 1, a: 1}
---- !u!23 &6663700458154285932 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 4574365849993264447, guid: d6cb9742c7afa0040a770ab5cc7f0c5b, type: 3}
   m_PrefabInstance: {fileID: 7134073186456594003}
   m_PrefabAsset: {fileID: 0}

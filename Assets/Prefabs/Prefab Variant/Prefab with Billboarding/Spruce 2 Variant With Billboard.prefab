@@ -313,7 +313,8 @@ PrefabInstance:
       propertyPath: m_points.Array.data[2].z
       value: -2.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6915151178105236374, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5660160380392802276, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}

@@ -239,48 +239,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2967752088679906739, guid: bfeb26d6621f8ea499b9530542e23a03, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4474406137436822469}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2478178681915189001, guid: bfeb26d6621f8ea499b9530542e23a03, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1416638721279254872}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfeb26d6621f8ea499b9530542e23a03, type: 3}
---- !u!23 &3496150809264117063 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 5440950134291389574, guid: bfeb26d6621f8ea499b9530542e23a03, type: 3}
-  m_PrefabInstance: {fileID: 8865038941974989249}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5920372311203837042 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2967752088679906739, guid: bfeb26d6621f8ea499b9530542e23a03, type: 3}
   m_PrefabInstance: {fileID: 8865038941974989249}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &6440907863080349384 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2478178681915189001, guid: bfeb26d6621f8ea499b9530542e23a03, type: 3}
-  m_PrefabInstance: {fileID: 8865038941974989249}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1416638721279254872
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6440907863080349384}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a31377be259019f4d8cc9bca28948273, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_numPoints: 3
-  m_radius: 8
-  m_pivotPoint: {x: 0, y: 3, z: 0}
-  m_renderCamera: {fileID: 0}
-  m_rendererRef: {fileID: 3496150809264117063}
-  m_renderTextureRef: {fileID: 8400000, guid: 303a08e8a0e086e468d60b8c41189a1f, type: 2}
-  m_points:
-  - {x: 0, y: 3, z: 8}
-  - {x: 6.928203, y: 3, z: -4.000001}
-  - {x: -6.928204, y: 3, z: -4}
-  m_cameraRotation: 0.812
-  m_drawGizmos: 1
-  m_pointColor: {r: 0, g: 0, b: 1, a: 1}

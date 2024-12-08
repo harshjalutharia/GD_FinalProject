@@ -146,46 +146,8 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2575566622272002469, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9037873966170743349}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2951424143206138655, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7123776126294596323}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
---- !u!23 &4000036638458664859 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 9084146820975188139, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
-  m_PrefabInstance: {fileID: 5301760709340172080}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &7018354074274253871 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2951424143206138655, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
-  m_PrefabInstance: {fileID: 5301760709340172080}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &7123776126294596323
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7018354074274253871}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a31377be259019f4d8cc9bca28948273, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_numPoints: 3
-  m_radius: 8
-  m_pivotPoint: {x: 0, y: 3, z: 0}
-  m_renderCamera: {fileID: 0}
-  m_rendererRef: {fileID: 4000036638458664859}
-  m_renderTextureRef: {fileID: 8400000, guid: 303a08e8a0e086e468d60b8c41189a1f, type: 2}
-  m_points:
-  - {x: 0, y: 3, z: 8}
-  - {x: 6.928203, y: 3, z: -4.000001}
-  - {x: -6.928204, y: 3, z: -4}
-  m_cameraRotation: 0.147
-  m_drawGizmos: 1
-  m_pointColor: {r: 0, g: 0, b: 1, a: 1}
 --- !u!4 &7651021429793101461 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2575566622272002469, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}

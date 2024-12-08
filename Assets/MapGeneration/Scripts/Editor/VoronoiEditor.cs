@@ -10,12 +10,12 @@ public class VoronoiEditor : Editor
 
         if (DrawDefaultInspector()) {
             if (v.autoUpdate) {
-                v.GenerateTessellation();
+                v.Generate();
             }
         }
 
         if (GUILayout.Button("Generate Voronoi")) {
-            v.GenerateTessellation();
+            v.Generate();
         }
     }
 }

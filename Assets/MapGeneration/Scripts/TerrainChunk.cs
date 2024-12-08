@@ -7,66 +7,8 @@ using System.Linq;
 [RequireComponent(typeof(Renderer))]
 public class TerrainChunk : MonoBehaviour
 {
-    /*
-    public enum LayerType { Random, Perlin, Falloff, PerlinFalloff }
-    public enum FalloffType { Box, NorthSouth, EastWest, Circle }
-    public enum ApplicationType { Off, Set, Add, Subtract, Multiply, Divide }
-    */
-
     const int textureSize = 512;
     const TextureFormat textureFormat = TextureFormat.RGB565;
-
-    /*
-    [System.Serializable]
-    public class TerrainLayer {
-        public string name;
-        public LayerType layerType;
-        public ApplicationType applicationType;
-        [Space]
-        public AnimationCurve heightCurve;
-        public float heightMultiplier;
-
-        [Header("Perlin Settings")]
-        public float scale = 20f;
-
-        [Header("Falloff Settings")]
-        public Falloff falloff;
-
-        public virtual float GeneratePoint(System.Random prng, int x, int y, int width, int height, int offsetX, int offsetY) { 
-            float value;
-            switch(layerType) {
-                case LayerType.Perlin:
-                    value = GeneratePerlin(x, y, width, height, offsetX*width, offsetY*height);
-                    break;
-                case LayerType.Falloff:
-                    value = GenerateFalloff(x, y, width, height);
-                    break;
-                case LayerType.PerlinFalloff:
-                    value = GeneratePerlin(x, y, width, height, offsetX, offsetY);
-                    value *= GenerateFalloff(x, y, width, height);
-                    break;
-                default:
-                    value = GenerateRandom(prng);
-                    break;
-            }
-            return heightCurve.Evaluate(value) * heightMultiplier;
-        }
-
-        public virtual float GenerateRandom(System.Random prng) {
-            return (float)prng.Next(0,100)/100f;
-        }
-
-        public virtual float GeneratePerlin(int x, int y, int width, int height, int offsetX, int offsetY) {
-            float xCoord = ((float)(x + offsetX)) / scale;
-            float yCoord = ((float)(y + offsetY)) / scale;
-            return Mathf.PerlinNoise(xCoord, yCoord);
-        }
-
-        public virtual float GenerateFalloff(int x, int y, int width, int height) {
-            return this.falloff.GetFalloff((float)x, (float)y);
-        }
-    }
-    */
 
     [System.Serializable]
     public class TextureLayer {
@@ -281,7 +223,7 @@ public class TerrainChunk : MonoBehaviour
                 m_noiseMap[x,y] = originalNoise - m_noiseRange.min;
                 
                 counter++;
-                if (counter % m_coroutineNumThreshold == 0) {
+                if ((float)counter % m_coroutineNumThreshold == 0) {
                     yield return null;
                     counter = 0;
                 }
