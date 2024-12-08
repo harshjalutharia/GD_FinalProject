@@ -483,6 +483,11 @@ public class Voronoi : MonoBehaviour
         m_clusterCentroidQuery.ClosestPoint(m_clusterWorldCentroidTree, flattened, results);
         return m_clusters[results[0]];
     }
+
+    public Region QueryRegion(Vector3 query) {
+        DBScanCluster cluster = QueryCluster(query);
+        return m_regions[cluster.regionIndex];
+    }
 }
 
 [System.Serializable]
