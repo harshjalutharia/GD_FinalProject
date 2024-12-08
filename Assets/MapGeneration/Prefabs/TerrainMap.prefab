@@ -45,7 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_seed: 0
-  m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
   m_offset: {x: 0, y: 0}
@@ -1722,7 +1721,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_seed: 0
-  m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
   m_offset: {x: 0, y: 0}
@@ -1930,7 +1928,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_seed: 0
-  m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
   m_offset: {x: 0, y: 0}
@@ -2101,7 +2098,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_seed: 0
-  m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
   m_offset: {x: 0, y: 0}
@@ -2142,7 +2138,14 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   m_colorMode: 0
-  m_meshMaterialLayers: []
+  m_meshMaterialLayers:
+  - name: 
+    texture: {fileID: 0}
+    tint: {r: 0, g: 0, b: 0, a: 0}
+    tintStrength: 0
+    startHeight: 0
+    blendStrength: 0
+    textureScale: 0
   m_terrainTypes:
   - name: 
     height: 0
@@ -2317,7 +2320,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_seed: 0
-  m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
   m_offset: {x: 0, y: 0}
@@ -4001,7 +4003,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_seed: 0
-  m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
   m_offset: {x: 0, y: 0}
@@ -4223,7 +4224,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_seed: 0
-  m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 501
   m_levelOfDetail: 1
   m_offset: {x: 0, y: 0}
@@ -4406,7 +4406,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_seed: 0
-  m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
   m_offset: {x: 0, y: 0}
@@ -4655,7 +4654,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_seed: 0
-  m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
   m_offset: {x: 0, y: 0}
@@ -4829,7 +4827,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_seed: 0
-  m_dimensions: {x: 100, y: 100}
   m_mapChunkSize: 481
   m_levelOfDetail: 1
   m_offset: {x: 0, y: 0}
