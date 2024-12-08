@@ -119,7 +119,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2523072964955092127, guid: c25fc8d80b5c27b4b9a87497ec827a83, type: 3}
       propertyPath: m_Name
-      value: Birch 2 Variant
+      value: Birch 2 Variat with Billboard
       objectReference: {fileID: 0}
     - target: {fileID: 2523072964955092127, guid: c25fc8d80b5c27b4b9a87497ec827a83, type: 3}
       propertyPath: m_Layer
