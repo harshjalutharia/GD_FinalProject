@@ -7,6 +7,8 @@ using UnityEditor;
 
 public class TestFinalTerrainManager : MonoBehaviour
 {
+    public enum FalloffType { Box, NorthSouth, EastWest, Circle }
+
     [Header("=== Terrrain Grid Settings ===")]
     [SerializeField, Tooltip("The seed used for generation. Passed down to all terrain chunks")]    private int m_seed;
     [SerializeField, Tooltip("The number of columns (along X-axis) along the chunk grid")]          private int m_numCols = 4;
@@ -21,7 +23,12 @@ public class TestFinalTerrainManager : MonoBehaviour
     [SerializeField, Tooltip("The TerrainChunk prefab")]    private TerrainChunk m_chunkPrefab;
     [SerializeField, Tooltip("Reference to the player")]    private Transform m_playerRef; 
 
+    [Header("=== Falloff Map Influence ===")]
+    [SerializeField, Tooltip("Do we even apply the falloff map?")]  private bool m_applyFalloff = true;
+    [SerializeField, Tooltip("The global falloff map settings")]    private Falloff m_globalFalloff;
+
     [Header("=== Region Determination ===")]
+    [SerializeField, Tooltip("Do we even apply the voronoi tessellation?")]             private bool m_applyVoronoi = false;
     [SerializeField, Tooltip("Voronoi region tessellation for region determination")]   private Voronoi m_voronoi;
 
     private Dictionary<Vector2Int, TerrainChunk> m_chunks;
@@ -45,6 +52,10 @@ public class TestFinalTerrainManager : MonoBehaviour
         // For now, set the viewer position to 0,0. If we actually DO have a player, then we get its current position.
         Vector2Int viewerCoords = Vector2Int.zero;
         if (m_playerRef != null) viewerCoords = GetIndicesFromWorldPosition(m_playerRef.position);
+
+        // Initialize falloff width and height
+        m_globalFalloff.width = width;
+        m_globalFalloff.height = height;
 
         // If we have a voronoi tessellation set up, then we generate
         if (m_voronoi != null) {
@@ -70,7 +81,8 @@ public class TestFinalTerrainManager : MonoBehaviour
                     : m_maxLOD;
                 chunk.SetLevelOfDetail(chunkLOD);
                 chunk.SetOffset(x,y);
-                chunk.SetVoronoi(m_voronoi);
+                if (m_applyVoronoi) chunk.SetVoronoi(m_voronoi);
+                if (m_applyFalloff) chunk.SetFalloff(m_globalFalloff);
                 // Initialize its coroutine
                 chunk.GenerateMap(true);
                 // Save a reference to it in our chunks dictionary
@@ -125,5 +137,31 @@ public class TestFinalTerrainManager : MonoBehaviour
         StopAllCoroutines();
         ClearChunks();
         ClearChildrenChunks();
+    }
+}
+
+[System.Serializable]
+public class Falloff {
+    public enum FalloffType { Box, NorthSouth, EastWest, Circle }
+    public FalloffType falloffType;
+    public float width, height;
+    [Range(0f,1f)] public float centerX = 0.5f, centerY = 0.5f;
+    [Range(0f,2f)] public float falloffStart = 0.25f, falloffEnd = 0.5f;
+    public AnimationCurve falloffCurve;
+    public float GetFalloff(float x, float y) {
+        Vector2 coords = new Vector2( x/width, y/height);
+        float t = 0f;
+        switch(falloffType) {
+            case FalloffType.NorthSouth:    t = Mathf.Abs(coords.y-centerY);  break;
+            case FalloffType.EastWest:      t = Mathf.Abs(coords.x-centerX);  break;
+            case FalloffType.Circle:        t = Vector2.Distance(new Vector2(centerX, centerY), coords);                break;
+            default:                        t = Mathf.Max(Mathf.Abs(coords.x-centerX), Mathf.Abs(coords.y-centerY));    break;
+        }
+        float v = (t < falloffStart) 
+            ? 1f 
+            : (t > falloffEnd) 
+                ? 0f 
+                : Mathf.SmoothStep(1f,0f,Mathf.InverseLerp(falloffStart, falloffEnd, t));
+        return falloffCurve.Evaluate(v);
     }
 }

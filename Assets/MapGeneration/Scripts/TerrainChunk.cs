@@ -26,12 +26,7 @@ public class TerrainChunk : MonoBehaviour
         public float scale = 20f;
 
         [Header("Falloff Settings")]
-        public FalloffType falloffType;
-        [Range(0f,1f)] public float centerX = 0.5f;
-        [Range(0f,1f)] public float centerY = 0.5f;
-        [Range(0f,2f)] public float falloffStart;
-        [Range(0f,2f)] public float falloffEnd;
-        public Gradient falloffGradient;
+        public Falloff falloff;
 
         public virtual float GeneratePoint(System.Random prng, int x, int y, int width, int height, int offsetX, int offsetY) { 
             float value;
@@ -64,27 +59,7 @@ public class TerrainChunk : MonoBehaviour
         }
 
         public virtual float GenerateFalloff(int x, int y, int width, int height) {
-            float xCoord = (float)x / width;
-            float yCoord = (float)y / height;
-            float t = 0f;
-            switch(falloffType) {
-                case FalloffType.NorthSouth:
-                    t = Mathf.Abs(yCoord-centerY);
-                    break;
-                case FalloffType.EastWest:
-                    t = Mathf.Abs(xCoord-centerX);
-                    break;
-                case FalloffType.Circle:
-                    t = Vector2.Distance(new Vector2(centerX, centerY), new Vector2(xCoord, yCoord));
-                    break;
-                default:
-                    t = Mathf.Max(Mathf.Abs(xCoord-centerX), Mathf.Abs(yCoord-centerY));
-                    break;
-            }
-            float v = (t < falloffStart) 
-                ? 1f : (t > falloffEnd) 
-                    ? 0f : Mathf.SmoothStep(1f,0f,Mathf.InverseLerp(falloffStart, falloffEnd, t));
-            return falloffGradient.Evaluate(v).r;
+            return this.falloff.GetFalloff((float)x, (float)y);
         }
     }
 
@@ -120,6 +95,7 @@ public class TerrainChunk : MonoBehaviour
 
     [Header("=== Layering & Noise Calculation ===")]
     [SerializeField, Tooltip("Voronoi map, if we want to apply it")]                                                private Voronoi m_regionVoronoi = null;
+    [SerializeField, Tooltip("Global Falloff map, if we want to apply it")]                                         private Falloff m_globalFalloff = null;
     [SerializeField, Tooltip("The terrain layers that generate the resulting nosie map")]                           private List<TerrainLayer> m_layers;
     [SerializeField, Tooltip("Do we use a custom noise map range or allow the system to estimate?")]                private bool m_manualNoiseRange = false;
     private System.Random m_prng;
@@ -163,6 +139,10 @@ public class TerrainChunk : MonoBehaviour
     public void SetDimensions(int w, int h) {
         m_width = w;
         m_height = h;
+        foreach(TerrainLayer layer in m_layers) {
+            layer.falloff.width = (float)w;
+            layer.falloff.height = (float)h;
+        }
     }
     public void SetDimensions(Vector2Int wh) { SetDimensions(wh.x, wh.y); }
 
@@ -178,6 +158,10 @@ public class TerrainChunk : MonoBehaviour
 
     public void SetVoronoi(Voronoi voronoi=null) {
         m_regionVoronoi = voronoi;
+    }
+
+    public void SetFalloff(Falloff newFalloff=null) {
+        m_globalFalloff = newFalloff;
     }
 
     private void Awake() {
@@ -225,9 +209,13 @@ public class TerrainChunk : MonoBehaviour
             for (int y = 0; y < gridHeight; y++) {
                 // Sequentially add onto the value based on the layer types
                 float value = 0f;
+                Vector3 pointPos = new Vector3(x+(m_offsetX*m_width), 0f, y+(m_offsetY*m_height));
                 // If the voronoi map exists, we set the base value to the closest cluster's world height
                 if (m_regionVoronoi != null) {
-                    value = m_regionVoronoi.QueryHeightFromCluster(new Vector3(x+(m_offsetX*m_width), 0f, y+(m_offsetY*m_height)));
+                    value += m_regionVoronoi.QueryHeightFromCluster(pointPos);
+                }
+                if (m_globalFalloff != null) {
+                    value += m_globalFalloff.GetFalloff(pointPos.x, pointPos.z);
                 }
                 for(int i = 0; i < m_layers.Count; i++) {
                     TerrainLayer layer = m_layers[i];
