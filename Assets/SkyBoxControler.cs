@@ -32,6 +32,7 @@ public class SkyboxController : MonoBehaviour
     [SerializeField] private Gradient skyColor;
     [SerializeField] private Gradient equatorColor;
     [SerializeField] private Gradient sunColor;
+    
 
     // Function to see the change in editor
     private void OnValidate()
