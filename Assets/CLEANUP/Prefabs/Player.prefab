@@ -7219,6 +7219,7 @@ MonoBehaviour:
   boosting: 0
   requestFlight: 0
   horizontalVelocity: {x: 0, y: 0, z: 0}
+  largeGemCollected: 0
   flightActivated: 0
   sprintActivated: 0
   paraglidingActivated: 0

@@ -212,6 +212,9 @@ public class PlayerMovement : MonoBehaviour
     
     [SerializeField] 
     private Vector3 horizontalVelocity;
+
+    [SerializeField] 
+    private int largeGemCollected = 0;
     
     [SerializeField] 
     private bool flightActivated;
@@ -842,7 +845,24 @@ public class PlayerMovement : MonoBehaviour
                 StopCoroutine(currentAccelerationCoroutine);
             }
             currentAccelerationCoroutine = StartCoroutine(ExtraAccelerate());
-            
+            return;
+        }
+        
+        // large gem
+        if (other.CompareTag("LargeGem"))
+        {
+            largeGemCollected++;
+            if (largeGemCollected >= 2)
+            {
+                ActivateFlight();
+                ActivateParagliding();
+                ActivatePBoosting();
+            }
+            else if (largeGemCollected >= 1)
+            {
+                ActivatePBoosting();
+            }
+            return;
         }
     }
 

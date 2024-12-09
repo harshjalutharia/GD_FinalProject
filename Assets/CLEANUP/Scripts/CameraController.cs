@@ -64,9 +64,11 @@ public class CameraController : MonoBehaviour
         // Set the references. We attach listeners to each action reference
         m_mapInputActive = false;
         m_firstPersonCameraActive = false;
-        m_actionReference.action.started += OpenMap;
-        m_actionReference.action.canceled += CloseMap;
-        m_actionReference.action.Enable();
+        
+        // we currently disabled this function
+        //m_actionReference.action.started += OpenMap;
+        //m_actionReference.action.canceled += CloseMap;
+        //m_actionReference.action.Enable();
     }
 
     public void OpenMap(InputAction.CallbackContext ctx) {
@@ -184,8 +186,8 @@ public class CameraController : MonoBehaviour
     }
 
     private void OnDisable() {
-        m_actionReference.action.started -= OpenMap;
-        m_actionReference.action.canceled -= CloseMap;
+        // m_actionReference.action.started -= OpenMap;
+        // m_actionReference.action.canceled -= CloseMap;
         m_firstPersonCameraActive = false;
         m_mapInputActive = false;
     }
