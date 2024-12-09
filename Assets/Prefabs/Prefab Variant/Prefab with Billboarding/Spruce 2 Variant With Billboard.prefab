@@ -127,7 +127,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
       propertyPath: m_LODs.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
       propertyPath: m_LocalReferencePoint.x
@@ -143,26 +143,46 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
       propertyPath: m_LODs.Array.data[1].screenRelativeHeight
-      value: 0.4
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
       propertyPath: m_LODs.Array.data[2].renderers.Array.size
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
       propertyPath: m_LODs.Array.data[2].screenRelativeHeight
-      value: 0.02254795
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
+      propertyPath: m_LODs.Array.data[3].renderers.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
+      propertyPath: m_LODs.Array.data[3].screenRelativeHeight
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
       propertyPath: m_LODs.Array.data[2].renderers.Array.data[0].renderer
       value: 
-      objectReference: {fileID: 4970932244547373324}
+      objectReference: {fileID: 7474607104115444303}
     - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
       propertyPath: m_LODs.Array.data[2].renderers.Array.data[1].renderer
       value: 
       objectReference: {fileID: 6216403075624144516}
     - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
       propertyPath: m_LODs.Array.data[2].renderers.Array.data[2].renderer
+      value: 
+      objectReference: {fileID: 694317693245791369}
+    - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
+      propertyPath: m_LODs.Array.data[3].renderers.Array.data[0].renderer
+      value: 
+      objectReference: {fileID: 4970932244547373324}
+    - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
+      propertyPath: m_LODs.Array.data[3].renderers.Array.data[1].renderer
+      value: 
+      objectReference: {fileID: 6216403075624144516}
+    - target: {fileID: 3019935042506348543, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
+      propertyPath: m_LODs.Array.data[3].renderers.Array.data[2].renderer
       value: 
       objectReference: {fileID: 694317693245791369}
     - target: {fileID: 4172942871073692320, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
@@ -183,7 +203,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4543438536316656940, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4847801385577015188, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
       propertyPath: m_Layer
@@ -322,6 +342,11 @@ PrefabInstance:
       addedObject: {fileID: 1458937626361575514}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
+--- !u!23 &7474607104115444303 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6636346802525006572, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
+  m_PrefabInstance: {fileID: 4297042961732264099}
+  m_PrefabAsset: {fileID: 0}
 --- !u!23 &8285910924011584574 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 5287034489210002589, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
