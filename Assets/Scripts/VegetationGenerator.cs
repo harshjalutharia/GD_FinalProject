@@ -11,6 +11,7 @@ public class VegetationGenerator : MonoBehaviour
         public int mapRenderSize;
         public Color mapColor;
         public bool alignWithNormal;
+        public Vector2 scaleRange;
     }
     
     public class ToSpawn {

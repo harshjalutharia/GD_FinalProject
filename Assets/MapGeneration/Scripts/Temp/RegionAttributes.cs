@@ -5,6 +5,7 @@ using UnityEngine;
 public class RegionAttributes : ScriptableObject
 {
     public string name;
+    public Color color;
     [Header("=== Vegetation Settings ===")]
     public List<VegetationGenerator.VegetationPrefab> vegetationPrefabs;
     public float vegetationSpawnThreshold;

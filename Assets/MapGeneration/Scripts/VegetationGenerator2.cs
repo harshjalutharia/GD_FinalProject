@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class VegetationGenerator2 : MonoBehaviour
 {
@@ -32,12 +35,24 @@ public class VegetationGenerator2 : MonoBehaviour
     private Queue<ToSpawn> m_coroutineSpawnQueue;
     private int m_generatedItemsCount;
     private System.Random m_prng;
+    private List<Vector3> m_debugPoints = new List<Vector3>();
 
     public class ToSpawn {
         public GameObject prefab;
         public Vector3 position;
         public Quaternion rotation;
+        public Vector3 scale;
     }
+
+    #if UNITY_EDITOR
+    void OnDrawGizmos() {
+        if (m_debugPoints.Count == 0) return;
+        Gizmos.color = Color.white;
+        foreach(Vector3 p in m_debugPoints) {
+            Gizmos.DrawSphere(p, 0.5f);
+        }
+    }
+    #endif
 
     private void Awake() {
         if (m_vegetationParent == null) m_vegetationParent = this.transform;
@@ -102,6 +117,8 @@ public class VegetationGenerator2 : MonoBehaviour
                 if ((float)m_prng.Next(0,1000)/1000f < currentRegion.attributes.vegetationSpawnThreshold) continue;
                 if (steepness > currentRegion.attributes.vegetationSteepnessThreshold) continue;
                 if (point.y > currentRegion.attributes.vegetationHeightRange.max || point.y < currentRegion.attributes.vegetationHeightRange.min) continue;
+
+                m_debugPoints.Add(point);
                 
                 // Select which prefab to use, and get its characteristics
                 int prefabIndex = m_prng.Next(0, prefabs.Count);
@@ -116,9 +133,10 @@ public class VegetationGenerator2 : MonoBehaviour
                 // Get the world position and rotation of the new object to be spawned.
                 Vector3 pos = point;
                 Quaternion rot = normalRotation * Quaternion.Euler(0f, m_prng.Next(0,360), 0f);
+                Vector3 scale = Vector3.one * (float)m_prng.Next(Mathf.RoundToInt(prefabs[prefabIndex].scaleRange.x*1000f), Mathf.RoundToInt(prefabs[prefabIndex].scaleRange.y*1000f))/1000f;
 
                 // Initialize a `ToSpawn` object, populate it, and add it to the spawn queue for our spawn coroutine
-                ToSpawn toSpawn = new ToSpawn { prefab=prefab, position=pos, rotation=rot };
+                ToSpawn toSpawn = new ToSpawn { prefab=prefab, position=pos, rotation=rot, scale=scale };
                 m_coroutineSpawnQueue.Enqueue(toSpawn);
 
                 // Break early of the total # of generated trees already has reached the max number possible.
@@ -154,6 +172,7 @@ public class VegetationGenerator2 : MonoBehaviour
 
                 // Instantiate the necessary prefab with the given position and rotation
                 GameObject t = Instantiate (toSpawn.prefab, toSpawn.position , toSpawn.rotation, m_vegetationParent);
+                t.transform.localScale = toSpawn.scale;
                 
                 // Add it to our list of generated vegetation
                 m_generatedVegetation.Add(t);

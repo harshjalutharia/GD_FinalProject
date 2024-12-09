@@ -13,15 +13,22 @@ MonoBehaviour:
   m_Name: Birch
   m_EditorClassIdentifier: 
   name: Birch
+  color: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}
   vegetationPrefabs:
-  - prefab: {fileID: 6734162098431510852, guid: 9683264ac3562834f8a5c963c2c019c4, type: 3}
+  - prefab: {fileID: 2523072964955092127, guid: c25fc8d80b5c27b4b9a87497ec827a83, type: 3}
     mapRenderSize: 0
     mapColor: {r: 0, g: 0, b: 0, a: 0}
     alignWithNormal: 0
-  vegetationSpawnThreshold: 0.85
+    scaleRange: {x: 2, y: 5}
+  - prefab: {fileID: 2730192691389033064, guid: 870d277575dd17e47a4a0f44b6cd77b3, type: 3}
+    mapRenderSize: 0
+    mapColor: {r: 0, g: 0, b: 0, a: 0}
+    alignWithNormal: 0
+    scaleRange: {x: 2, y: 5}
+  vegetationSpawnThreshold: 0.985
   vegetationSteepnessThreshold: 30
   vegetationHeightRange:
-    min: 20
+    min: 15
     max: 80
   landmarkPrefabs:
     prefabs: []

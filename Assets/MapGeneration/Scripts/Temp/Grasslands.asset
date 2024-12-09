@@ -13,21 +13,30 @@ MonoBehaviour:
   m_Name: Grasslands
   m_EditorClassIdentifier: 
   name: Grasslands
+  color: {r: 0, g: 0, b: 0, a: 1}
   vegetationPrefabs:
   - prefab: {fileID: 2478178681915189001, guid: bfeb26d6621f8ea499b9530542e23a03, type: 3}
     mapRenderSize: 0
     mapColor: {r: 0, g: 0, b: 0, a: 0}
     alignWithNormal: 0
+    scaleRange: {x: 1, y: 2}
   - prefab: {fileID: 2652233368764414375, guid: 1106dc3a951aa44408c609c7971a6a6a, type: 3}
     mapRenderSize: 0
     mapColor: {r: 0, g: 0, b: 0, a: 0}
     alignWithNormal: 0
+    scaleRange: {x: 1, y: 2}
   - prefab: {fileID: 4172942871073692320, guid: eb12a3127bf7a5e4ca518928274ffa44, type: 3}
     mapRenderSize: 0
     mapColor: {r: 0, g: 0, b: 0, a: 0}
     alignWithNormal: 0
-  vegetationSpawnThreshold: 0.9
-  vegetationSteepnessThreshold: 25
+    scaleRange: {x: 1, y: 2}
+  - prefab: {fileID: 8703182417706153909, guid: d6cb9742c7afa0040a770ab5cc7f0c5b, type: 3}
+    mapRenderSize: 0
+    mapColor: {r: 0, g: 0, b: 0, a: 0}
+    alignWithNormal: 0
+    scaleRange: {x: 1, y: 2}
+  vegetationSpawnThreshold: 0.99
+  vegetationSteepnessThreshold: 35
   vegetationHeightRange:
     min: 10
     max: 30

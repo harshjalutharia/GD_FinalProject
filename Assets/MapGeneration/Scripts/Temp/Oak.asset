@@ -13,12 +13,14 @@ MonoBehaviour:
   m_Name: Oak
   m_EditorClassIdentifier: 
   name: Oak
+  color: {r: 0.013888836, g: 1, b: 0, a: 1}
   vegetationPrefabs:
-  - prefab: {fileID: 7018354074274253871, guid: bed5b9b1a089e4c4993632443861364c, type: 3}
+  - prefab: {fileID: 2951424143206138655, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
     mapRenderSize: 0
     mapColor: {r: 0, g: 0, b: 0, a: 0}
     alignWithNormal: 0
-  vegetationSpawnThreshold: 0.85
+    scaleRange: {x: 2, y: 4}
+  vegetationSpawnThreshold: 0.975
   vegetationSteepnessThreshold: 30
   vegetationHeightRange:
     min: 10

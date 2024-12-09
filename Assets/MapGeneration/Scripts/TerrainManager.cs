@@ -108,9 +108,12 @@ public class TerrainManager : MonoBehaviour
                 chunk.gameObject.layer = (int)Mathf.Log(m_terrainLayer.value, 2);
                 chunk.SetParent(this);
                 chunk.SetDimensions(m_cellWidth, m_cellHeight);
+                /*
                 int chunkLOD = (m_playerRef != null) 
                     ? Mathf.Clamp(Mathf.Max(Mathf.Abs(index.x-viewerCoords.x), Mathf.Abs(index.y - viewerCoords.y)) - 1, 0, m_maxLOD) 
                     : m_maxLOD;
+                */
+                int chunkLOD = 0;
                 chunk.SetLevelOfDetail(chunkLOD);
                 chunk.SetOffset(x,y);
                 // Initialize its coroutine
@@ -303,6 +306,21 @@ public class TerrainManager : MonoBehaviour
     }
     public bool TryGetPointOnTerrain(int queryX, int queryZ, out Vector3 point, out Vector3 normal, out float steepness) {   return TryGetPointOnTerrain((float)queryX, (float)queryZ, out point, out normal, out steepness); }
     public bool TryGetPointOnTerrain(Vector3 queryPosition, out Vector3 point, out Vector3 normal, out float steepness) {    return TryGetPointOnTerrain(queryPosition.x, queryPosition.z, out point, out normal, out steepness); }
+
+    public void ToggleLODMethod(string setTo) {
+        switch(setTo) {
+            case "Off":             m_lodMethod = LODMethod.Off;    break;
+            case "Grid":            m_lodMethod = LODMethod.Grid;   break;
+            case "Angle":           m_lodMethod = LODMethod.Angle;  break;
+            case "AngleDistance":   m_lodMethod = LODMethod.AngleDistance;  break;
+            default:
+                Debug.LogError($"Terrain Manager: Cannot set LOD Method to \"{setTo}\" - no corresponding LOD Method");
+                break;
+        }
+    }
+    public void ToggleLODMethod(LODMethod setTo) {
+        m_lodMethod = setTo;
+    }
 
     public void ClearChunks() {
         if (m_chunks != null && m_chunks.Count > 0) foreach(TerrainChunk chunk in m_chunks.Values) if (chunk != null) DestroyImmediate(chunk.gameObject);

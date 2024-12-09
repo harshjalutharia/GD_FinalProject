@@ -31,7 +31,6 @@ public class Voronoi : MonoBehaviour
     [SerializeField] private RegionAttributes m_oakAttributes;
     [SerializeField] private RegionAttributes m_birchAttributes;
     [SerializeField] private RegionAttributes m_spruceAttributes;
-    [SerializeField] private RegionAttributes m_defaultAttributes;
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("The voronoi segment centroids")]  protected Vector3[] m_centroids;
@@ -44,7 +43,6 @@ public class Voronoi : MonoBehaviour
     [SerializeField] private Region m_oakRegion;
     [SerializeField] private Region m_birchRegion;
     [SerializeField] private Region m_spruceRegion;
-    [SerializeField] private Region m_defaultRegion;
     
     [Header("=== Noise Map Interactions ===")]
     [SerializeField, Tooltip("The world width of the resulting voronoi map. Used in gizmos rendering + for cluster querying when provided world positions")]    protected float m_worldWidth = 1f;
@@ -70,6 +68,8 @@ public class Voronoi : MonoBehaviour
     private KDTree m_clusterCentroidTree;
     private Vector3[] m_clusterWorldCentroids;
     private KDTree m_clusterWorldCentroidTree;
+    private Vector3[] m_regionCentroids;
+    private KDTree m_regionCentroidsTree;
 
     private KDQuery m_clusterCentroidQuery;
     private System.Random m_prng;
@@ -94,14 +94,19 @@ public class Voronoi : MonoBehaviour
         Gizmos.DrawLine(world3, world4);
         
         if (m_centroids == null || m_centroids.Length == 0 || m_clusters == null || m_clusters.Count == 0 || m_centroidToClusterMap == null || m_centroidToClusterMap.Length == 0) return;
-        for(int i = 0; i < m_clusters.Count; i++) {
-            DBScanCluster cluster = m_clusters[i];
-            Gizmos.color = cluster.color;
-            Gizmos.DrawSphere(transform.rotation * (transform.position + cluster.worldCentroid), m_gizmosCentroidSize);
-
-            foreach(int pi in cluster.points) {
-                Vector3 p = transform.rotation * (transform.position + new Vector3(m_centroids[pi].x * m_worldWidth, cluster.worldCentroid.y, m_centroids[pi].z * m_worldHeight));
+        for(int i = 0; i < m_regions.Count; i++) {
+            Region region = m_regions[i];
+            Gizmos.color = region.attributes.color;            
+            Gizmos.DrawSphere(transform.rotation * (transform.position + region.coreCluster.worldCentroid), m_gizmosCentroidSize);
+            foreach(int pi in region.coreCluster.points) {
+                Vector3 p = transform.rotation * (transform.position + new Vector3(m_centroids[pi].x * m_worldWidth, region.coreCluster.worldCentroid.y, m_centroids[pi].z * m_worldHeight));
                 Gizmos.DrawSphere(p, m_gizmosPointSize);
+            }
+            foreach(DBScanCluster cluster in region.subClusters) {
+                foreach(int pi in cluster.points) {
+                    Vector3 p = transform.rotation * (transform.position + new Vector3(m_centroids[pi].x * m_worldWidth, cluster.worldCentroid.y, m_centroids[pi].z * m_worldHeight));
+                    Gizmos.DrawSphere(p, m_gizmosPointSize);
+                }
             }
         }
     }
@@ -394,38 +399,47 @@ public class Voronoi : MonoBehaviour
             float normalizedY = Mathf.Clamp(clusterCentroid.z / m_worldHeight, 0f, 1f);
             int distanceToCenter = Mathf.RoundToInt(Mathf.InverseLerp(maxDistance, 0f, Vector2.Distance(new Vector2(normalizedX, normalizedY), normalizedCenter)) * 10f);
             int size = Mathf.RoundToInt((float)cluster.points.Count / m_numSegments * 10f);
-            Region region = new Region { majorRegionWeight=distanceToCenter*size };
-            region.clusters = new List<DBScanCluster>();
-            region.clusters.Add(cluster);
+            Region region = new Region { coreCluster=cluster, majorRegionWeight=distanceToCenter*size };
             regions.Add(region);
         }
         regions.Sort();
+        
+        m_regionCentroids = new Vector3[4];
         // First region: grassland
         m_grasslandsRegion = regions[0];
         m_grasslandsRegion.attributes = m_grasslandsAttributes;
-        m_grasslandsRegion.clusters[0].regionIndex = 0;
+        m_grasslandsRegion.coreCluster.regionIndex = 0;
+        m_regionCentroids[0] = m_grasslandsRegion.coreCluster.worldCentroid;
         // Second region: oak
         m_oakRegion = regions[1];
         m_oakRegion.attributes = m_oakAttributes;
-        m_oakRegion.clusters[0].regionIndex = 1;
+        m_oakRegion.coreCluster.regionIndex = 1;
+        m_regionCentroids[1] = m_oakRegion.coreCluster.worldCentroid;
+        // Third region: birch
         m_birchRegion = regions[2];
         m_birchRegion.attributes = m_birchAttributes;
-        m_birchRegion.clusters[0].regionIndex = 2;
+        m_birchRegion.coreCluster.regionIndex = 2;
+        m_regionCentroids[2] = m_birchRegion.coreCluster.worldCentroid;
         // Fourth region: spruce
         m_spruceRegion = regions[3];
         m_spruceRegion.attributes = m_spruceAttributes;
-        m_spruceRegion.clusters[0].regionIndex = 3;
-        // Final region: Deadlands
-        m_defaultRegion = new Region { majorRegionWeight=0, attributes=m_defaultAttributes };
-        m_defaultRegion.clusters = new List<DBScanCluster>();
-        for(int i = 4; i < regions.Count; i++) {
-            foreach(DBScanCluster cluster in regions[i].clusters) {
-                m_defaultRegion.clusters.Add(cluster);
-                cluster.regionIndex = 4;
-            }
-        } 
+        m_spruceRegion.coreCluster.regionIndex = 3;
+        m_regionCentroids[3] = m_spruceRegion.coreCluster.worldCentroid;
         // Set `m_regions`
-        m_regions = new List<Region>() { m_grasslandsRegion, m_oakRegion, m_birchRegion, m_spruceRegion, m_defaultRegion };
+        m_regions = new List<Region>() { m_grasslandsRegion, m_oakRegion, m_birchRegion, m_spruceRegion };
+        m_regionCentroidsTree = new KDTree(m_regionCentroids, 4);
+
+        // Iterate through remaining regions. Associate non-major regions with major regions via KDTree KNearest
+        for(int i = 4; i < regions.Count; i++) {
+            // Cluster
+            DBScanCluster cluster = regions[i].coreCluster;
+            // Get nearest regions
+            List<int> results = new List<int>();
+            m_clusterCentroidQuery.ClosestPoint(m_regionCentroidsTree, cluster.worldCentroid, results);
+            // First item is considered the closest
+            cluster.regionIndex = results[0];
+            m_regions[results[0]].subClusters.Add(cluster); 
+        } 
     }
     public IEnumerator DetermineRegionsCoroutine(List<DBScanCluster> clusters, int numMajorRegions=4, float edgeRatio=0.25f) {
         Vector2 normalizedCenter = Vector2.one * 0.5f;
@@ -441,9 +455,7 @@ public class Voronoi : MonoBehaviour
             float normalizedY = Mathf.Clamp(clusterCentroid.z / m_worldHeight, 0f, 1f);
             int distanceToCenter = Mathf.RoundToInt(Mathf.InverseLerp(maxDistance, 0f, Vector2.Distance(new Vector2(normalizedX, normalizedY), normalizedCenter)) * 10f);
             int size = Mathf.RoundToInt((float)cluster.points.Count / m_numSegments * 10f);
-            Region region = new Region { majorRegionWeight=distanceToCenter*size };
-            region.clusters = new List<DBScanCluster>();
-            region.clusters.Add(cluster);
+            Region region = new Region { coreCluster=cluster, majorRegionWeight=distanceToCenter*size };
             regions.Add(region);
             counter++;
             if ((float)counter % m_coroutineNumThreshold == 0) yield return null;
@@ -451,35 +463,49 @@ public class Voronoi : MonoBehaviour
         regions.Sort();
         yield return null;
 
+        m_regionCentroids = new Vector3[4];
         // First region: grassland
         m_grasslandsRegion = regions[0];
         m_grasslandsRegion.attributes = m_grasslandsAttributes;
-        m_grasslandsRegion.clusters[0].regionIndex = 0;
+        m_grasslandsRegion.coreCluster.regionIndex = 0;
+        m_regionCentroids[0] = m_grasslandsRegion.coreCluster.worldCentroid;
         // Second region: oak
         m_oakRegion = regions[1];
         m_oakRegion.attributes = m_oakAttributes;
-        m_oakRegion.clusters[0].regionIndex = 1;
+        m_oakRegion.coreCluster.regionIndex = 1;
+        m_regionCentroids[1] = m_oakRegion.coreCluster.worldCentroid;
+        // Third region: birch
         m_birchRegion = regions[2];
         m_birchRegion.attributes = m_birchAttributes;
-        m_birchRegion.clusters[0].regionIndex = 2;
+        m_birchRegion.coreCluster.regionIndex = 2;
+        m_regionCentroids[2] = m_birchRegion.coreCluster.worldCentroid;
         // Fourth region: spruce
         m_spruceRegion = regions[3];
         m_spruceRegion.attributes = m_spruceAttributes;
-        m_spruceRegion.clusters[0].regionIndex = 3;
-        // Final region: Deadlands
-        m_defaultRegion = new Region { majorRegionWeight=0, attributes=m_defaultAttributes };
-        m_defaultRegion.clusters = new List<DBScanCluster>();
-        counter = 0;
-        for(int i = 4; i < regions.Count; i++) {
-            foreach(DBScanCluster cluster in regions[i].clusters) {
-                m_defaultRegion.clusters.Add(cluster);
-                cluster.regionIndex = 4;
-                counter++;
-                if ((float)counter % m_coroutineNumThreshold == 0) yield return null;
-            }
-        } 
+        m_spruceRegion.coreCluster.regionIndex = 3;
+        m_regionCentroids[3] = m_spruceRegion.coreCluster.worldCentroid;
+
         // Set `m_regions`
-        m_regions = new List<Region>() { m_grasslandsRegion, m_oakRegion, m_birchRegion, m_spruceRegion, m_defaultRegion };
+        m_regions = new List<Region>() { m_grasslandsRegion, m_oakRegion, m_birchRegion, m_spruceRegion };
+        m_regionCentroidsTree = new KDTree(m_regionCentroids, 2);
+
+        // Iterate through remaining regions. Associate non-major regions with major regions via KDTree KNearest
+        counter = 0;
+        List<int> results = new List<int>();
+        for(int i = 4; i < regions.Count; i++) {
+            // Cluster
+            DBScanCluster cluster = regions[i].coreCluster;
+            // Get nearest regions
+            m_clusterCentroidQuery.ClosestPoint(m_regionCentroidsTree, cluster.worldCentroid, results);
+            // First item is considered the closest
+            cluster.regionIndex = results[0];
+            m_regions[results[0]].subClusters.Add(cluster);
+            // Coroutine logic
+            counter++;
+            if ((float)counter % m_coroutineNumThreshold == 0) yield return null;   
+        } 
+
+        // Yield return null
         yield return null;
     }
 
@@ -524,7 +550,8 @@ public class DBScanCluster : IComparable<DBScanCluster> {
 [System.Serializable]
 public class Region : IComparable<Region> {
     public RegionAttributes attributes;
-    public List<DBScanCluster> clusters;
+    public DBScanCluster coreCluster;
+    public List<DBScanCluster> subClusters = new List<DBScanCluster>();
     [HideInInspector] public int majorRegionWeight;
     
     public int CompareTo(Region other) {		
