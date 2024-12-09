@@ -539,6 +539,13 @@ public class Voronoi : MonoBehaviour
         return results;
     }
 
+    public int QueryClosestPointIndex(Vector3 query) {
+        Vector3 flattened = new Vector3(query.x, 0f, query.z);
+        List<int> results = new List<int>();
+        m_clusterCentroidQuery.ClosestPoint(m_centroidTree, flattened, results);
+        return results[0];
+    }
+
 }
 
 [System.Serializable]

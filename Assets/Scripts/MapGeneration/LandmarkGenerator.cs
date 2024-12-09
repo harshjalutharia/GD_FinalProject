@@ -945,7 +945,7 @@ public class LandmarkGenerator : MonoBehaviour
                 out normal, out steepness);
 
             pointsInPath.Add(spawnPoint);
-            //Debug.DrawLine(lastPoint, spawnPoint, lastPoint == point1 ? Color.blue : Color.red, 3000f, false);
+            Debug.DrawLine(lastPoint, spawnPoint, lastPoint == point1 ? Color.blue : Color.red, 3000f, false);
 
             directionv2 = point2v2 - spawnPointv2;
             directionv2.Normalize();

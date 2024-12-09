@@ -226,12 +226,12 @@ public class TerrainManager : MonoBehaviour
     } 
 
     public void OnChunkNoiseCompletion(TerrainChunk chunk) {
-        Debug.Log($"{chunk.gameObject.name}: Noise Generation Completed");
         // Increment our counter.
         m_numInitializedChunks += 1;
         // If our # of initialized chunks is done, then we can move onto the next step.
         if (m_numInitializedChunks != m_chunks.Count) return;
 
+        Debug.Log($"Terrain Manager: Noise Generation Completed");
         m_numInitializedChunks = 0;
         foreach(TerrainChunk c in m_chunks.Values) {
             // Remove the listener for noise generation
@@ -246,7 +246,6 @@ public class TerrainManager : MonoBehaviour
     }
 
     public void OnChunkNoiseAdjustment(TerrainChunk chunk) {
-        Debug.Log($"{chunk.gameObject.name}: Noise Adjustment Completed");
         // In this case, we don't need to check the counter for incrementation. We can just make a beeline!
         // Firstly, remove the listener for noise adjustment
         chunk.onNoiseAdjustmentEnd.RemoveListener(this.OnChunkNoiseAdjustment);
@@ -256,7 +255,6 @@ public class TerrainManager : MonoBehaviour
     }
 
     public void OnChunkMaterialCompletion(TerrainChunk chunk) {
-        Debug.Log($"{chunk.gameObject.name}: Material Generation Completed");
         // In this case, we don't need to check the counter for incrementation. We can just make a beeline!
         // Firstly, remove the listener for noise adjustment
         chunk.onMaterialGenerationEnd.RemoveListener(this.OnChunkMaterialCompletion);
@@ -266,7 +264,6 @@ public class TerrainManager : MonoBehaviour
     }
 
     public void OnChunkMeshCompletion(TerrainChunk chunk) {
-        Debug.Log($"{chunk.gameObject.name}: Mesh Generation Completed");
         // This time, we DO need the counter
         m_numInitializedChunks += 1;
         // Remove the listener
@@ -274,6 +271,8 @@ public class TerrainManager : MonoBehaviour
 
         // Cannot do anything until all chunks are complete.
         if (m_numInitializedChunks < m_chunks.Count) return;
+
+        Debug.Log($"Terrain Manager: Mesh Generation Completed");
         // Assuming teh check passes, then we can safely declare that we're initialized
         m_generated = true;
         // If any events are tied to on generation end, invoke them

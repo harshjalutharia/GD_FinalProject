@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class GemGenerator2 : MonoBehaviour
 {
@@ -24,9 +27,26 @@ public class GemGenerator2 : MonoBehaviour
     [SerializeField, Tooltip("The prefab used for the destination gem")]                                private Gem m_destinationGemPrefab;
     private System.Random m_prng;
 
+    [SerializeField] private List<Vector3> m_majorGemLocations = new List<Vector3>();
+    [SerializeField] private List<Vector3> m_minorGemLocations = new List<Vector3>();
+
     [Header("=== Post-Generation ===")]
     [SerializeField, Tooltip("Event to call when small gems are generated")]            private UnityEvent m_onSmallGemGenerationEnd;
     [SerializeField, Tooltip("Event to call when the destination gem is generated")]    private UnityEvent m_onDestinationGemGenerationEnd;
+
+    #if UNITY_EDITOR
+    void OnDrawGizmos() {
+        if (m_majorGemLocations.Count > 0) {
+            Gizmos.color = Color.blue;
+            foreach(Vector3 p in m_majorGemLocations) Gizmos.DrawSphere(p, 10f);
+        }
+
+        if (m_minorGemLocations.Count > 0) {
+            Gizmos.color = Color.yellow;
+            foreach(Vector3 p in m_minorGemLocations) Gizmos.DrawSphere(p, 10f);
+        }
+    }
+    #endif
 
     private void Awake() {
         if (m_gemParent == null) m_gemParent = this.transform;
@@ -60,8 +80,17 @@ public class GemGenerator2 : MonoBehaviour
             return;
         }
 
+        // Set seed and dimensions
+        SetSeed(TerrainManager.current.seed);
+        m_width = TerrainManager.current.width;
+        m_height = TerrainManager.current.height;
+        Debug.Log($"{TerrainManager.current.width}, {TerrainManager.current.height} VS {m_width}, {m_height}");
+
         // Initialize the prng system
         m_prng = new System.Random(m_seed);
+
+        // Need to generate for reach region
+        foreach(Region region in Voronoi.current.regions) GenerateRegion(region);
     }
 
     private void GenerateRegion(Region region) {
@@ -69,36 +98,27 @@ public class GemGenerator2 : MonoBehaviour
         // Not all placements are suitable. For example, it'll be hard to find a gem that's lodged itself into the side of a mountain, for example.
         // We'll therefore restrict all gem placements within a boundary and steepness.
         
-        // Store a list of the clusters that actually were either used or considered. We do not want to repeat clusters.
-        Dictionary<DBScanCluster, bool> visitedClusters = new Dictionary<DBScanCluster, bool>();
-        List<int> visitedPoints = new List<int>(region.points);
-
         // Firstly, the major gem. We'll place this at one of the core cluster's points.
         DBScanCluster coreCluster = region.coreCluster;
-        Vector2 coreCentroid2D = new Vector2(coreCluster.worldCentroid.x, coreCluster.worldCentroid.z);
-        bool majorGemLocationFound = false;
-        Vector3 majorGemLocation = Vector3.zero;
-        do {
-            // Get the centroid from the list of visited gems
-            int centroidIndex = visitedPoints[m_prng.Next(0, visitedPoints.Count-1)];
-            visitedPoints.Remove(centroidIndex);
+        List<int> unvisitedPoints = new List<int>(region.points);
 
-            // Get the point that corresponds to this centroid
-            Vector3 point = Voronoi.current.centroids[centroidIndex];
-            Vector2 point2D = new Vector2(point.x, point.z);
 
-            // Check: is this too close to the bell tower (aka this region's core cluster's centroid?)
-            float distanceToCore = Vector2.Distance(coreCentroid2D, point2D);
-            if (distanceToCore > m_maxRadiusFromGems) continue;
+        int majorGemLocationIndex = Voronoi.current.QueryClosestPointIndex(coreCluster.centroid);
+        Vector3 point = Voronoi.current.centroids[majorGemLocationIndex];
+        TerrainManager.current.TryGetPointOnTerrain(point.x * m_width, point.z * m_height, out Vector3 majorGemLocation, out Vector3 majorNormal, out float majorSteepness);
+        m_majorGemLocations.Add(majorGemLocation);
+        unvisitedPoints.Remove(majorGemLocationIndex);
 
-            // Assuming we are here, then the major gem location is found.
-            majorGemLocationFound = TerrainManager.current.TryGetPointOnTerrain(point.x, point.z, out majorGemLocation, out Vector3 majorNormal, out float majorSteepness);
-
-            // This COULD lead to an infinite loop - what if, by pure, unadultarated chance, there are NO good positions?
-            // Though granted, very unlikely.
-        } while(!majorGemLocationFound);
-
-        
+        // For each cluster, we grab a random point
+        foreach(int iloc in unvisitedPoints) {
+            Vector3 gemPoint = Voronoi.current.centroids[iloc];
+            if (gemPoint.x < m_widthBorderRange || gemPoint.x > 1f-m_widthBorderRange || gemPoint.z < m_heightBorderRange || gemPoint.y > 1f-m_heightBorderRange) continue;
+            if (TerrainManager.current.TryGetPointOnTerrain(gemPoint.x*m_width, gemPoint.z*m_height, out Vector3 gemLocation, out Vector3 gemNormal, out float gemSteepness)) {
+                if (gemSteepness <= m_maxSteepnessThreshold) {
+                    m_minorGemLocations.Add(gemLocation);
+                }
+            }
+        }
 
     }
 }
