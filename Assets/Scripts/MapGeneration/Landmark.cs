@@ -119,8 +119,10 @@ public class Landmark : MonoBehaviour
     }
 
     // offsets the landmark's position in the y-axis to fix it floating above ground
-    public void OffsetLandmarkInYaxis() {   
-        if (SessionManager.current == null || SessionManager.current.terrainGenerator == null) return;
+    public void OffsetLandmarkInYaxis()
+    {
+        if (TerrainManager.current == null) return;
+        //if (SessionManager.current == null || SessionManager.current.terrainGenerator == null) return;
         if (m_renderers == null || m_renderers.Length == 0) return;
 
         foreach(Renderer r in m_renderers) {
@@ -142,7 +144,9 @@ public class Landmark : MonoBehaviour
             bool moveDown = false;
             for (int i = 0; i < bottomPoints.Length; i++) {
                 // Get the terrain height at the bound point
-                float terrainHeight = SessionManager.current.terrainGenerator.QueryHeightAtWorldPos(bottomPoints[i].x, bottomPoints[i].z, out var x, out var y);
+                TerrainManager.current.TryGetPointOnTerrain(bottomPoints[i], out var point, out var normal,
+                    out var steepness);
+                float terrainHeight = point.y;//SessionManager.current.terrainGenerator.QueryHeightAtWorldPos(bottomPoints[i].x, bottomPoints[i].z, out var x, out var y);
                 // We need to check if we want to move downward or upward. This is because
                 // sometimes, a bound can be either completely hanging above the terrain...
                 // ... maybe in between the terrain...

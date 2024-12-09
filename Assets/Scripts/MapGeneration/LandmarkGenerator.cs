@@ -10,8 +10,14 @@ using Vector3 = UnityEngine.Vector3;
 using static Cinemachine.CinemachineBlendDefinition;
 using Vector2 = UnityEngine.Vector2;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
+using UnityEngine.Events;
 using static LandmarkGenerator;
+using UnityEngine.TerrainUtils;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
+
+
 
 
 #if UNITY_EDITOR
@@ -85,6 +91,9 @@ public class LandmarkGenerator : MonoBehaviour
     [SerializeField, Tooltip("Prefabs for landmarks at weenies")]                          private LandmarkGroupCounter m_weenieLandmarks;
     [SerializeField, Tooltip("Prefab for weenies")]                                        private List<Landmark> weeniePrefab;
     [SerializeField, Tooltip("Prefab for the arch object")]                                private Landmark m_archPrefab;
+    [SerializeField, Tooltip("Prefab for the King bell tower object")]                     private Landmark m_kingBellTowerPrefab;
+    [SerializeField, Tooltip("Prefab for the major region bell tower object")]             private Landmark m_majorBellTowerPrefab;
+    [SerializeField, Tooltip("Prefab for the minor region bell tower object")]             private Landmark m_minorBellTowerPrefab;
 
 
     [Header("=== Generation Settings ===")]
@@ -110,7 +119,8 @@ public class LandmarkGenerator : MonoBehaviour
     [SerializeField, Tooltip("Weenie path height limit")]                                  private float weeniePathHeightLimit = 30f;
     [SerializeField, Tooltip("Weenie path (normal based) offset amount")]                  private float weeniePathMaxOffset = 10f;
     [SerializeField, Tooltip("Minimum distance between any 2 arches")]                     private float minimumDistanceBetweenArches = 40f;
-    [SerializeField, Tooltip("Number of arches per path")]                                 private int archCountPerPath = 1;
+    [SerializeField, Tooltip("Number of arches per path")]                                 private int archCountPerPath = 2;
+    [SerializeField, Tooltip("Minimum points for region to be considered minor")]          private int minimumPointsInMinorRegion = 5;
 
 
     [Header("=== Outputs - READ ONLY ===")]
@@ -122,6 +132,7 @@ public class LandmarkGenerator : MonoBehaviour
     [SerializeField, Tooltip("List of positions' distances to check when spawning weenie")] private List<Vector3> m_weenieCheckPositions;
     [SerializeField, Tooltip("The final list of landmarks generated.")]                    private List<Landmark> m_landmarks;
 
+    private UnityAction m_mapGeneratedAction; // action thats called when map has been generated
 
     public virtual void SetSeed(string newSeed) {
         if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {
@@ -134,11 +145,169 @@ public class LandmarkGenerator : MonoBehaviour
         m_seed = newSeed;
     }
 
-    private void Start() {
+    private void Start()
+    {
+        m_mapGeneratedAction += GenerateLandmarksNew;
+        TerrainManager.current.onGenerationEnd.AddListener(m_mapGeneratedAction);
         StartCoroutine(SortLandmarks());
     }
 
-    public void GenerateLandmarks(Vector3 destination, Vector3 startPosition, NoiseMap terrainMap) {
+    // TODO: Change name
+    // Generates bell towers in the map
+    public void GenerateLandmarksNew()
+    {
+        // NEW LANDMARK STUFF THAT USES VORONOI MAP REGIONS AND SHIT
+
+        // Define the landmark parent
+        if (m_landmarkParent == null) m_landmarkParent = this.transform;
+
+        // TODO: Replace with m_landmarks once prefabs are of type Landmark
+        m_landmarks = new List<Landmark>();
+
+        // King bell tower in grasslands region
+        TerrainManager.current.TryGetPointOnTerrain(Voronoi.current.regions[0].coreCluster.worldCentroid, out var terrainPoint,
+            out var normal, out var steepness);
+        InstantiateLandmark(m_kingBellTowerPrefab, terrainPoint, Quaternion.identity);
+        //Instantiate(m_kingBellTowerPrefab, terrainPoint, Quaternion.identity, m_landmarkParent);
+        //m_testLandmarks.Add(terrainPoint);
+
+        // Major bell towers in other major regions' core clusters
+        for (int i = 1; i < Voronoi.current.regions.Count; i++)
+        {
+            TerrainManager.current.TryGetPointOnTerrain(Voronoi.current.regions[i].coreCluster.worldCentroid, out terrainPoint,
+                out normal, out steepness);
+            InstantiateLandmark(m_majorBellTowerPrefab, terrainPoint, Quaternion.identity);
+            //Instantiate(m_majorBellTowerPrefab, terrainPoint, Quaternion.identity, m_landmarkParent);
+            //m_testLandmarks.Add(terrainPoint);
+        }
+
+        // Minor bell towers in the regions' sub-clusters
+        for (int i = 0; i < Voronoi.current.regions.Count; i++)
+        {
+            foreach (var cluster in Voronoi.current.regions[i].subClusters)
+            {
+                if (cluster.points.Count >= minimumPointsInMinorRegion)
+                {
+                    TerrainManager.current.TryGetPointOnTerrain(cluster.worldCentroid, out terrainPoint, out normal,
+                        out steepness);
+                    InstantiateLandmark(m_minorBellTowerPrefab, terrainPoint, Quaternion.identity);
+                    //Instantiate(m_minorBellTowerPrefab, terrainPoint, Quaternion.identity, m_landmarkParent);
+                    //m_testLandmarks.Add(terrainPoint);
+                }
+            }
+        }
+
+        var generatedPaths = GeneratePathsBetweenLandmarks();
+
+        if (m_archPrefab != null)
+        {
+            List<Vector3> archPositions = new List<Vector3>();
+            // Spawn arches in the paths generated
+            foreach (var path in generatedPaths)
+            {
+                int pointsInEachSegment = path.Count / (archCountPerPath + 1);
+                for (int i = 1; i <= archCountPerPath; i++)
+                {
+                    // if too close to other arches, continue
+                    if (!CheckDistanceFromPoints(path[pointsInEachSegment * i], archPositions,
+                            minimumDistanceBetweenArches,
+                            out float totalDistance))
+                        continue;
+
+                    Vector3 direction = path[(pointsInEachSegment * i) + 1] - path[(pointsInEachSegment * i)];
+                    direction.Normalize();
+                    //Debug.DrawLine(path[pointsInEachSegment * i], path[pointsInEachSegment * i] + (direction * 3), Color.yellow, 3000f, false);
+                    //Instantiate(m_archPrefab, path[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), m_landmarkParent);
+                    InstantiateLandmark(m_archPrefab, path[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), false);
+                    archPositions.Add(path[pointsInEachSegment * i]);
+                }
+            }
+        }
+    }
+
+    private List<(Vector3, float)> GetClosestLandmarksList(Vector3 position)
+    {
+        List<(Vector3, float)> closeLandmarks = new List<(Vector3, float)>();
+
+        foreach (var landmark in m_landmarks)
+        {
+            if (landmark.transform.position == position)
+                continue;
+
+            float distance = Vector3.Distance(position, landmark.transform.position);
+            closeLandmarks.Add((landmark.transform.position, distance));
+        }
+
+        closeLandmarks.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+
+        return closeLandmarks;
+    }
+
+    // Uses kruskal's algorithm to generate a MST that connects all landmarks. Then generates paths based on normals
+    private List<List<Vector3>> GeneratePathsBetweenLandmarks()
+    {
+        List <(Vector3, Vector3)> pathEndPoints = new List <(Vector3, Vector3)>();
+        List<List<Vector3>> generatedPaths = new List<List<Vector3>>();
+
+        HashSet<HashSet<Vector3>> landmarkSets = new HashSet<HashSet<Vector3>>();
+        List<((Vector3, Vector3), float)> possiblePaths = new List<((Vector3, Vector3), float)>();
+
+        foreach (var landmark in m_landmarks)
+        {
+            landmarkSets.Add(new HashSet<Vector3> { landmark.transform.position });
+
+            var closeLandmarkList = GetClosestLandmarksList(landmark.transform.position);
+
+            foreach (var landmarkDistanceTuple in closeLandmarkList)
+            {
+                possiblePaths.Add(((landmark.transform.position, landmarkDistanceTuple.Item1), landmarkDistanceTuple.Item2));
+                //Debug.DrawLine(landmark, landmarkDistanceTuple.Item1, Color.red, 3000f, false);
+            }
+        }
+
+        possiblePaths = possiblePaths.OrderBy(i => i.Item2).ToList();
+
+        foreach (var path in possiblePaths)
+        {
+            HashSet<Vector3> set1 = null;
+            HashSet<Vector3> set2 = null;
+            foreach (var set in landmarkSets)
+            {
+                if (set.Contains(path.Item1.Item1))
+                    set1 = set;
+                if (set.Contains(path.Item1.Item2))
+                    set2 = set;
+                if (set1 != null && set2 != null)
+                    break;
+            }
+
+            if (set1 == set2)
+                continue;
+
+            //Debug.DrawLine(path.Item1.Item1, path.Item1.Item2, Color.grey, 3000f, false);
+            generatedPaths.Add(GeneratePathBetweenPoints(path.Item1.Item1, path.Item1.Item2));
+            //generatedPaths.Add(new List<Vector3> { path.Item1.Item1, path.Item1.Item2 });
+
+            if (generatedPaths.Count == m_landmarks.Count - 1)
+                break;
+
+            landmarkSets.Remove(set1);
+            landmarkSets.Remove(set2);
+
+            foreach (var point in set2)
+            {
+                set1.Add(point);
+            }
+
+            landmarkSets.Add(set1);
+        }
+
+        return generatedPaths;
+    }
+
+    public void GenerateLandmarks(Vector3 destination, Vector3 startPosition, NoiseMap terrainMap) 
+    {
+        // OLD LANDMARK STUFF
         // Check Flag: do we have a landmark prefab to begin with?
         if (m_destinationLandmark == null) {
             Debug.LogError("Landmark prefab not assigned in editor");
@@ -229,14 +398,14 @@ public class LandmarkGenerator : MonoBehaviour
 
         // Spawn landmark at destination
         //m_landmarkPositions[0].InstantiateObject( m_destinationLandmark, m_landmarkParent);
-        InstantiateLandmark(m_destinationLandmark, m_landmarkPositions[0].location, Quaternion.identity, terrainMap);
+        InstantiateLandmark(m_destinationLandmark, m_landmarkPositions[0].location, Quaternion.identity);
 
         // Spawn all the weenies
         for (int i = 0; i < m_weenieOffsetPositions.Count; i++)
         {
             if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre))
             {
-                InstantiateLandmark(pre, m_weenieOffsetPositions[i], Quaternion.identity, terrainMap);
+                InstantiateLandmark(pre, m_weenieOffsetPositions[i], Quaternion.identity);
             }
         }
 
@@ -257,7 +426,7 @@ public class LandmarkGenerator : MonoBehaviour
 
             generatedPaths.Add((i, closestIndex));
 
-            generatedPathV3.Add(GeneratePathBetweenPoints(m_weenieOffsetPositions[i], closestWeenie, terrainMap));
+            generatedPathV3.Add(GeneratePathBetweenPoints(m_weenieOffsetPositions[i], closestWeenie));
         }
 
         if (m_archPrefab != null)
@@ -279,7 +448,7 @@ public class LandmarkGenerator : MonoBehaviour
                     direction.Normalize();
                     //Debug.DrawLine(path[pointsInEachSegment * i], path[pointsInEachSegment * i] + (direction * 3), Color.yellow, 3000f, false);
 
-                    InstantiateLandmark(m_archPrefab, path[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), terrainMap, false);
+                    InstantiateLandmark(m_archPrefab, path[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), false);
                     archPositions.Add(path[pointsInEachSegment * i]);
                 }
             }
@@ -630,7 +799,7 @@ public class LandmarkGenerator : MonoBehaviour
         {
             if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre))
             {
-                InstantiateLandmark(pre, spawnPoint, Quaternion.identity, terrainMap);
+                InstantiateLandmark(pre, spawnPoint, Quaternion.identity);
             }
         }
 
@@ -667,7 +836,7 @@ public class LandmarkGenerator : MonoBehaviour
         {
             if (m_weenieLandmarks.TryGetNextPrefab(out Landmark pre))
             {
-                InstantiateLandmark(pre, spawnPoint, Quaternion.identity, terrainMap);
+                InstantiateLandmark(pre, spawnPoint, Quaternion.identity);
             }
         }
     }
@@ -739,7 +908,7 @@ public class LandmarkGenerator : MonoBehaviour
         }
     }
 
-    private List<Vector3> GeneratePathBetweenPoints(Vector3 point1, Vector3 point2, NoiseMap terrainMap)
+    private List<Vector3> GeneratePathBetweenPoints(Vector3 point1, Vector3 point2)
     {
         List<Vector3> pointsInPath = new List<Vector3>();
 
@@ -755,9 +924,9 @@ public class LandmarkGenerator : MonoBehaviour
         while (distance >= 6f)
         {
             Vector2 spawnPointv2 = lastPointv2 + (directionv2 * 3f);
-            Vector3 spawnPoint = new Vector3(spawnPointv2.x, 0f, spawnPointv2.y);
 
-            Vector3 normal = terrainMap.QueryMapNormalAtWorldPos(spawnPointv2.x, spawnPointv2.y, LayerMask.GetMask("Ground"), out int gridX, out int gridY, out spawnPoint.y);
+            TerrainManager.current.TryGetPointOnTerrain(spawnPointv2.x, spawnPointv2.y, out var spawnPoint,
+                out var normal, out var steepness);
 
             directionv2 = point2v2 - spawnPointv2;
             directionv2.Normalize();
@@ -772,9 +941,8 @@ public class LandmarkGenerator : MonoBehaviour
             float angle = Vector2.Angle(directionv2, offsetV2);
             spawnPointv2 += weeniePathMaxOffset * MathF.Sin((angle * Mathf.PI) / 180) * offsetV2;
 
-            spawnPoint.x = spawnPointv2.x;
-            spawnPoint.z = spawnPointv2.y;
-            spawnPoint.y = terrainMap.QueryHeightAtWorldPos(spawnPoint.x, spawnPoint.z, out gridX, out gridY);
+            TerrainManager.current.TryGetPointOnTerrain(spawnPointv2.x, spawnPointv2.y, out spawnPoint,
+                out normal, out steepness);
 
             pointsInPath.Add(spawnPoint);
             //Debug.DrawLine(lastPoint, spawnPoint, lastPoint == point1 ? Color.blue : Color.red, 3000f, false);
@@ -832,7 +1000,7 @@ public class LandmarkGenerator : MonoBehaviour
 
         foreach (var spawnPoint in ruinSpawnPoints)
         {
-            InstantiateLandmark(m_surroundingDestinationLandmark, spawnPoint, Quaternion.identity, terrainMap);
+            InstantiateLandmark(m_surroundingDestinationLandmark, spawnPoint, Quaternion.identity);
         }
     }
 
@@ -1025,7 +1193,7 @@ public class LandmarkGenerator : MonoBehaviour
         }
     }
 
-    public void InstantiateLandmark(Landmark prefab, Vector3 pos, Quaternion rot, NoiseMap terrainMap, bool addToLandmarks = true)
+    public void InstantiateLandmark(Landmark prefab, Vector3 pos, Quaternion rot, bool addToLandmarks = true)
     {
         // Instantiate the landmark itself, given the prefab, position, and rotation
         Landmark newWeenie = Instantiate(prefab, pos, rot, m_landmarkParent) as Landmark;

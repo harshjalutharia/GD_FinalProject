@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8481396902453215436}
   - component: {fileID: -5858307131567264345}
   m_Layer: 6
-  m_Name: DebugDestination
+  m_Name: DebugCube1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

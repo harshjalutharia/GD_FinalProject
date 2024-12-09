@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8481396902453215436}
   - component: {fileID: 5307773641784612379}
   m_Layer: 6
-  m_Name: DebugWeenie1
+  m_Name: DebugCube3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 12, y: 12, z: 12}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -118,5 +118,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c2e9d49cc4534e10a7a2076b67d5eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_renderer: {fileID: 5621650129511195101}
-  m_collider: {fileID: 8481396902453215436}
+  m_cameraController: {fileID: 0}
+  m_renderers: []
+  m_totalTimeToDetect: 5
+  m_mapColor: {r: 1, g: 1, b: 1, a: 1}
+  m_bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  m_inFustrum: 0
+  m_drawnOnMap: 0
+  m_viewportPoint: {x: 0, y: 0}
+  m_distToCamCenter: 0
