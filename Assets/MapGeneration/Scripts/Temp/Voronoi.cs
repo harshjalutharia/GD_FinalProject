@@ -34,6 +34,7 @@ public class Voronoi : MonoBehaviour
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("The voronoi segment centroids")]  protected Vector3[] m_centroids;
+    public Vector3[] centroids => m_centroids;
     [SerializeField] private List<DBScanCluster> m_clusters;
     public List<DBScanCluster> clusters => m_clusters;
     [SerializeField] private List<Region> m_regions;
@@ -409,21 +410,25 @@ public class Voronoi : MonoBehaviour
         m_grasslandsRegion = regions[0];
         m_grasslandsRegion.attributes = m_grasslandsAttributes;
         m_grasslandsRegion.coreCluster.regionIndex = 0;
+        m_grasslandsRegion.points.AddRange(m_grasslandsRegion.coreCluster.points);
         m_regionCentroids[0] = m_grasslandsRegion.coreCluster.worldCentroid;
         // Second region: oak
         m_oakRegion = regions[1];
         m_oakRegion.attributes = m_oakAttributes;
         m_oakRegion.coreCluster.regionIndex = 1;
+        m_oakRegion.points.AddRange(m_oakRegion.coreCluster.points);
         m_regionCentroids[1] = m_oakRegion.coreCluster.worldCentroid;
         // Third region: birch
         m_birchRegion = regions[2];
         m_birchRegion.attributes = m_birchAttributes;
         m_birchRegion.coreCluster.regionIndex = 2;
+        m_birchRegion.points.AddRange(m_birchRegion.coreCluster.points);
         m_regionCentroids[2] = m_birchRegion.coreCluster.worldCentroid;
         // Fourth region: spruce
         m_spruceRegion = regions[3];
         m_spruceRegion.attributes = m_spruceAttributes;
         m_spruceRegion.coreCluster.regionIndex = 3;
+        m_spruceRegion.points.AddRange(m_spruceRegion.coreCluster.points);
         m_regionCentroids[3] = m_spruceRegion.coreCluster.worldCentroid;
         // Set `m_regions`
         m_regions = new List<Region>() { m_grasslandsRegion, m_oakRegion, m_birchRegion, m_spruceRegion };
@@ -439,6 +444,7 @@ public class Voronoi : MonoBehaviour
             // First item is considered the closest
             cluster.regionIndex = results[0];
             m_regions[results[0]].subClusters.Add(cluster); 
+            m_regions[results[0]].points.AddRange(cluster.points);
         } 
     }
     public IEnumerator DetermineRegionsCoroutine(List<DBScanCluster> clusters, int numMajorRegions=4, float edgeRatio=0.25f) {
@@ -468,21 +474,25 @@ public class Voronoi : MonoBehaviour
         m_grasslandsRegion = regions[0];
         m_grasslandsRegion.attributes = m_grasslandsAttributes;
         m_grasslandsRegion.coreCluster.regionIndex = 0;
+        m_grasslandsRegion.points.AddRange(m_grasslandsRegion.coreCluster.points);
         m_regionCentroids[0] = m_grasslandsRegion.coreCluster.worldCentroid;
         // Second region: oak
         m_oakRegion = regions[1];
         m_oakRegion.attributes = m_oakAttributes;
         m_oakRegion.coreCluster.regionIndex = 1;
+        m_oakRegion.points.AddRange(m_oakRegion.coreCluster.points);
         m_regionCentroids[1] = m_oakRegion.coreCluster.worldCentroid;
         // Third region: birch
         m_birchRegion = regions[2];
         m_birchRegion.attributes = m_birchAttributes;
         m_birchRegion.coreCluster.regionIndex = 2;
+        m_birchRegion.points.AddRange(m_birchRegion.coreCluster.points);
         m_regionCentroids[2] = m_birchRegion.coreCluster.worldCentroid;
         // Fourth region: spruce
         m_spruceRegion = regions[3];
         m_spruceRegion.attributes = m_spruceAttributes;
         m_spruceRegion.coreCluster.regionIndex = 3;
+        m_spruceRegion.points.AddRange(m_spruceRegion.coreCluster.points);
         m_regionCentroids[3] = m_spruceRegion.coreCluster.worldCentroid;
 
         // Set `m_regions`
@@ -500,6 +510,7 @@ public class Voronoi : MonoBehaviour
             // First item is considered the closest
             cluster.regionIndex = results[0];
             m_regions[results[0]].subClusters.Add(cluster);
+            m_regions[results[0]].points.AddRange(cluster.points);
             // Coroutine logic
             counter++;
             if ((float)counter % m_coroutineNumThreshold == 0) yield return null;   
@@ -552,6 +563,7 @@ public class Region : IComparable<Region> {
     public RegionAttributes attributes;
     public DBScanCluster coreCluster;
     public List<DBScanCluster> subClusters = new List<DBScanCluster>();
+    public List<int> points = new List<int>();
     [HideInInspector] public int majorRegionWeight;
     
     public int CompareTo(Region other) {		
