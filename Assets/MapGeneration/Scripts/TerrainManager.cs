@@ -10,7 +10,7 @@ public class TerrainManager : MonoBehaviour
 {
     public static TerrainManager current;
     public enum FalloffType { Box, NorthSouth, EastWest, Circle }
-    public enum LODMethod { Off, Grid, Angle, Both }
+    public enum LODMethod { Off, Grid, Angle, AngleDistance }
 
     [Header("=== Terrrain Grid Settings ===")]
     [SerializeField, Tooltip("The seed used for generation. Passed down to all terrain chunks")]    private int m_seed;
@@ -129,6 +129,7 @@ public class TerrainManager : MonoBehaviour
 
         // Get the current chunk coords of the viewer
         Vector2Int playerChunkCoords = GetIndicesFromWorldPosition(m_playerRef.position);
+        TerrainChunk playerChunk = m_chunks[playerChunkCoords];
         
         // For each Terrain Chunk, calculate the intended LOD level. If the LOD level ahs changed, we run the coroutien to update it
         foreach(KeyValuePair<Vector2Int, TerrainChunk> kvp in m_chunks) {
@@ -139,30 +140,40 @@ public class TerrainManager : MonoBehaviour
             int chunkLOD = chunk.levelOfDetail;
 
             // Distance. Clamp between 0 and max LOD
-            int distance;
-            float angle;
-            Vector3 playerForward, towardsChunk;
-            switch(m_lodMethod) {
-                case LODMethod.Both:
-                    playerForward = m_playerRef.forward;
-                    towardsChunk = new Vector3(chunk.chunkCenter.x - m_playerRef.position.x, 0f, chunk.chunkCenter.z - m_playerRef.position.z);
-                    angle = Mathf.Abs(Vector3.SignedAngle(playerForward, towardsChunk.normalized, Vector3.up));
-                    int angleDistance = Mathf.FloorToInt(angle/m_lodAngleThreshold);
-                    int gridDistance = Mathf.Max(Mathf.Abs(chunkCoords.x - playerChunkCoords.x), Mathf.Abs(chunkCoords.y - playerChunkCoords.y)) - 1;
-                    distance = Mathf.Min(angleDistance, gridDistance);
-                    break;
-                case LODMethod.Angle:
-                    playerForward = m_playerRef.forward;
-                    towardsChunk = new Vector3(chunk.chunkCenter.x - m_playerRef.position.x, 0f, chunk.chunkCenter.z - m_playerRef.position.z);
-                    angle = Mathf.Abs(Vector3.SignedAngle(playerForward, towardsChunk.normalized, Vector3.up));
-                    distance = Mathf.FloorToInt(angle/m_lodAngleThreshold);
-                    break;
-                default:
-                    // Grid
-                    distance = Mathf.Max(Mathf.Abs(chunkCoords.x - playerChunkCoords.x), Mathf.Abs(chunkCoords.y - playerChunkCoords.y)) - 1;
-                    break;
+            int clampedDistance = 0;
+
+            // If the current chunk is the same as the player's chunk, then we just set the distance to 0
+            if (playerChunk == chunk) {
+                clampedDistance = 0;
+            } else {
+                // Distance. Clamp between 0 and max LOD
+                int distance;
+                float angle;
+                Vector3 playerForward, towardsChunk;
+                switch(m_lodMethod) {
+                    case LODMethod.AngleDistance:
+                        playerForward = m_playerRef.forward;
+                        towardsChunk = new Vector3(chunk.chunkCenter.x - m_playerRef.position.x, 0f, chunk.chunkCenter.z - m_playerRef.position.z);
+                        angle = Mathf.Abs(Vector3.SignedAngle(playerForward, towardsChunk.normalized, Vector3.up));
+                        int angleDistance = Mathf.FloorToInt(angle/m_lodAngleThreshold);
+                        int gridDistance = Mathf.Max(Mathf.Abs(chunkCoords.x - playerChunkCoords.x), Mathf.Abs(chunkCoords.y - playerChunkCoords.y)) - 1;
+                        distance = Mathf.Min(angleDistance, gridDistance);
+                        break;
+                    case LODMethod.Angle:
+                        playerForward = m_playerRef.forward;
+                        towardsChunk = new Vector3(chunk.chunkCenter.x - m_playerRef.position.x, 0f, chunk.chunkCenter.z - m_playerRef.position.z);
+                        angle = Mathf.Abs(Vector3.SignedAngle(playerForward, towardsChunk.normalized, Vector3.up));
+                        distance = Mathf.FloorToInt(angle/m_lodAngleThreshold);
+                        break;
+                    default:
+                        // Grid
+                        distance = Mathf.Max(Mathf.Abs(chunkCoords.x - playerChunkCoords.x), Mathf.Abs(chunkCoords.y - playerChunkCoords.y)) - 1;
+                        break;
+                }
+                clampedDistance = Mathf.Clamp(distance, 0, m_maxLOD);
             }
-            int clampedDistance = Mathf.Clamp(distance, 0, m_maxLOD);
+
+        
 
             // Check if the LOD is different or not. If so, update
             // We don't need a coroutine because we already generated it. It's just about switching the model, which is a quick function call.

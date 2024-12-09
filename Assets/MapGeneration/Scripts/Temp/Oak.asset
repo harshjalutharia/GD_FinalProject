@@ -18,6 +18,7 @@ MonoBehaviour:
     mapRenderSize: 0
     mapColor: {r: 0, g: 0, b: 0, a: 0}
     alignWithNormal: 0
+  vegetationSpawnThreshold: 0.85
   vegetationSteepnessThreshold: 30
   vegetationHeightRange:
     min: 10

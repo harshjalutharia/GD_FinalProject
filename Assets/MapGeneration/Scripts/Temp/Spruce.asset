@@ -18,6 +18,11 @@ MonoBehaviour:
     mapRenderSize: 0
     mapColor: {r: 0, g: 0, b: 0, a: 0}
     alignWithNormal: 0
+  - prefab: {fileID: 165345245997595139, guid: 9680b6cc1cbd0a144b4eb51251d309b6, type: 3}
+    mapRenderSize: 0
+    mapColor: {r: 0, g: 0, b: 0, a: 0}
+    alignWithNormal: 0
+  vegetationSpawnThreshold: 0.85
   vegetationSteepnessThreshold: 10
   vegetationHeightRange:
     min: 40

@@ -26,7 +26,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 1, y: 0, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8052509397062107133}
@@ -206,9 +206,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5346984054009083772, guid: 2cc0a9086ad95e543b4d7ea4261c47a9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7637635533952554443}
-    - targetCorrespondingSourceObject: {fileID: 5346984054009083772, guid: 2cc0a9086ad95e543b4d7ea4261c47a9, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6890319237535164997}
   m_SourcePrefab: {fileID: 100100000, guid: 2cc0a9086ad95e543b4d7ea4261c47a9, type: 3}
 --- !u!23 &2410929276436669270 stripped
 MeshRenderer:
@@ -263,31 +260,6 @@ LODGroup:
     - renderer: {fileID: 3295063734344681763}
     - renderer: {fileID: 8240959393902172974}
   m_Enabled: 1
---- !u!114 &6890319237535164997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6734162098431510852}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a31377be259019f4d8cc9bca28948273, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_numPoints: 3
-  m_radius: 12
-  m_pivotPoint: {x: 0, y: 6, z: 0}
-  m_renderCamera: {fileID: 0}
-  m_rendererRef: {fileID: 2410929276436669270}
-  m_renderTextureRef: {fileID: 8400000, guid: 303a08e8a0e086e468d60b8c41189a1f, type: 2}
-  m_points:
-  - {x: 0, y: 6, z: 12}
-  - {x: 10.392304, y: 6, z: -6.0000014}
-  - {x: -10.392306, y: 6, z: -6}
-  m_cameraRotation: 0.841
-  m_drawGizmos: 1
-  m_pointColor: {r: 0, g: 0, b: 1, a: 1}
 --- !u!4 &7190519617666987036 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8397272031226219044, guid: 2cc0a9086ad95e543b4d7ea4261c47a9, type: 3}

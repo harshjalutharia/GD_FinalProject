@@ -5,25 +5,33 @@ using UnityEngine.Events;
 
 public class VegetationGenerator2 : MonoBehaviour
 {
-    [SerializeField] private int m_seed;
-    public int seed => m_seed;
+    [Header("=== References ===")]
     [SerializeField] private Transform m_vegetationParent;
-    [SerializeField] private float m_width = 100f;
-    [SerializeField] private float m_height = 100f;
+
+    [Header("=== Generation Settings ===")]
+    [SerializeField, Tooltip("The seed value for randomization.")] private int m_seed;
+    public int seed => m_seed;
+    [SerializeField, Tooltip("The map width")]  private float m_width = 100f;
+    [SerializeField, Tooltip("The map height")] private float m_height = 100f;
     public float width => m_width;
     public float height => m_height;
-    [SerializeField] private int m_iterationIncrement = 2;
-    [SerializeField] private int m_maxGeneratedItems;
-    [SerializeField] private bool m_autoCalculateMax = true;
-    [SerializeField] private int m_generatedItemsCount;
-    [SerializeField, Tooltip("If using a coroutine, the spawn delay between spawning.")]                                            private float m_coroutineSpawnDelay = 0.05f;
-    [SerializeField, Tooltip("If using a coroutine, how many objects do you dequeue at a single time?")]                            private int m_coroutineNumItems = 3;
-    public List<GameObject> m_generatedVegetation;
+    [Space]
+    [SerializeField, Tooltip("Do we auto-generate the max number of generated vegeation items?")]   private bool m_autoCalculateMax = true;
+    [SerializeField, Tooltip("The total number of vegetation items we want to generate")]           private int m_maxGeneratedItems;                
+    [Space]
+    [SerializeField, Tooltip("When iterating across the map, how much do we advance the steps by?")]    private int m_iterationIncrement = 2;
+    [SerializeField, Tooltip("The spawn delay between spawning.")]                                      private float m_coroutineSpawnDelay = 0.05f;
+    [SerializeField, Tooltip("How many vegetation items do you spawn at a single time?")]               private int m_coroutineNumItems = 3;
+    
+    [Header("=== Outputs - READ ONLY ===")]
+    [SerializeField, Tooltip("The generated vegetation items")] private List<GameObject> m_generatedVegetation;
+    public List<GameObject> generatedVegetation => m_generatedVegetation;
+    public UnityEvent onGenerationEnd;
+
     private IEnumerator m_spawnCoroutine;
     private Queue<ToSpawn> m_coroutineSpawnQueue;
+    private int m_generatedItemsCount;
     private System.Random m_prng;
-
-    public UnityEvent onGenerationEnd;
 
     public class ToSpawn {
         public GameObject prefab;
@@ -67,45 +75,39 @@ public class VegetationGenerator2 : MonoBehaviour
         // Set the seed engine
         m_prng = new System.Random(m_seed);
 
-        // Initialize the spawn coroutine
-        m_generatedItemsCount = 0;
-        m_coroutineSpawnQueue = new Queue<ToSpawn>();
-        m_spawnCoroutine = SpawnCoroutine();
+        // Initialize the spawn coroutine. This requires:
+        m_generatedItemsCount = 0;                      // Keeping a count of the total number of generated items
+        m_coroutineSpawnQueue = new Queue<ToSpawn>();   // The queue when instantiating the generated items
+        m_spawnCoroutine = SpawnCoroutine();            // The coroutine for spawning the vegetation items
         StartCoroutine(m_spawnCoroutine);
 
         // We want to iterate across the entire map. At most, the total number of possible vegetation elements we can add is m_width*m_height.
         // We first start by iterating through our map
         for(int x = 0; x <= (int)m_width; x+=m_iterationIncrement) {
             for(int z = 0; z <= (int)m_height; z+=m_iterationIncrement) {
-                // What's the world position coordinates?
-                float worldX = (float)x;
-                float worldZ = (float)z;
-                // Let's randomize the position just a bit, to add some noise
-                worldX += (float)m_prng.Next(-5,5)/10f;
-                worldZ += (float)m_prng.Next(-5,5)/10f;
+                // What's the world position coordinates? We randomize the position just a bit, to add some noise
+                float worldX = (float)x + (float)m_prng.Next(-5,5)/10f;
+                float worldZ = (float)z + (float)m_prng.Next(-5,5)/10f;
 
                 // Get the point on the terrain where this point is
                 if (!TerrainManager.current.TryGetPointOnTerrain(worldX, worldZ, out Vector3 point, out Vector3 normal, out float steepness)) {
-                    // unfortunately, looks like we couldn't get a point. Skip.
-                    continue;
+                    continue;   // unfortunately, looks like we couldn't get a point. Skip.
                 }
 
-                // Similarly, query which region we are currently in.
+                // Similarly, query which region we are currently in. This region has a list of prefabs we want to refer to.
                 Region currentRegion = Voronoi.current.QueryRegion(point);
                 List<VegetationGenerator.VegetationPrefab> prefabs = currentRegion.attributes.vegetationPrefabs;
 
                 //  Given the position on the map and the region, we now have to check if the point matches the criteria defined by the region attributes
-                if ((float)m_prng.Next(0,1000)/1000 < currentRegion.attributes.vegetationSpawnThreshold) continue;
+                if ((float)m_prng.Next(0,1000)/1000f < currentRegion.attributes.vegetationSpawnThreshold) continue;
                 if (steepness > currentRegion.attributes.vegetationSteepnessThreshold) continue;
                 if (point.y > currentRegion.attributes.vegetationHeightRange.max || point.y < currentRegion.attributes.vegetationHeightRange.min) continue;
                 
                 // Select which prefab to use, and get its characteristics
                 int prefabIndex = m_prng.Next(0, prefabs.Count);
                 GameObject prefab = prefabs[prefabIndex].prefab;
-                int mapRadius = prefabs[prefabIndex].mapRenderSize;
-                Color mapColor = prefabs[prefabIndex].mapColor;
-                bool alignWithNormal = prefabs[prefabIndex].alignWithNormal;
 
+                // Determine if we should rotate the vegetation item to follow the curvature of the terrain
                 Quaternion normalRotation = Quaternion.identity;
                 if ( prefabs[prefabIndex].alignWithNormal) {
                     normalRotation = Quaternion.FromToRotation(Vector3.up, normal);
