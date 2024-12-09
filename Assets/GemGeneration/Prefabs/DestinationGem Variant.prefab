@@ -29430,6 +29430,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DestinationGem Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 2928799326942741062, guid: 92bfd48bc64554204989399f6272004d, type: 3}
+      propertyPath: m_TagString
+      value: LargeGem
+      objectReference: {fileID: 0}
     - target: {fileID: 8582019481816557990, guid: 92bfd48bc64554204989399f6272004d, type: 3}
       propertyPath: m_Radius
       value: 4
