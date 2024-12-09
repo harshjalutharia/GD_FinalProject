@@ -1,0 +1,174 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Events;
+
+public class VegetationGenerator2 : MonoBehaviour
+{
+    [SerializeField] private int m_seed;
+    public int seed => m_seed;
+    [SerializeField] private Transform m_vegetationParent;
+    [SerializeField] private float m_width = 100f;
+    [SerializeField] private float m_height = 100f;
+    public float width => m_width;
+    public float height => m_height;
+    [SerializeField] private int m_iterationIncrement = 2;
+    [SerializeField] private int m_maxGeneratedItems;
+    [SerializeField] private bool m_autoCalculateMax = true;
+    [SerializeField] private int m_generatedItemsCount;
+    [SerializeField, Tooltip("If using a coroutine, the spawn delay between spawning.")]                                            private float m_coroutineSpawnDelay = 0.05f;
+    [SerializeField, Tooltip("If using a coroutine, how many objects do you dequeue at a single time?")]                            private int m_coroutineNumItems = 3;
+    public List<GameObject> m_generatedVegetation;
+    private IEnumerator m_spawnCoroutine;
+    private Queue<ToSpawn> m_coroutineSpawnQueue;
+    private System.Random m_prng;
+
+    public UnityEvent onGenerationEnd;
+
+    public class ToSpawn {
+        public GameObject prefab;
+        public Vector3 position;
+        public Quaternion rotation;
+    }
+
+    private void Awake() {
+        if (m_vegetationParent == null) m_vegetationParent = this.transform;
+    }
+
+    public virtual void SetSeed(string newSeed) {
+        if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {
+            m_seed = validNewSeed;
+            return;
+        }
+        m_seed = UnityEngine.Random.Range(0, 1000001);
+    }
+    public virtual void SetSeed(int newSeed) {
+        m_seed = newSeed;
+    }
+
+    public void SetDimensions(float w, float h) {
+        m_width = width;
+        m_height = height;
+        if (m_autoCalculateMax) m_maxGeneratedItems = (int)m_width * (int)m_height;
+    }
+    public void SetDimensions(Vector2 dimensions) { SetDimensions(dimensions.x, dimensions.y); }
+    
+    public void Generate() {
+        // Check if both voronoi and terrain map are generated, then we can proceed. However, if we have neither, then we cannot do anything
+        if (TerrainManager.current == null || !TerrainManager.current.generated) {
+            Debug.Log("Vegetation Generator 2: Cannot start generating until terrian is generated.");
+            return;
+        }
+        if (Voronoi.current == null || !Voronoi.current.generated) {
+            Debug.Log("Vegetation Generator 2: Cannot start generating until voronoi is generated.");
+            return;
+        }
+
+        // Set the seed engine
+        m_prng = new System.Random(m_seed);
+
+        // Initialize the spawn coroutine
+        m_generatedItemsCount = 0;
+        m_coroutineSpawnQueue = new Queue<ToSpawn>();
+        m_spawnCoroutine = SpawnCoroutine();
+        StartCoroutine(m_spawnCoroutine);
+
+        // We want to iterate across the entire map. At most, the total number of possible vegetation elements we can add is m_width*m_height.
+        // We first start by iterating through our map
+        for(int x = 0; x <= (int)m_width; x+=m_iterationIncrement) {
+            for(int z = 0; z <= (int)m_height; z+=m_iterationIncrement) {
+                // What's the world position coordinates?
+                float worldX = (float)x;
+                float worldZ = (float)z;
+                // Let's randomize the position just a bit, to add some noise
+                worldX += (float)m_prng.Next(-5,5)/10f;
+                worldZ += (float)m_prng.Next(-5,5)/10f;
+
+                // Get the point on the terrain where this point is
+                if (!TerrainManager.current.TryGetPointOnTerrain(worldX, worldZ, out Vector3 point, out Vector3 normal, out float steepness)) {
+                    // unfortunately, looks like we couldn't get a point. Skip.
+                    continue;
+                }
+
+                // Similarly, query which region we are currently in.
+                Region currentRegion = Voronoi.current.QueryRegion(point);
+                List<VegetationGenerator.VegetationPrefab> prefabs = currentRegion.attributes.vegetationPrefabs;
+
+                //  Given the position on the map and the region, we now have to check if the point matches the criteria defined by the region attributes
+                if ((float)m_prng.Next(0,1000)/1000 < currentRegion.attributes.vegetationSpawnThreshold) continue;
+                if (steepness > currentRegion.attributes.vegetationSteepnessThreshold) continue;
+                if (point.y > currentRegion.attributes.vegetationHeightRange.max || point.y < currentRegion.attributes.vegetationHeightRange.min) continue;
+                
+                // Select which prefab to use, and get its characteristics
+                int prefabIndex = m_prng.Next(0, prefabs.Count);
+                GameObject prefab = prefabs[prefabIndex].prefab;
+                int mapRadius = prefabs[prefabIndex].mapRenderSize;
+                Color mapColor = prefabs[prefabIndex].mapColor;
+                bool alignWithNormal = prefabs[prefabIndex].alignWithNormal;
+
+                Quaternion normalRotation = Quaternion.identity;
+                if ( prefabs[prefabIndex].alignWithNormal) {
+                    normalRotation = Quaternion.FromToRotation(Vector3.up, normal);
+                }
+
+                // Get the world position and rotation of the new object to be spawned.
+                Vector3 pos = point;
+                Quaternion rot = normalRotation * Quaternion.Euler(0f, m_prng.Next(0,360), 0f);
+
+                // Initialize a `ToSpawn` object, populate it, and add it to the spawn queue for our spawn coroutine
+                ToSpawn toSpawn = new ToSpawn { prefab=prefab, position=pos, rotation=rot };
+                m_coroutineSpawnQueue.Enqueue(toSpawn);
+
+                // Break early of the total # of generated trees already has reached the max number possible.
+                m_generatedItemsCount++;
+                if (m_generatedItemsCount >= m_maxGeneratedItems) break;
+            }
+            if (m_generatedItemsCount >= m_maxGeneratedItems) break;
+        }
+    }
+
+    private IEnumerator SpawnCoroutine() {
+        // Initialize waitforseconds delay
+        WaitForSeconds spawnDelay = new WaitForSeconds(m_coroutineSpawnDelay);
+
+        // Let's actually wait for the spawn delay first, to give the system enough time to generate some number of trees to generate
+        yield return spawnDelay;
+
+        // initiate loop
+        while(m_generatedVegetation.Count < m_generatedItemsCount) {
+            // Check if we still have something to spawn. If not, skip
+            if (m_coroutineSpawnQueue.Count == 0) {
+                yield return null;
+                continue;
+            }
+
+            // Execute a loop to restrict the number of simultaneous items to spawn
+            for(int i = 0; i < m_coroutineNumItems; i++) {
+                // If nothing to dequeue, just break
+                if (m_coroutineSpawnQueue.Count == 0) break;
+
+                // Get the first object in the queue
+                ToSpawn toSpawn = m_coroutineSpawnQueue.Dequeue();
+
+                // Instantiate the necessary prefab with the given position and rotation
+                GameObject t = Instantiate (toSpawn.prefab, toSpawn.position , toSpawn.rotation, m_vegetationParent);
+                
+                // Add it to our list of generated vegetation
+                m_generatedVegetation.Add(t);
+
+                // If we indicated that we wanted to add it to the held map, then we add it
+                //if (toSpawn.prefab.mapRenderSize > 0 && toSpawn.prefab.mapColor.a > 0f) m_terrainGenerator.DrawCircleOnHeldMap(toSpawn.position.x, toSpawn.position.z, toSpawn.prefab.mapRenderSize, toSpawn.prefab.mapColor);
+            }
+
+            // Yield return the delay
+            yield return spawnDelay;
+        }
+
+        // When reaching this point, we have generated all our trees. If there's an event callback we want to call, we do so here.
+        onGenerationEnd?.Invoke();
+    }
+
+    private void OnValidate() {
+        if (m_autoCalculateMax) m_maxGeneratedItems = (int)m_width * (int)m_height;
+    }
+}

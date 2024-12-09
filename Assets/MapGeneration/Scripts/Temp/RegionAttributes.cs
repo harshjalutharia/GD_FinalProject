@@ -5,6 +5,11 @@ using UnityEngine;
 public class RegionAttributes : ScriptableObject
 {
     public string name;
-    public List<VegetationGenerator.VegetationPrefab> m_vegetationPrefabs;
-    public LandmarkGenerator.LandmarkGroupCounter m_landmarkPrefabs;
+    [Header("=== Vegetation Settings ===")]
+    public List<VegetationGenerator.VegetationPrefab> vegetationPrefabs;
+    public float vegetationSpawnThreshold;
+    public float vegetationSteepnessThreshold;
+    public TerrainChunk.MinMax vegetationHeightRange;
+    [Header("=== Landmarks ===")]
+    public LandmarkGenerator.LandmarkGroupCounter landmarkPrefabs;
 }

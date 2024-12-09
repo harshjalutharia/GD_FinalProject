@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: Grasslands
   m_EditorClassIdentifier: 
   name: Grasslands
-  m_vegetationPrefabs: []
-  m_landmarkPrefabs:
+  vegetationPrefabs:
+  - prefab: {fileID: 2001493310600810982, guid: f3b2fcc4124d48d44b8612d08295f91e, type: 3}
+    mapRenderSize: 0
+    mapColor: {r: 0, g: 0, b: 0, a: 0}
+    alignWithNormal: 0
+  vegetationSteepnessThreshold: 25
+  vegetationHeightRange:
+    min: 10
+    max: 30
+  landmarkPrefabs:
     prefabs: []
     counter: 0

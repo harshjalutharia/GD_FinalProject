@@ -13,7 +13,16 @@ MonoBehaviour:
   m_Name: Default
   m_EditorClassIdentifier: 
   name: Default
-  m_vegetationPrefabs: []
-  m_landmarkPrefabs:
+  vegetationPrefabs:
+  - prefab: {fileID: 7018354074274253871, guid: bed5b9b1a089e4c4993632443861364c, type: 3}
+    mapRenderSize: 0
+    mapColor: {r: 0, g: 0, b: 0, a: 0}
+    alignWithNormal: 0
+  vegetationSpawnThreshold: 0.75
+  vegetationSteepnessThreshold: 30
+  vegetationHeightRange:
+    min: 0
+    max: 30
+  landmarkPrefabs:
     prefabs: []
     counter: 0

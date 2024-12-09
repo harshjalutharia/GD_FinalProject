@@ -11,6 +11,7 @@ public class TestNewTerrainQuery : MonoBehaviour
     [SerializeField] private TerrainManager m_terrainManager;
     private bool hit = false;
     private Vector3 hitPoint, hitNormal;
+    private float hitSteepness;
 
     #if UNITY_EDITOR
     [SerializeField] private Color m_debugColor;
@@ -30,8 +31,8 @@ public class TestNewTerrainQuery : MonoBehaviour
             hit=false; 
             return;
         }
-        hit = m_terrainManager.TryGetPointOnTerrain(transform.position, out hitPoint, out hitNormal);
-        if (hit)    Debug.Log($"Point: {hitPoint.ToString()} | Normal: {hitNormal.ToString()}");
+        hit = m_terrainManager.TryGetPointOnTerrain(transform.position, out hitPoint, out hitNormal, out hitSteepness);
+        if (hit)    Debug.Log($"Point: {hitPoint.ToString()} | Normal: {hitNormal.ToString()} | Steepness: {hitSteepness.ToString()}");
         else        Debug.Log("No hit with terrain mesh");
     }
 }

@@ -36,7 +36,9 @@ public class Voronoi : MonoBehaviour
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("The voronoi segment centroids")]  protected Vector3[] m_centroids;
     [SerializeField] private List<DBScanCluster> m_clusters;
+    public List<DBScanCluster> clusters => m_clusters;
     [SerializeField] private List<Region> m_regions;
+    public List<Region> regions => m_regions;
     [Space]
     [SerializeField] private Region m_grasslandsRegion;
     [SerializeField] private Region m_oakRegion;
@@ -58,6 +60,8 @@ public class Voronoi : MonoBehaviour
     public bool autoUpdate => m_autoUpdate;
 
     [Header("=== On Completion ===")]
+    private bool m_generated = false;
+    public bool generated => m_generated;
     public UnityEvent onCompletion;
 
     private KDTree m_centroidTree;
@@ -145,6 +149,7 @@ public class Voronoi : MonoBehaviour
         m_centroidTree = new KDTree(m_centroids, 32);       // Generate a KD tree with all the centroids. At this point, the centroids will no longer be modified
         DBScanClusterRegions(m_centroids, m_dbscanEpsilon, m_dbscanMinPoints);  // Use DBScan to generate clusters, which can be interpreted as regions
         DetermineRegions(m_clusters);
+        m_generated = true;
         onCompletion?.Invoke();
     }
 
@@ -158,6 +163,7 @@ public class Voronoi : MonoBehaviour
         m_centroidTree = new KDTree(m_centroids, 32);                       // Generate a KD tree with all the centroids. At this point, the centroids will no longer be modified
         DBScanClusterRegions(m_centroids, m_dbscanEpsilon, m_dbscanMinPoints);  // Use DBScan to generate clusters, which can be interpreted as regions
         yield return DetermineRegionsCoroutine(m_clusters);
+        m_generated = true;
         onCompletion?.Invoke();
     }
 
@@ -488,6 +494,14 @@ public class Voronoi : MonoBehaviour
         DBScanCluster cluster = QueryCluster(query);
         return m_regions[cluster.regionIndex];
     }
+
+    public List<int> QueryKNearestClusters(Vector3 query, int k) {
+        Vector3 flattened = new Vector3(query.x, 0f, query.z);
+        List<int> results = new List<int>();
+        m_clusterCentroidQuery.KNearest(m_clusterWorldCentroidTree, flattened, k, results);
+        return results;
+    }
+
 }
 
 [System.Serializable]
@@ -495,6 +509,7 @@ public class DBScanCluster : IComparable<DBScanCluster> {
     public int id = 0;
     public Color color = Color.black;
     public List<int> points = new List<int>();
+    public List<int> gemPoints = new List<int>();
     public float noiseHeight;
     public Vector3 centroid;
     public Vector3 worldCentroid;

@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: Spruce
   m_EditorClassIdentifier: 
   name: Spruce
-  m_vegetationPrefabs: []
-  m_landmarkPrefabs:
+  vegetationPrefabs:
+  - prefab: {fileID: 96349233404758280, guid: ac59f3143cefa164a9d367bf779d0800, type: 3}
+    mapRenderSize: 0
+    mapColor: {r: 0, g: 0, b: 0, a: 0}
+    alignWithNormal: 0
+  vegetationSteepnessThreshold: 10
+  vegetationHeightRange:
+    min: 40
+    max: 100
+  landmarkPrefabs:
     prefabs: []
     counter: 0

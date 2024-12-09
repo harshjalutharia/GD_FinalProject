@@ -50,12 +50,13 @@ public class TerrainManager : MonoBehaviour
 
     private Dictionary<Vector2Int, TerrainChunk> m_chunks;
     private int m_numInitializedChunks = 0;
-    private bool chunksInitialized = false;
+    private bool m_generated = false;
+    public bool generated => m_generated;
 
     #if UNITY_EDITOR
     /*
     void OnDrawGizmos() {
-        if (!chunksInitialized || m_voronoi == null || m_playerRef == null) return;
+        if (!m_generated || m_voronoi == null || m_playerRef == null) return;
         Voronoi.DBScanCluster closestCluster = m_voronoi.QueryCluster(m_playerRef.position);
         Vector3 clusterPos = new Vector3(closestCluster.centroid.x * width, 0f, closestCluster.centroid.z * height);
         Gizmos.color = Color.black;
@@ -124,7 +125,7 @@ public class TerrainManager : MonoBehaviour
     }
 
     private void Update() {
-        if (m_playerRef == null || !chunksInitialized || m_lodMethod == LODMethod.Off) return;
+        if (m_playerRef == null || !m_generated || m_lodMethod == LODMethod.Off) return;
 
         // Get the current chunk coords of the viewer
         Vector2Int playerChunkCoords = GetIndicesFromWorldPosition(m_playerRef.position);
@@ -260,7 +261,7 @@ public class TerrainManager : MonoBehaviour
         // Cannot do anything until all chunks are complete.
         if (m_numInitializedChunks < m_chunks.Count) return;
         // Assuming teh check passes, then we can safely declare that we're initialized
-        chunksInitialized = true;
+        m_generated = true;
         // If any events are tied to on generation end, invoke them
         onGenerationEnd?.Invoke();
     }
@@ -273,22 +274,24 @@ public class TerrainManager : MonoBehaviour
         );
     }
 
-    public bool TryGetPointOnTerrain(float queryX, float queryZ, out Vector3 point, out Vector3 normal) {
+    public bool TryGetPointOnTerrain(float queryX, float queryZ, out Vector3 point, out Vector3 normal, out float steepness) {
         // We need to do a raycast. We COULD use mesh.triangles and all that hullaballoo, but it's easier to use physics for this one.
         float verticalDistance = m_noiseRange.max+10f;
         Vector3 start = new Vector3(queryX, verticalDistance, queryZ);
         if (Physics.Raycast(start, Vector3.down, out RaycastHit hit, verticalDistance, m_terrainLayer)) {
             point = hit.point;
             normal = hit.normal;
+            steepness = Vector3.Angle(Vector3.up, normal);
             return true;
         }
         // In the case where we can't get a raycast hit, we'll just return upward normal and start
         point = start;
         normal = Vector3.up;
+        steepness = 0f;
         return false;
     }
-    public bool TryGetPointOnTerrain(int queryX, int queryZ, out Vector3 point, out Vector3 normal) {   return TryGetPointOnTerrain((float)queryX, (float)queryZ, out point, out normal); }
-    public bool TryGetPointOnTerrain(Vector3 queryPosition, out Vector3 point, out Vector3 normal) {    return TryGetPointOnTerrain(queryPosition.x, queryPosition.z, out point, out normal); }
+    public bool TryGetPointOnTerrain(int queryX, int queryZ, out Vector3 point, out Vector3 normal, out float steepness) {   return TryGetPointOnTerrain((float)queryX, (float)queryZ, out point, out normal, out steepness); }
+    public bool TryGetPointOnTerrain(Vector3 queryPosition, out Vector3 point, out Vector3 normal, out float steepness) {    return TryGetPointOnTerrain(queryPosition.x, queryPosition.z, out point, out normal, out steepness); }
 
     public void ClearChunks() {
         if (m_chunks != null && m_chunks.Count > 0) foreach(TerrainChunk chunk in m_chunks.Values) if (chunk != null) DestroyImmediate(chunk.gameObject);
