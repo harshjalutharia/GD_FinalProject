@@ -6,6 +6,7 @@ TagManager:
   tags:
   - StaminaPowerUp
   - Accelerator
+  - LargeGem
   layers:
   - Default
   - TransparentFX

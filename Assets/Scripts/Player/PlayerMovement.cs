@@ -852,9 +852,14 @@ public class PlayerMovement : MonoBehaviour
         if (other.CompareTag("LargeGem"))
         {
             largeGemCollected++;
-            if (largeGemCollected >= 2)
+            if (largeGemCollected >= 3)
             {
                 ActivateFlight();
+                ActivateParagliding();
+                ActivatePBoosting();
+            }
+            if (largeGemCollected >= 2)
+            {
                 ActivateParagliding();
                 ActivatePBoosting();
             }
