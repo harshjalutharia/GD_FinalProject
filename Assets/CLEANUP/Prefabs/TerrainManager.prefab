@@ -1,0 +1,281 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4586490935089066740
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5331262809235056911}
+  - component: {fileID: 5834255471106373448}
+  m_Layer: 6
+  m_Name: TerrainManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5331262809235056911
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4586490935089066740}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5834255471106373448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4586490935089066740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a60ec99e17e5c498835f9de7dd173c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_seed: 0
+  m_numCols: 18
+  m_numRows: 18
+  m_cellWidth: 50
+  m_cellHeight: 50
+  m_maxLOD: 4
+  m_lodMethod: 0
+  m_lodAngleThreshold: 15
+  m_randomizeOffsets: 1
+  m_offsets: {x: 0, y: 0}
+  m_chunkPrefab: {fileID: 1983288166757723927, guid: e1e4020bb366e5245bff13f45238e764, type: 3}
+  m_playerRef: {fileID: 0}
+  m_terrainLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  m_applyValleys: 1
+  m_baseFalloff:
+    falloffType: 3
+    centerX: 0.5
+    centerY: 0.5
+    falloffStart: 0.2
+    falloffEnd: 0.6
+    heightCurve:
+      curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: -1
+          outSlope: -1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: 0
+          inSlope: -1
+          outSlope: -1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      multiplier: 10
+  m_valleysPerlin:
+    scale: 100
+    heightCurve:
+      curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 0.2
+          value: 0.1865375
+          inSlope: 0.09398391
+          outSlope: 0.09398391
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.45
+          value: 0.1971107
+          inSlope: -0.007524296
+          outSlope: -0.007524296
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.17197423
+        - serializedVersion: 3
+          time: 0.9476746
+          value: 0.9365265
+          inSlope: 1.2991297
+          outSlope: 1.2991297
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.07362753
+          outWeight: 0.23165177
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 4.5289474
+          outSlope: 4.5289474
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.23687313
+          outWeight: 0.33333334
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      multiplier: 30
+  m_applyDunes: 1
+  m_dunesPerlin:
+    scale: 17.5
+    heightCurve:
+      curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 2
+          outSlope: 2
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      multiplier: 5
+  m_traversableFalloff:
+    falloffType: 3
+    centerX: 0.5
+    centerY: 0.5
+    falloffStart: 0.25
+    falloffEnd: 0.5
+    heightCurve:
+      curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      multiplier: 1.5
+  m_borderFalloff:
+    falloffType: 3
+    centerX: 0.5
+    centerY: 0.5
+    falloffStart: 0.25
+    falloffEnd: 0.5
+    heightCurve:
+      curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: -0.12965728
+          outSlope: -0.12965728
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.4832454
+          value: 0.9373437
+          inSlope: -0.31908578
+          outSlope: -0.31908578
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.14257291
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: 0
+          inSlope: -1.8139049
+          outSlope: -1.8139049
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      multiplier: 4
+  m_noiseRange:
+    min: 0
+    max: 0
+  onGenerationEnd:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: VegetationGenerator2, Assembly-CSharp
+        m_MethodName: Generate
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: GemGenerator2, Assembly-CSharp
+        m_MethodName: Generate
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
