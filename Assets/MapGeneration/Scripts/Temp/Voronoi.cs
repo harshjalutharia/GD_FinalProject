@@ -12,9 +12,18 @@ public class Voronoi : MonoBehaviour
 {
     public static Voronoi current;
 
-    [Header("=== Voronoi Tessellation Settings ===")]
+    [Header("=== Generator Settings ===")]
     [SerializeField, Tooltip("The seed used for pseudo random generation")] protected int m_seed;
     public int seed => m_seed;
+    [SerializeField, Tooltip("The world width of the resulting voronoi map. Used in gizmos rendering + for cluster querying when provided world positions")]    protected float m_width = 1f;
+    [SerializeField, Tooltip("The world height of the resulting voronoi map. Used in gizmos rendering + for cluster querying when provided world positions")]   protected float m_height = 1f;
+    public float width => m_width;
+    public float height => m_height;
+    [SerializeField, Tooltip("Should we generate on start?")]   private bool m_generateOnStart = true;
+    [SerializeField, Tooltip("Do we use a coroutine?")] private bool m_useCoroutine = false;
+    [SerializeField, Tooltip("If using a coroutine, then how many for-loop iterations do we wait for each frame?")] private int m_coroutineNumThreshold = 20;
+
+    [Header("=== Voronoi Tessellation Settings ===")]
     [SerializeField, Tooltip("How many segments do we want?")]      protected int m_numSegments = 50;
     [SerializeField, Tooltip("Buffer ratio from horizontal edges"), Range(0f,0.5f)] protected float m_horizontalBuffer = 0.1f;
     [SerializeField, Tooltip("Buffer ratio from vertical edges"), Range(0f, 0.5f)]  protected float m_verticalBuffer = 0.1f;
@@ -46,22 +55,17 @@ public class Voronoi : MonoBehaviour
     [SerializeField] private Region m_spruceRegion;
     
     [Header("=== Noise Map Interactions ===")]
-    [SerializeField, Tooltip("The world width of the resulting voronoi map. Used in gizmos rendering + for cluster querying when provided world positions")]    protected float m_worldWidth = 1f;
-    [SerializeField, Tooltip("The world height of the resulting voronoi map. Used in gizmos rendering + for cluster querying when provided world positions")]   protected float m_worldHeight = 1f;
     [SerializeField, Tooltip("The height curve when converting from noise height to world height")] protected AnimationCurve m_heightCurve;
     [SerializeField, Tooltip("The height multiplier when converting from noise height to world height")]    protected float m_heightMultiplier = 1f;
 
     [Header("=== Inspector tools ===")]
-    [SerializeField, Tooltip("Do we use a coroutine?")] private bool m_useCoroutine = false;
-    [SerializeField, Tooltip("If using a coroutine, then how many for-loop iterations do we wait for each frame?")] private int m_coroutineNumThreshold = 20;
-    [SerializeField, Tooltip("Should we generate on start?")]   private bool m_generateOnStart = true;
     [SerializeField, Tooltip("Should we auto-updated per change?")] protected bool m_autoUpdate = true;
     public bool autoUpdate => m_autoUpdate;
 
     [Header("=== On Completion ===")]
     private bool m_generated = false;
     public bool generated => m_generated;
-    public UnityEvent onCompletion;
+    public UnityEvent onGenerationEnd;
 
     private KDTree m_centroidTree;
     private int[] m_centroidToClusterMap;
@@ -84,11 +88,11 @@ public class Voronoi : MonoBehaviour
         if (!m_showDebug) return;
 
         Gizmos.color = Color.black;
-        Vector3 worldCenter = transform.position + new Vector3(m_worldWidth/2f,0f,m_worldHeight/2f);
+        Vector3 worldCenter = transform.position + new Vector3(m_width/2f,0f,m_height/2f);
         Vector3 world1 = transform.rotation * transform.position;
-        Vector3 world2 = transform.rotation * (transform.position + new Vector3(m_worldWidth, 0f, 0f));
-        Vector3 world3 = transform.rotation * (transform.position + new Vector3(0f, 0f, m_worldHeight));
-        Vector3 world4 = transform.rotation * (transform.position + new Vector3(m_worldWidth, 0f, m_worldHeight));
+        Vector3 world2 = transform.rotation * (transform.position + new Vector3(m_width, 0f, 0f));
+        Vector3 world3 = transform.rotation * (transform.position + new Vector3(0f, 0f, m_height));
+        Vector3 world4 = transform.rotation * (transform.position + new Vector3(m_width, 0f, m_height));
         Gizmos.DrawLine(world1, world2);
         Gizmos.DrawLine(world1, world3);
         Gizmos.DrawLine(world2, world4);
@@ -100,12 +104,12 @@ public class Voronoi : MonoBehaviour
             Gizmos.color = region.attributes.color;            
             Gizmos.DrawSphere(transform.rotation * (transform.position + region.coreCluster.worldCentroid), m_gizmosCentroidSize);
             foreach(int pi in region.coreCluster.points) {
-                Vector3 p = transform.rotation * (transform.position + new Vector3(m_centroids[pi].x * m_worldWidth, region.coreCluster.worldCentroid.y, m_centroids[pi].z * m_worldHeight));
+                Vector3 p = transform.rotation * (transform.position + new Vector3(m_centroids[pi].x * m_width, region.coreCluster.worldCentroid.y, m_centroids[pi].z * m_height));
                 Gizmos.DrawSphere(p, m_gizmosPointSize);
             }
             foreach(DBScanCluster cluster in region.subClusters) {
                 foreach(int pi in cluster.points) {
-                    Vector3 p = transform.rotation * (transform.position + new Vector3(m_centroids[pi].x * m_worldWidth, cluster.worldCentroid.y, m_centroids[pi].z * m_worldHeight));
+                    Vector3 p = transform.rotation * (transform.position + new Vector3(m_centroids[pi].x * m_width, cluster.worldCentroid.y, m_centroids[pi].z * m_height));
                     Gizmos.DrawSphere(p, m_gizmosPointSize);
                 }
             }
@@ -124,21 +128,15 @@ public class Voronoi : MonoBehaviour
         m_seed = newSeed;
     }
 
-    public void SetScale(float width, float height) {
-        m_worldWidth = width;
-        m_worldHeight = height;
+    public void SetDimensions(float w, float h) {
+        m_width = w;
+        m_height = h;
     }
 
     private void Awake() {
         current = this;
     }
     private void Start() {
-        // If there is a terrain manager that is active in the world, then get its elements
-        if (TerrainManager.current != null) {
-            SetSeed(TerrainManager.current.seed);
-            SetScale(TerrainManager.current.width, TerrainManager.current.height);
-        }
-
         if (m_generateOnStart) {
             if (m_useCoroutine) StartCoroutine(GenerateCoroutine());
             else Generate();
@@ -148,29 +146,35 @@ public class Voronoi : MonoBehaviour
     public void Generate() {
         m_prng = new System.Random(m_seed);         // Initialize the randomization
         m_clusterCentroidQuery = new KDQuery();     // This is a query class that interacts with any KDTrees we formulate.
+        
         GenerateCentroids(m_numSegments);                   // Generate the initial list of centroids.
         if (m_numRelaxations > 0) {
             LloydRelaxation(m_centroids, m_numRelaxations); // We modify the centroid positions via Lloyd Relaxation.
         }
         m_centroidTree = new KDTree(m_centroids, 32);       // Generate a KD tree with all the centroids. At this point, the centroids will no longer be modified
+        
         DBScanClusterRegions(m_centroids, m_dbscanEpsilon, m_dbscanMinPoints);  // Use DBScan to generate clusters, which can be interpreted as regions
         DetermineRegions(m_clusters);
+        
         m_generated = true;
-        onCompletion?.Invoke();
+        onGenerationEnd?.Invoke();
     }
 
     public IEnumerator GenerateCoroutine() {
         m_prng = new System.Random(m_seed);             // Initialize the randomization
         m_clusterCentroidQuery = new KDQuery();         // This is a query class that interacts with any KDTrees we formulate.
+        
         yield return GenerateCentroidsCoroutine(m_numSegments);             // Generate the initial list of centroids.
         if (m_numRelaxations > 0) {
             yield return LloydRelaxationCoroutine(m_centroids, m_numRelaxations);    // We modify the centroid positions via Lloyd Relaxation.
         }
         m_centroidTree = new KDTree(m_centroids, 32);                       // Generate a KD tree with all the centroids. At this point, the centroids will no longer be modified
+        
         DBScanClusterRegions(m_centroids, m_dbscanEpsilon, m_dbscanMinPoints);  // Use DBScan to generate clusters, which can be interpreted as regions
         yield return DetermineRegionsCoroutine(m_clusters);
+        
         m_generated = true;
-        onCompletion?.Invoke();
+        onGenerationEnd?.Invoke();
     }
 
     public void GenerateCentroids(int n) {
@@ -379,7 +383,7 @@ public class Voronoi : MonoBehaviour
             }
             cluster.centroid /= cluster.points.Count;
             cluster.centroid.y = cluster.noiseHeight;
-            cluster.worldCentroid = transform.position + new Vector3(cluster.centroid.x * m_worldWidth, m_heightCurve.Evaluate(cluster.noiseHeight) * m_heightMultiplier, cluster.centroid.z * m_worldHeight);
+            cluster.worldCentroid = transform.position + new Vector3(cluster.centroid.x * m_width, m_heightCurve.Evaluate(cluster.noiseHeight) * m_heightMultiplier, cluster.centroid.z * m_height);
             m_clusterCentroids[ci] = cluster.centroid;
             m_clusterWorldCentroids[ci] = cluster.worldCentroid;
         }
@@ -396,8 +400,8 @@ public class Voronoi : MonoBehaviour
         for(int i = 0; i < clusters.Count; i++) {
             DBScanCluster cluster = clusters[i];
             Vector3 clusterCentroid = cluster.worldCentroid;
-            float normalizedX = Mathf.Clamp(clusterCentroid.x / m_worldWidth, 0f, 1f);
-            float normalizedY = Mathf.Clamp(clusterCentroid.z / m_worldHeight, 0f, 1f);
+            float normalizedX = Mathf.Clamp(clusterCentroid.x / m_width, 0f, 1f);
+            float normalizedY = Mathf.Clamp(clusterCentroid.z / m_height, 0f, 1f);
             int distanceToCenter = Mathf.RoundToInt(Mathf.InverseLerp(maxDistance, 0f, Vector2.Distance(new Vector2(normalizedX, normalizedY), normalizedCenter)) * 10f);
             int size = Mathf.RoundToInt((float)cluster.points.Count / m_numSegments * 10f);
             Region region = new Region { coreCluster=cluster, majorRegionWeight=distanceToCenter*size };
@@ -457,8 +461,8 @@ public class Voronoi : MonoBehaviour
         for(int i = 0; i < clusters.Count; i++) {
             DBScanCluster cluster = clusters[i];
             Vector3 clusterCentroid = cluster.worldCentroid;
-            float normalizedX = Mathf.Clamp(clusterCentroid.x / m_worldWidth, 0f, 1f);
-            float normalizedY = Mathf.Clamp(clusterCentroid.z / m_worldHeight, 0f, 1f);
+            float normalizedX = Mathf.Clamp(clusterCentroid.x / m_width, 0f, 1f);
+            float normalizedY = Mathf.Clamp(clusterCentroid.z / m_height, 0f, 1f);
             int distanceToCenter = Mathf.RoundToInt(Mathf.InverseLerp(maxDistance, 0f, Vector2.Distance(new Vector2(normalizedX, normalizedY), normalizedCenter)) * 10f);
             int size = Mathf.RoundToInt((float)cluster.points.Count / m_numSegments * 10f);
             Region region = new Region { coreCluster=cluster, majorRegionWeight=distanceToCenter*size };
@@ -519,6 +523,22 @@ public class Voronoi : MonoBehaviour
         // Yield return null
         yield return null;
     }
+    
+    // Note: query MUST BE NORMALIZED BETWEEN 0 and 1 for each axis
+    public int QueryClosestPointIndex(Vector3 query) {
+        Vector3 flattened = new Vector3(query.x, 0f, query.z);
+        List<int> results = new List<int>();
+        m_clusterCentroidQuery.ClosestPoint(m_centroidTree, flattened, results);
+        return results[0];
+    }
+
+    // Note: query MUST BE NORMALIZED BETWEEN 0 and 1 for each axis
+    public List<int> QueryKNearestPointIndices(Vector3 query, int k) {
+        Vector3 flattened = new Vector3(query.x, 0f, query.z);
+        List<int> results = new List<int>();
+        m_clusterCentroidQuery.KNearest(m_centroidTree, flattened, k, results);
+        return results;
+    }
 
     public DBScanCluster QueryCluster(Vector3 query) {
         Vector3 flattened = new Vector3(query.x, 0f, query.z);
@@ -537,13 +557,6 @@ public class Voronoi : MonoBehaviour
         List<int> results = new List<int>();
         m_clusterCentroidQuery.KNearest(m_clusterWorldCentroidTree, flattened, k, results);
         return results;
-    }
-
-    public int QueryClosestPointIndex(Vector3 query) {
-        Vector3 flattened = new Vector3(query.x, 0f, query.z);
-        List<int> results = new List<int>();
-        m_clusterCentroidQuery.ClosestPoint(m_centroidTree, flattened, results);
-        return results[0];
     }
 
 }

@@ -2,17 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 public class TerrainManager : MonoBehaviour
 {
     public static TerrainManager current;
+    
     public enum FalloffType { Box, NorthSouth, EastWest, Circle }
     public enum LODMethod { Off, Grid, Angle, AngleDistance }
 
-    [Header("=== Terrrain Grid Settings ===")]
+    [Header("=== Terrain Grid Settings ===")]
     [SerializeField, Tooltip("The seed used for generation. Passed down to all terrain chunks")]    private int m_seed;
     public int seed => m_seed;
     [SerializeField, Tooltip("The number of columns (along X-axis) along the chunk grid")]          private int m_numCols = 4;
@@ -21,6 +19,7 @@ public class TerrainManager : MonoBehaviour
     [SerializeField, Tooltip("The height (along Z-axis) of each individual chunk")]                 private int m_cellHeight = 150;
     public float width => (float)m_numCols * m_cellWidth;
     public float height => (float)m_numRows * m_cellHeight;
+    [SerializeField, Tooltip("Generate on start?")] private bool m_generateOnStart = false;
     [Space]
     [SerializeField, Tooltip("The maximum LOD we want to enforce for terrain chunks"), Range(0,6)]  private int m_maxLOD = 6;
     [SerializeField, Tooltip("How do chunks determine their LOD? If 'Off', then will default to max LOD level")]    private LODMethod m_lodMethod = LODMethod.Grid;
@@ -46,27 +45,15 @@ public class TerrainManager : MonoBehaviour
     [SerializeField, Tooltip("READ ONLY")]  private TerrainChunk.MinMax m_noiseRange;
 
     [Header("=== On Completion ===")]
+    [SerializeField, Tooltip("Is the terrain generated?")]  private bool m_generated = false;
+    public bool generated => m_generated;
     public UnityEvent onGenerationEnd;
 
     private Dictionary<Vector2Int, TerrainChunk> m_chunks;
     private int m_numInitializedChunks = 0;
-    private bool m_generated = false;
-    public bool generated => m_generated;
-
-    #if UNITY_EDITOR
-    /*
-    void OnDrawGizmos() {
-        if (!m_generated || m_voronoi == null || m_playerRef == null) return;
-        Voronoi.DBScanCluster closestCluster = m_voronoi.QueryCluster(m_playerRef.position);
-        Vector3 clusterPos = new Vector3(closestCluster.centroid.x * width, 0f, closestCluster.centroid.z * height);
-        Gizmos.color = Color.black;
-        Gizmos.DrawCube(clusterPos, Vector3.one * 20);
-    }
-    */
-    #endif
 
     public void SetSeed(string newSeed) {
-        if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {
+        if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {   
             m_seed = validNewSeed;
             return;
         }
@@ -82,6 +69,10 @@ public class TerrainManager : MonoBehaviour
     }
 
     private void Start() {
+        if (m_generateOnStart) Generate();
+    }
+
+    public void Generate() {
         // CLear all existing chunks, and initialize the chunk collection
         ClearChildrenChunks();
         m_chunks = new Dictionary<Vector2Int, TerrainChunk>();

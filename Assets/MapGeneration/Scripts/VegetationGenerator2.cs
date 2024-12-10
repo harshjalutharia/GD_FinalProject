@@ -2,12 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using DataStructures.ViliWonka.KDTree;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 public class VegetationGenerator2 : MonoBehaviour
 {
+    public static VegetationGenerator2 current;
+
     [Header("=== References ===")]
     [SerializeField] private Transform m_vegetationParent;
 
@@ -29,13 +32,20 @@ public class VegetationGenerator2 : MonoBehaviour
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("The generated vegetation items")] private List<GameObject> m_generatedVegetation;
     public List<GameObject> generatedVegetation => m_generatedVegetation;
+    private List<Vector3> m_generatedPoints;
+
+    [Header("=== On Generation End")]
+    [SerializeField, Tooltip("Has vegetation been generated?")] private bool m_generated = false;
+    public bool generated => m_generated;
     public UnityEvent onGenerationEnd;
 
     private IEnumerator m_spawnCoroutine;
     private Queue<ToSpawn> m_coroutineSpawnQueue;
     private int m_generatedItemsCount;
+
+    private KDQuery m_vegetationQuery;
+    private KDTree m_vegetationTree;
     private System.Random m_prng;
-    private List<Vector3> m_debugPoints = new List<Vector3>();
 
     public class ToSpawn {
         public GameObject prefab;
@@ -45,24 +55,25 @@ public class VegetationGenerator2 : MonoBehaviour
     }
 
     #if UNITY_EDITOR
+    [Header("=== Debug Tree Indice Radius Search ===")]
+    [SerializeField] private Transform m_debugPositionRef;
+    [SerializeField] private float m_debugRadius = 10f;
     void OnDrawGizmos() {
-        if (m_debugPoints.Count == 0) return;
-        Gizmos.color = Color.white;
-        foreach(Vector3 p in m_debugPoints) {
-            Gizmos.DrawSphere(p, 0.5f);
-        }
+        if (!m_generated || m_debugPositionRef == null) return;
+        List<int> treeIndices = QueryTreeIndicesInRadius(m_debugPositionRef.position, m_debugRadius);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(m_debugPositionRef.position, m_debugRadius);
+        foreach(int i in treeIndices) Gizmos.DrawSphere(m_generatedPoints[i], 10f);
     }
     #endif
 
     private void Awake() {
+        current = this;
         if (m_vegetationParent == null) m_vegetationParent = this.transform;
     }
 
     public virtual void SetSeed(string newSeed) {
-        if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {
-            m_seed = validNewSeed;
-            return;
-        }
+        if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {    m_seed = validNewSeed;  return; }
         m_seed = UnityEngine.Random.Range(0, 1000001);
     }
     public virtual void SetSeed(int newSeed) {
@@ -70,9 +81,9 @@ public class VegetationGenerator2 : MonoBehaviour
     }
 
     public void SetDimensions(float w, float h) {
-        m_width = width;
-        m_height = height;
-        if (m_autoCalculateMax) m_maxGeneratedItems = (int)m_width * (int)m_height;
+        m_width = w;
+        m_height = h;
+        if (m_autoCalculateMax) m_maxGeneratedItems = Mathf.FloorToInt(m_width * m_height);
     }
     public void SetDimensions(Vector2 dimensions) { SetDimensions(dimensions.x, dimensions.y); }
     
@@ -86,7 +97,6 @@ public class VegetationGenerator2 : MonoBehaviour
             Debug.Log("Vegetation Generator 2: Cannot start generating until voronoi is generated.");
             return;
         }
-
         // Set the seed engine
         m_prng = new System.Random(m_seed);
 
@@ -117,8 +127,6 @@ public class VegetationGenerator2 : MonoBehaviour
                 if ((float)m_prng.Next(0,1000)/1000f < currentRegion.attributes.vegetationSpawnThreshold) continue;
                 if (steepness > currentRegion.attributes.vegetationSteepnessThreshold) continue;
                 if (point.y > currentRegion.attributes.vegetationHeightRange.max || point.y < currentRegion.attributes.vegetationHeightRange.min) continue;
-
-                m_debugPoints.Add(point);
                 
                 // Select which prefab to use, and get its characteristics
                 int prefabIndex = m_prng.Next(0, prefabs.Count);
@@ -154,6 +162,9 @@ public class VegetationGenerator2 : MonoBehaviour
         // Let's actually wait for the spawn delay first, to give the system enough time to generate some number of trees to generate
         yield return spawnDelay;
 
+        // Because we want to form a KDTree for easy vegetation search, we must initialize a list o positions here
+        m_generatedPoints = new List<Vector3>();
+
         // initiate loop
         while(m_generatedVegetation.Count < m_generatedItemsCount) {
             // Check if we still have something to spawn. If not, skip
@@ -176,17 +187,34 @@ public class VegetationGenerator2 : MonoBehaviour
                 
                 // Add it to our list of generated vegetation
                 m_generatedVegetation.Add(t);
-
-                // If we indicated that we wanted to add it to the held map, then we add it
-                //if (toSpawn.prefab.mapRenderSize > 0 && toSpawn.prefab.mapColor.a > 0f) m_terrainGenerator.DrawCircleOnHeldMap(toSpawn.position.x, toSpawn.position.z, toSpawn.prefab.mapRenderSize, toSpawn.prefab.mapColor);
+                m_generatedPoints.Add(toSpawn.position);
             }
 
             // Yield return the delay
             yield return spawnDelay;
         }
 
-        // When reaching this point, we have generated all our trees. If there's an event callback we want to call, we do so here.
+        // When reaching this point, we have generated all our trees. 
+        m_vegetationQuery = new KDQuery();
+        m_vegetationTree = new KDTree(m_generatedPoints.ToArray(), 32);
+
+        // If there's an event callback we want to call, we do so here.
+        m_generated = true;
         onGenerationEnd?.Invoke();
+    }
+
+    public List<int> QueryTreeIndicesInRadius(Vector3 query, float radius) {
+        if (!m_generated) return null;
+        List<int> results = new List<int>();
+        m_vegetationQuery.Radius(m_vegetationTree, query, radius, results);
+        return results;
+    }
+
+    public void DeactivateTreesInRadius(Vector3 query, float radius) {
+        if (!m_generated) return;
+        List<int> results = QueryTreeIndicesInRadius(query, radius);
+        if (results == null) return;
+        foreach(int i in results) m_generatedVegetation[i].SetActive(false);
     }
 
     private void OnValidate() {
