@@ -141,6 +141,7 @@ public class GemGenerator2 : MonoBehaviour
         Gem destinationGem = Instantiate(m_destinationGemPrefab, majorGemLocation, Quaternion.identity, m_gemParent) as Gem;  
         destinationGem.gemType = Gem.GemType.Destination;
         destinationGem.regionIndex = region.id;
+        destinationGem.SetColor(region.attributes.color);
         m_destinationGems.Add(destinationGem);
         region.destinationGem = destinationGem;
         
@@ -162,6 +163,7 @@ public class GemGenerator2 : MonoBehaviour
             Gem smallGem = Instantiate(m_smallGemPrefab, smallGemLocation, Quaternion.identity, m_gemParent) as Gem;
             smallGem.gemType = Gem.GemType.Small;
             smallGem.regionIndex = region.id;
+            smallGem.SetColor(region.attributes.color);
             m_smallGems.Add(smallGem);
             region.smallGems.Add(smallGem);
         }

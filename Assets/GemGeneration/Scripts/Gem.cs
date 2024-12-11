@@ -21,6 +21,10 @@ public class Gem : MonoBehaviour
         if (m_collider != null) m_collider.isTrigger = true;
     }
 
+    public void SetColor(Color color) {
+        if (m_renderer != null) m_renderer.material.SetColor("_Color", color); 
+    }
+
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag != "Player") return;
         Debug.Log("Gem Reached!");
