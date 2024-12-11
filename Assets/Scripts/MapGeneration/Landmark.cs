@@ -51,76 +51,20 @@ public class Landmark : MonoBehaviour
     private void Start() {
         // Find all renderers associated with this object
         m_renderers = GetComponentsInChildren<Renderer>();
-
         // Offset Landmark
         OffsetLandmarkInYaxis();
-    }
-
-    private void LateUpdate() {
-        if (!CameraController.current.enabled) return;
-
-        // Don't do a fustrum check if we aren't evne pressed down on the map input
-        bool mapInputActive = CameraController.current.firstPersonCameraActive;
-        if (!mapInputActive) {
-            m_inFustrum = false;
-            m_distToCamCenter = -1f;
-            m_viewportPoint = Vector2.zero;
-            return;
-        }
-
-        // Rather than chekc the fustrum, we will be doing a different test today. In this case, we will be attempting to check 
-        // if this landmark's bounds are within the right side of the camera.
-        // To do this, we get the min and max points of the bounds and do a comparison check.
-        // The bounds is considered inside if either the min is greater than (0.5,0) and smaller than (1,1), or similar for max.
-        Vector3 min = m_bounds.min;
-        Vector3 max = m_bounds.max;
-
-        // Get the screen points of each
-        Vector3 minScreen = CameraController.current.firstPersonCamera.WorldToViewportPoint(min);
-        Vector3 maxScreen = CameraController.current.firstPersonCamera.WorldToViewportPoint(max);
-        
-        // We need to convert the x-coords for both the min and max points to fit the range between (0.5f,1f), to check for right-sidedness
-        // Note that for viewport, the bottom-left is (0,0) and the top-right is (1,1)
-        Vector2 minScreenNormalized = new Vector2((minScreen.x - 0.5f)/0.5f, minScreen.y);
-        Vector2 maxScreenNormalized = new Vector2((maxScreen.x - 0.5f)/0.5f, maxScreen.y);
-
-        // At this point: 1) if any values are < 0, then they're outside on the lower bound. Likewise, if values are > 1, then they are outside on the upper bound
-        if ( !(minScreenNormalized.x > 0f && minScreenNormalized.x < 1f && minScreenNormalized.y > 0f && maxScreenNormalized.y < 1f) && !(maxScreenNormalized.x > 0f && maxScreenNormalized.x < 1f && maxScreenNormalized.y > 0f && maxScreenNormalized.y < 1f) ) {
-            // We are not in the view fustrum. Cancel out early
-            m_inFustrum = false;
-            m_viewportPoint = Vector2.zero;
-            m_distToCamCenter = -1f;
-            return;
-        }
-
-        m_inFustrum = true;
-
-        // If we haven't been drawn yet, we gotta
-        if (!m_drawnOnMap && m_mapColor.a > 0f) {
-            SessionManager.current.terrainGenerator.DrawBoxOnHeldMap(m_bounds.center.x, m_bounds.center.z, m_bounds.min.x, m_bounds.min.z, m_bounds.max.x, m_bounds.max.z, Color.black);
-            SessionManager.current.terrainGenerator.DrawBoxOnHeldMap(m_bounds.center.x, m_bounds.center.z, m_bounds.min.x+1, m_bounds.min.z+1, m_bounds.max.x-1, m_bounds.max.z-1, m_mapColor);
-            m_drawnOnMap = true;
-        }
-
-        // What's the closest point on bounds to the first-person camera and its distance?
-        Vector3 closestPointOnBounds = m_bounds.ClosestPoint(CameraController.current.firstPersonCamera.transform.position);
-        Vector3 closestViewportPoint = CameraController.current.firstPersonCamera.WorldToViewportPoint(closestPointOnBounds);
-        m_viewportPoint = new Vector3(Mathf.Clamp(closestViewportPoint.x, 0f, 1f), Mathf.Clamp(closestViewportPoint.y, 0f, 1f));
-        m_distToCamCenter = Mathf.Abs(0.65f - viewportPoint.x);
     }
 
     public void CalculateBounds() {
         // Find all renderers associated with this object
         m_renderers = GetComponentsInChildren<Renderer>();
-
         // Initialize a new bounds that'll act as the composite bounds of this object
         m_bounds = new Bounds (transform.position, Vector3.one);
 	    foreach (Renderer renderer in m_renderers) m_bounds.Encapsulate (renderer.bounds);
     }
 
     // offsets the landmark's position in the y-axis to fix it floating above ground
-    public void OffsetLandmarkInYaxis()
-    {
+    public void OffsetLandmarkInYaxis() {
         if (TerrainManager.current == null) return;
         //if (SessionManager.current == null || SessionManager.current.terrainGenerator == null) return;
         if (m_renderers == null || m_renderers.Length == 0) return;
@@ -168,7 +112,6 @@ public class Landmark : MonoBehaviour
 
         // We have to first 
         return bottomPoints;
-
     }
 }
 
