@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using DataStructures.ViliWonka.KDTree;
 using UnityEngine.Events;
+using UnityEngine.UI;
+using TMPro;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -32,6 +34,13 @@ public class Voronoi : MonoBehaviour
     [SerializeField] private RegionAttributes m_oakAttributes;
     [SerializeField] private RegionAttributes m_birchAttributes;
     [SerializeField] private RegionAttributes m_spruceAttributes;
+
+    [Header("=== Gameplay ===")]
+    [SerializeField, Tooltip("Reference to the player transform")]  private Transform m_playerRef;
+    [SerializeField, Tooltip("Which region is the player currently in?")]   private Region m_playerRegion = null;
+    [SerializeField, Tooltip("The TextMeshProUGUI textbox for the region's name")]  private TextMeshProUGUI m_regionNameTextbox = null;
+    [SerializeField, Tooltip("The TextMeshProUGUI textbox for the total # of gems")]    private TextMeshProUGUI m_regionTotalCountTextbox = null;
+    [SerializeField, Tooltip("The TextMeshProUGUI textbox for the current # of gems collected")]    private TextMeshProUGUI m_regionCurrentCountTextbox = null;
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("The voronoi segment centroids")] protected Centroid[] m_centroids;
@@ -97,18 +106,6 @@ public class Voronoi : MonoBehaviour
             foreach(Centroid centroid in region.centroids) {
                 Gizmos.DrawSphere(transform.rotation * (transform.position + centroid.position), m_gizmosPointSize);
             }
-            /*
-            foreach(int pi in region.coreCluster.points) {
-                Vector3 p = transform.rotation * (transform.position + new Vector3(m_centroids[pi].x * m_width, region.coreCluster.worldCentroid.y, m_centroids[pi].z * m_height));
-                Gizmos.DrawSphere(p, m_gizmosPointSize);
-            }
-            foreach(DBScanCluster cluster in region.subClusters) {
-                foreach(int pi in cluster.points) {
-                    Vector3 p = transform.rotation * (transform.position + new Vector3(m_centroids[pi].x * m_width, cluster.worldCentroid.y, m_centroids[pi].z * m_height));
-                    Gizmos.DrawSphere(p, m_gizmosPointSize);
-                }
-            }
-            */
         }
     }
     #endif
@@ -496,6 +493,18 @@ public class Voronoi : MonoBehaviour
         m_query.ClosestPoint(m_regionTree, query, results);
         return m_regions[results[0]];
     }
+
+    private void Update() {
+        if (SessionManager2.current != null && !SessionManager2.current.gameplayInitialized) return;
+        if (m_playerRef == null) return;
+
+        // Track where the player is currently
+        m_playerRegion = QueryClosestRegion(m_playerRef.position);
+        // Populate the textmeshpros
+        if (m_regionNameTextbox != null) m_regionNameTextbox.text = m_playerRegion.attributes.name;
+        if (m_regionTotalCountTextbox != null) m_regionTotalCountTextbox.text = m_playerRegion.smallGems.Count.ToString();
+        if (m_regionCurrentCountTextbox != null) m_regionCurrentCountTextbox.text = m_playerRegion.collectedGems.Count.ToString();
+    }
 }
 
 [System.Serializable]
@@ -510,7 +519,6 @@ public class Centroid {
     [Space]
     public List<int> neighbors = new List<int>();
 }
-
 
 [System.Serializable]
 public class DBScanCluster : IComparable<DBScanCluster> {
@@ -551,8 +559,10 @@ public class Region : IComparable<Region> {
     [HideInInspector] public int majorRegionWeight;
     [Space]
     public Gem destinationGem;
-    public HashSet<Gem> smallGems;
+    public List<Gem> smallGems;
     public List<Gem> collectedGems;
+    public bool destinationCollected = false;
+    public bool smallGemsCollected => collectedGems.Count == smallGems.Count;
 
     public void GenerateTree() {
         this.query = new KDQuery();

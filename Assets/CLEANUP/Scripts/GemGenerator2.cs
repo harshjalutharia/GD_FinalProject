@@ -39,7 +39,7 @@ public class GemGenerator2 : MonoBehaviour
     [SerializeField, Tooltip("Distance threshold - if a location is too close, we cannot place there")] private float m_minDistanceThreshold = 20f;
     [SerializeField, Tooltip("The max number of gem locations per region")] private int m_maxGemCountPerRegion = 15;
 
-    [Header("=== Prefabs ===")]
+    [Header("=== References ===")]
     [SerializeField, Tooltip("The prefab used for small gems")]             private Gem m_smallGemPrefab;
     [SerializeField, Tooltip("The prefab used for the destination gem")]    private Gem m_destinationGemPrefab;
 
@@ -139,6 +139,7 @@ public class GemGenerator2 : MonoBehaviour
         majorGemLocation += majorNormal * 0.25f;
         if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(majorGemLocation, 10f);
         Gem destinationGem = Instantiate(m_destinationGemPrefab, majorGemLocation, Quaternion.identity, m_gemParent) as Gem;  
+        destinationGem.gameObject.name = $"Destination Gem - {region.attributes.name}";
         destinationGem.gemType = Gem.GemType.Destination;
         destinationGem.regionIndex = region.id;
         destinationGem.SetColor(region.attributes.color);
@@ -154,13 +155,13 @@ public class GemGenerator2 : MonoBehaviour
         QuerySmallGemCandidate(closestCentroid.position, ref region, ref potentialSmallGemSpawns, ref visitedPotential);
 
         // For all spawns in potential spawns, add them to minor gem locations
-        region.smallGems = new HashSet<Gem>();
+        region.smallGems = new List<Gem>();
         region.collectedGems = new List<Gem>();
         foreach(GemSpawn spawn in potentialSmallGemSpawns) {
-            TerrainManager.current.TryGetNormalOnTerrain(closestCentroid.position.x, closestCentroid.position.z, out Vector3 minorNormal, out float minorSteepness);
-            Vector3 smallGemLocation = spawn.point + minorNormal*0.25f;
+            Vector3 smallGemLocation = spawn.point;
             if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(smallGemLocation, 5f);
             Gem smallGem = Instantiate(m_smallGemPrefab, smallGemLocation, Quaternion.identity, m_gemParent) as Gem;
+            smallGem.gameObject.name = $"Small Gem - {region.attributes.name}";
             smallGem.gemType = Gem.GemType.Small;
             smallGem.regionIndex = region.id;
             smallGem.SetColor(region.attributes.color);
@@ -188,6 +189,7 @@ public class GemGenerator2 : MonoBehaviour
             if (gemPoint.x/m_width < m_widthBorderRange || gemPoint.x/m_width > 1f-m_widthBorderRange || gemPoint.z/m_height < m_heightBorderRange || gemPoint.y/m_height > 1f-m_heightBorderRange) continue;
             if (!TerrainManager.current.TryGetPointOnTerrain(gemPoint.x, gemPoint.z, out Vector3 gemLocation, out Vector3 gemNormal, out float gemSteepness)) continue;
             if (gemSteepness > m_maxSteepnessThreshold) continue;
+            gemLocation += gemNormal * 0.5f;
             // Evaluate fitness of this point. Determined by steepness and distance to the current gem point
             int fitness = 0;
             if (currentLocations.Count == 0) fitness = Mathf.RoundToInt(Vector3.Distance(point, gemLocation));

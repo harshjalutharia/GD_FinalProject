@@ -23,6 +23,7 @@ public class SessionManager2 : MonoBehaviour
     [SerializeField, Tooltip("Has the environment finished generating?")]   private bool m_environmentGenerated = false;
     [SerializeField, Tooltip("Has the loading cutscene finished playing?")] private bool m_loadingCutsceneFinished = false;
     [SerializeField, Tooltip("Has gameplay been initialized?")]  private bool m_gameplayInitialized = false;
+    public bool gameplayInitialized => m_gameplayInitialized;
 
     public virtual void SetSeed(string newSeed) {
         if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {    m_seed = validNewSeed;  return; }
@@ -139,7 +140,7 @@ public class SessionManager2 : MonoBehaviour
         // All canvas-related
         if (CanvasController.current != null) {
             CanvasController.current.ToggleLoadingScreen(false, false);
-            CanvasController.current.ToggleStamina(true);
+            CanvasController.current.ToggleGameplay(true);
         }
         
         // Activate the player and camera
@@ -151,7 +152,40 @@ public class SessionManager2 : MonoBehaviour
     }
 
     public void CollectGem(Gem gem) {
-        Debug.Log($"Collected Gem Acknowledged\nGem Type: {gem.gemType.ToString()}\tRegion Index: {gem.regionIndex}");
+        // Indicate we got the gem, turn it off
+        Debug.Log($"Collected Gem Acknowledged\nGem Type: {gem.gemType.ToString()}\nRegion Index: {gem.regionIndex}");
+        gem.gameObject.SetActive(false);
+
+        // If voronoi regions is not null, then we proceed with updating that region's counter
+        if (Voronoi.current != null) {
+            Region region = Voronoi.current.regions[gem.regionIndex];
+            Debug.Log($"Detected Region: {region.attributes.name}");
+            if (gem.gemType == Gem.GemType.Destination) {
+                if (!region.destinationCollected && gem == region.destinationGem) {
+                    // The region has collected its destination gem
+                    region.destinationCollected = true;
+                    Debug.Log("Destination gem for this region now collected");
+                    // TODO - link to powerup
+                }
+                else {
+                    // For some reason the destination gem was collected already...
+                    Debug.LogError("ERROR: Destination gem for this region already collected. This is a double...");
+                }
+            }
+            else {
+                // This is a small gem
+                if (!region.collectedGems.Contains(gem)) {
+                    // successfully collected this gem;
+                    region.collectedGems.Add(gem);
+                    Debug.Log("Small gem for this region successfully collected");
+                    // TODO - link to powerup
+                } else {
+                    // for some reason, this gem was ALREADY collected! What the f?
+                    Debug.LogError("ERROR: Small gem for this region already collected. This is a double...");
+                }
+            }
+            
+        }
     }
 
     private void OnDestroy() {

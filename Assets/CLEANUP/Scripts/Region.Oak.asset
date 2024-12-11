@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24f9e016c8879404cb8cfb84728b5730, type: 3}
   m_Name: Region.Oak
   m_EditorClassIdentifier: 
-  name: Oak
-  color: {r: 0.015686274, g: 1, b: 0, a: 1}
+  name: Orchards
+  color: {r: 1, g: 0, b: 0.020870686, a: 1}
   vegetationPrefabs:
   - prefab: {fileID: 2951424143206138655, guid: 899062abf7d6e25489d84dbcfe825bcc, type: 3}
     mapRenderSize: 0

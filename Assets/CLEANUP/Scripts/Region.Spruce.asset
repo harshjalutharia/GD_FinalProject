@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Region.Spruce
   m_EditorClassIdentifier: 
   name: Spruce
-  color: {r: 0.008547783, g: 0, b: 1, a: 1}
+  color: {r: 0.75196075, g: 0.75, b: 1, a: 1}
   vegetationPrefabs:
   - prefab: {fileID: 2652233368764414375, guid: 1106dc3a951aa44408c609c7971a6a6a, type: 3}
     mapRenderSize: 0
@@ -28,7 +28,7 @@ MonoBehaviour:
   vegetationSpawnThreshold: 0.85
   vegetationSteepnessThreshold: 10
   vegetationHeightRange:
-    min: 20
+    min: 10
     max: 100
   landmarkPrefabs:
     prefabs: []

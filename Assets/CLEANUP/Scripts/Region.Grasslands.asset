@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Region.Grasslands
   m_EditorClassIdentifier: 
   name: Grasslands
-  color: {r: 0, g: 0, b: 0, a: 1}
+  color: {r: 0.1462264, g: 0.15640458, b: 1, a: 1}
   vegetationPrefabs:
   - prefab: {fileID: 2478178681915189001, guid: bfeb26d6621f8ea499b9530542e23a03, type: 3}
     mapRenderSize: 0
