@@ -504,6 +504,7 @@ public class Voronoi : MonoBehaviour
         if (m_regionNameTextbox != null) m_regionNameTextbox.text = m_playerRegion.attributes.name;
         if (m_regionTotalCountTextbox != null) m_regionTotalCountTextbox.text = m_playerRegion.smallGems.Count.ToString();
         if (m_regionCurrentCountTextbox != null) m_regionCurrentCountTextbox.text = m_playerRegion.collectedGems.Count.ToString();
+
     }
 }
 

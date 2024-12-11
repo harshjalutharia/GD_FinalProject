@@ -164,6 +164,7 @@ public class LandmarkGenerator2 : MonoBehaviour
         // Instantiate the landmark itself, given the prefab, position, and rotation
         Landmark newWeenie = Instantiate(prefab, pos, rot, m_landmarkParent) as Landmark;
         if (addToLandmarks) m_landmarks.Add(newWeenie);
+        if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(pos, 20f);
     }
 
     // Returns false if point is too close to checkPoints and outs the total distance from checkPoints if point is valid

@@ -35,6 +35,7 @@ public class GemGenerator2 : MonoBehaviour
     [SerializeField, Tooltip("Buffer area along the height of the map we dont' want to spawn gems in"), Range(0f,0.5f)] private float m_heightBorderRange = 0.1f;
     private float widthBorderRange => m_widthBorderRange * m_width;
     private float heightBorderRange => m_heightBorderRange * m_height;
+    [SerializeField, Tooltip("Min distance from region centroid that destination gem must be placed")]  private float m_minDistanceFromRegionCentroid = 15f;
     [SerializeField, Tooltip("Steepness threshold - if a location is too steep, do not place here"), Range(0f,90f)]     private float m_maxSteepnessThreshold = 45f; 
     [SerializeField, Tooltip("Distance threshold - if a location is too close, we cannot place there")] private float m_minDistanceThreshold = 20f;
     [SerializeField, Tooltip("The max number of gem locations per region")] private int m_maxGemCountPerRegion = 15;
@@ -131,7 +132,12 @@ public class GemGenerator2 : MonoBehaviour
         List<Centroid> unvisitedCentroids = new List<Centroid>(region.centroids);
 
         // Search for the closest centroid. Should still be within this region. 
-        Centroid closestCentroid = region.QueryClosestCentroid(coreCluster.centroid, true);
+        List<Centroid> closestCentroids = region.QueryKNearestCentroids(coreCluster.centroid, 10, true);
+        Centroid closestCentroid = closestCentroids[0];
+        foreach(Centroid c in closestCentroids) {
+            closestCentroid = c;
+            if (Vector3.Distance(coreCluster.centroid, c.position) >= m_minDistanceFromRegionCentroid) break;
+        }
         TerrainManager.current.TryGetPointOnTerrain(closestCentroid.position.x, closestCentroid.position.z, out Vector3 majorGemLocation, out Vector3 majorNormal, out float majorSteepness);
         unvisitedCentroids.Remove(closestCentroid);
 
