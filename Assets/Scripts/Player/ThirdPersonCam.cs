@@ -1,12 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ThirdPersonCam : MonoBehaviour
 {
+    public static ThirdPersonCam current;
+    
     [SerializeField, Tooltip("player transform")]private Transform player;
     [SerializeField, Tooltip("player's sub object orientation")] private Transform orientation;
-    
+
+    private void Awake()
+    {
+        current = this;
+    }
+
     private void Start()
     {
         player = PlayerMovement.current.transform;

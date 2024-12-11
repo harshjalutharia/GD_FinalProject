@@ -1066,7 +1066,6 @@ public class PlayerMovement : MonoBehaviour
 
     public IEnumerator ActivatePlayer()
     {
-        Debug.Log("Activating player");
         yield return new WaitForFixedUpdate();
         rb.isKinematic = false;
         maxAccessibleStamina += GetGemCount() * staminaPerGem;

@@ -142,6 +142,9 @@ public class SessionManager2 : MonoBehaviour
         }
         
         // Activate the player and camera
+        CameraFader mainCameraFader = ThirdPersonCam.current.gameObject.GetComponent<CameraFader>();
+        mainCameraFader.enabled = true;
+        mainCameraFader.FadeIn();
         StartCoroutine(PlayerMovement.current.ActivatePlayer());
         
     }
