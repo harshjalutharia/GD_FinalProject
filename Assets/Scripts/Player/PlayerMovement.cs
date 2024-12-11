@@ -380,9 +380,13 @@ public class PlayerMovement : MonoBehaviour
         // debug message
         //float horizontalSpeed = new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude;
         float overAllSpeed = rb.velocity.magnitude;
+
+        if (debugText1 != null && debugText2 != null)
+        {
+            debugText1.text = normProject[0] + " " + normProject[1] + "slop: " + GetSlopAngle();
+            debugText2.text = "Velocity:" + rb.velocity + " \nHorizontal Speed:" + horizontalVelocity + " Speed:" + overAllSpeed;
+        }
         
-        debugText1.text = normProject[0] + " " + normProject[1] + "slop: " + GetSlopAngle();
-        debugText2.text = "Velocity:" + rb.velocity + " \nHorizontal Speed:" + horizontalVelocity + " Speed:" + overAllSpeed;
         
         // Debug.Log(normProject[0] + " " + normProject[1]);
         //Debug.DrawRay(groundHits[0].point, groundHits[0].normal, Color.blue, 0, false);
@@ -489,23 +493,6 @@ public class PlayerMovement : MonoBehaviour
         }
         
         
-        // ====== update the map state
-        //if (mapInput.IsPressed() && grounded && (!sliding || rb.velocity.magnitude < 2))
-        if (CameraController.current.mapInputActive && grounded && (!sliding || rb.velocity.magnitude < 2))
-        {
-            // if holding map, ignore all the other input
-            horizontalInput = 0;
-            verticalInput = 0;
-            sprinting = false;
-            if (hasMoved && hasJumped) hasMapped = true;
-            //keepSprint = false;
-            return;
-        }
-        
-        if (CameraController.current.firstPersonCameraActive) // if fp camera active, ignore all the input
-            return;
-        
-        
         // ======= =use new input system to get the input value
         Vector2 movement2D = directionInput.ReadValue<Vector2>();
         if (directionInput.activeControl != null && directionInput.activeControl.device.name != "Keyboard")
@@ -600,7 +587,7 @@ public class PlayerMovement : MonoBehaviour
     // event of jump input triggered
     private void OnJumpInput(InputAction.CallbackContext ctx)
     {
-        if(readyToJump && grounded && flightStamina > jumpStaminaConsume && !CameraController.current.mapInputActive)
+        if(readyToJump && grounded && flightStamina > jumpStaminaConsume)
         {
             readyToJump = false;
             Invoke(nameof(ResetJump), jumpCooldown);
@@ -612,7 +599,7 @@ public class PlayerMovement : MonoBehaviour
     // event of flight input triggered
     private void OnFlightInput(InputAction.CallbackContext ctx)
     {
-        if (flightActivated && !grounded && flightStamina > 0 && !CameraController.current.mapInputActive)
+        if (flightActivated && !grounded && flightStamina > 0)
         {
             requestFlight = true;
         }
@@ -629,8 +616,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnSprintInput(InputAction.CallbackContext ctx)
     {
-        if (sprintActivated && grounded && moveDirection.magnitude > 0.02f && !sliding &&
-            !CameraController.current.mapInputActive)
+        if (sprintActivated && grounded && moveDirection.magnitude > 0.02f && !sliding)
         {
             /*if (sprinting)
             {
@@ -677,15 +663,11 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
         
         // rotate the player according to the velocity
-        if (!CameraController.current.firstPersonCameraActive && rb.velocity.magnitude >= 0.05f)
+        if (rb.velocity.magnitude >= 0.05f)
         {
             //playerObj.forward = Vector3.Slerp(playerObj.forward, new Vector3(rb.velocity.x, 0, rb.velocity.z).normalized, Time.fixedDeltaTime * rotationSpeed);
-            // rotate the player according to input
+            // rotate the player according to input direction
             playerObj.forward = Vector3.Slerp(playerObj.forward, moveDirection.normalized, Time.deltaTime * rotationSpeed);
-        }
-        else if (CameraController.current.firstPersonCameraActive)
-        {
-            playerObj.forward = Vector3.Slerp(playerObj.forward, orientation.forward, Time.fixedDeltaTime * rotationSpeed);
         }
         
         
@@ -1084,6 +1066,7 @@ public class PlayerMovement : MonoBehaviour
 
     public IEnumerator ActivatePlayer()
     {
+        Debug.Log("Activating player");
         yield return new WaitForFixedUpdate();
         rb.isKinematic = false;
         maxAccessibleStamina += GetGemCount() * staminaPerGem;
@@ -1093,6 +1076,7 @@ public class PlayerMovement : MonoBehaviour
 
     private int GetGemCount()
     {
+        /*
         Dictionary<Gem, GemGenerator.GemData> gemData = gemGenerator.gemData;
         int count = 0;
         foreach (var gem in gemData.Values)
@@ -1100,7 +1084,8 @@ public class PlayerMovement : MonoBehaviour
             if (!gem.isDestination) count++;
         }
 
-        return count;
+        return count;*/
+        return 100;
     }
     
     [System.Serializable] 
@@ -1114,7 +1099,6 @@ public class PlayerMovement : MonoBehaviour
         public bool sliding;
         public bool paragliding;
         public bool sprinting;
-        //public bool holdingMap;
     }
     
     [System.Serializable] 

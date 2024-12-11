@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,8 +18,15 @@ public class Follower : MonoBehaviour
     [SerializeField] private float m_smoothTime = 1f;
     private Vector3 m_positionVelocity = Vector3.zero;
     
-    [Header("=== Rotation Following ===")]
-    [SerializeField] private Transform m_orientationTarget;
+    //[Header("=== Rotation Following ===")]
+    //[SerializeField] private Transform m_orientationTarget;
+
+    private void Start()
+    {
+        // find the follow target
+        m_positionTarget = PlayerMovement.current.transform.Find("CameraFocusTarget");
+    }
+
 
     private void Update() {
         if (m_updateType == UpdateType.Update) Follow(Time.deltaTime);
@@ -32,7 +40,7 @@ public class Follower : MonoBehaviour
         if (m_updateType == UpdateType.FixedUpdate) Follow(Time.fixedDeltaTime);
     }
 
-    public void Follow(float deltaTime) {
+    private void Follow(float deltaTime) {
         // Position
         if (m_positionTarget != null) {
             Vector3 targetPos = m_positionTarget.position;
@@ -44,7 +52,7 @@ public class Follower : MonoBehaviour
         }
 
         // Rotation
-        if (m_orientationTarget != null) transform.rotation = m_orientationTarget.rotation;
+        //if (m_orientationTarget != null) transform.rotation = m_orientationTarget.rotation;
 
         //Vector3 targetForward = m_positionTarget.forward;
         //+ m_orientationOffset;

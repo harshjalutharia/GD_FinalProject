@@ -140,6 +140,10 @@ public class SessionManager2 : MonoBehaviour
             CanvasController.current.ToggleLoadingScreen(false, false);
             CanvasController.current.ToggleStamina(true);
         }
+        
+        // Activate the player and camera
+        StartCoroutine(PlayerMovement.current.ActivatePlayer());
+        
     }
 
     private void OnDestroy() {
