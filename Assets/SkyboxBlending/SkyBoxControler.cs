@@ -99,7 +99,7 @@ public class SkyboxController : MonoBehaviour
         sunlight = sun.GetComponent<Light>();
         if (fadeObject != null)
         {
-            sunlight.intensity = 2.0f;
+            sunlight.intensity = 1.5f;
             fadeObject.StartFadeIn(); // Start fade-in before changing
             StartCoroutine(WaitForFadeOut(skyboxMaterial));
         }
