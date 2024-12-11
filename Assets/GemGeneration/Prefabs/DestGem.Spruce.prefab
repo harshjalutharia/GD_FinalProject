@@ -223,7 +223,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0, b: 0.036842346, a: 0.43529412}
+      maxColor: {r: 0.254902, g: 0.9192432, b: 1, a: 0.43529412}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -5114,7 +5114,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.7169812, b: 0.9165859, a: 1}
+      maxColor: {r: 0.254902, g: 1, b: 0.85595304, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -10011,7 +10011,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.06640468, b: 0, a: 0.43529412}
+      maxColor: {r: 0.5660378, g: 1, b: 0.8380166, a: 0.43529412}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -16044,8 +16044,8 @@ ParticleSystem:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 0}
         key1: {r: 1, g: 1, b: 1, a: 0.7490196}
-        key2: {r: 1, g: 0, b: 0.68108845, a: 0.5879253}
-        key3: {r: 1, g: 0.8010277, b: 0.4470588, a: 0}
+        key2: {r: 0, g: 0.47750664, b: 1, a: 0.5879253}
+        key3: {r: 0.4470588, g: 1, b: 0.9315146, a: 0}
         key4: {r: 1, g: 1, b: 1, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
@@ -19787,7 +19787,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0, b: 0.609375, a: 1}
+      maxColor: {r: 0, g: 1, b: 0.14433002, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -24479,7 +24479,7 @@ Transform:
   m_GameObject: {fileID: 6950845349558833921}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.55, z: 0}
+  m_LocalPosition: {x: 0, y: 0.55, z: -0}
   m_LocalScale: {x: 6, y: 6, z: 6}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -24676,7 +24676,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.254902, b: 0.7697356, a: 1}
+      maxColor: {r: 0.254902, g: 0.4541119, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -29428,7 +29428,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2928799326942741062, guid: 92bfd48bc64554204989399f6272004d, type: 3}
       propertyPath: m_Name
-      value: DestinationGem Variant Region3
+      value: DestGem.Spruce
       objectReference: {fileID: 0}
     - target: {fileID: 2928799326942741062, guid: 92bfd48bc64554204989399f6272004d, type: 3}
       propertyPath: m_TagString
@@ -29437,7 +29437,7 @@ PrefabInstance:
     - target: {fileID: 3721612699922916243, guid: 92bfd48bc64554204989399f6272004d, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: c4a89ff866d18d04fb4503d895fb3035, type: 2}
+      objectReference: {fileID: 2100000, guid: 7ab9cda0ed831424d8c2751ceae56767, type: 2}
     - target: {fileID: 8582019481816557990, guid: 92bfd48bc64554204989399f6272004d, type: 3}
       propertyPath: m_Radius
       value: 4
@@ -29453,36 +29453,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2589288125916453116, guid: 92bfd48bc64554204989399f6272004d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1178555606697590416}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2928799326942741062, guid: 92bfd48bc64554204989399f6272004d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 728609368597595872}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 92bfd48bc64554204989399f6272004d, type: 3}
---- !u!1 &4960381789276931489 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2928799326942741062, guid: 92bfd48bc64554204989399f6272004d, type: 3}
-  m_PrefabInstance: {fileID: 7814870758013290471}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &728609368597595872
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4960381789276931489}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae7c21ff934be4841aac5631a4e1d776, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_collider: {fileID: 8448192498378092643}
 --- !u!4 &5736741879884242715 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2589288125916453116, guid: 92bfd48bc64554204989399f6272004d, type: 3}
-  m_PrefabInstance: {fileID: 7814870758013290471}
-  m_PrefabAsset: {fileID: 0}
---- !u!135 &8448192498378092643 stripped
-SphereCollider:
-  m_CorrespondingSourceObject: {fileID: 1823392552788326276, guid: 92bfd48bc64554204989399f6272004d, type: 3}
   m_PrefabInstance: {fileID: 7814870758013290471}
   m_PrefabAsset: {fileID: 0}

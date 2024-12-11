@@ -40,10 +40,6 @@ public class GemGenerator2 : MonoBehaviour
     [SerializeField, Tooltip("Distance threshold - if a location is too close, we cannot place there")] private float m_minDistanceThreshold = 20f;
     [SerializeField, Tooltip("The max number of gem locations per region")] private int m_maxGemCountPerRegion = 15;
 
-    [Header("=== References ===")]
-    [SerializeField, Tooltip("The prefab used for small gems")]             private Gem m_smallGemPrefab;
-    [SerializeField, Tooltip("The prefab used for the destination gem")]    private Gem m_destinationGemPrefab;
-
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField] private List<Gem> m_destinationGems = new List<Gem>();
     public List<Gem> destinationGems => m_destinationGems;
@@ -144,11 +140,10 @@ public class GemGenerator2 : MonoBehaviour
         // Instantiate the major gem. Make sure to delete any trees in the region
         majorGemLocation += majorNormal * 0.25f;
         if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(majorGemLocation, 10f);
-        Gem destinationGem = Instantiate(m_destinationGemPrefab, majorGemLocation, Quaternion.identity, m_gemParent) as Gem;  
+        Gem destinationGem = Instantiate(region.attributes.destinationGemPrefab, majorGemLocation, Quaternion.identity, m_gemParent) as Gem;  
         destinationGem.gameObject.name = $"Destination Gem - {region.attributes.name}";
         destinationGem.gemType = Gem.GemType.Destination;
         destinationGem.regionIndex = region.id;
-        destinationGem.SetColor(region.attributes.color);
         m_destinationGems.Add(destinationGem);
         region.destinationGem = destinationGem;
         
@@ -166,11 +161,10 @@ public class GemGenerator2 : MonoBehaviour
         foreach(GemSpawn spawn in potentialSmallGemSpawns) {
             Vector3 smallGemLocation = spawn.point;
             if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(smallGemLocation, 5f);
-            Gem smallGem = Instantiate(m_smallGemPrefab, smallGemLocation, Quaternion.identity, m_gemParent) as Gem;
+            Gem smallGem = Instantiate(region.attributes.smallGemPrefab, smallGemLocation, Quaternion.identity, m_gemParent) as Gem;
             smallGem.gameObject.name = $"Small Gem - {region.attributes.name}";
             smallGem.gemType = Gem.GemType.Small;
             smallGem.regionIndex = region.id;
-            smallGem.SetColor(region.attributes.color);
             m_smallGems.Add(smallGem);
             region.smallGems.Add(smallGem);
         }
