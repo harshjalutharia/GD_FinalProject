@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49c530a489a964c1fadb8a7ad92843a7, type: 3}
+  m_Name: Cutscene.Loading
+  m_EditorClassIdentifier: 
+  name: Loading
+  slides:
+  - {fileID: 21300000, guid: 1c07176761856c94e8ed8f0b7e99a406, type: 3}
+  - {fileID: 21300000, guid: 948d702a064bfef4785e1e8a77722714, type: 3}
+  - {fileID: 21300000, guid: 36127ba293d92fe4380908d065fcbceb, type: 3}
+  - {fileID: 21300000, guid: b994a1e27f59b3f439bf99b1156d8af4, type: 3}
+  - {fileID: 21300000, guid: fdaf9f39c5aa03641b35262717e426b3, type: 3}
+  - {fileID: 21300000, guid: b4b1ac8a0119d1b4fa6d28d5562272e1, type: 3}
+  - {fileID: 21300000, guid: bf81519ead88a6d49850bfb00c0a2f1f, type: 3}
+  slideDisplayTime: 2
+  slideTransitionTime: 1

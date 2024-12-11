@@ -15,6 +15,15 @@ public class SessionManager2 : MonoBehaviour
     [SerializeField, Tooltip("The action reference that allows the player to skip cutscenes")]  private InputActionReference m_skipCutsceneAction;
     [SerializeField, Tooltip("The action reference that allows the player to  jump")]           private InputActionReference m_playerJumpAction;
     
+    [Header("== Core references ===")]
+    [SerializeField, Tooltip("The player character's transform")]   private Transform m_playerRef;
+    public Transform playerRef => m_playerRef;
+
+    [Header("=== Checks ===")]
+    [SerializeField, Tooltip("Has the environment finished generating?")]   private bool m_environmentGenerated = false;
+    [SerializeField, Tooltip("Has the loading cutscene finished playing?")] private bool m_loadingCutsceneFinished = false;
+    [SerializeField, Tooltip("Has gameplay been initialized?")]  private bool m_gameplayInitialized = false;
+
     public virtual void SetSeed(string newSeed) {
         if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {    m_seed = validNewSeed;  return; }
         m_seed = UnityEngine.Random.Range(0, 1000001);
@@ -32,6 +41,10 @@ public class SessionManager2 : MonoBehaviour
 
         // Make sure to show the loading screen first.
         if (CanvasController.current != null) CanvasController.current.ToggleLoadingScreen(true, true);
+        if (CutsceneManager.current != null) {
+            CutsceneManager.current.onFinishedCutscene.AddListener(OnLoadingCutsceneFinished);
+            CutsceneManager.current.PlayLoadingCutscene();
+        }
 
         // Disable key actions
         m_skipCutsceneAction.action.Disable();
@@ -98,11 +111,26 @@ public class SessionManager2 : MonoBehaviour
         Debug.Log("Session Manager 2: Landmarks Generated");
         // Initialize transition from loading to skip.
         if (CanvasController.current != null) CanvasController.current.ToggleLoadingIconsGroup(false);
-        m_skipCutsceneAction.action.Enable();
+        m_environmentGenerated = true;
+
+        // At this point, we very much can check if the cutscene is finished loading or not.
+        if (!m_gameplayInitialized) {
+            // If not finished, enabled the skip cutscene feature
+            m_skipCutsceneAction.action.Enable();
+        }
+    }
+
+    public void OnLoadingCutsceneFinished() {
+        // Indicate that we finished playing the cutscene
+        if (CutsceneManager.current != null) CutsceneManager.current.onFinishedCutscene.RemoveListener(OnLoadingCutsceneFinished);
+        m_loadingCutsceneFinished = true;
     }
     
     private void InitializeGameplayAction(InputAction.CallbackContext ctx) { InitializeGameplay(); }
     public void InitializeGameplay() {
+        // Let the system know that we've initialized gameplay
+        m_gameplayInitialized = true;
+
         // Disable the input action to prevent double-clicking
         m_skipCutsceneAction.action.Disable();
         m_playerJumpAction.action.Enable();
