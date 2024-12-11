@@ -120,7 +120,7 @@ public class VegetationGenerator2 : MonoBehaviour
                 }
 
                 // Similarly, query which region we are currently in. This region has a list of prefabs we want to refer to.
-                Region currentRegion = Voronoi.current.QueryRegion(point);
+                Region currentRegion = Voronoi.current.QueryClosestRegion(point);
                 List<VegetationGenerator.VegetationPrefab> prefabs = currentRegion.attributes.vegetationPrefabs;
 
                 //  Given the position on the map and the region, we now have to check if the point matches the criteria defined by the region attributes

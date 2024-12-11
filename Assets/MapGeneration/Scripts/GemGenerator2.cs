@@ -13,9 +13,7 @@ public class GemGenerator2 : MonoBehaviour
     public static GemGenerator2 current;
 
     public class GemSpawn : IComparable<GemSpawn> {
-        public int id;
         public Vector3 point;
-        public Vector3 worldPoint;
         public int fitness;
         public int CompareTo(GemSpawn other) {
             if (other == null) return 1;
@@ -46,8 +44,10 @@ public class GemGenerator2 : MonoBehaviour
     [SerializeField, Tooltip("The prefab used for the destination gem")]    private Gem m_destinationGemPrefab;
 
     [Header("=== Outputs - READ ONLY ===")]
-    [SerializeField] private List<Vector3> m_majorGemLocations = new List<Vector3>();
-    [SerializeField] private List<Vector3> m_minorGemLocations = new List<Vector3>();
+    [SerializeField] private List<Gem> m_destinationGems = new List<Gem>();
+    public List<Gem> destinationGems => m_destinationGems;
+    [SerializeField] private List<Gem> m_smallGems = new List<Gem>();
+    public List<Gem> smallGems => m_smallGems;
 
     private System.Random m_prng;
     private KDQuery m_gemQuery;
@@ -59,15 +59,16 @@ public class GemGenerator2 : MonoBehaviour
     public UnityEvent onGenerationEnd;
 
     #if UNITY_EDITOR
+    [SerializeField] private bool m_drawGizmos = false;
     void OnDrawGizmos() {
-        if (m_majorGemLocations.Count > 0) {
+        if (!m_drawGizmos) return;
+        if (m_destinationGems.Count > 0) {
             Gizmos.color = Color.blue;
-            foreach(Vector3 p in m_majorGemLocations) Gizmos.DrawSphere(p, 10f);
+            foreach(Gem g in m_destinationGems) Gizmos.DrawSphere(g.transform.position, 10f);
         }
-
-        if (m_minorGemLocations.Count > 0) {
+        if (m_smallGems.Count > 0) {
             Gizmos.color = Color.yellow;
-            foreach(Vector3 p in m_minorGemLocations) Gizmos.DrawSphere(p, 10f);
+            foreach(Gem g in m_smallGems) Gizmos.DrawSphere(g.transform.position, 10f);
         }
     }
     #endif
@@ -127,58 +128,66 @@ public class GemGenerator2 : MonoBehaviour
         
         // Firstly, the major gem. We'll place this at one of the core cluster's points.
         DBScanCluster coreCluster = region.coreCluster;
-        List<int> unvisitedPoints = new List<int>(region.points);
+        List<Centroid> unvisitedCentroids = new List<Centroid>(region.centroids);
 
-        // Search for the closest centroid. Should theoretically be still within this region. 
-        int majorGemLocationIndex = Voronoi.current.QueryClosestPointIndex(coreCluster.centroid);
-        Vector3 point = Voronoi.current.centroids[majorGemLocationIndex];
+        // Search for the closest centroid. Should still be within this region. 
+        Centroid closestCentroid = region.QueryClosestCentroid(coreCluster.centroid, true);
+        TerrainManager.current.TryGetPointOnTerrain(closestCentroid.position.x, closestCentroid.position.z, out Vector3 majorGemLocation, out Vector3 majorNormal, out float majorSteepness);
+        unvisitedCentroids.Remove(closestCentroid);
 
-        // Get the point on th terrain;
-        TerrainManager.current.TryGetPointOnTerrain(point.x * m_width, point.z * m_height, out Vector3 majorGemLocation, out Vector3 majorNormal, out float majorSteepness);
-        m_majorGemLocations.Add(majorGemLocation);
-        unvisitedPoints.Remove(majorGemLocationIndex);
-
+        // Instantiate the major gem
+        majorGemLocation += majorNormal * 0.25f;
+        Gem destinationGem = Instantiate(m_destinationGemPrefab, majorGemLocation, Quaternion.identity, m_gemParent) as Gem;  
+        m_destinationGems.Add(destinationGem);
+        region.destinationGem = destinationGem;
+        
         // Given the major gem location, we place gems within reasonable distance between each other.
         // We us the GemSpawn comparable to check different points. Basically, we branch out and check for the fitness of this point as a place to spawn a gem.
         // Fitness is dependent on steepness and proximity to other gems (further away from other gems is better). Automatically disregard points that are close to the edge
         List<GemSpawn> potentialSmallGemSpawns = new List<GemSpawn>();
-        HashSet<int> visitedPotentialIndices = new HashSet<int>();
-        visitedPotentialIndices.Add(majorGemLocationIndex);
-        QuerySmallGemCandidate(point, majorGemLocation, ref potentialSmallGemSpawns, ref visitedPotentialIndices);
+        HashSet<Centroid> visitedPotential = new HashSet<Centroid>();
+        visitedPotential.Add(closestCentroid);
+        QuerySmallGemCandidate(closestCentroid.position, ref region, ref potentialSmallGemSpawns, ref visitedPotential);
 
         // For all spawns in potential spawns, add them to minor gem locations
+        region.smallGems = new HashSet<Gem>();
+        region.collectedGems = new List<Gem>();
         foreach(GemSpawn spawn in potentialSmallGemSpawns) {
-            m_minorGemLocations.Add(spawn.worldPoint);
+            TerrainManager.current.TryGetNormalOnTerrain(closestCentroid.position.x, closestCentroid.position.z,out Vector3 minorNormal, out float minorSteepness);
+            Gem smallGem = Instantiate(m_smallGemPrefab, spawn.point + minorNormal*0.25f, Quaternion.identity, m_gemParent) as Gem;
+            m_smallGems.Add(smallGem);
+            region.smallGems.Add(smallGem);
         }
-
     }
 
     //  start` must be normalized between 0 and 1.
-    public void QuerySmallGemCandidate(Vector3 start, Vector3 worldStart, ref List<GemSpawn> currentLocations, ref HashSet<int> checkedLocations) {
+    public void QuerySmallGemCandidate(Vector3 point, ref Region region, ref List<GemSpawn> currentLocations, ref HashSet<Centroid> checkedLocations) {
         // double-check that we haven't already gone over the limit
         if (currentLocations.Count >= m_maxGemCountPerRegion) return;
+        
         // Query the centroids around this location. Use KNearest
-        List<int> potentialIndices = Voronoi.current.QueryKNearestPointIndices(start, 10);
+        List<Centroid> potentials = region.QueryKNearestCentroids(point, 10, true);
+        
         // For each point, we check its fitness.
         List<GemSpawn> potentialSpawns = new List<GemSpawn>();
-        foreach(int i in potentialIndices) {
+        foreach(Centroid c in potentials) {
             // If `i` is already in known current locations, then continue
-            if (checkedLocations.Contains(i)) continue;
+            if (checkedLocations.Contains(c)) continue;
             // Otherwise, get the point
-            Vector3 gemPoint = Voronoi.current.centroids[i];
+            Vector3 gemPoint = c.position;
             // Ignore if too close to edge or, if sme reason, the terrain manager can't seem to get the terrain point.
-            if (gemPoint.x < m_widthBorderRange || gemPoint.x > 1f-m_widthBorderRange || gemPoint.z < m_heightBorderRange || gemPoint.y > 1f-m_heightBorderRange) continue;
-            if (!TerrainManager.current.TryGetPointOnTerrain(gemPoint.x*m_width, gemPoint.z*m_height, out Vector3 gemLocation, out Vector3 gemNormal, out float gemSteepness)) continue;
+            if (gemPoint.x/m_width < m_widthBorderRange || gemPoint.x/m_width > 1f-m_widthBorderRange || gemPoint.z/m_height < m_heightBorderRange || gemPoint.y/m_height > 1f-m_heightBorderRange) continue;
+            if (!TerrainManager.current.TryGetPointOnTerrain(gemPoint.x, gemPoint.z, out Vector3 gemLocation, out Vector3 gemNormal, out float gemSteepness)) continue;
             if (gemSteepness > m_maxSteepnessThreshold) continue;
             // Evaluate fitness of this point. Determined by steepness and distance to the current gem point
             int fitness = 0;
-            if (currentLocations.Count == 0) fitness = Mathf.RoundToInt(Vector3.Distance(worldStart, gemLocation));
+            if (currentLocations.Count == 0) fitness = Mathf.RoundToInt(Vector3.Distance(point, gemLocation));
             else {
-                foreach(GemSpawn spawn in currentLocations) fitness += Mathf.RoundToInt(Vector3.Distance(gemLocation, spawn.worldPoint));
+                foreach(GemSpawn spawn in currentLocations) fitness += Mathf.RoundToInt(Vector3.Distance(spawn.point, gemLocation));
             }
-            GemSpawn gemSpawn = new GemSpawn { id=i, point=gemPoint, worldPoint=gemLocation, fitness=fitness };
+            GemSpawn gemSpawn = new GemSpawn { point=gemLocation, fitness=fitness };
             potentialSpawns.Add(gemSpawn);
-            checkedLocations.Add(i);
+            checkedLocations.Add(c);
         }
         // If the list of potential spawns is empty, then don't continue
         if (potentialSpawns.Count == 0) return; 
@@ -189,7 +198,7 @@ public class GemGenerator2 : MonoBehaviour
 
         // If we haven't reached the total number of gems for this region, then we continue searching
         if (currentLocations.Count < m_maxGemCountPerRegion) {
-            foreach(GemSpawn spawn in potentialSpawns) QuerySmallGemCandidate(spawn.point, spawn.worldPoint, ref currentLocations, ref checkedLocations);
+            foreach(GemSpawn spawn in potentialSpawns) QuerySmallGemCandidate(spawn.point, ref region, ref currentLocations, ref checkedLocations);
         }
     }
 }

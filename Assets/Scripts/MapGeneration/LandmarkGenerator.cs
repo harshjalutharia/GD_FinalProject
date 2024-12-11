@@ -27,6 +27,8 @@ using UnityEditor;
 public class LandmarkGenerator : MonoBehaviour
 {
 
+    public static LandmarkGenerator current;
+
     [System.Serializable]
     public class LandmarkGroupCounter {
         public List<Landmark> prefabs = new List<Landmark>();
@@ -132,7 +134,9 @@ public class LandmarkGenerator : MonoBehaviour
     [SerializeField, Tooltip("List of positions' distances to check when spawning weenie")] private List<Vector3> m_weenieCheckPositions;
     [SerializeField, Tooltip("The final list of landmarks generated.")]                    private List<Landmark> m_landmarks;
 
-    private UnityAction m_mapGeneratedAction; // action thats called when map has been generated
+    [SerializeField] private bool m_generated = false;
+    public bool generated => m_generated;
+    public UnityEvent onGenerationEnd;
 
     public virtual void SetSeed(string newSeed) {
         if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {
@@ -145,17 +149,17 @@ public class LandmarkGenerator : MonoBehaviour
         m_seed = newSeed;
     }
 
-    private void Start()
-    {
-        m_mapGeneratedAction += GenerateLandmarksNew;
-        TerrainManager.current.onGenerationEnd.AddListener(m_mapGeneratedAction);
-        StartCoroutine(SortLandmarks());
+    private void Awake() {
+        current = this;
+    }
+
+    private void Start() {
+        //StartCoroutine(SortLandmarks());
     }
 
     // TODO: Change name
     // Generates bell towers in the map
-    public void GenerateLandmarksNew()
-    {
+    public void GenerateLandmarksNew() {
         // NEW LANDMARK STUFF THAT USES VORONOI MAP REGIONS AND SHIT
 
         // Define the landmark parent
@@ -165,7 +169,7 @@ public class LandmarkGenerator : MonoBehaviour
         m_landmarks = new List<Landmark>();
 
         // King bell tower in grasslands region
-        TerrainManager.current.TryGetPointOnTerrain(Voronoi.current.regions[0].coreCluster.worldCentroid, out var terrainPoint,
+        TerrainManager.current.TryGetPointOnTerrain(Voronoi.current.regions[0].coreCluster.centroid, out var terrainPoint,
             out var normal, out var steepness);
         InstantiateLandmark(m_kingBellTowerPrefab, terrainPoint, Quaternion.identity);
         //Instantiate(m_kingBellTowerPrefab, terrainPoint, Quaternion.identity, m_landmarkParent);
@@ -174,7 +178,7 @@ public class LandmarkGenerator : MonoBehaviour
         // Major bell towers in other major regions' core clusters
         for (int i = 1; i < Voronoi.current.regions.Count; i++)
         {
-            TerrainManager.current.TryGetPointOnTerrain(Voronoi.current.regions[i].coreCluster.worldCentroid, out terrainPoint,
+            TerrainManager.current.TryGetPointOnTerrain(Voronoi.current.regions[i].coreCluster.centroid, out terrainPoint,
                 out normal, out steepness);
             InstantiateLandmark(m_majorBellTowerPrefab, terrainPoint, Quaternion.identity);
             //Instantiate(m_majorBellTowerPrefab, terrainPoint, Quaternion.identity, m_landmarkParent);
@@ -186,9 +190,9 @@ public class LandmarkGenerator : MonoBehaviour
         {
             foreach (var cluster in Voronoi.current.regions[i].subClusters)
             {
-                if (cluster.points.Count >= minimumPointsInMinorRegion)
+                if (cluster.centroids.Count >= minimumPointsInMinorRegion)
                 {
-                    TerrainManager.current.TryGetPointOnTerrain(cluster.worldCentroid, out terrainPoint, out normal,
+                    TerrainManager.current.TryGetPointOnTerrain(cluster.centroid, out terrainPoint, out normal,
                         out steepness);
                     InstantiateLandmark(m_minorBellTowerPrefab, terrainPoint, Quaternion.identity);
                     //Instantiate(m_minorBellTowerPrefab, terrainPoint, Quaternion.identity, m_landmarkParent);
@@ -223,6 +227,9 @@ public class LandmarkGenerator : MonoBehaviour
                 }
             }
         }
+
+        m_generated = true;
+        onGenerationEnd?.Invoke();
     }
 
     private List<(Vector3, float)> GetClosestLandmarksList(Vector3 position)

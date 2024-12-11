@@ -297,6 +297,23 @@ public class TerrainManager : MonoBehaviour
     public bool TryGetPointOnTerrain(int queryX, int queryZ, out Vector3 point, out Vector3 normal, out float steepness) {   return TryGetPointOnTerrain((float)queryX, (float)queryZ, out point, out normal, out steepness); }
     public bool TryGetPointOnTerrain(Vector3 queryPosition, out Vector3 point, out Vector3 normal, out float steepness) {    return TryGetPointOnTerrain(queryPosition.x, queryPosition.z, out point, out normal, out steepness); }
 
+    public bool TryGetNormalOnTerrain(float queryX, float queryZ, out Vector3 normal, out float steepness) {
+         // We need to do a raycast. We COULD use mesh.triangles and all that hullaballoo, but it's easier to use physics for this one.
+        float verticalDistance = m_noiseRange.max+10f;
+        Vector3 start = new Vector3(queryX, verticalDistance, queryZ);
+        if (Physics.Raycast(start, Vector3.down, out RaycastHit hit, verticalDistance, m_terrainLayer)) {
+            normal = hit.normal;
+            steepness = Vector3.Angle(Vector3.up, normal);
+            return true;
+        }
+        // In the case where we can't get a raycast hit, we'll just return upward normal and start
+        normal = Vector3.up;
+        steepness = 0f;
+        return false;
+    }
+    public bool TryGetNormalOnTerrain(int queryX, int queryZ, out Vector3 normal, out float steepness) { return TryGetNormalOnTerrain((float)queryX, (float)queryZ, out normal, out steepness); }
+    public bool TryGetNormalOnTerrain(Vector3 query, out Vector3 normal, out float steepness) { return TryGetNormalOnTerrain(query.x, query.z, out normal, out steepness); }
+
     public void ToggleLODMethod(string setTo) {
         switch(setTo) {
             case "Off":             m_lodMethod = LODMethod.Off;    break;

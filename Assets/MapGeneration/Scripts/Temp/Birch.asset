@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Birch
   m_EditorClassIdentifier: 
   name: Birch
-  color: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}
+  color: {r: 1, g: 1, b: 1, a: 1}
   vegetationPrefabs:
   - prefab: {fileID: 2523072964955092127, guid: c25fc8d80b5c27b4b9a87497ec827a83, type: 3}
     mapRenderSize: 0

@@ -40,7 +40,8 @@ public class SessionManager2 : MonoBehaviour
         return TerrainManager.current != null
             && Voronoi.current != null
             && VegetationGenerator2.current != null
-            && GemGenerator2.current != null;
+            && GemGenerator2.current != null
+            && LandmarkGenerator.current != null;
     }
     public void OnTerrainGenerated() { 
         Debug.Log("Session Manager 2: Terrain Generation Acknowledged. Starting Voronoi Generation");
@@ -69,8 +70,18 @@ public class SessionManager2 : MonoBehaviour
     }
     public void OnGemsGenerated() {
         Debug.Log("Session Manager 2: Gems Generated");
+        // Initialize landmark generation
+        LandmarkGenerator.current.onGenerationEnd.AddListener(this.OnLandmarksGenerated);
+        LandmarkGenerator.current.GenerateLandmarksNew();
     }
-    public void OnLandmarksGenerated() {}
+    public void OnLandmarksGenerated() {
+        Debug.Log("Session Manager 2: Landmarks Generated");
+        // Initialize transition from loading to player.
+    }
+    
+    public void InitializePlayer() {
+        
+    }
 
     private void OnDestroy() {
         StopAllCoroutines();
@@ -78,5 +89,6 @@ public class SessionManager2 : MonoBehaviour
         if (Voronoi.current != null) Voronoi.current.onGenerationEnd.RemoveListener(this.OnVoronoiGenerated);
         if (VegetationGenerator2.current != null) VegetationGenerator2.current.onGenerationEnd.RemoveListener(this.OnVegetationGenerated);
         if (GemGenerator2.current != null) GemGenerator2.current.onGenerationEnd.RemoveListener(this.OnGemsGenerated);
+        if (LandmarkGenerator.current != null) LandmarkGenerator.current.onGenerationEnd.RemoveListener(this.OnLandmarksGenerated);
     }
 }
