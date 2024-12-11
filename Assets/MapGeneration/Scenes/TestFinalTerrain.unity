@@ -122,6 +122,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &9062041 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2651717976837089791, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+  m_PrefabInstance: {fileID: 284828542}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &73527790
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1589,7 +1594,7 @@ MonoBehaviour:
   m_randomizeOffsets: 1
   m_offsets: {x: 0, y: 0}
   m_chunkPrefab: {fileID: 1983288166757723927, guid: e1e4020bb366e5245bff13f45238e764, type: 3}
-  m_playerRef: {fileID: 1510446720}
+  m_playerRef: {fileID: 9062041}
   m_terrainLayer:
     serializedVersion: 2
     m_Bits: 64

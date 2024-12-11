@@ -223,7 +223,7 @@ public class TerrainChunk : MonoBehaviour
                 m_noiseMap[x,y] = originalNoise - m_noiseRange.min;
                 
                 counter++;
-                if ((float)counter % m_coroutineNumThreshold == 0) {
+                if (counter >= m_coroutineNumThreshold) {
                     yield return null;
                     counter = 0;
                 }
@@ -270,20 +270,39 @@ public class TerrainChunk : MonoBehaviour
     }
 
     public IEnumerator GenerateMaterialCoroutine() {
+        Debug.Log("Started generating material");
         // Initialize the material by making an instance of it, so that we don't accidentally override it.
         m_meshMaterial = new Material(m_meshMaterialSrc);
+        Debug.Log("Creating new material");
 
         // We prep its variables
+        Color[] baseColors = new Color[m_meshMaterialLayers.Count];
+        float[] startHeights = new float[m_meshMaterialLayers.Count];
+        float[] blendStrengths = new float[m_meshMaterialLayers.Count];
+        float[] tintStrengths = new float[m_meshMaterialLayers.Count];
+        float[] textureScales = new float[m_meshMaterialLayers.Count];
+        Texture2D[] textures = new Texture2D[m_meshMaterialLayers.Count];
+        for (int i = 0; i < m_meshMaterialLayers.Count; i++) {
+            TextureLayer tl = m_meshMaterialLayers[i];
+            baseColors[i] = tl.tint;
+            startHeights[i] = tl.startHeight;
+            blendStrengths[i] = tl.blendStrength;
+            tintStrengths[i] = tl.tintStrength;
+            textureScales[i] = tl.textureScale;
+            textures[i] = tl.texture;
+            yield return null;
+        }
+
         m_meshMaterial.SetInt("layerCount", m_meshMaterialLayers.Count);
-        m_meshMaterial.SetColorArray("baseColors", m_meshMaterialLayers.Select(x => x.tint).ToArray());
-        m_meshMaterial.SetFloatArray("baseStartHeights", m_meshMaterialLayers.Select(x => x.startHeight).ToArray());
-        m_meshMaterial.SetFloatArray("baseBlends", m_meshMaterialLayers.Select(x => x.blendStrength).ToArray());
-        m_meshMaterial.SetFloatArray("baseColorStrength", m_meshMaterialLayers.Select(x => x.tintStrength).ToArray());
-        m_meshMaterial.SetFloatArray("baseTextureScales", m_meshMaterialLayers.Select(x => x.textureScale).ToArray());
+        m_meshMaterial.SetColorArray("baseColors", baseColors);             yield return null;
+        m_meshMaterial.SetFloatArray("baseStartHeights", startHeights);     yield return null;
+        m_meshMaterial.SetFloatArray("baseBlends", blendStrengths);         yield return null;
+        m_meshMaterial.SetFloatArray("baseColorStrength", tintStrengths);   yield return null;
+        m_meshMaterial.SetFloatArray("baseTextureScales", textureScales);   yield return null;
 
         // Initialize the texture array
-        Texture2DArray texturesArray = GenerateTextureArray(m_meshMaterialLayers.Select(x => x.texture).ToArray());
-        m_meshMaterial.SetTexture("baseTextures", texturesArray);
+        Texture2DArray texturesArray = GenerateTextureArray(textures);      yield return null;
+        m_meshMaterial.SetTexture("baseTextures", texturesArray);           yield return null;
         m_meshMaterial.SetFloat("minHeight", m_noiseRange.min);
         m_meshMaterial.SetFloat("maxHeight", m_noiseRange.max);
 
@@ -314,7 +333,7 @@ public class TerrainChunk : MonoBehaviour
 
                 // Coroutine stuff
                 counter++;
-                if (counter % m_coroutineNumThreshold == 0) {
+                if (counter >= m_coroutineNumThreshold) {
                     yield return null;
                     counter = 0;
                 }
