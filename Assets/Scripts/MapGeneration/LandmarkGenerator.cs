@@ -1174,6 +1174,7 @@ public class LandmarkGenerator : MonoBehaviour
         }
     }
 
+    /*
     private IEnumerator SortLandmarks()
     {
         WaitForSeconds sortDelay = new WaitForSeconds(0.5f);
@@ -1194,6 +1195,7 @@ public class LandmarkGenerator : MonoBehaviour
             yield return sortDelay;
         }
     }
+    */
 
     public void InstantiateLandmark(Landmark prefab, Vector3 pos, Quaternion rot, bool addToLandmarks = true)
     {

@@ -8,26 +8,12 @@ using UnityEditor;
 public class Landmark : MonoBehaviour
 {
     [Header("=== References ===")]
-    [SerializeField, Tooltip("The camera controller that manages first-person camera-ing")] private CameraController m_cameraController;
     [SerializeField, Tooltip("Reference to this object's renderer")]    private Renderer[] m_renderers;
     public Renderer[] _renderers => m_renderers;
-
-    [Header("=== Map Settings ===")]
-    [SerializeField, Tooltip("The total amount of time required for this to track as 'detected'")]  private float m_totalTimeToDetect = 5f;
-    [SerializeField, Tooltip("The color we want to draw for this landmark on the held map")]  private Color m_mapColor = Color.white;
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("The bounds of this landmark")]    private Bounds m_bounds;
     public Bounds bounds => m_bounds;
-    [SerializeField, Tooltip("Am I in the camera fustrum?")]    private bool m_inFustrum = false;
-    public bool inFustrum => m_inFustrum;
-    [SerializeField, Tooltip("Have I been drawn on the map?")]  private bool m_drawnOnMap = false;
-    public bool drawnOnMap => m_drawnOnMap;
-    [SerializeField, Tooltip("The viewport position that the closest bound point is to the first person camera")]   private Vector2 m_viewportPoint = Vector2.zero;
-    public Vector2 viewportPoint => m_viewportPoint;
-    [SerializeField, Tooltip("The distance between the landmark fustrum camera's center and the viewport projection of the bounds center onto this camera")]    private float m_distToCamCenter;
-    public float distToCamCenter => m_distToCamCenter;
-
 
     private List<Vector3> m_toDrawGizmos = new List<Vector3>();
 
