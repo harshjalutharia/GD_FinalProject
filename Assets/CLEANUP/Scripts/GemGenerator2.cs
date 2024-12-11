@@ -139,6 +139,8 @@ public class GemGenerator2 : MonoBehaviour
         majorGemLocation += majorNormal * 0.25f;
         if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(majorGemLocation, 10f);
         Gem destinationGem = Instantiate(m_destinationGemPrefab, majorGemLocation, Quaternion.identity, m_gemParent) as Gem;  
+        destinationGem.gemType = Gem.GemType.Destination;
+        destinationGem.regionIndex = region.id;
         m_destinationGems.Add(destinationGem);
         region.destinationGem = destinationGem;
         
@@ -158,6 +160,8 @@ public class GemGenerator2 : MonoBehaviour
             Vector3 smallGemLocation = spawn.point + minorNormal*0.25f;
             if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(smallGemLocation, 5f);
             Gem smallGem = Instantiate(m_smallGemPrefab, smallGemLocation, Quaternion.identity, m_gemParent) as Gem;
+            smallGem.gemType = Gem.GemType.Small;
+            smallGem.regionIndex = region.id;
             m_smallGems.Add(smallGem);
             region.smallGems.Add(smallGem);
         }

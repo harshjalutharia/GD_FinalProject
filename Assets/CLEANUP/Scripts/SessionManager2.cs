@@ -112,7 +112,8 @@ public class SessionManager2 : MonoBehaviour
         // Initialize transition from loading to skip.
         if (CanvasController.current != null) CanvasController.current.ToggleLoadingIconsGroup(false);
         m_environmentGenerated = true;
-
+        // Tell TerrainManager to toggle LOD mode
+        TerrainManager.current.ToggleLODMethod(TerrainManager.LODMethod.Grid);
         // At this point, we very much can check if the cutscene is finished loading or not.
         if (!m_gameplayInitialized) {
             // If not finished, enabled the skip cutscene feature
@@ -146,7 +147,10 @@ public class SessionManager2 : MonoBehaviour
         mainCameraFader.enabled = true;
         mainCameraFader.FadeIn();
         StartCoroutine(PlayerMovement.current.ActivatePlayer());
-        
+    }
+
+    public void CollectGem(Gem gem) {
+        Debug.Log($"Collected Gem Acknowledged\nGem Type: {gem.gemType.ToString()}\tRegion Index: {gem.regionIndex}");
     }
 
     private void OnDestroy() {

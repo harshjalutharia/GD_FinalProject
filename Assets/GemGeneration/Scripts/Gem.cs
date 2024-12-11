@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class Gem : MonoBehaviour
 {
-    [SerializeField, Tooltip("Reference to this object's collider. if unset, will attempt to set by itself")]
-    private Collider m_collider = null;
+    public enum GemType { Destination, Small }
+
+    [Header("=== References ===")]
+    [SerializeField, Tooltip("Reference to this object's collider. if unset, will attempt to set by itself")] private Collider m_collider = null;
     public Collider _collider => m_collider;
     private Renderer m_renderer = null;
+
+    [Header("=== Gem Properties ===")]
+    public GemType gemType;
+    public int regionIndex;
 
     private void Awake() {
         m_collider = GetComponent<Collider>();
@@ -18,7 +24,7 @@ public class Gem : MonoBehaviour
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag != "Player") return;
         Debug.Log("Gem Reached!");
-        GemGenerator.current.CollectGem(this);
+        if (SessionManager2.current != null) SessionManager2.current.CollectGem(this);
     }
 
     
