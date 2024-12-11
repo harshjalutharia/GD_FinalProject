@@ -147,6 +147,7 @@ public class SessionManager2 : MonoBehaviour
         mainCameraFader.enabled = true;
         mainCameraFader.FadeIn();
         StartCoroutine(PlayerMovement.current.ActivatePlayer());
+        StartCoroutine(PlayerMovement.current.Tutorial());
     }
 
     public void CollectGem(Gem gem) {
