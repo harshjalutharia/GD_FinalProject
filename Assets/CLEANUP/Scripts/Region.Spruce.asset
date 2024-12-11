@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Spruce
   color: {r: 0.75196075, g: 0.75, b: 1, a: 1}
+  destinationGemPrefab: {fileID: 121536549225121206, guid: eebc6f6a3bd56404ab95d1134e936574, type: 3}
+  smallGemPrefab: {fileID: 7916263080323056209, guid: da15a006056e04548aef1561f4bc18ef, type: 3}
   vegetationPrefabs:
   - prefab: {fileID: 2652233368764414375, guid: 1106dc3a951aa44408c609c7971a6a6a, type: 3}
     mapRenderSize: 0

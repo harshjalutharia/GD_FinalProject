@@ -263,9 +263,6 @@ public class PlayerMovement : MonoBehaviour
 
     [Tooltip("player turn speed")]
     public float rotationSpeed;
-
-    [Tooltip("Gem Generator GameObject")] 
-    public GemGenerator gemGenerator;
     
     [Tooltip("particle system of collecting gem")]
     public ParticleSystem collectGemParticles;
@@ -278,12 +275,6 @@ public class PlayerMovement : MonoBehaviour
     
     [Tooltip("The boosting trail TrailRenderer componet")] 
     public TrailRenderer boostingTrail;
-
-    //[Tooltip("GameObject of the map")] 
-    //public GameObject mapObj;
-    
-    //[Tooltip("GameObject of the compass")] 
-    //public GameObject compassObj;
 
     public event Action OnLanding;
     
@@ -378,7 +369,6 @@ public class PlayerMovement : MonoBehaviour
         SetSound();
         
         // debug message
-        //float horizontalSpeed = new Vector3(rb.velocity.x, 0, rb.velocity.z).magnitude;
         float overAllSpeed = rb.velocity.magnitude;
 
         if (debugText1 != null && debugText2 != null)
@@ -387,10 +377,6 @@ public class PlayerMovement : MonoBehaviour
             debugText2.text = "Velocity:" + rb.velocity + " \nHorizontal Speed:" + horizontalVelocity + " Speed:" + overAllSpeed;
         }
         
-        
-        // Debug.Log(normProject[0] + " " + normProject[1]);
-        //Debug.DrawRay(groundHits[0].point, groundHits[0].normal, Color.blue, 0, false);
-        //Debug.DrawRay(groundHits[1].point, groundHits[1].normal, Color.green, 0, false);
         // cheat
         if (controls.Debug.ActivateFlight.WasPressedThisFrame())
         {
@@ -429,8 +415,6 @@ public class PlayerMovement : MonoBehaviour
                      Vector3.Angle(normProject[0], normProject[1]) < slopAngularChangeTolerance && grounded &&
                      !preparingJump && !requestFlight;
         
-        // if (!grabGround)
-        //     Debug.Log((normProject[1].z >= normProject[0].z) + " " + Vector3.Angle(normProject[0], normProject[1]));
         
         Collider[] colliders = Physics.OverlapSphere(orientation.position, 0.1f, groundMask);
 
@@ -493,7 +477,7 @@ public class PlayerMovement : MonoBehaviour
         }
         
         
-        // ======= =use new input system to get the input value
+        // ======== 56use new input system to get the input value
         Vector2 movement2D = directionInput.ReadValue<Vector2>();
         if (directionInput.activeControl != null && directionInput.activeControl.device.name != "Keyboard")
         {
@@ -517,6 +501,7 @@ public class PlayerMovement : MonoBehaviour
             hasMoved = true;
         }
 
+        
         // ======== update the sprinting state
         if (sprintActivated && grounded && sprinting && moveDirection.magnitude > 0.02f && !sliding)
         {
@@ -527,6 +512,7 @@ public class PlayerMovement : MonoBehaviour
             sprinting = false;
         }
 
+        
         // ======== update the boosting state
         if (boosting && flightStamina <= 0)
         {
@@ -570,6 +556,7 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("Hold the sprint button to sprint.");
             yield return new WaitForSeconds(1f);
         }*/
+        /*
         iconManager.ShowMapIcon();
         while (!hasMapped)
         {
@@ -577,6 +564,7 @@ public class PlayerMovement : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
         iconManager.HideIcon();
+        */
         // Tutorial complete
         Debug.Log("Tutorial complete!");
     }
@@ -809,9 +797,8 @@ public class PlayerMovement : MonoBehaviour
         {
             // increase fixed amount of stamina
             maxFlightStamina += staminaPerGem;
-            //Destroy(other.gameObject);
+            flightStamina += staminaPerGem;
             
-            //todo maybe some effect happens
             SoundManager.current.PlaySFX("Collect Gem");
             collectGemParticles.Play();
             if (usingCape)
@@ -1068,24 +1055,12 @@ public class PlayerMovement : MonoBehaviour
     {
         yield return new WaitForFixedUpdate();
         rb.isKinematic = false;
-        maxAccessibleStamina += GetGemCount() * staminaPerGem;
+        maxAccessibleStamina += GemGenerator2.current.smallGems.Count * staminaPerGem;
         // StartCoroutine(Tutorial());
     }
 
 
-    private int GetGemCount()
-    {
-        /*
-        Dictionary<Gem, GemGenerator.GemData> gemData = gemGenerator.gemData;
-        int count = 0;
-        foreach (var gem in gemData.Values)
-        {
-            if (!gem.isDestination) count++;
-        }
 
-        return count;*/
-        return 100;
-    }
     
     [System.Serializable] 
     public struct AnimationVars
