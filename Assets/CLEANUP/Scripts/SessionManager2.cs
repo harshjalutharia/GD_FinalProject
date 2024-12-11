@@ -54,7 +54,7 @@ public class SessionManager2 : MonoBehaviour
             && Voronoi.current != null
             && VegetationGenerator2.current != null
             && GemGenerator2.current != null
-            && LandmarkGenerator.current != null;
+            && LandmarkGenerator2.current != null;
     }
     public void OnTerrainGenerated() { 
         Debug.Log("Session Manager 2: Terrain Generation Acknowledged. Starting Voronoi Generation");
@@ -90,8 +90,9 @@ public class SessionManager2 : MonoBehaviour
         // Toggle the loading screen to show that gem generation has finished, if canvas controller exists
         if (CanvasController.current != null) CanvasController.current.ToggleLoadedIcon("Gems");
         // Initialize landmark generation
-        LandmarkGenerator.current.onGenerationEnd.AddListener(this.OnLandmarksGenerated);
-        LandmarkGenerator.current.GenerateLandmarksNew();
+        LandmarkGenerator2.current.SetSeed(m_seed);
+        LandmarkGenerator2.current.onGenerationEnd.AddListener(this.OnLandmarksGenerated);
+        LandmarkGenerator2.current.Generate();
     }
     public void OnLandmarksGenerated() {
         Debug.Log("Session Manager 2: Landmarks Generated");

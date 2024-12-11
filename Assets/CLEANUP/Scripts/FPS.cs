@@ -1,18 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using TMPro;
 
 public class FPS : MonoBehaviour
 {
-    //Declare these in your class
-    private int m_frameCounter = 0;
-    private float m_timeCounter = 0.0f;
-    private int m_lastFramerate = 0;
+    public static FPS current;
+
     [SerializeField] private float m_refreshTime = 0.5f;
     [SerializeField] private TextMeshProUGUI m_textbox;
 
-    void Update() {
+    private int m_frameCounter = 0;
+    private float m_timeCounter = 0.0f;
+    private int m_lastFramerate = 0;
+    
+    private void Awake () {
+        current = this;
+    }
+
+    private void Update() {
         if(m_timeCounter < m_refreshTime) {
             m_timeCounter += Time.deltaTime;
             m_frameCounter++;

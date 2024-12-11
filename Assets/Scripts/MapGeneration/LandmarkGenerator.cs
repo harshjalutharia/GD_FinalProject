@@ -77,11 +77,6 @@ public class LandmarkGenerator : MonoBehaviour
         public int CompareTo([AllowNull] SpawnPoint otherPoint) {
             return this.weight.CompareTo(otherPoint.weight);
         }
-        /*
-        public void InstantiateObject(Landmark prefab, Transform objectParent) {
-            this.spawnedObject = Instantiate(prefab.gameObject, this.location, Quaternion.identity, objectParent);
-        }
-        */
     }
 
     [Header("=== References ===")]

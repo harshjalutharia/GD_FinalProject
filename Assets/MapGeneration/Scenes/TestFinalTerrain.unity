@@ -258,71 +258,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 866876757}
-  - component: {fileID: 866876756}
+  - component: {fileID: 866876758}
   m_Layer: 0
-  m_Name: Landmark Generator
+  m_Name: Landmark Generator 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &866876756
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 866876755}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 359e4414254f807439a914ea20ad961e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_voronoiMap: {fileID: 0}
-  m_landmarkParent: {fileID: 0}
-  m_destinationLandmark: {fileID: 0}
-  m_surroundingDestinationLandmark: {fileID: 0}
-  m_weenieLandmarks:
-    prefabs: []
-    counter: 0
-  weeniePrefab: []
-  m_archPrefab: {fileID: 4185725744669889363, guid: a5589b62813894297be924456cdc0234, type: 3}
-  m_kingBellTowerPrefab: {fileID: 7749286727764677152, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
-  m_majorBellTowerPrefab: {fileID: 4748057832654619263, guid: 23bd2aab5291cd94daaf1892e28c8ecf, type: 3}
-  m_minorBellTowerPrefab: {fileID: 9212000600960928965, guid: 0249e8d31eb0f694897faf266fd82273, type: 3}
-  m_seed: 0
-  minimumDistanceBetweenLandmarks: 50
-  maximumDistanceBetweenLandmarks: 70
-  landmarkCount: 6
-  edgePadding: 0.15
-  spawnTriesPerLandmark: 24
-  maxRetries: 10
-  randomizationFactor: 10
-  m_placeLandmarkAtDest: 0
-  endRegionRadius: 20
-  endRegionRuinCount: 10
-  minimumDistanceBetweenRuins: 5
-  visionPointsCount: 10
-  minimumDistanceInWeenieAndPath: 40
-  minimumDistanceBetweenWeenies: 40
-  spawnHeightLimit: 40
-  weenieCount: 20
-  landmarkPlacementOffset: 10
-  weeniePlacementOffset: 3
-  weeniePathHeightLimit: 30
-  weeniePathMaxOffset: 10
-  minimumDistanceBetweenArches: 40
-  archCountPerPath: 5
-  minimumPointsInMinorRegion: 5
-  m_landmarkPositions: []
-  m_weeniePositions: []
-  m_weenieOffsetPositions: []
-  m_weenieCheckPositions: []
-  m_landmarks: []
-  m_generated: 0
-  onGenerationEnd:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!4 &866876757
 Transform:
   m_ObjectHideFlags: 0
@@ -332,12 +275,39 @@ Transform:
   m_GameObject: {fileID: 866876755}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 240.47073, y: 118.70485, z: 259.29688}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 417609143}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &866876758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 866876755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 080694b2ed34845d18607b40b22d1a29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_seed: 0
+  m_landmarkParent: {fileID: 0}
+  m_archPrefab: {fileID: 4185725744669889363, guid: a5589b62813894297be924456cdc0234, type: 3}
+  m_kingBellTowerPrefab: {fileID: 7749286727764677152, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
+  m_majorBellTowerPrefab: {fileID: 4748057832654619263, guid: 23bd2aab5291cd94daaf1892e28c8ecf, type: 3}
+  m_minorBellTowerPrefab: {fileID: 9212000600960928965, guid: 0249e8d31eb0f694897faf266fd82273, type: 3}
+  weeniePathMaxOffset: 10
+  minimumDistanceBetweenArches: 40
+  archCountPerPath: 5
+  minimumPointsInMinorRegion: 5
+  m_landmarks: []
+  m_generated: 0
+  onGenerationEnd:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &945464004
 GameObject:
   m_ObjectHideFlags: 0

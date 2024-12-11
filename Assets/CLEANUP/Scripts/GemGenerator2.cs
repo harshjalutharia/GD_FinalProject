@@ -135,8 +135,9 @@ public class GemGenerator2 : MonoBehaviour
         TerrainManager.current.TryGetPointOnTerrain(closestCentroid.position.x, closestCentroid.position.z, out Vector3 majorGemLocation, out Vector3 majorNormal, out float majorSteepness);
         unvisitedCentroids.Remove(closestCentroid);
 
-        // Instantiate the major gem
+        // Instantiate the major gem. Make sure to delete any trees in the region
         majorGemLocation += majorNormal * 0.25f;
+        if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(majorGemLocation, 10f);
         Gem destinationGem = Instantiate(m_destinationGemPrefab, majorGemLocation, Quaternion.identity, m_gemParent) as Gem;  
         m_destinationGems.Add(destinationGem);
         region.destinationGem = destinationGem;
@@ -153,8 +154,10 @@ public class GemGenerator2 : MonoBehaviour
         region.smallGems = new HashSet<Gem>();
         region.collectedGems = new List<Gem>();
         foreach(GemSpawn spawn in potentialSmallGemSpawns) {
-            TerrainManager.current.TryGetNormalOnTerrain(closestCentroid.position.x, closestCentroid.position.z,out Vector3 minorNormal, out float minorSteepness);
-            Gem smallGem = Instantiate(m_smallGemPrefab, spawn.point + minorNormal*0.25f, Quaternion.identity, m_gemParent) as Gem;
+            TerrainManager.current.TryGetNormalOnTerrain(closestCentroid.position.x, closestCentroid.position.z, out Vector3 minorNormal, out float minorSteepness);
+            Vector3 smallGemLocation = spawn.point + minorNormal*0.25f;
+            if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(smallGemLocation, 5f);
+            Gem smallGem = Instantiate(m_smallGemPrefab, smallGemLocation, Quaternion.identity, m_gemParent) as Gem;
             m_smallGems.Add(smallGem);
             region.smallGems.Add(smallGem);
         }
