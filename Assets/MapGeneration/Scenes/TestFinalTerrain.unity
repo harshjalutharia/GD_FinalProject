@@ -1624,6 +1624,64 @@ MonoBehaviour:
   m_terrainLayer:
     serializedVersion: 2
     m_Bits: 64
+  m_meshMaterialSrc: {fileID: 2100000, guid: 217fde7098daa504c8fc91ac7824bda1, type: 2}
+  m_meshMaterialLayers:
+  - name: Lower Dirt
+    texture: {fileID: 2800000, guid: f956523123a0aba47b005c76af34d727, type: 3}
+    tint: {r: 0.17722642, g: 0.4433962, b: 0.035555363, a: 0}
+    tintStrength: 0.19
+    blendStrength: 0.15
+    startHeight: 0
+    textureScale: 10
+  - name: Upper Dirt
+    texture: {fileID: 2800000, guid: f956523123a0aba47b005c76af34d727, type: 3}
+    tint: {r: 0.075649686, g: 0.6415094, b: 0.2107074, a: 0}
+    tintStrength: 0
+    blendStrength: 0.15
+    startHeight: 0.05
+    textureScale: 10
+  - name: Lower Grass
+    texture: {fileID: 2800000, guid: f956523123a0aba47b005c76af34d727, type: 3}
+    tint: {r: 0.057671774, g: 0.4528302, b: 0.057671774, a: 0}
+    tintStrength: 0.4
+    blendStrength: 0.1
+    startHeight: 0.1
+    textureScale: 10
+  - name: Middle Grass
+    texture: {fileID: 2800000, guid: f956523123a0aba47b005c76af34d727, type: 3}
+    tint: {r: 0.057671774, g: 0.4528302, b: 0.057671774, a: 0}
+    tintStrength: 0.4
+    blendStrength: 0.1
+    startHeight: 0.2
+    textureScale: 10
+  - name: HigherGrass
+    texture: {fileID: 2800000, guid: f956523123a0aba47b005c76af34d727, type: 3}
+    tint: {r: 0.14818442, g: 0.2830189, b: 0.14818442, a: 0}
+    tintStrength: 0.4
+    blendStrength: 0.1
+    startHeight: 0.3
+    textureScale: 10
+  - name: Rock1
+    texture: {fileID: 2800000, guid: a8087cc094c09e9419cba8569a36961f, type: 3}
+    tint: {r: 0.5, g: 0.5, b: 0.5, a: 0}
+    tintStrength: 0
+    blendStrength: 0.481
+    startHeight: 0.4
+    textureScale: 20
+  - name: Rock2
+    texture: {fileID: 2800000, guid: 504f02f7dacb88d45bdd0f21741a8b14, type: 3}
+    tint: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0}
+    tintStrength: 0
+    blendStrength: 0.072
+    startHeight: 0.6
+    textureScale: 20
+  - name: Snow
+    texture: {fileID: 2800000, guid: fb4721a27ff9e5442ab710b6971d94b8, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 0}
+    tintStrength: 0
+    blendStrength: 0.3
+    startHeight: 0.8
+    textureScale: 20
   m_applyValleys: 1
   m_baseFalloff:
     falloffType: 3
@@ -1816,7 +1874,7 @@ MonoBehaviour:
       multiplier: 4
   m_noiseRange:
     min: 0
-    max: 0
+    max: 150
   m_generated: 0
   onGenerationEnd:
     m_PersistentCalls:

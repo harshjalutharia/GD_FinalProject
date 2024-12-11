@@ -6,6 +6,9 @@ using UnityEngine.Events;
 public class TerrainManager : MonoBehaviour
 {
     public static TerrainManager current;
+
+    const int textureSize = 512;
+    const TextureFormat textureFormat = TextureFormat.RGB565;
     
     public enum FalloffType { Box, NorthSouth, EastWest, Circle }
     public enum LODMethod { Off, Grid, Angle, AngleDistance }
@@ -34,6 +37,11 @@ public class TerrainManager : MonoBehaviour
     [SerializeField, Tooltip("Reference to the player")]    private Transform m_playerRef; 
     [SerializeField, Tooltip("What layer should we assign to each child?")] private LayerMask m_terrainLayer;
 
+    [Header("=== Material Generation ===")]
+    [SerializeField] private Material m_meshMaterialSrc;
+    private Material m_meshMaterial;
+    [SerializeField] private List<TextureLayer> m_meshMaterialLayers;
+
     [Header("=== Generation Layers ===")]
     [SerializeField] private bool m_applyValleys = true;
     [SerializeField, Tooltip("The falloff representation for base height")]         private Falloff m_baseFalloff;
@@ -45,12 +53,13 @@ public class TerrainManager : MonoBehaviour
     [SerializeField, Tooltip("READ ONLY")]  private TerrainChunk.MinMax m_noiseRange;
 
     [Header("=== On Completion ===")]
+    [SerializeField] private int m_numInitializedChunks = 0;
+    private int m_totalNumChunks => m_numCols * m_numRows;
     [SerializeField, Tooltip("Is the terrain generated?")]  private bool m_generated = false;
     public bool generated => m_generated;
     public UnityEvent onGenerationEnd;
 
     private Dictionary<Vector2Int, TerrainChunk> m_chunks;
-    private int m_numInitializedChunks = 0;
 
     public void SetSeed(string newSeed) {
         if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {   
@@ -73,11 +82,6 @@ public class TerrainManager : MonoBehaviour
     }
 
     public void Generate() {
-        // CLear all existing chunks, and initialize the chunk collection
-        ClearChildrenChunks();
-        m_chunks = new Dictionary<Vector2Int, TerrainChunk>();
-        m_noiseRange = new TerrainChunk.MinMax { min=float.MaxValue, max=float.MinValue };
-
         // For now, set the viewer position to 0,0. If we actually DO have a player, then we get its current position.
         Vector2Int viewerCoords = Vector2Int.zero;
         if (m_playerRef != null) viewerCoords = GetIndicesFromWorldPosition(m_playerRef.position);
@@ -86,6 +90,68 @@ public class TerrainManager : MonoBehaviour
         m_prng = new System.Random(m_seed);
         if (m_randomizeOffsets) m_offsets = new Vector2(m_prng.Next(-100000, 100000), m_prng.Next(-100000, 100000));
 
+        // Start Coroutine to generate materials
+        StartCoroutine(GenerateMaterial());
+
+        // We CANNOT declare that we're ready - becuse we haven't initialized the chunks yet!
+        //StartCoroutine(GenerateMap());
+    }
+
+    public IEnumerator GenerateMaterial() {
+        Debug.Log("Started generating material");
+        // Initialize the material by making an instance of it, so that we don't accidentally override it.
+        m_meshMaterial = new Material(m_meshMaterialSrc);
+        Debug.Log("Creating new material");
+
+        // We prep its variables
+        Color[] baseColors = new Color[m_meshMaterialLayers.Count];
+        float[] startHeights = new float[m_meshMaterialLayers.Count];
+        float[] blendStrengths = new float[m_meshMaterialLayers.Count];
+        float[] tintStrengths = new float[m_meshMaterialLayers.Count];
+        float[] textureScales = new float[m_meshMaterialLayers.Count];
+        Texture2D[] textures = new Texture2D[m_meshMaterialLayers.Count];
+        for (int i = 0; i < m_meshMaterialLayers.Count; i++) {
+            TextureLayer tl = m_meshMaterialLayers[i];
+            baseColors[i] = tl.tint;
+            startHeights[i] = tl.startHeight;
+            blendStrengths[i] = tl.blendStrength;
+            tintStrengths[i] = tl.tintStrength;
+            textureScales[i] = tl.textureScale;
+            textures[i] = tl.texture;
+            yield return null;
+        }
+
+        m_meshMaterial.SetInt("layerCount", m_meshMaterialLayers.Count);
+        m_meshMaterial.SetColorArray("baseColors", baseColors);             yield return null;
+        m_meshMaterial.SetFloatArray("baseStartHeights", startHeights);     yield return null;
+        m_meshMaterial.SetFloatArray("baseBlends", blendStrengths);         yield return null;
+        m_meshMaterial.SetFloatArray("baseColorStrength", tintStrengths);   yield return null;
+        m_meshMaterial.SetFloatArray("baseTextureScales", textureScales);   yield return null;
+
+        // Initialize the texture array
+        Texture2DArray texturesArray = GenerateTextureArray(textures);      yield return null;
+        m_meshMaterial.SetTexture("baseTextures", texturesArray);           yield return null;
+        m_meshMaterial.SetFloat("minHeight", m_noiseRange.min);
+        m_meshMaterial.SetFloat("maxHeight", m_noiseRange.max);
+
+        // Start Generating Chunks
+        yield return null;
+        GenerateChunks();
+    }
+    public virtual Texture2DArray GenerateTextureArray(Texture2D[] textures) {
+        Texture2DArray textureArray = new Texture2DArray(textureSize, textureSize, textures.Length, textureFormat, true);
+        for(int i =0; i < textures.Length; i++) textureArray.SetPixels(textures[i].GetPixels(), i);
+        textureArray.Apply();
+        return textureArray;
+    }
+
+    public void GenerateChunks() {
+        // CLear all existing chunks, and initialize the chunk collection
+        ClearChildrenChunks();
+        m_chunks = new Dictionary<Vector2Int, TerrainChunk>();
+        //m_noiseRange = new TerrainChunk.MinMax { min=float.MaxValue, max=float.MinValue };
+        // Loop through chunks
+        m_numInitializedChunks = 0;
         for(int x = 0; x < m_numCols; x++) {
             for(int y = 0; y < m_numRows; y++) {
                 // Generate Vector2Int index for this chunk
@@ -99,22 +165,15 @@ public class TerrainManager : MonoBehaviour
                 chunk.gameObject.layer = (int)Mathf.Log(m_terrainLayer.value, 2);
                 chunk.SetParent(this);
                 chunk.SetDimensions(m_cellWidth, m_cellHeight);
-                /*
-                int chunkLOD = (m_playerRef != null) 
-                    ? Mathf.Clamp(Mathf.Max(Mathf.Abs(index.x-viewerCoords.x), Mathf.Abs(index.y - viewerCoords.y)) - 1, 0, m_maxLOD) 
-                    : m_maxLOD;
-                */
-                int chunkLOD = 0;
-                chunk.SetLevelOfDetail(chunkLOD);
+                chunk.SetLevelOfDetail(0);
                 chunk.SetOffset(x,y);
+                chunk.SetMaterial(m_meshMaterial);
                 // Initialize its coroutine
                 chunk.Initialize(true,true);
                 // Save a reference to it in our chunks dictionary
                 m_chunks.Add(index, chunk);
             }
         }
-
-        // We CANNOT declare that we're ready - becuse we haven't initialized the chunks yet!
         StartCoroutine(GenerateMap());
     }
 
@@ -195,8 +254,8 @@ public class TerrainManager : MonoBehaviour
         float terrainValue = traversible + border;
 
         // Double check if this can be considered a min or max value in our noise range
-        if (terrainValue < m_noiseRange.min) m_noiseRange.min = terrainValue;
-        if (terrainValue > m_noiseRange.max) m_noiseRange.max = terrainValue;
+        //if (terrainValue < m_noiseRange.min) m_noiseRange.min = terrainValue;
+        //if (terrainValue > m_noiseRange.max) m_noiseRange.max = terrainValue;
 
         // Return the value.
         return terrainValue;
@@ -215,6 +274,22 @@ public class TerrainManager : MonoBehaviour
             yield return null;
         }
     } 
+
+    /*
+    public void OnChunkNoiseCompletion(TerrainChunk chunk) {
+        // Remove the listener for noise generation
+        chunk.onNoiseGenerationEnd.RemoveListener(this.OnChunkNoiseCompletion);
+        
+        // Set this chunk's noise range to that determiend when calcualteing terrain values
+        chunk.SetMinMax(m_noiseRange);
+        
+        // Add the listener for chunk adjustment
+        chunk.onNoiseAdjustmentEnd.AddListener(this.OnChunkNoiseAdjustment);
+        
+        // And start the coroutine
+        StartCoroutine(chunk.AdjustHeightToFloor());
+    }
+    */
 
     public void OnChunkNoiseCompletion(TerrainChunk chunk) {
         // Increment our counter.
@@ -241,8 +316,10 @@ public class TerrainManager : MonoBehaviour
         // Firstly, remove the listener for noise adjustment
         chunk.onNoiseAdjustmentEnd.RemoveListener(this.OnChunkNoiseAdjustment);
         // Now, tell it to generate the materials
-        chunk.onMaterialGenerationEnd.AddListener(this.OnChunkMaterialCompletion);
-        StartCoroutine(chunk.GenerateMaterialCoroutine());
+        //chunk.onMaterialGenerationEnd.AddListener(this.OnChunkMaterialCompletion);
+        chunk.onMeshGenerationEnd.AddListener(this.OnChunkMeshCompletion);
+        //StartCoroutine(chunk.GenerateMaterialCoroutine());
+        StartCoroutine(chunk.GenerateMeshDataCoroutine());
     }
 
     public void OnChunkMaterialCompletion(TerrainChunk chunk) {
@@ -255,6 +332,7 @@ public class TerrainManager : MonoBehaviour
     }
 
     public void OnChunkMeshCompletion(TerrainChunk chunk) {
+        Debug.Log("Mesh Completion");
         // This time, we DO need the counter
         m_numInitializedChunks += 1;
         // Remove the listener
@@ -390,4 +468,15 @@ public class PerlinNoise {
         float yCoord = (y+offsetY) / scale;
         return heightCurve.Evaluate(Mathf.PerlinNoise(xCoord, yCoord));
     }
+}
+
+[System.Serializable]
+public class TextureLayer {
+        public string name;
+        public Texture2D texture;
+        public Color tint;
+        [Range(0f,1f)] public float tintStrength;
+        [Range(0f,1f)] public float blendStrength;
+        public float startHeight;
+        public float textureScale;
 }

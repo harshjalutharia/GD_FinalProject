@@ -11,17 +11,6 @@ public class TerrainChunk : MonoBehaviour
     const TextureFormat textureFormat = TextureFormat.RGB565;
 
     [System.Serializable]
-    public class TextureLayer {
-        public string name;
-        public Texture2D texture;
-        public Color tint;
-        [Range(0f,1f)] public float tintStrength;
-        [Range(0f,1f)] public float blendStrength;
-        public float startHeight;
-        public float textureScale;
-    }
-
-    [System.Serializable]
     public class MinMax {
         public float min;
         public float max;
@@ -60,7 +49,7 @@ public class TerrainChunk : MonoBehaviour
     [SerializeField] private int[] m_lodLevels;
     [SerializeField] private float[,] m_noiseMap;
     [SerializeField] private MinMax m_noiseRange;
-    [SerializeField] private Texture2D m_textureData;
+    //[SerializeField] private Texture2D m_textureData;
     [SerializeField] private Mesh[] m_meshes;
 
     [Header("=== Debug Settings ===")]
@@ -97,6 +86,11 @@ public class TerrainChunk : MonoBehaviour
 
     public void SetMinMax(MinMax newRange) {
         m_noiseRange = newRange;
+    }
+
+    public void SetMaterial(Material mat = null) {
+        m_meshMaterial = mat; 
+        if (m_renderer != null) m_renderer.sharedMaterial = mat;
     }
 
     private void Awake() {
@@ -247,10 +241,11 @@ public class TerrainChunk : MonoBehaviour
         m_meshMaterial.SetFloat("minHeight", m_noiseRange.min);
         m_meshMaterial.SetFloat("maxHeight", m_noiseRange.max);
 
+        /*
         m_textureData = new Texture2D(gridWidth, gridHeight);
         m_textureData.filterMode = m_filterMode;
         m_textureData.wrapMode = TextureWrapMode.Clamp;
-
+    
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
                 float currentHeight = m_noiseMap[x,y];
@@ -261,10 +256,11 @@ public class TerrainChunk : MonoBehaviour
                         break;
                     }
                 }
-                m_textureData.SetPixel(x, y, currentColor);
+                //m_textureData.SetPixel(x, y, currentColor);
             }
         }
-        m_textureData.Apply();
+        //m_textureData.Apply();
+        */
         if (m_meshMaterial != null && m_renderer != null) m_renderer.sharedMaterial = m_meshMaterial;
         onMaterialGenerationEnd?.Invoke(this);
     }
@@ -306,6 +302,7 @@ public class TerrainChunk : MonoBehaviour
         m_meshMaterial.SetFloat("minHeight", m_noiseRange.min);
         m_meshMaterial.SetFloat("maxHeight", m_noiseRange.max);
 
+        /*
         // Initialize the texture we'll be applying to this material
         m_textureData = new Texture2D(gridWidth, gridHeight);
         m_textureData.filterMode = m_filterMode;
@@ -329,7 +326,7 @@ public class TerrainChunk : MonoBehaviour
                 }
 
                 // Given the color, let's apply it
-                m_textureData.SetPixel(x, y, currentColor);
+                //m_textureData.SetPixel(x, y, currentColor);
 
                 // Coroutine stuff
                 counter++;
@@ -341,7 +338,8 @@ public class TerrainChunk : MonoBehaviour
         }
 
         // Apply the texture to set its colors
-        m_textureData.Apply();
+        //m_textureData.Apply();
+        */
         if (m_meshMaterial != null && m_renderer != null) m_renderer.sharedMaterial = m_meshMaterial;
         onMaterialGenerationEnd?.Invoke(this);
         yield return null;

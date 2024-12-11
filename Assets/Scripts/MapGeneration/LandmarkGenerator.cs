@@ -15,12 +15,12 @@ using System.Linq;
 using UnityEngine.Events;
 using static LandmarkGenerator;
 using UnityEngine.TerrainUtils;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 
 
 
 #if UNITY_EDITOR
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 using UnityEditor;
 #endif
 
