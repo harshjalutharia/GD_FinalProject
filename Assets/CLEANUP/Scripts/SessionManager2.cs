@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class SessionManager2 : MonoBehaviour
 {
@@ -9,6 +10,10 @@ public class SessionManager2 : MonoBehaviour
     [Header("=== Core Settings ===")]
     [SerializeField, Tooltip("Seed for randomization")] private int m_seed;
     public int seed => m_seed;
+
+    [Header("=== Player Input Action References ===")]
+    [SerializeField, Tooltip("The action reference that allows the player to skip cutscenes")]  private InputActionReference m_skipCutsceneAction;
+    [SerializeField, Tooltip("The action reference that allows the player to  jump")]           private InputActionReference m_playerJumpAction;
     
     public virtual void SetSeed(string newSeed) {
         if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {    m_seed = validNewSeed;  return; }
@@ -17,12 +22,20 @@ public class SessionManager2 : MonoBehaviour
     public virtual void SetSeed(int newSeed) {  m_seed = newSeed;   }
 
     private void Awake() {
-        current = this;    
+        current = this;
+        m_skipCutsceneAction.action.performed += InitializeGameplayAction;
     }
 
     private void Start() {
         // Get seed from SessionMemory, if SessionMemory exists
         if (SessionMemory.current != null) SetSeed(SessionMemory.current.seed);
+
+        // Make sure to show the loading screen first.
+        if (CanvasController.current != null) CanvasController.current.ToggleLoadingScreen(true, true);
+
+        // Disable key actions
+        m_skipCutsceneAction.action.Disable();
+        m_playerJumpAction.action.Disable();
         
         // Chck that we have the necessary generators
         if (!TryCheckGenerators()) {
@@ -30,7 +43,7 @@ public class SessionManager2 : MonoBehaviour
             return;
         }
 
-        // Assuming we reach this far, start the terrain generation first and foremost
+        //Assuming we reach this far, we can now start the terrain generation first and foremost
         TerrainManager.current.SetSeed(m_seed);
         TerrainManager.current.onGenerationEnd.AddListener(this.OnTerrainGenerated);
         TerrainManager.current.Generate();
@@ -53,6 +66,8 @@ public class SessionManager2 : MonoBehaviour
     }
     public void OnVoronoiGenerated() {
         Debug.Log("Session Manager 2: Voronoi Generation Acknowledged. Starting Vegetation Generation");
+        // Toggle the loading screen to show that terrain generation has finished, if canvas controller exists
+        if (CanvasController.current != null) CanvasController.current.ToggleLoadedIcon("Terrain");
         // Initialize vegetation generation
         VegetationGenerator2.current.SetSeed(m_seed);
         VegetationGenerator2.current.SetDimensions(TerrainManager.current.width, TerrainManager.current.height);
@@ -62,6 +77,8 @@ public class SessionManager2 : MonoBehaviour
     }
     public void OnVegetationGenerated() {
         Debug.Log("Session Manager 2: Vegetation Generated");
+        // Toggle the loading screen to show that vegetation generation has finished, if canvas controller exists
+        if (CanvasController.current != null) CanvasController.current.ToggleLoadedIcon("Trees");
         // Initialize gem generation
         GemGenerator2.current.SetSeed(m_seed);
         GemGenerator2.current.SetDimensions(TerrainManager.current.width, TerrainManager.current.height);
@@ -70,25 +87,41 @@ public class SessionManager2 : MonoBehaviour
     }
     public void OnGemsGenerated() {
         Debug.Log("Session Manager 2: Gems Generated");
+        // Toggle the loading screen to show that gem generation has finished, if canvas controller exists
+        if (CanvasController.current != null) CanvasController.current.ToggleLoadedIcon("Gems");
         // Initialize landmark generation
         LandmarkGenerator.current.onGenerationEnd.AddListener(this.OnLandmarksGenerated);
         LandmarkGenerator.current.GenerateLandmarksNew();
     }
     public void OnLandmarksGenerated() {
         Debug.Log("Session Manager 2: Landmarks Generated");
-        // Initialize transition from loading to player.
+        // Initialize transition from loading to skip.
+        if (CanvasController.current != null) CanvasController.current.ToggleLoadingIconsGroup(false);
+        m_skipCutsceneAction.action.Enable();
     }
     
-    public void InitializePlayer() {
-        
+    private void InitializeGameplayAction(InputAction.CallbackContext ctx) { InitializeGameplay(); }
+    public void InitializeGameplay() {
+        // Disable the input action to prevent double-clicking
+        m_skipCutsceneAction.action.Disable();
+        m_playerJumpAction.action.Enable();
+
+        // All canvas-related
+        if (CanvasController.current != null) {
+            CanvasController.current.ToggleLoadingScreen(false, false);
+            CanvasController.current.ToggleStamina(true);
+        }
     }
 
     private void OnDestroy() {
         StopAllCoroutines();
+        // All managers - remove listeners
         if (TerrainManager.current != null) TerrainManager.current.onGenerationEnd.RemoveListener(this.OnTerrainGenerated);
         if (Voronoi.current != null) Voronoi.current.onGenerationEnd.RemoveListener(this.OnVoronoiGenerated);
         if (VegetationGenerator2.current != null) VegetationGenerator2.current.onGenerationEnd.RemoveListener(this.OnVegetationGenerated);
         if (GemGenerator2.current != null) GemGenerator2.current.onGenerationEnd.RemoveListener(this.OnGemsGenerated);
         if (LandmarkGenerator.current != null) LandmarkGenerator.current.onGenerationEnd.RemoveListener(this.OnLandmarksGenerated);
+        // input actions - remove listeners
+        m_skipCutsceneAction.action.performed -= InitializeGameplayAction;
     }
 }

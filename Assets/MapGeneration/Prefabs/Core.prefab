@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Core
       objectReference: {fileID: 0}
+    - target: {fileID: 1443572427384837443, guid: 065ef0bb8f7d0064086064970de4f27c, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1471091177436073286, guid: 065ef0bb8f7d0064086064970de4f27c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 150
