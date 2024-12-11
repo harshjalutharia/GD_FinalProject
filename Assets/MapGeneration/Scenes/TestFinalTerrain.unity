@@ -2109,7 +2109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80bddc1806ae79e4f86745673827933b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeDuration: 1
+  fadeDuration: 2.5
   rotationSpeed: 3
 --- !u!135 &1518026526
 SphereCollider:
