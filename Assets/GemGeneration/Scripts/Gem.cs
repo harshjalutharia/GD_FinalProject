@@ -11,6 +11,7 @@ public class Gem : MonoBehaviour
     public Collider _collider => m_collider;
     private Renderer m_renderer = null;
     [SerializeField, Tooltip("Reference to the object's audio source")] private AudioSource m_bellRing;
+    [SerializeField, Tooltip("Reference to the particle system")]       private ParticleSystem m_particleSystem;
 
     [Header("=== Gem Properties ===")]
     public GemType gemType;
@@ -29,8 +30,8 @@ public class Gem : MonoBehaviour
     }
 
     public void RingGem() {
-        if (m_bellRing == null) return;
-        m_bellRing.Play();
+        if (m_bellRing != null) m_bellRing.Play();
+        if (m_particleSystem != null) m_particleSystem.Play();
     }
 
     

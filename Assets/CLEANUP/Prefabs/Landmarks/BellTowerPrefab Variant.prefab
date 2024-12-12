@@ -152,6 +152,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 4748057832654619263, guid: 23bd2aab5291cd94daaf1892e28c8ecf, type: 3}
+      propertyPath: m_audioSource
+      value: 
+      objectReference: {fileID: 31697700985114832}
     - target: {fileID: 5774944208453963322, guid: 23bd2aab5291cd94daaf1892e28c8ecf, type: 3}
       propertyPath: m_Size
       value: 47.639317
@@ -463,14 +467,14 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 0
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
+  MinDistance: 20
+  MaxDistance: 700
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0

@@ -26,8 +26,8 @@ public class SessionManager2 : MonoBehaviour
     [SerializeField, Tooltip("Has the loading cutscene finished playing?")] private bool m_loadingCutsceneFinished = false;
     [SerializeField, Tooltip("Has gameplay been initialized?")]  private bool m_gameplayInitialized = false;
     public bool gameplayInitialized => m_gameplayInitialized;
-    [SerializeField, Tooltip("Is the session manager rotating the player's view")] private bool m_rotatingPlayerView = false;
-    public bool rotatingPlayerView => m_rotatingPlayerView;
+    [SerializeField, Tooltip("Timestamp last time the player rang the bells")] private float m_timeLastRung = 0f;
+    [SerializeField, Tooltip("The amount of time we want to allow the player before they can ring the bells again")]    private float m_ringDelay = 3f;
 
     public virtual void SetSeed(string newSeed) {
         if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {    m_seed = validNewSeed;  return; }
@@ -202,13 +202,17 @@ public class SessionManager2 : MonoBehaviour
 
         // What's the player's current region? Tracked by Voronoi
         Region region = Voronoi.current.playerRegion;
-        region.towerLandmark.PlayAudioSource();
         if (region == null) return;
+
+        // Record the time.. but not before checking if we're even allowed to again
+        if (Time.time - m_timeLastRung < m_ringDelay) return;
+        m_timeLastRung = Time.time;
 
         // Has this region had its destination bell collected?
         if (region.destinationCollected) {
             // Collected. We ring the bell and highlight all the small gems
-            //region.towerLandmark.PlayAudioSource();
+            region.towerLandmark.PlayAudioSource();
+            foreach(Gem gem in region.smallGems) gem.RingGem();
         } else {
             // Not collected. We instead, we highlight just the gem. We do NOT ring the bell.
             region.destinationGem.RingGem();
