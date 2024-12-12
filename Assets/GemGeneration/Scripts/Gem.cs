@@ -10,6 +10,7 @@ public class Gem : MonoBehaviour
     [SerializeField, Tooltip("Reference to this object's collider. if unset, will attempt to set by itself")] private Collider m_collider = null;
     public Collider _collider => m_collider;
     private Renderer m_renderer = null;
+    [SerializeField, Tooltip("Reference to the object's audio source")] private AudioSource m_bellRing;
 
     [Header("=== Gem Properties ===")]
     public GemType gemType;
@@ -25,6 +26,11 @@ public class Gem : MonoBehaviour
         if (other.gameObject.tag != "Player") return;
         Debug.Log("Gem Reached!");
         if (SessionManager2.current != null) SessionManager2.current.CollectGem(this);
+    }
+
+    public void RingGem() {
+        if (m_bellRing == null) return;
+        m_bellRing.Play();
     }
 
     

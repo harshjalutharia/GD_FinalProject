@@ -82,7 +82,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Map"",
+                    ""name"": ""RingBell"",
                     ""type"": ""Button"",
                     ""id"": ""00c486d6-9ce8-44c2-94fb-60a4e830eeff"",
                     ""expectedControlType"": ""Button"",
@@ -236,7 +236,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Map"",
+                    ""action"": ""RingBell"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -247,7 +247,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Map"",
+                    ""action"": ""RingBell"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -475,7 +475,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Fly = m_Player.FindAction("Fly", throwIfNotFound: true);
         m_Player_SkipCutscene = m_Player.FindAction("SkipCutscene", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
-        m_Player_Map = m_Player.FindAction("Map", throwIfNotFound: true);
+        m_Player_RingBell = m_Player.FindAction("RingBell", throwIfNotFound: true);
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
         m_Player_SwitchBoost = m_Player.FindAction("Switch Boost", throwIfNotFound: true);
         m_Player_Boost = m_Player.FindAction("Boost", throwIfNotFound: true);
@@ -551,7 +551,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Fly;
     private readonly InputAction m_Player_SkipCutscene;
     private readonly InputAction m_Player_Sprint;
-    private readonly InputAction m_Player_Map;
+    private readonly InputAction m_Player_RingBell;
     private readonly InputAction m_Player_Menu;
     private readonly InputAction m_Player_SwitchBoost;
     private readonly InputAction m_Player_Boost;
@@ -565,7 +565,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Fly => m_Wrapper.m_Player_Fly;
         public InputAction @SkipCutscene => m_Wrapper.m_Player_SkipCutscene;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
-        public InputAction @Map => m_Wrapper.m_Player_Map;
+        public InputAction @RingBell => m_Wrapper.m_Player_RingBell;
         public InputAction @Menu => m_Wrapper.m_Player_Menu;
         public InputAction @SwitchBoost => m_Wrapper.m_Player_SwitchBoost;
         public InputAction @Boost => m_Wrapper.m_Player_Boost;
@@ -596,9 +596,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
-            @Map.started += instance.OnMap;
-            @Map.performed += instance.OnMap;
-            @Map.canceled += instance.OnMap;
+            @RingBell.started += instance.OnRingBell;
+            @RingBell.performed += instance.OnRingBell;
+            @RingBell.canceled += instance.OnRingBell;
             @Menu.started += instance.OnMenu;
             @Menu.performed += instance.OnMenu;
             @Menu.canceled += instance.OnMenu;
@@ -630,9 +630,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
-            @Map.started -= instance.OnMap;
-            @Map.performed -= instance.OnMap;
-            @Map.canceled -= instance.OnMap;
+            @RingBell.started -= instance.OnRingBell;
+            @RingBell.performed -= instance.OnRingBell;
+            @RingBell.canceled -= instance.OnRingBell;
             @Menu.started -= instance.OnMenu;
             @Menu.performed -= instance.OnMenu;
             @Menu.canceled -= instance.OnMenu;
@@ -729,7 +729,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnFly(InputAction.CallbackContext context);
         void OnSkipCutscene(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
-        void OnMap(InputAction.CallbackContext context);
+        void OnRingBell(InputAction.CallbackContext context);
         void OnMenu(InputAction.CallbackContext context);
         void OnSwitchBoost(InputAction.CallbackContext context);
         void OnBoost(InputAction.CallbackContext context);

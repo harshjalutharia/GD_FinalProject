@@ -37,7 +37,6 @@ public class Voronoi : MonoBehaviour
 
     [Header("=== Gameplay ===")]
     [SerializeField, Tooltip("Reference to the player transform")]  private Transform m_playerRef;
-    [SerializeField, Tooltip("Which region is the player currently in?")]   private Region m_playerRegion = null;
     [SerializeField, Tooltip("The TextMeshProUGUI textbox for the region's name")]  private TextMeshProUGUI m_regionNameTextbox = null;
     [SerializeField, Tooltip("The TextMeshProUGUI textbox for the total # of gems")]    private TextMeshProUGUI m_regionTotalCountTextbox = null;
     [SerializeField, Tooltip("The TextMeshProUGUI textbox for the current # of gems collected")]    private TextMeshProUGUI m_regionCurrentCountTextbox = null;
@@ -54,6 +53,7 @@ public class Voronoi : MonoBehaviour
     [SerializeField] private Region m_oakRegion;
     [SerializeField] private Region m_birchRegion;
     [SerializeField] private Region m_spruceRegion;
+    [SerializeField, Tooltip("Which region is the player currently in?")]   private Region m_playerRegion = null;
     // ---
     public KDTree normalizedCentroidsTree;
     public KDTree centroidsTree;
@@ -65,6 +65,7 @@ public class Voronoi : MonoBehaviour
     public Centroid[] centroids => m_centroids;
     public List<DBScanCluster> clusters => m_clusters;
     public List<Region> regions => m_regions;
+    public Region playerRegion => m_playerRegion;
 
     [Header("=== On Completion ===")]
     private bool m_generated = false;
@@ -564,6 +565,9 @@ public class Region : IComparable<Region> {
     public List<Gem> collectedGems;
     public bool destinationCollected = false;
     public bool smallGemsCollected => collectedGems.Count == smallGems.Count;
+    [Space]
+    public Landmark towerLandmark;
+    public List<Landmark> minorLandmarks = new List<Landmark>();
 
     public void GenerateTree() {
         this.query = new KDQuery();

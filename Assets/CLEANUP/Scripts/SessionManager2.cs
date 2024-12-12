@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Cinemachine;
 
 public class SessionManager2 : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class SessionManager2 : MonoBehaviour
     [Header("=== Player Input Action References ===")]
     [SerializeField, Tooltip("The action reference that allows the player to skip cutscenes")]  private InputActionReference m_skipCutsceneAction;
     [SerializeField, Tooltip("The action reference that allows the player to  jump")]           private InputActionReference m_playerJumpAction;
+    [SerializeField, Tooltip("The action reference that allows the player to ring the bell")]   private InputActionReference m_playerRingBellAction;
     
     [Header("== Core references ===")]
     [SerializeField, Tooltip("The player character's transform")]   private Transform m_playerRef;
@@ -24,6 +26,8 @@ public class SessionManager2 : MonoBehaviour
     [SerializeField, Tooltip("Has the loading cutscene finished playing?")] private bool m_loadingCutsceneFinished = false;
     [SerializeField, Tooltip("Has gameplay been initialized?")]  private bool m_gameplayInitialized = false;
     public bool gameplayInitialized => m_gameplayInitialized;
+    [SerializeField, Tooltip("Is the session manager rotating the player's view")] private bool m_rotatingPlayerView = false;
+    public bool rotatingPlayerView => m_rotatingPlayerView;
 
     public virtual void SetSeed(string newSeed) {
         if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {    m_seed = validNewSeed;  return; }
@@ -34,6 +38,7 @@ public class SessionManager2 : MonoBehaviour
     private void Awake() {
         current = this;
         m_skipCutsceneAction.action.performed += InitializeGameplayAction;
+        m_playerRingBellAction.action.performed += RingBellAction;
     }
 
     private void Start() {
@@ -50,6 +55,7 @@ public class SessionManager2 : MonoBehaviour
         // Disable key actions
         m_skipCutsceneAction.action.Disable();
         m_playerJumpAction.action.Disable();
+        m_playerRingBellAction.action.Disable();
         
         // Chck that we have the necessary generators
         if (!TryCheckGenerators()) {
@@ -136,6 +142,7 @@ public class SessionManager2 : MonoBehaviour
         // Disable the input action to prevent double-clicking
         m_skipCutsceneAction.action.Disable();
         m_playerJumpAction.action.Enable();
+        m_playerRingBellAction.action.Enable();
 
         // All canvas-related
         if (CanvasController.current != null) {
@@ -188,6 +195,26 @@ public class SessionManager2 : MonoBehaviour
         }
     }
 
+    public void RingBellAction(InputAction.CallbackContext ctx) { RingBell(); }
+    public void RingBell() {
+        // Can't do anything if Voronoi isn't set
+        if (Voronoi.current == null) return;
+
+        // What's the player's current region? Tracked by Voronoi
+        Region region = Voronoi.current.playerRegion;
+        region.towerLandmark.PlayAudioSource();
+        if (region == null) return;
+
+        // Has this region had its destination bell collected?
+        if (region.destinationCollected) {
+            // Collected. We ring the bell and highlight all the small gems
+            //region.towerLandmark.PlayAudioSource();
+        } else {
+            // Not collected. We instead, we highlight just the gem. We do NOT ring the bell.
+            region.destinationGem.RingGem();
+        }
+    }
+
     private void OnDestroy() {
         StopAllCoroutines();
         // All managers - remove listeners
@@ -198,5 +225,6 @@ public class SessionManager2 : MonoBehaviour
         if (LandmarkGenerator.current != null) LandmarkGenerator.current.onGenerationEnd.RemoveListener(this.OnLandmarksGenerated);
         // input actions - remove listeners
         m_skipCutsceneAction.action.performed -= InitializeGameplayAction;
+        m_playerRingBellAction.action.performed -= RingBellAction;
     }
 }

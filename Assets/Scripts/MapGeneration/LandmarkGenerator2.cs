@@ -106,7 +106,8 @@ public class LandmarkGenerator2 : MonoBehaviour
         Quaternion kingRotation = (kingDirection.magnitude == 0) 
             ? Quaternion.Euler(0f, m_prng.Next(0,360), 0f)
             : Quaternion.LookRotation(kingDirection.normalized, Vector3.up);
-        InstantiateLandmark(m_kingBellTowerPrefab, terrainPoint, kingRotation);
+        Landmark kingTower = InstantiateLandmark(m_kingBellTowerPrefab, terrainPoint, kingRotation);
+        Voronoi.current.regions[0].towerLandmark = kingTower;
 
         // Major bell towers in other major regions' core clusters
         for (int i = 1; i < Voronoi.current.regions.Count; i++) {
@@ -116,7 +117,8 @@ public class LandmarkGenerator2 : MonoBehaviour
             Quaternion majorRotation = (majorDirection.magnitude == 0) 
                 ? Quaternion.Euler(0f, m_prng.Next(0,360), 0f)
                 : Quaternion.LookRotation(majorDirection.normalized, Vector3.up);
-            InstantiateLandmark(m_majorBellTowerPrefab, terrainPoint, majorRotation);
+            Landmark bellTower = InstantiateLandmark(m_majorBellTowerPrefab, terrainPoint, majorRotation);
+            Voronoi.current.regions[i].towerLandmark = bellTower;
         }
 
         // Minor bell towers in the regions' sub-clusters
@@ -129,7 +131,8 @@ public class LandmarkGenerator2 : MonoBehaviour
                     Quaternion minorRotation = (minorDirection.magnitude == 0) 
                         ? Quaternion.Euler(0f, m_prng.Next(0,360), 0f)
                         : Quaternion.LookRotation(minorDirection.normalized, Vector3.up);
-                    InstantiateLandmark(m_minorBellTowerPrefab, terrainPoint, minorRotation);
+                    Landmark minorLandmark = InstantiateLandmark(m_minorBellTowerPrefab, terrainPoint, minorRotation);
+                    Voronoi.current.regions[i].minorLandmarks.Add(minorLandmark);
                 }
             }
         }
@@ -160,11 +163,12 @@ public class LandmarkGenerator2 : MonoBehaviour
         onGenerationEnd?.Invoke();
     }
 
-    public void InstantiateLandmark(Landmark prefab, Vector3 pos, Quaternion rot, bool addToLandmarks = true) {
+    public Landmark InstantiateLandmark(Landmark prefab, Vector3 pos, Quaternion rot, bool addToLandmarks = true) {
         // Instantiate the landmark itself, given the prefab, position, and rotation
         Landmark newWeenie = Instantiate(prefab, pos, rot, m_landmarkParent) as Landmark;
         if (addToLandmarks) m_landmarks.Add(newWeenie);
         if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(pos, 20f);
+        return newWeenie;
     }
 
     // Returns false if point is too close to checkPoints and outs the total distance from checkPoints if point is valid

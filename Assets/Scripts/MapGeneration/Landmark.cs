@@ -10,6 +10,7 @@ public class Landmark : MonoBehaviour
     [Header("=== References ===")]
     [SerializeField, Tooltip("Reference to this object's renderer")]    private Renderer[] m_renderers;
     public Renderer[] _renderers => m_renderers;
+    [SerializeField, Tooltip("Reference to an audio source, if present.")]  private AudioSource m_audioSource;
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("The bounds of this landmark")]    private Bounds m_bounds;
@@ -71,7 +72,6 @@ public class Landmark : MonoBehaviour
             m_toDrawGizmos.AddRange(bottomPoints);
 
             float finalOffset = float.MaxValue;
-            bool moveDown = false;
             for (int i = 0; i < bottomPoints.Length; i++) {
                 // Get the terrain height at the bound point
                 TerrainManager.current.TryGetPointOnTerrain(bottomPoints[i], out var point, out var normal,
@@ -82,7 +82,6 @@ public class Landmark : MonoBehaviour
                 // ... maybe in between the terrain...
                 // ... or maybe underneath the terrain
                 // We confirm if we want to move down if ANY of the bound points are above the terrain.
-                if (terrainHeight <= bottomPoints[i].y) moveDown = true;
                 float offset = terrainHeight - bottomPoints[i].y;
                 if (offset < finalOffset) finalOffset = offset;
             }
@@ -98,6 +97,11 @@ public class Landmark : MonoBehaviour
 
         // We have to first 
         return bottomPoints;
+    }
+
+    public void PlayAudioSource() {
+        if (m_audioSource == null) return;
+        m_audioSource.Play();
     }
 }
 

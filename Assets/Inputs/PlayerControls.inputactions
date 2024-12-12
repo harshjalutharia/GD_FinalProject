@@ -60,7 +60,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Map",
+                    "name": "RingBell",
                     "type": "Button",
                     "id": "00c486d6-9ce8-44c2-94fb-60a4e830eeff",
                     "expectedControlType": "Button",
@@ -214,7 +214,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Map",
+                    "action": "RingBell",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -225,7 +225,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Map",
+                    "action": "RingBell",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
