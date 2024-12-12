@@ -137,6 +137,12 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Stamina regained per second while on the ground and not sprinting")]
     public float flightStaminaRefillSpeed;
 
+    [Tooltip("when refill boost activated, how many times the recovery speed is provided")] 
+    public float refillBoost;
+
+    [Tooltip("Provides refill boost when the current region's gem collection progress reaches a certain percentage.")]
+    public float refillBoostTriggerPercentage;
+
     
     [Header("Input Reference Binds")]
     [SerializeField, Tooltip("The action input of player jumping.")]
@@ -256,6 +262,19 @@ public class PlayerMovement : MonoBehaviour
 
     private Coroutine currentAccelerationCoroutine = null;
 
+
+    [Header("Uprising Acceleration Settings")] 
+    [SerializeField, Tooltip("uprising ready")]
+    public bool uprisingReady;
+    
+    [Tooltip("speed of rising")]
+    public float uprisingSpeed;
+    
+    [Tooltip("the height should be reached")]
+    public float uprisingHeight;
+    
+    
+
     
     [Header("Others")] 
     [Tooltip("Used to determine the player direction")]
@@ -280,10 +299,12 @@ public class PlayerMovement : MonoBehaviour
     
     private Transform playerObj;
     
+    
     [Header("Debug UI Element")] 
     public TextMeshProUGUI debugText1;
     public TextMeshProUGUI debugText2;
 
+    
     [Header("Tutorial Variables")]
     public TutorialIconManager iconManager;
     private bool hasMoved = false;
@@ -308,6 +329,7 @@ public class PlayerMovement : MonoBehaviour
         //compassObj.SetActive(false);
 
         readyToJump = true;
+        uprisingReady = true;
         maxAccessibleStamina = maxFlightStamina;
         flightStamina = maxFlightStamina;
         
@@ -345,7 +367,9 @@ public class PlayerMovement : MonoBehaviour
         // Refill stamina when grounded
         if (grounded /*&& !sprinting*/ && !boosting)
         {
-            flightStamina += flightStaminaRefillSpeed * Time.deltaTime;
+            Region region = Voronoi.current.playerRegion;
+            // if collect enough gems in current region, provide stamina refill boost
+            flightStamina += flightStaminaRefillSpeed * Time.deltaTime * ((float)region.collectedGems.Count/region.smallGems.Count > refillBoostTriggerPercentage ? refillBoost : 1);
             flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
         }
         else if(sprinting)
@@ -385,12 +409,15 @@ public class PlayerMovement : MonoBehaviour
             ActivateParagliding();
             ActivatePBoosting();
             SoundManager.current.PlaySFX("Cheat");
+            
             // start acceleration
             if (currentAccelerationCoroutine != null)
             {
                 StopCoroutine(currentAccelerationCoroutine);
             }
             currentAccelerationCoroutine = StartCoroutine(ExtraAccelerate());
+            
+            //StartCoroutine(UprisingAcceleration());
         }
     }
 
@@ -838,9 +865,49 @@ public class PlayerMovement : MonoBehaviour
             }
             return;
         }
+        
+        // bell tower
+        if (other.CompareTag("BellTower"))
+        {
+            Debug.Log(uprisingReady  + " " + Voronoi.current.playerRegion.destinationCollected);
+            if (uprisingReady && Voronoi.current.playerRegion.destinationCollected)
+            {
+                uprisingReady = false;
+                Debug.Log("startUPPpp");
+                StartCoroutine(UprisingAcceleration());
+            }
+            return;
+        }
     }
 
+    
+    // apply uprising acceleration provide by bell tower
+    private IEnumerator UprisingAcceleration()
+    {
+        Debug.Log("upppppping");
+        acceleratorTrail.SetActive(true);
+        TrailRenderer trailRenderer = acceleratorTrail.GetComponent<TrailRenderer>();
+        trailRenderer.time = 1;
+        
+        float initialY = transform.position.y;
+        rb.isKinematic = true; // forbid rigid body, controls the transform.position directly
+        while (transform.position.y - initialY <= uprisingHeight)
+        {
+            yield return new WaitForFixedUpdate();
+            transform.position = new Vector3(transform.position.x,
+                transform.position.y + Time.fixedDeltaTime * uprisingSpeed, transform.position.z);
+            
+        }
+        uprisingReady = true;
+        rb.isKinematic = false;
+        rb.velocity = new Vector3(0, uprisingSpeed, 0);
+        StartCoroutine(FadeoutAccelerationTrail());
 
+    }
+    
+    
+
+    // apply acceleration of arch ruins
     private IEnumerator ExtraAccelerate()
     {
         // set the accelerator direction based on input direction
@@ -887,14 +954,16 @@ public class PlayerMovement : MonoBehaviour
             float forceMagnitude = Mathf.Lerp(acceleratorForce, 0, t); // gradually reduce force intensity
             rb.AddForce(forceMagnitude * direction, ForceMode.Force);
 
-            trailRenderer.time = Mathf.Lerp(1, 0, t);
+            //trailRenderer.time = Mathf.Lerp(1, 0, t);
         }
         accelerating = false;
-        acceleratorTrail.SetActive(false);
+        //acceleratorTrail.SetActive(false);
         currentAccelerationCoroutine = null;
+        StartCoroutine(FadeoutAccelerationTrail());
     }
 
 
+    // gives an impulse at the beginning of the boost
     private IEnumerator BoostOneShot()
     {
         yield return new WaitForFixedUpdate();
@@ -918,6 +987,20 @@ public class PlayerMovement : MonoBehaviour
                 yield break;
             }
         }
+    }
+    
+    private IEnumerator FadeoutAccelerationTrail()
+    {
+        TrailRenderer trail = acceleratorTrail.GetComponent<TrailRenderer>();
+        float duration = 1;
+        float startTime = Time.time;
+        while (Time.time - startTime <= duration)
+        {
+            yield return new WaitForFixedUpdate();
+            float t = (Time.time - startTime) / duration;
+            trail.time = Mathf.Clamp(Mathf.Lerp(1, 0, t), 0, 1);
+        }
+        acceleratorTrail.SetActive(false);
     }
     
 

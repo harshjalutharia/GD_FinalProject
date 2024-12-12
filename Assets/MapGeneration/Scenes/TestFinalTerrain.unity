@@ -1266,10 +1266,12 @@ MonoBehaviour:
   m_seed: 0
   m_skipCutsceneAction: {fileID: 789659568516712295, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
   m_playerJumpAction: {fileID: 1297723305485046813, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+  m_playerRingBellAction: {fileID: 8035770346209381568, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
   m_playerRef: {fileID: 0}
   m_environmentGenerated: 0
   m_loadingCutsceneFinished: 0
   m_gameplayInitialized: 0
+  m_rotatingPlayerView: 0
 --- !u!4 &945464006
 Transform:
   m_ObjectHideFlags: 0
@@ -2461,23 +2463,6 @@ MonoBehaviour:
   m_birchAttributes: {fileID: 11400000, guid: 44390a2d61010214e888f95661e8f361, type: 2}
   m_spruceAttributes: {fileID: 11400000, guid: a9ae3257be0ee164984a83e215f78528, type: 2}
   m_playerRef: {fileID: 9062041}
-  m_playerRegion:
-    id: 0
-    attributes: {fileID: 0}
-    coreCluster:
-      id: 0
-      regionIndex: 0
-      color: {r: 0, g: 0, b: 0, a: 1}
-      centroid: {x: 0, y: 0, z: 0}
-      centroids: []
-      gemPoints: 
-    subClusters: []
-    centroids: []
-    majorRegionWeight: 0
-    destinationGem: {fileID: 0}
-    smallGems: []
-    collectedGems: []
-    destinationCollected: 0
   m_regionNameTextbox: {fileID: 1462922565}
   m_regionTotalCountTextbox: {fileID: 2011397957}
   m_regionCurrentCountTextbox: {fileID: 1884896130}
@@ -4032,6 +4017,8 @@ MonoBehaviour:
     smallGems: []
     collectedGems: []
     destinationCollected: 0
+    towerLandmark: {fileID: 0}
+    minorLandmarks: []
   - id: 0
     attributes: {fileID: 11400000, guid: 044656423db2eee4086b4c1f26c40c10, type: 2}
     coreCluster:
@@ -4072,6 +4059,8 @@ MonoBehaviour:
     smallGems: []
     collectedGems: []
     destinationCollected: 0
+    towerLandmark: {fileID: 0}
+    minorLandmarks: []
   - id: 0
     attributes: {fileID: 11400000, guid: 44390a2d61010214e888f95661e8f361, type: 2}
     coreCluster:
@@ -4100,6 +4089,8 @@ MonoBehaviour:
     smallGems: []
     collectedGems: []
     destinationCollected: 0
+    towerLandmark: {fileID: 0}
+    minorLandmarks: []
   - id: 0
     attributes: {fileID: 11400000, guid: a9ae3257be0ee164984a83e215f78528, type: 2}
     coreCluster:
@@ -4128,6 +4119,8 @@ MonoBehaviour:
     smallGems: []
     collectedGems: []
     destinationCollected: 0
+    towerLandmark: {fileID: 0}
+    minorLandmarks: []
   m_grasslandsRegion:
     id: 0
     attributes: {fileID: 11400000, guid: 630d3fe5450f65c49b31d281c0da24aa, type: 2}
@@ -4175,6 +4168,8 @@ MonoBehaviour:
     smallGems: []
     collectedGems: []
     destinationCollected: 0
+    towerLandmark: {fileID: 0}
+    minorLandmarks: []
   m_oakRegion:
     id: 0
     attributes: {fileID: 11400000, guid: 044656423db2eee4086b4c1f26c40c10, type: 2}
@@ -4216,6 +4211,8 @@ MonoBehaviour:
     smallGems: []
     collectedGems: []
     destinationCollected: 0
+    towerLandmark: {fileID: 0}
+    minorLandmarks: []
   m_birchRegion:
     id: 0
     attributes: {fileID: 11400000, guid: 44390a2d61010214e888f95661e8f361, type: 2}
@@ -4245,6 +4242,8 @@ MonoBehaviour:
     smallGems: []
     collectedGems: []
     destinationCollected: 0
+    towerLandmark: {fileID: 0}
+    minorLandmarks: []
   m_spruceRegion:
     id: 0
     attributes: {fileID: 11400000, guid: a9ae3257be0ee164984a83e215f78528, type: 2}
@@ -4274,6 +4273,27 @@ MonoBehaviour:
     smallGems: []
     collectedGems: []
     destinationCollected: 0
+    towerLandmark: {fileID: 0}
+    minorLandmarks: []
+  m_playerRegion:
+    id: 0
+    attributes: {fileID: 0}
+    coreCluster:
+      id: 0
+      regionIndex: 0
+      color: {r: 0, g: 0, b: 0, a: 1}
+      centroid: {x: 0, y: 0, z: 0}
+      centroids: []
+      gemPoints: 
+    subClusters: []
+    centroids: []
+    majorRegionWeight: 0
+    destinationGem: {fileID: 0}
+    smallGems: []
+    collectedGems: []
+    destinationCollected: 0
+    towerLandmark: {fileID: 0}
+    minorLandmarks: []
   onGenerationEnd:
     m_PersistentCalls:
       m_Calls: []

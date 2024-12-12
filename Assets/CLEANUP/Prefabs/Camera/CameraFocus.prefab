@@ -49,5 +49,4 @@ MonoBehaviour:
   m_smoothX: 1
   m_smoothY: 1
   m_smoothZ: 1
-  m_smoothTime: 0.5
-  m_orientationTarget: {fileID: 0}
+  m_smoothTime: 0.4
