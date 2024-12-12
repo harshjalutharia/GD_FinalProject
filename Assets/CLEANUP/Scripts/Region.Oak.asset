@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Region.Oak
   m_EditorClassIdentifier: 
   name: Orchards
-  color: {r: 1, g: 0, b: 0.020870686, a: 1}
+  color: {r: 1, g: 0.21176471, b: 0.22352941, a: 1}
   destinationGemPrefab: {fileID: 121536549225121206, guid: f2a4d18d5c3d08c4bb57dded31a1342f, type: 3}
   smallGemPrefab: {fileID: 7916263080323056209, guid: 9d91bc50f938a4e49a3470684b1fa892, type: 3}
   vegetationPrefabs:

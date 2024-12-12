@@ -171,8 +171,8 @@ public class SessionManager2 : MonoBehaviour
                 if (!region.destinationCollected && gem == region.destinationGem) {
                     // The region has collected its destination gem
                     region.destinationCollected = true;
+                    if (CanvasController.current != null) CanvasController.current.ToggleDestinationGemIcon(true);
                     Debug.Log("Destination gem for this region now collected");
-                    // TODO - link to powerup
                 }
                 else {
                     // For some reason the destination gem was collected already...

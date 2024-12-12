@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Region.Birch
   m_EditorClassIdentifier: 
   name: Birch
-  color: {r: 0.18867922, g: 0.18867922, b: 0.18867922, a: 1}
+  color: {r: 0.5254902, g: 0, b: 1, a: 1}
   destinationGemPrefab: {fileID: 121536549225121206, guid: 5c71ca3937e09fe4181266c6f17a01a6, type: 3}
   smallGemPrefab: {fileID: 7916263080323056209, guid: b4fff6c8b840fb0449a749ce9c1d0961, type: 3}
   vegetationPrefabs:

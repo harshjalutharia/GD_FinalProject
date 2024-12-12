@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Region.Grasslands
   m_EditorClassIdentifier: 
   name: Grasslands
-  color: {r: 0.1462264, g: 0.15640458, b: 1, a: 1}
+  color: {r: 1, g: 0.9137255, b: 0.043137256, a: 1}
   destinationGemPrefab: {fileID: 121536549225121206, guid: 8ed93f322e73843569d2204adb9a5a75, type: 3}
   smallGemPrefab: {fileID: 7916263080323056209, guid: 92bfd48bc64554204989399f6272004d, type: 3}
   vegetationPrefabs:

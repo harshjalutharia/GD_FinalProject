@@ -58,8 +58,11 @@ public class CanvasController : MonoBehaviour
     public bool fpsCanvasActive => m_fpsCanvasActive;
     
     [Header("=== Gameplay Canvas ===")]
-    [SerializeField, Tooltip("Reference to the gameplay canvas group")] private CanvasGroup m_gameplayCanvasGroup;
-    [SerializeField, Tooltip("Is the gameplay canvas active?")]         private bool m_gameplayCanvasActive = false;
+    [SerializeField, Tooltip("Reference to the gameplay canvas group")]             private CanvasGroup m_gameplayCanvasGroup;
+    [SerializeField, Tooltip("The image UI element for region destination gem")]    private Image m_destinationGemImage;
+    [SerializeField, Tooltip("The image for the incomplete destination gem")]       private Sprite m_uncollectedDestGemSprite;
+    [SerializeField, Tooltip("The image for the completed gem destination")]        private Sprite m_collectedDestGemSprite;
+    [SerializeField, Tooltip("Is the gameplay canvas active?")]                     private bool m_gameplayCanvasActive = false;
     public bool gameplayCanvasActive => m_gameplayCanvasActive;
     
 
@@ -152,6 +155,14 @@ public class CanvasController : MonoBehaviour
     public void ToggleGameplay(bool setTo) {
         m_gameplayCanvasActive = setTo;
         SetCanvasGroupAlpha(m_gameplayCanvasGroup, setTo);
+    }
+
+    public void ToggleDestinationGemIcon(bool collected, Color color) {
+        m_destinationGemImage.sprite = (collected) ? m_collectedDestGemSprite : m_uncollectedDestGemSprite;
+        m_destinationGemImage.color = color;
+    }
+    public void ToggleDestinationGemIcon(bool collected) {
+        m_destinationGemImage.sprite = (collected) ? m_collectedDestGemSprite : m_uncollectedDestGemSprite;
     }
     
     public void ToggleAllCanvases(bool setTo) {

@@ -500,6 +500,10 @@ public class Voronoi : MonoBehaviour
         if (m_playerRef == null) return;
 
         // Track where the player is currently
+        Region current = QueryClosestRegion(m_playerRef.position);
+        if (current != m_playerRegion && CanvasController.current != null) {
+            CanvasController.current.ToggleDestinationGemIcon(current.destinationCollected, current.attributes.color);
+        }
         m_playerRegion = QueryClosestRegion(m_playerRef.position);
         // Populate the textmeshpros
         if (m_regionNameTextbox != null) m_regionNameTextbox.text = m_playerRegion.attributes.name;

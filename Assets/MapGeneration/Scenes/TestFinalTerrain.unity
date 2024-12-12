@@ -135,6 +135,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 691844705312844327, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 699676725450220675, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4687449967d64e246bef407d64c51f78, type: 3}
     - target: {fileID: 1077702348231788260, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -179,8 +187,45 @@ PrefabInstance:
       propertyPath: m_Name
       value: CanvasController
       objectReference: {fileID: 0}
+    - target: {fileID: 1426423508823656045, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c04178551b4b1be4a9d3e8266168e18f, type: 3}
+    - target: {fileID: 3187205618469522684, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 1024
+      objectReference: {fileID: 0}
+    - target: {fileID: 3187205618469522684, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3780505631194964635, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 1024
+      objectReference: {fileID: 0}
+    - target: {fileID: 4241200753745201469, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 1024
+      objectReference: {fileID: 0}
+    - target: {fileID: 4241200753745201469, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4860047504310445860, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 7292112237587484452, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 407484875f45ea24ab9307668d7b610f, type: 3}
+    - target: {fileID: 7573997594667326777, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 1739311801379561808, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
@@ -1271,7 +1316,8 @@ MonoBehaviour:
   m_environmentGenerated: 0
   m_loadingCutsceneFinished: 0
   m_gameplayInitialized: 0
-  m_rotatingPlayerView: 0
+  m_timeLastRung: 0
+  m_ringDelay: 3
 --- !u!4 &945464006
 Transform:
   m_ObjectHideFlags: 0
