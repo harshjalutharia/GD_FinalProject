@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class DestinationGemTrail : MonoBehaviour
+public class GemTrail : MonoBehaviour
 {
     public Transform playerRef;
     public TrailRenderer trailRenderer;

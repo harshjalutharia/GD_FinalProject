@@ -22,6 +22,7 @@ public class TerrainManager : MonoBehaviour
     [SerializeField, Tooltip("The height (along Z-axis) of each individual chunk")]                 private int m_cellHeight = 150;
     public float width => (float)m_numCols * m_cellWidth;
     public float height => (float)m_numRows * m_cellHeight;
+    public Vector3 worldCenter => new Vector3(width/2f, (m_noiseRange.max-m_noiseRange.min)/2f + m_noiseRange.min, height/2f);
     [SerializeField, Tooltip("Generate on start?")] private bool m_generateOnStart = false;
     [Space]
     [SerializeField, Tooltip("The maximum LOD we want to enforce for terrain chunks"), Range(0,6)]  private int m_maxLOD = 6;
