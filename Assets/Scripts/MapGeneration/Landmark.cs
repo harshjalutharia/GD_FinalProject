@@ -12,8 +12,8 @@ public class Landmark : MonoBehaviour
     [SerializeField, Tooltip("Reference to this object's renderer")]    private Renderer[] m_renderers;
     public Renderer[] _renderers => m_renderers;
     [SerializeField, Tooltip("Reference to an audio source, if present.")]  private AudioSource m_audioSource;
+    [SerializeField, Tooltip("Should camera parent ref")]   private Transform m_shoulderCameraParent;
     [SerializeField, Tooltip("Reference to the Cinemachine camera attached to this landmark's shoulder, if present")]  private CinemachineVirtualCamera m_shoulderCamera;
-    [SerializeField, Tooltip("Reference to the Cinemachine camera attached above this landmark, if present")]  private CinemachineVirtualCamera m_overheadCamera;
     [SerializeField, Tooltip("Destination of the destination gem trail")]   private Transform m_pathingDestination;
     public Transform pathingDestination => m_pathingDestination;
     [SerializeField, Tooltip("Forward point of the destination gem trail")] private Transform m_pathingForward;
@@ -114,6 +114,19 @@ public class Landmark : MonoBehaviour
 
     public void ToggleShoulderCamera(bool setTo) {
         if (m_shoulderCamera == null) return;
+        // Firstly, detect which is the optimal direction to rotate to. Only possible of Voronoi is not null
+        //if (Voronoi.current != null) {
+        if (TerrainManager.current != null) {
+            Region region = Voronoi.current.regions[this.regionIndex];
+            Vector3 direction = Vector3.zero;
+            foreach(Gem gem in region.smallGems) {
+                direction += (gem.transform.position - this.transform.position).normalized;
+            }
+            Vector3 averageDir = direction / region.smallGems.Count;
+            //Vector3 averageDir = (TerrainManager.current.worldCenter - transform.position).normalized;
+            Vector3 targetPostition = m_shoulderCameraParent.position + new Vector3(averageDir.x, 0f, averageDir.z);
+            m_shoulderCameraParent.LookAt(targetPostition);
+        }
         m_shoulderCamera.m_Priority = (setTo) ? 10 : 0;
     }
 }

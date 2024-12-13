@@ -367,9 +367,14 @@ public class PlayerMovement : MonoBehaviour
         // Refill stamina when grounded
         if (grounded /*&& !sprinting*/ && !boosting)
         {
-            Region region = Voronoi.current.playerRegion;
-            // if collect enough gems in current region, provide stamina refill boost
-            flightStamina += flightStaminaRefillSpeed * Time.deltaTime * ((float)region.collectedGems.Count/region.smallGems.Count > refillBoostTriggerPercentage ? refillBoost : 1);
+            if (Voronoi.current != null) {
+                Region region = Voronoi.current.playerRegion;
+                // if collect enough gems in current region, provide stamina refill boost
+                flightStamina += flightStaminaRefillSpeed * Time.deltaTime * ((float)region.collectedGems.Count/region.smallGems.Count > refillBoostTriggerPercentage ? refillBoost : 1);
+            }
+            else {
+                flightStamina += flightStaminaRefillSpeed * Time.deltaTime;
+            }
             flightStamina = Mathf.Clamp(flightStamina, 0, maxFlightStamina);
         }
         else if(sprinting)

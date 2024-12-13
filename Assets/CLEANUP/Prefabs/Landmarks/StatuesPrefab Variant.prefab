@@ -1,5 +1,121 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1670903051066332763
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3301372080059752970}
+  m_Layer: 11
+  m_Name: Shoulder Cam Parent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3301372080059752970
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1670903051066332763}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.30989653, z: 0, w: 0.9507703}
+  m_LocalPosition: {x: 0, y: 25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1317460012138284922}
+  - {fileID: 6526067375997434342}
+  m_Father: {fileID: 3070134861905406828}
+  m_LocalEulerAnglesHint: {x: 0, y: -36.106, z: 0}
+--- !u!1 &2242453598052281784
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9179629985188024934}
+  - component: {fileID: 2249419119897482728}
+  - component: {fileID: 7342505500865281769}
+  m_Layer: 12
+  m_Name: Updraft Trigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9179629985188024934
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2242453598052281784}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3070134861905406828}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &2249419119897482728
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2242453598052281784}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 20
+  m_Height: 70
+  m_Direction: 1
+  m_Center: {x: 0, y: 10, z: 10}
+--- !u!54 &7342505500865281769
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2242453598052281784}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 1
 --- !u!1 &4186233614903800291
 GameObject:
   m_ObjectHideFlags: 0
@@ -100,14 +216,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5410369332797379829}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.23104057, y: -0.30060712, z: 0.07530582, w: 0.92227155}
-  m_LocalPosition: {x: 13.77, y: 37.75, z: -6.36}
+  m_LocalRotation: {x: 0.065403156, y: 0, z: 0, w: 0.99785894}
+  m_LocalPosition: {x: 8, y: 6.1, z: -27.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5623759767983838928}
-  m_Father: {fileID: 3070134861905406828}
-  m_LocalEulerAnglesHint: {x: 28.128, y: -36.106, z: 0}
+  m_Father: {fileID: 3301372080059752970}
+  m_LocalEulerAnglesHint: {x: 7.5, y: 0, z: 0}
 --- !u!114 &295054735192743665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,12 +287,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7518568683625052558}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 25, z: 50}
+  m_LocalRotation: {x: -0, y: 0.30989653, z: -0, w: 0.9507703}
+  m_LocalPosition: {x: 30.27197, y: 0, z: 39.807137}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3070134861905406828}
+  m_Father: {fileID: 3301372080059752970}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &3145499766042279211
 PrefabInstance:
@@ -1882,6 +1998,10 @@ PrefabInstance:
       propertyPath: m_pathingDestination
       value: 
       objectReference: {fileID: 1097025421892970190}
+    - target: {fileID: 7749286727764677152, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
+      propertyPath: m_shoulderCameraParent
+      value: 
+      objectReference: {fileID: 3301372080059752970}
     - target: {fileID: 8562370985502458357, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
       propertyPath: center.x
       value: 6.85
@@ -2503,13 +2623,13 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 89016715398878791, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
       insertIndex: 0
-      addedObject: {fileID: 1317460012138284922}
+      addedObject: {fileID: 3301372080059752970}
     - targetCorrespondingSourceObject: {fileID: 89016715398878791, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
       insertIndex: 1
       addedObject: {fileID: 1097025421892970190}
     - targetCorrespondingSourceObject: {fileID: 89016715398878791, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
       insertIndex: 2
-      addedObject: {fileID: 6526067375997434342}
+      addedObject: {fileID: 9179629985188024934}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7716955945500810821, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
       insertIndex: -1
@@ -2544,7 +2664,7 @@ AudioSource:
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 0
-  DopplerLevel: 1
+  DopplerLevel: 0
   MinDistance: 20
   MaxDistance: 700
   Pan2D: 0
@@ -2581,7 +2701,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0

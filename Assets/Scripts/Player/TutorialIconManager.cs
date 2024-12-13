@@ -35,14 +35,14 @@ public class TutorialIconManager : MonoBehaviour
     private void DoTestAction(InputAction.CallbackContext ctx)
     {
         string deviceName = ctx.action.activeControl.device.name;
-        Debug.Log("Device used: " + deviceName);
+        //Debug.Log("Device used: " + deviceName);
         lastDeviceUsed = deviceName;
     }
 
     public string checkInput()
     {
         // Check the last device that triggered an input event
-        // We’ll simplify and look for keywords that identify the device type.
+        // Weï¿½ll simplify and look for keywords that identify the device type.
         if (lastDeviceUsed.Contains("Keyboard") || lastDeviceUsed.Contains("Mouse"))
         {
             return "Keyboard";
