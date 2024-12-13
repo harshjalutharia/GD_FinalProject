@@ -79,6 +79,39 @@ public class LandmarkGenerator : MonoBehaviour
         }
     }
 
+    [System.Serializable]
+    public class PathBetweenLandmarks : IComparable<PathBetweenLandmarks>
+    {
+        public Landmark landmark1, landmark2;
+        public float distance;
+        public List<Vector3> generatedPath;
+
+        public PathBetweenLandmarks(Landmark landmark1, Landmark landmark2)
+        {
+            this.landmark1 = landmark1;
+            this.landmark2 = landmark2;
+        }
+
+        public PathBetweenLandmarks(Landmark landmark1, Landmark landmark2, float distance)
+        {
+            this.landmark1 = landmark1;
+            this.landmark2 = landmark2;
+            this.distance = distance;
+        }
+
+        public PathBetweenLandmarks(Landmark landmark1, Landmark landmark2, float distance, List<Vector3> generatedPath)
+        {
+            this.landmark1 = landmark1;
+            this.landmark2 = landmark2;
+            this.distance = distance;
+            this.generatedPath = generatedPath;
+        }
+        public int CompareTo([AllowNull] PathBetweenLandmarks otherPath)
+        {
+            return this.distance.CompareTo(otherPath.distance);
+        }
+    }
+
     [Header("=== References ===")]
     [SerializeField, Tooltip("Voronoi Map used in combinedMap")]                           private VoronoiMap m_voronoiMap;
     [SerializeField, Tooltip("Parent for landmarks")]                                      private Transform m_landmarkParent;
@@ -204,21 +237,21 @@ public class LandmarkGenerator : MonoBehaviour
             // Spawn arches in the paths generated
             foreach (var path in generatedPaths)
             {
-                int pointsInEachSegment = path.Count / (archCountPerPath + 1);
+                int pointsInEachSegment = path.generatedPath.Count / (archCountPerPath + 1);
                 for (int i = 1; i <= archCountPerPath; i++)
                 {
                     // if too close to other arches, continue
-                    if (!CheckDistanceFromPoints(path[pointsInEachSegment * i], archPositions,
+                    if (!CheckDistanceFromPoints(path.generatedPath[pointsInEachSegment * i], archPositions,
                             minimumDistanceBetweenArches,
                             out float totalDistance))
                         continue;
 
-                    Vector3 direction = path[(pointsInEachSegment * i) + 1] - path[(pointsInEachSegment * i)];
+                    Vector3 direction = path.generatedPath[(pointsInEachSegment * i) + 1] - path.generatedPath[(pointsInEachSegment * i)];
                     direction.Normalize();
                     //Debug.DrawLine(path[pointsInEachSegment * i], path[pointsInEachSegment * i] + (direction * 3), Color.yellow, 3000f, false);
                     //Instantiate(m_archPrefab, path[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), m_landmarkParent);
-                    InstantiateLandmark(m_archPrefab, path[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), false);
-                    archPositions.Add(path[pointsInEachSegment * i]);
+                    InstantiateLandmark(m_archPrefab, path.generatedPath[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), false);
+                    archPositions.Add(path.generatedPath[pointsInEachSegment * i]);
                 }
             }
         }
@@ -227,9 +260,9 @@ public class LandmarkGenerator : MonoBehaviour
         onGenerationEnd?.Invoke();
     }
 
-    private List<(Vector3, float)> GetClosestLandmarksList(Vector3 position)
+    private List<(Landmark, float)> GetClosestLandmarksList(Vector3 position)
     {
-        List<(Vector3, float)> closeLandmarks = new List<(Vector3, float)>();
+        List<(Landmark, float)> closeLandmarks = new List<(Landmark, float)>();
 
         foreach (var landmark in m_landmarks)
         {
@@ -237,7 +270,7 @@ public class LandmarkGenerator : MonoBehaviour
                 continue;
 
             float distance = Vector3.Distance(position, landmark.transform.position);
-            closeLandmarks.Add((landmark.transform.position, distance));
+            closeLandmarks.Add((landmark, distance));
         }
 
         closeLandmarks.Sort((x, y) => x.Item2.CompareTo(y.Item2));
@@ -245,39 +278,42 @@ public class LandmarkGenerator : MonoBehaviour
         return closeLandmarks;
     }
 
-    // Uses kruskal's algorithm to generate a MST that connects all landmarks. Then generates paths based on normals
-    private List<List<Vector3>> GeneratePathsBetweenLandmarks()
-    {
-        List <(Vector3, Vector3)> pathEndPoints = new List <(Vector3, Vector3)>();
-        List<List<Vector3>> generatedPaths = new List<List<Vector3>>();
+    
 
-        HashSet<HashSet<Vector3>> landmarkSets = new HashSet<HashSet<Vector3>>();
-        List<((Vector3, Vector3), float)> possiblePaths = new List<((Vector3, Vector3), float)>();
+    // Uses kruskal's algorithm to generate a MST that connects all landmarks. Then generates paths based on normals
+    private List<PathBetweenLandmarks> GeneratePathsBetweenLandmarks()
+    {
+        List<PathBetweenLandmarks> generatedPaths = new List<PathBetweenLandmarks>();
+        List<PathBetweenLandmarks> possiblePaths = new List<PathBetweenLandmarks>();
+
+        HashSet<HashSet<Landmark>> landmarkSets = new HashSet<HashSet<Landmark>>();
+        List<(int,int)> possiblePathsLandmarkIndex = new List<(int,int)>();
 
         foreach (var landmark in m_landmarks)
         {
-            landmarkSets.Add(new HashSet<Vector3> { landmark.transform.position });
+            landmarkSets.Add(new HashSet<Landmark> { landmark });
 
             var closeLandmarkList = GetClosestLandmarksList(landmark.transform.position);
 
             foreach (var landmarkDistanceTuple in closeLandmarkList)
             {
-                possiblePaths.Add(((landmark.transform.position, landmarkDistanceTuple.Item1), landmarkDistanceTuple.Item2));
+                //possiblePaths.Add(((landmark.transform.position, landmarkDistanceTuple.Item1.transform.position), landmarkDistanceTuple.Item2));
+                possiblePaths.Add(new PathBetweenLandmarks(landmark, landmarkDistanceTuple.Item1, landmarkDistanceTuple.Item2));
                 //Debug.DrawLine(landmark, landmarkDistanceTuple.Item1, Color.red, 3000f, false);
             }
         }
 
-        possiblePaths = possiblePaths.OrderBy(i => i.Item2).ToList();
+        possiblePaths = possiblePaths.OrderBy(i => i.distance).ToList();
 
         foreach (var path in possiblePaths)
         {
-            HashSet<Vector3> set1 = null;
-            HashSet<Vector3> set2 = null;
+            HashSet<Landmark> set1 = null;
+            HashSet<Landmark> set2 = null;
             foreach (var set in landmarkSets)
             {
-                if (set.Contains(path.Item1.Item1))
+                if (set.Contains(path.landmark1))
                     set1 = set;
-                if (set.Contains(path.Item1.Item2))
+                if (set.Contains(path.landmark2))
                     set2 = set;
                 if (set1 != null && set2 != null)
                     break;
@@ -286,8 +322,17 @@ public class LandmarkGenerator : MonoBehaviour
             if (set1 == set2)
                 continue;
 
-            //Debug.DrawLine(path.Item1.Item1, path.Item1.Item2, Color.grey, 3000f, false);
-            generatedPaths.Add(GeneratePathBetweenPoints(path.Item1.Item1, path.Item1.Item2));
+            Debug.DrawLine(path.landmark1.transform.position, path.landmark2.transform.position, Color.grey, 3000f, false);
+            path.generatedPath =
+                GeneratePathBetweenPoints(path.landmark1.transform.position, path.landmark2.transform.position);
+            generatedPaths.Add(path);
+
+            List<Vector3> reversedGeneratedPath =
+                GeneratePathBetweenPoints(path.landmark2.transform.position, path.landmark1.transform.position);
+
+            path.landmark1.m_pathsToOtherLandmarks.Add(path);
+            path.landmark2.m_pathsToOtherLandmarks.Add(new PathBetweenLandmarks(path.landmark2, path.landmark1, path.distance, reversedGeneratedPath));
+
             //generatedPaths.Add(new List<Vector3> { path.Item1.Item1, path.Item1.Item2 });
 
             if (generatedPaths.Count == m_landmarks.Count - 1)
