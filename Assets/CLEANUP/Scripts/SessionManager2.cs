@@ -29,6 +29,7 @@ public class SessionManager2 : MonoBehaviour
     public bool gameplayInitialized => m_gameplayInitialized;
     [SerializeField, Tooltip("Timestamp last time the player rang the bells")] private float m_timeLastRung = 0f;
     [SerializeField, Tooltip("The amount of time we want to allow the player before they can ring the bells again")]    private float m_ringDelay = 3f;
+    [SerializeField, Tooltip("Ring tutorial needs to be completed before player can move")] public bool ringTutorialCompleted = false;
 
     public virtual void SetSeed(string newSeed) {
         if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {    m_seed = validNewSeed;  return; }
@@ -71,6 +72,18 @@ public class SessionManager2 : MonoBehaviour
         TerrainManager.current.SetSeed(m_seed);
         TerrainManager.current.onGenerationEnd.AddListener(this.OnTerrainGenerated);
         TerrainManager.current.Generate();
+        PlayerMovement.current.canMove = false;
+        PlayerMovement.current.canJump = false;
+        PlayerMovement.current.canSprint = true; // doesn't really matter if there's no other input
+        PlayerMovement.current.canBoost = false;
+    }
+
+    private IEnumerator RingTutorialSequence()
+    {
+        yield return StartCoroutine(TutorialIconManager.current.ShowIconUntilCondition(
+            TutorialIconManager.current.ShowRingIcon,
+            () => ringTutorialCompleted
+        ));
     }
 
     public bool TryCheckGenerators() {
@@ -158,7 +171,7 @@ public class SessionManager2 : MonoBehaviour
         mainCameraFader.enabled = true;
         mainCameraFader.FadeIn();
         StartCoroutine(PlayerMovement.current.ActivatePlayer());
-        StartCoroutine(PlayerMovement.current.Tutorial());
+        StartCoroutine(RingTutorialSequence());
     }
 
     public void CollectGem(Gem gem) {
@@ -224,7 +237,21 @@ public class SessionManager2 : MonoBehaviour
         m_gemTrail.Reset();
     }
 
-    public void RingBellAction(InputAction.CallbackContext ctx) { RingBell(); }
+    public void RingBellAction(InputAction.CallbackContext ctx) { 
+        RingBell();
+        if (!ringTutorialCompleted)
+        {
+            ringTutorialCompleted = true;
+            Debug.Log("RING DONE");
+            StartCoroutine(PlayerMovement.current.MoveTutorialSequence());
+        }
+
+        // Now unlock basic movement
+        PlayerMovement.current.canMove = true;
+        PlayerMovement.current.canJump = true;
+        PlayerMovement.current.canSprint = true;
+
+    }
     public void RingBell() {
         // Can't do anything if Voronoi isn't set
         if (Voronoi.current == null) return;

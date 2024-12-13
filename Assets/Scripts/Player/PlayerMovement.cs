@@ -234,12 +234,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] 
     private bool boostingActivated;
 
-    [SerializeField] 
-    private bool accelerationActivated; // acceleration provided by arch
-
-    [SerializeField] 
-    private bool risingUpActivated;
-
     [SerializeField, Tooltip("Private state of SFX")]
     private SoundFXState sfxState;
 
@@ -316,7 +310,14 @@ public class PlayerMovement : MonoBehaviour
     private bool hasMoved = false;
     private bool hasJumped = false;
     // private bool hasSprinted = false;
-    private bool hasMapped = false;
+    private bool hasBoosted = false;
+    public bool moveTutorialCompleted = false;
+    public bool jumpTutorialCompleted = false;
+    public bool boostTutorialCompleted = false;
+    [HideInInspector] public bool canMove = false;
+    [HideInInspector] public bool canJump = false;
+    [HideInInspector] public bool canSprint = true;
+    [HideInInspector] public bool canBoost = false;
 
     private void Awake()
     {
@@ -355,8 +356,6 @@ public class PlayerMovement : MonoBehaviour
         paraglidingActivated = false;
         sprintActivated = true;
         boostingActivated = false;
-        accelerationActivated = false;
-        risingUpActivated = false;
         
         if (iconManager == null)
         {
@@ -432,6 +431,7 @@ public class PlayerMovement : MonoBehaviour
             
             //StartCoroutine(UprisingAcceleration());
         }
+
     }
 
     private void FixedUpdate()
@@ -515,8 +515,8 @@ public class PlayerMovement : MonoBehaviour
                           slideSpeedThreshold || rb.velocity.y < -1 * slidingDropThreshold) &&
                       grounded /*&& !sprinting*/;
         }
-        
-        
+
+
         // ======== 56use new input system to get the input value
         Vector2 movement2D = directionInput.ReadValue<Vector2>();
         if (directionInput.activeControl != null && directionInput.activeControl.device.name != "Keyboard")
@@ -532,18 +532,29 @@ public class PlayerMovement : MonoBehaviour
             }
             //Debug.Log(movement2D.magnitude + directionInput.activeControl.device.name + " ");
         }
-        
+
+        if (!canMove)
+        {
+            // If not allowed to move yet, forcibly set input to zero
+            movement2D = Vector2.zero;
+        }
+
         horizontalInput = movement2D.x;
         verticalInput = movement2D.y;
 
         if (!hasMoved && (horizontalInput != 0 || verticalInput != 0))
         {
             hasMoved = true;
+            if (SessionManager2.current.ringTutorialCompleted && !moveTutorialCompleted)
+            {
+                moveTutorialCompleted = true;
+                Debug.Log("FINISHED MOVE");
+            }
         }
 
         
         // ======== update the sprinting state
-        if (sprintActivated && grounded && sprinting && moveDirection.magnitude > 0.02f && !sliding)
+        if (sprintActivated && grounded && canSprint && sprinting && moveDirection.magnitude > 0.02f && !sliding)
         {
             //sprinting = flightStamina > 0;  // end sprinting if stamina less than 0
         }
@@ -554,11 +565,16 @@ public class PlayerMovement : MonoBehaviour
 
         
         // ======== update the boosting state
-        if (boosting && flightStamina <= 0)
+        if (boosting && (!canBoost || flightStamina <= 0))
         {
             OffBoostingInput(new InputAction.CallbackContext());
+            if (boostingActivated && !boostTutorialCompleted)
+            {
+                boostTutorialCompleted = true;
+                Debug.Log("BOOST FINISH");
+            }
         }
-        if (boostActionReference.action.phase == InputActionPhase.Performed)
+        if (boostActionReference.action.phase == InputActionPhase.Performed && canBoost)
         {
             OnBoostingInput(new InputAction.CallbackContext());
         }
@@ -568,59 +584,24 @@ public class PlayerMovement : MonoBehaviour
         {
             OffFlightInput(new InputAction.CallbackContext());
         }
-        
     }
-
-    public IEnumerator Tutorial()
-    {
-        iconManager.ShowMoveIcon();
-        while (!hasMoved)
-        {
-            Debug.Log("Use movement controls to move around.");
-            yield return new WaitForSeconds(1f);
-        }
-        iconManager.HideIcon();
-
-        // Step 2: Jump
-        iconManager.ShowJumpIcon();
-        while (!hasJumped)
-        {
-            Debug.Log("Press the jump button to jump.");
-            yield return new WaitForSeconds(1f);
-        }
-        iconManager.HideIcon();
-
-        // Step 3: Sprint
-        /*while (!hasSprinted)
-        {
-            Debug.Log("Hold the sprint button to sprint.");
-            yield return new WaitForSeconds(1f);
-        }*/
-        /*
-        iconManager.ShowMapIcon();
-        while (!hasMapped)
-        {
-            Debug.Log("Open the map.");
-            yield return new WaitForSeconds(1f);
-        }
-        iconManager.HideIcon();
-        */
-        // Tutorial complete
-        Debug.Log("Tutorial complete!");
-    }
-
-
 
     //------------------ Event for the inputs---------------------
     // event of jump input triggered
     private void OnJumpInput(InputAction.CallbackContext ctx)
     {
-        if(readyToJump && grounded && flightStamina > jumpStaminaConsume)
+        if(canJump && readyToJump && grounded && flightStamina > jumpStaminaConsume)
         {
             readyToJump = false;
             Invoke(nameof(ResetJump), jumpCooldown);
             requestJump = true;
             preparingJump = true;
+
+            if (!jumpTutorialCompleted)
+            {
+                jumpTutorialCompleted = true;
+                Debug.Log("JUMP FINISH");
+            }
         }
     }
 
@@ -671,6 +652,7 @@ public class PlayerMovement : MonoBehaviour
             boosting = true;
             boostingTrail.time = 1;
             StartCoroutine(BoostOneShot()); // Applying an instantaneous acceleration
+            hasBoosted = true;
         }
     }
     
@@ -849,7 +831,7 @@ public class PlayerMovement : MonoBehaviour
         // in case of accelerator collider
         if (other.CompareTag("Accelerator"))
         {
-            if (accelerationActivated && currentAccelerationCoroutine != null)
+            if (currentAccelerationCoroutine != null)
             {
                 StopCoroutine(currentAccelerationCoroutine);
             }
@@ -860,27 +842,21 @@ public class PlayerMovement : MonoBehaviour
         // large gem
         if (other.CompareTag("LargeGem"))
         {
-            SoundManager.current.PlaySFX("Collect Gem");
             largeGemCollected++;
             if (largeGemCollected >= 3)
             {
                 ActivateFlight();
                 ActivateParagliding();
-                ActivateRisingUp();
                 ActivatePBoosting();
-                ActivateAcceleration();
             }
             if (largeGemCollected >= 2)
             {
                 ActivateParagliding();
-                ActivateRisingUp();
                 ActivatePBoosting();
-                ActivateAcceleration();
             }
             else if (largeGemCollected >= 1)
             {
                 ActivatePBoosting();
-                ActivateAcceleration();
             }
             return;
         }
@@ -888,7 +864,8 @@ public class PlayerMovement : MonoBehaviour
         // bell tower
         if (other.CompareTag("BellTower"))
         {
-            if (risingUpActivated && uprisingReady && Voronoi.current.playerRegion.destinationCollected)
+            Debug.Log(uprisingReady  + " " + Voronoi.current.playerRegion.destinationCollected);
+            if (uprisingReady && Voronoi.current.playerRegion.destinationCollected)
             {
                 uprisingReady = false;
                 Debug.Log("startUPPpp");
@@ -1131,29 +1108,26 @@ public class PlayerMovement : MonoBehaviour
 
 
     // Could fly after activate
-    public void ActivateFlight() {
+    public void ActivateFlight()  
+    {
         flightActivated = true;
     }
 
     // Could sprint after activate
-    public void ActivateSprint() {
+    public void ActivateSprint()
+    {
         sprintActivated = true;
     }
     
-    public void ActivateParagliding() {
+    public void ActivateParagliding()
+    {
         paraglidingActivated = true;
     }
 
-    public void ActivatePBoosting() {
+    public void ActivatePBoosting()
+    {
         boostingActivated = true;
-    }
-
-    public void ActivateAcceleration() {
-        accelerationActivated = true;
-    }
-
-    public void ActivateRisingUp() {
-        risingUpActivated = true;
+        StartCoroutine(BoostTutorialSequence());
     }
 
     public IEnumerator ActivatePlayer()
@@ -1164,9 +1138,36 @@ public class PlayerMovement : MonoBehaviour
         // StartCoroutine(Tutorial());
     }
 
+    // --- Tutorials ---
+    public IEnumerator MoveTutorialSequence()
+    {
+        yield return new WaitForSeconds(1f);
+        Debug.Log("Starting MOVE");
+        yield return StartCoroutine(TutorialIconManager.current.ShowIconUntilCondition(
+            TutorialIconManager.current.ShowMoveIcon,
+            () => moveTutorialCompleted
+        ));
+        Debug.Log("Starting JUMP");
+        yield return StartCoroutine(TutorialIconManager.current.ShowIconUntilCondition(
+            TutorialIconManager.current.ShowJumpIcon,
+            () => jumpTutorialCompleted
+        ));
+
+    }
+
+    public IEnumerator BoostTutorialSequence()
+    {
+        Debug.Log("Starting BOOST");
+        yield return StartCoroutine(TutorialIconManager.current.ShowIconUntilCondition(
+            TutorialIconManager.current.ShowBoostIcon,
+            () => boostTutorialCompleted
+        ));
+
+        Debug.Log("All tutorials done!");
+        // Do anything else needed after tutorials
+    }
 
 
-    
     [System.Serializable] 
     public struct AnimationVars
     {

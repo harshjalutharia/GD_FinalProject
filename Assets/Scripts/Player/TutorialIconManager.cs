@@ -6,48 +6,46 @@ using UnityEngine.InputSystem;
 
 public class TutorialIconManager : MonoBehaviour
 {
+    public static TutorialIconManager current;
+
     public GameObject iconCanvas; // Reference to the Canvas object
-    public Image iconImage; // Reference to the Image component
-    public Sprite movekbIcon; // Icon for movement tutorial
-    public Sprite movexbIcon;
-    public Sprite movepsIcon;
-    public Sprite jumpkbIcon; // Icon for jump tutorial
-    public Sprite jumpxbIcon;
-    public Sprite jumppsIcon;
-    public Sprite sprintkbIcon;
-    public Sprite sprintxbIcon;
-    public Sprite sprintpsIcon;
+    public Image iconImage;       // Reference to the Image component
+
+    // All the icons we might show
+    public Sprite movekbIcon, movexbIcon, movepsIcon;
+    public Sprite jumpkbIcon, jumpxbIcon, jumppsIcon;
+    public Sprite ringkbIcon, ringxbIcon, ringpsIcon;
+    public Sprite boostkbIcon, boostxbIcon, boostpsIcon;
     public Sprite mapkbIcon;
 
     private string currentInput = "Keyboard";
-    private string lastDeviceUsed = "Keyboard"; // Default to keyboard at start, or leave blank
-    [SerializeField]
-    private InputActionAsset inputActionAsset;
+    private string lastDeviceUsed = "Keyboard";
+    [SerializeField] private InputActionAsset inputActionAsset;
 
     private bool tutorialActive = false;
 
+    private void Awake()
+    {
+        current = this;
+    }
     private void Start()
     {
         iconCanvas.SetActive(false); // Hide the icon at the start
     }
 
-
     private void DoTestAction(InputAction.CallbackContext ctx)
     {
         string deviceName = ctx.action.activeControl.device.name;
-        //Debug.Log("Device used: " + deviceName);
         lastDeviceUsed = deviceName;
     }
 
     public string checkInput()
     {
-        // Check the last device that triggered an input event
-        // We�ll simplify and look for keywords that identify the device type.
         if (lastDeviceUsed.Contains("Keyboard") || lastDeviceUsed.Contains("Mouse"))
         {
             return "Keyboard";
         }
-        else if (lastDeviceUsed.Contains("XInput") || lastDeviceUsed.Contains("XInputControllerWindows"))
+        else if (lastDeviceUsed.Contains("XInput"))
         {
             return "Xbox";
         }
@@ -55,106 +53,102 @@ public class TutorialIconManager : MonoBehaviour
         {
             return "PlayStation";
         }
-
-        // If none of the above, you can return a generic "Unknown"
         return "Unknown";
     }
 
+    // ====== Existing Show/Hide Methods ======
+    public void ShowRingIcon()
+    {
+        SelectRingSprite();
+        iconCanvas.SetActive(true);
+        tutorialActive = true;
+    }
     public void ShowMoveIcon()
     {
-
-        if (currentInput == "Xbox")
-        {
-            iconImage.sprite = movexbIcon;
-        }
-        else if (currentInput == "PlayStation")
-        {
-            iconImage.sprite = movepsIcon;
-        }
-        else
-        {
-            iconImage.sprite = movekbIcon;
-        }
-        
+        SelectMoveSprite();
+        Debug.Log("showing move icon");
         iconCanvas.SetActive(true);
         tutorialActive = true;
     }
-
-    public void ShowSprintIcon()
+    public void ShowBoostIcon()
     {
-        if (currentInput == "Xbox")
-        {
-            iconImage.sprite = sprintxbIcon;
-        }
-        else if (currentInput == "PlayStation")
-        {
-            iconImage.sprite = sprintpsIcon;
-        }
-        else
-        {
-            iconImage.sprite = sprintkbIcon;
-        }
+        SelectBoostSprite();
         iconCanvas.SetActive(true);
         tutorialActive = true;
     }
-
     public void ShowJumpIcon()
     {
-        if (currentInput == "Xbox")
-        {
-            iconImage.sprite = jumpxbIcon;
-        }
-        else if (currentInput == "PlayStation")
-        {
-            iconImage.sprite = jumppsIcon;
-        }
-        else
-        {
-            iconImage.sprite = jumpkbIcon;
-        }
+        SelectJumpSprite();
         iconCanvas.SetActive(true);
         tutorialActive = true;
     }
-
-    public void ShowMapIcon()
-    {
-        return;
-        /*
-        if (currentInput == "Keyboard")
-        {
-            iconImage.sprite = mapkbIcon;
-        }
-        else if (currentInput == "Xbox")
-        {
-            // Show Xbox-related icons or hints
-        }
-        else if (currentInput == "PlayStation")
-        {
-            // Show PlayStation-related icons or hints
-        }
-        
-        iconCanvas.SetActive(true);
-        tutorialActive = true;
-        */
-    }
-
     public void HideIcon()
     {
         iconCanvas.SetActive(false);
         tutorialActive = false;
     }
 
+    // ====== Example Coroutines ======
+    // A generic coroutine that: show icon, wait until tutorialComplete is true, hide icon
+    public IEnumerator ShowIconUntilCondition(System.Action showMethod, System.Func<bool> condition)
+    {
+        // 1. Show the icon
+        showMethod.Invoke();
+        // 2. Wait until the condition is met
+        while (!condition())
+        {
+            yield return null;
+        }
+        // 3. Hide the icon
+        HideIcon();
+    }
+
+    // Similarly for Move, Jump, Boost, etc., but reusing ShowIconUntilCondition is simpler.
+
+    // ====== Helper Methods to pick the right sprite based on input ======
+    private void SelectRingSprite()
+    {
+        if (currentInput == "Xbox") iconImage.sprite = ringxbIcon;
+        else if (currentInput == "PlayStation") iconImage.sprite = ringpsIcon;
+        else iconImage.sprite = ringkbIcon;
+    }
+    private void SelectMoveSprite()
+    {
+        if (currentInput == "Xbox") iconImage.sprite = movexbIcon;
+        else if (currentInput == "PlayStation") iconImage.sprite = movepsIcon;
+        else iconImage.sprite = movekbIcon;
+    }
+    private void SelectBoostSprite()
+    {
+        if (currentInput == "Xbox") iconImage.sprite = boostxbIcon;
+        else if (currentInput == "PlayStation") iconImage.sprite = boostpsIcon;
+        else iconImage.sprite = boostkbIcon;
+    }
+    private void SelectJumpSprite()
+    {
+        if (currentInput == "Xbox") iconImage.sprite = jumpxbIcon;
+        else if (currentInput == "PlayStation") iconImage.sprite = jumppsIcon;
+        else iconImage.sprite = jumpkbIcon;
+    }
+
+    // Example map icon is commented out, but you can replicate similarly
+    public void ShowMapIcon()
+    {
+        return;
+    }
+
+    // ====== Existing Update method ======
     private void Update()
     {
         if (tutorialActive)
         {
-            //inputActionAsset.Enable();
+            // inputActionAsset.Enable();
             inputActionAsset.FindAction("Move").performed += DoTestAction;
             currentInput = checkInput();
+
             // Make the canvas always face the camera
-            //iconCanvas.transform.LookAt(Camera.main.transform);
-            //iconCanvas.transform.Rotate(0, 180, 0); // Adjust orientation if needed
+            iconCanvas.transform.LookAt(Camera.main.transform);
+            iconCanvas.transform.Rotate(0, 180, 0);
         }
     }
 }
-

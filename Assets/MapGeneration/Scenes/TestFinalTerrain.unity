@@ -526,6 +526,34 @@ PrefabInstance:
       propertyPath: iconCanvas
       value: 
       objectReference: {fileID: 267181205}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: movekbIcon
+      value: 
+      objectReference: {fileID: 21300000, guid: faa8ff5e5e8b9e54fb85805a63de4940, type: 3}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: ringkbIcon
+      value: 
+      objectReference: {fileID: 21300000, guid: e75c0f1aeb5f888459c65c29aaf1b53d, type: 3}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: ringpsIcon
+      value: 
+      objectReference: {fileID: 21300000, guid: e75c0f1aeb5f888459c65c29aaf1b53d, type: 3}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: ringxbIcon
+      value: 
+      objectReference: {fileID: 21300000, guid: e75c0f1aeb5f888459c65c29aaf1b53d, type: 3}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: boostkbIcon
+      value: 
+      objectReference: {fileID: 21300000, guid: d617ed1c1bf45354c8381dcada083e87, type: 3}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: boostpsIcon
+      value: 
+      objectReference: {fileID: 21300000, guid: d617ed1c1bf45354c8381dcada083e87, type: 3}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: boostxbIcon
+      value: 
+      objectReference: {fileID: 21300000, guid: d617ed1c1bf45354c8381dcada083e87, type: 3}
     - target: {fileID: 8217776322400629397, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
       propertyPath: m_Name
       value: Player
@@ -1585,6 +1613,7 @@ MonoBehaviour:
   m_gameplayInitialized: 0
   m_timeLastRung: 0
   m_ringDelay: 3
+  ringTutorialCompleted: 0
 --- !u!4 &945464006
 Transform:
   m_ObjectHideFlags: 0
