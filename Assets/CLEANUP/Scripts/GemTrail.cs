@@ -33,15 +33,16 @@ public class GemTrail : MonoBehaviour
             transform.position = playerRef.position;
             return;
         }
-        if (Vector3.Distance(transform.position, points[0]) <= 0.05f) {
-            points.RemoveAt(0);
-            if (points.Count == 0) {
-                Reset();
-                onDestinationReached?.Invoke(destination);
-                return;
+        if (points.Count > 0) {
+            if (Vector3.Distance(transform.position, points[0]) <= 0.05f) {
+                points.RemoveAt(0);
+                if (points.Count == 0) {
+                    onDestinationReached?.Invoke(destination);
+                    return;
+                }
             }
+            transform.position = Vector3.SmoothDamp(transform.position, points[0], ref velocity, travelTimePerPoint);
         }
-        transform.position = Vector3.SmoothDamp(transform.position, points[0], ref velocity, travelTimePerPoint);
     }
 
     public void Reset() {

@@ -221,6 +221,7 @@ public class SessionManager2 : MonoBehaviour
         }
         yield return new WaitForSeconds(2f);
         destination.ToggleShoulderCamera(false);
+        m_gemTrail.Reset();
     }
 
     public void RingBellAction(InputAction.CallbackContext ctx) { RingBell(); }
