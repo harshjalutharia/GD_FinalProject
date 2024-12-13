@@ -234,6 +234,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] 
     private bool boostingActivated;
 
+    [SerializeField] 
+    private bool accelerationActivated; // acceleration provided by arch
+
+    [SerializeField] 
+    private bool risingUpActivated;
+
     [SerializeField, Tooltip("Private state of SFX")]
     private SoundFXState sfxState;
 
@@ -349,6 +355,8 @@ public class PlayerMovement : MonoBehaviour
         paraglidingActivated = false;
         sprintActivated = true;
         boostingActivated = false;
+        accelerationActivated = false;
+        risingUpActivated = false;
         
         if (iconManager == null)
         {
@@ -841,7 +849,7 @@ public class PlayerMovement : MonoBehaviour
         // in case of accelerator collider
         if (other.CompareTag("Accelerator"))
         {
-            if (currentAccelerationCoroutine != null)
+            if (accelerationActivated && currentAccelerationCoroutine != null)
             {
                 StopCoroutine(currentAccelerationCoroutine);
             }
@@ -852,21 +860,27 @@ public class PlayerMovement : MonoBehaviour
         // large gem
         if (other.CompareTag("LargeGem"))
         {
+            SoundManager.current.PlaySFX("Collect Gem");
             largeGemCollected++;
             if (largeGemCollected >= 3)
             {
                 ActivateFlight();
                 ActivateParagliding();
+                ActivateRisingUp();
                 ActivatePBoosting();
+                ActivateAcceleration();
             }
             if (largeGemCollected >= 2)
             {
                 ActivateParagliding();
+                ActivateRisingUp();
                 ActivatePBoosting();
+                ActivateAcceleration();
             }
             else if (largeGemCollected >= 1)
             {
                 ActivatePBoosting();
+                ActivateAcceleration();
             }
             return;
         }
@@ -874,8 +888,7 @@ public class PlayerMovement : MonoBehaviour
         // bell tower
         if (other.CompareTag("BellTower"))
         {
-            Debug.Log(uprisingReady  + " " + Voronoi.current.playerRegion.destinationCollected);
-            if (uprisingReady && Voronoi.current.playerRegion.destinationCollected)
+            if (risingUpActivated && uprisingReady && Voronoi.current.playerRegion.destinationCollected)
             {
                 uprisingReady = false;
                 Debug.Log("startUPPpp");
@@ -1118,25 +1131,29 @@ public class PlayerMovement : MonoBehaviour
 
 
     // Could fly after activate
-    public void ActivateFlight()  
-    {
+    public void ActivateFlight() {
         flightActivated = true;
     }
 
     // Could sprint after activate
-    public void ActivateSprint()
-    {
+    public void ActivateSprint() {
         sprintActivated = true;
     }
     
-    public void ActivateParagliding()
-    {
+    public void ActivateParagliding() {
         paraglidingActivated = true;
     }
 
-    public void ActivatePBoosting()
-    {
+    public void ActivatePBoosting() {
         boostingActivated = true;
+    }
+
+    public void ActivateAcceleration() {
+        accelerationActivated = true;
+    }
+
+    public void ActivateRisingUp() {
+        risingUpActivated = true;
     }
 
     public IEnumerator ActivatePlayer()

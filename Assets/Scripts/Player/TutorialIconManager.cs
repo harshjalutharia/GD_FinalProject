@@ -148,12 +148,12 @@ public class TutorialIconManager : MonoBehaviour
     {
         if (tutorialActive)
         {
-            inputActionAsset.Enable();
+            //inputActionAsset.Enable();
             inputActionAsset.FindAction("Move").performed += DoTestAction;
             currentInput = checkInput();
             // Make the canvas always face the camera
-            iconCanvas.transform.LookAt(Camera.main.transform);
-            iconCanvas.transform.Rotate(0, 180, 0); // Adjust orientation if needed
+            //iconCanvas.transform.LookAt(Camera.main.transform);
+            //iconCanvas.transform.Rotate(0, 180, 0); // Adjust orientation if needed
         }
     }
 }
