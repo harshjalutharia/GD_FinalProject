@@ -105,7 +105,7 @@ public class SessionManager : MonoBehaviour
 
         // After generating the terrain, we can now initiate a bunch of other managers, generators, etc.
         //if (m_fustrumManager != null)       m_fustrumManager.Initialize();                                                                                  // Fustrum culling
-        if (m_landmarkGenerator != null)    m_landmarkGenerator.GenerateLandmarks(m_playerEndPosition, m_playerStartPosition, m_terrainGenerator);          // Landmark generation
+        if (m_landmarkGenerator != null) m_landmarkGenerator.GenerateLandmarks();//(m_playerEndPosition, m_playerStartPosition, m_terrainGenerator);          // Landmark generation
         if (m_vegetationGenerator != null)  m_vegetationGenerator.GenerateVegetation();                                                                     // Vegetation generation                                                                        // Rock generation
         if (m_grassGenerator != null)       m_grassGenerator.GenerateVegetation();                                                                          // Grass generation
         // Gem generation

@@ -19,7 +19,7 @@ public class Landmark : MonoBehaviour
     [SerializeField, Tooltip("Forward point of the destination gem trail")] private Transform m_pathingForward;
     public Transform pathingForward => m_pathingForward;
     public int regionIndex = 0;
-    public List<LandmarkGenerator.PathBetweenLandmarks> m_pathsToOtherLandmarks = new List<LandmarkGenerator.PathBetweenLandmarks>();
+    public List<LandmarkGenerator2.PathBetweenLandmarks> m_pathsToOtherLandmarks = new List<LandmarkGenerator2.PathBetweenLandmarks>();
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("The bounds of this landmark")]    private Bounds m_bounds;

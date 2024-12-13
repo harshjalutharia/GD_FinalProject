@@ -79,39 +79,6 @@ public class LandmarkGenerator : MonoBehaviour
         }
     }
 
-    [System.Serializable]
-    public class PathBetweenLandmarks : IComparable<PathBetweenLandmarks>
-    {
-        public Landmark landmark1, landmark2;
-        public float distance;
-        public List<Vector3> generatedPath;
-
-        public PathBetweenLandmarks(Landmark landmark1, Landmark landmark2)
-        {
-            this.landmark1 = landmark1;
-            this.landmark2 = landmark2;
-        }
-
-        public PathBetweenLandmarks(Landmark landmark1, Landmark landmark2, float distance)
-        {
-            this.landmark1 = landmark1;
-            this.landmark2 = landmark2;
-            this.distance = distance;
-        }
-
-        public PathBetweenLandmarks(Landmark landmark1, Landmark landmark2, float distance, List<Vector3> generatedPath)
-        {
-            this.landmark1 = landmark1;
-            this.landmark2 = landmark2;
-            this.distance = distance;
-            this.generatedPath = generatedPath;
-        }
-        public int CompareTo([AllowNull] PathBetweenLandmarks otherPath)
-        {
-            return this.distance.CompareTo(otherPath.distance);
-        }
-    }
-
     [Header("=== References ===")]
     [SerializeField, Tooltip("Voronoi Map used in combinedMap")]                           private VoronoiMap m_voronoiMap;
     [SerializeField, Tooltip("Parent for landmarks")]                                      private Transform m_landmarkParent;
@@ -185,9 +152,8 @@ public class LandmarkGenerator : MonoBehaviour
         //StartCoroutine(SortLandmarks());
     }
 
-    // TODO: Change name
     // Generates bell towers in the map
-    public void GenerateLandmarksNew() {
+    public void GenerateLandmarks() {
         // NEW LANDMARK STUFF THAT USES VORONOI MAP REGIONS AND SHIT
 
         // Define the landmark parent
@@ -281,10 +247,10 @@ public class LandmarkGenerator : MonoBehaviour
     
 
     // Uses kruskal's algorithm to generate a MST that connects all landmarks. Then generates paths based on normals
-    private List<PathBetweenLandmarks> GeneratePathsBetweenLandmarks()
+    private List<LandmarkGenerator2.PathBetweenLandmarks> GeneratePathsBetweenLandmarks()
     {
-        List<PathBetweenLandmarks> generatedPaths = new List<PathBetweenLandmarks>();
-        List<PathBetweenLandmarks> possiblePaths = new List<PathBetweenLandmarks>();
+        List<LandmarkGenerator2.PathBetweenLandmarks> generatedPaths = new List<LandmarkGenerator2.PathBetweenLandmarks>();
+        List<LandmarkGenerator2.PathBetweenLandmarks> possiblePaths = new List<LandmarkGenerator2.PathBetweenLandmarks>();
 
         HashSet<HashSet<Landmark>> landmarkSets = new HashSet<HashSet<Landmark>>();
         List<(int,int)> possiblePathsLandmarkIndex = new List<(int,int)>();
@@ -298,7 +264,7 @@ public class LandmarkGenerator : MonoBehaviour
             foreach (var landmarkDistanceTuple in closeLandmarkList)
             {
                 //possiblePaths.Add(((landmark.transform.position, landmarkDistanceTuple.Item1.transform.position), landmarkDistanceTuple.Item2));
-                possiblePaths.Add(new PathBetweenLandmarks(landmark, landmarkDistanceTuple.Item1, landmarkDistanceTuple.Item2));
+                possiblePaths.Add(new LandmarkGenerator2.PathBetweenLandmarks(landmark, landmarkDistanceTuple.Item1, landmarkDistanceTuple.Item2));
                 //Debug.DrawLine(landmark, landmarkDistanceTuple.Item1, Color.red, 3000f, false);
             }
         }
@@ -331,7 +297,7 @@ public class LandmarkGenerator : MonoBehaviour
                 GeneratePathBetweenPoints(path.landmark2.transform.position, path.landmark1.transform.position);
 
             path.landmark1.m_pathsToOtherLandmarks.Add(path);
-            path.landmark2.m_pathsToOtherLandmarks.Add(new PathBetweenLandmarks(path.landmark2, path.landmark1, path.distance, reversedGeneratedPath));
+            path.landmark2.m_pathsToOtherLandmarks.Add(new LandmarkGenerator2.PathBetweenLandmarks(path.landmark2, path.landmark1, path.distance, reversedGeneratedPath));
 
             //generatedPaths.Add(new List<Vector3> { path.Item1.Item1, path.Item1.Item2 });
 
@@ -352,7 +318,7 @@ public class LandmarkGenerator : MonoBehaviour
         return generatedPaths;
     }
 
-    public void GenerateLandmarks(Vector3 destination, Vector3 startPosition, NoiseMap terrainMap) 
+    public void GenerateLandmarksOld(Vector3 destination, Vector3 startPosition, NoiseMap terrainMap) 
     {
         // OLD LANDMARK STUFF
         // Check Flag: do we have a landmark prefab to begin with?
