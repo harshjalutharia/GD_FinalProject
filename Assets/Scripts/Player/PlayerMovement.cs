@@ -223,7 +223,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 horizontalVelocity;
 
     [SerializeField] 
-    private int largeGemCollected = 0;
+    public int largeGemCollected = 0;
     
     [SerializeField] 
     private bool flightActivated;
