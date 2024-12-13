@@ -322,7 +322,7 @@ public class LandmarkGenerator : MonoBehaviour
             if (set1 == set2)
                 continue;
 
-            Debug.DrawLine(path.landmark1.transform.position, path.landmark2.transform.position, Color.grey, 3000f, false);
+            //Debug.DrawLine(path.landmark1.transform.position, path.landmark2.transform.position, Color.grey, 3000f, false);
             path.generatedPath =
                 GeneratePathBetweenPoints(path.landmark1.transform.position, path.landmark2.transform.position);
             generatedPaths.Add(path);
