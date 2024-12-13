@@ -789,7 +789,7 @@ MonoBehaviour:
   sun: {fileID: 1578846183}
   timeOfDay: 0
   sunRotationSpeed: 0
-  timeToChange: 50
+  timeToChange: 300
   skyColor:
     serializedVersion: 2
     key0: {r: 0.4773941, g: 0.54467785, b: 0.68235296, a: 1}
@@ -2458,7 +2458,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80bddc1806ae79e4f86745673827933b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeDuration: 2.5
+  fadeDuration: 3
   rotationSpeed: 3
 --- !u!135 &1518026526
 SphereCollider:

@@ -75,32 +75,40 @@ public class SkyboxController : MonoBehaviour
 
     public void TurningMorning()
     {
-        StartFadeTransition(daySkyBox);
+        
+        StartCoroutine(StartFadeTransition(daySkyBox, 11f));
         //RenderSettings.skybox = daySkyBox;
-        StartChangeTimeOfDay(11f);
+        
     }
 
     public void TurningTwilight()
     {
-        StartFadeTransition(twilightSkyBox);
+        
+        StartCoroutine(StartFadeTransition(twilightSkyBox, 17f));
         //RenderSettings.skybox = twilightSkyBox;
-        StartChangeTimeOfDay(17f);
+        
     }
 
     public void TurningEvening()
     {
-        StartFadeTransition(nightSkyBox);
+        
+        StartCoroutine(StartFadeTransition(nightSkyBox, 24f));
         //RenderSettings.skybox = nightSkyBox;
-        StartChangeTimeOfDay(24f);
+        
     }
 
-    private void StartFadeTransition(Material skyboxMaterial)
+    private IEnumerator StartFadeTransition(Material skyboxMaterial, float timeTo)
     {
         sunlight = sun.GetComponent<Light>();
         if (fadeObject != null)
         {
+            
+            yield return new WaitForSeconds(3f);
+            Debug.Log("Wait for 3 sec");
             sunlight.intensity = 1.5f;
+            StartChangeTimeOfDay(timeTo);
             fadeObject.StartFadeIn(); // Start fade-in before changing
+            
             StartCoroutine(WaitForFadeOut(skyboxMaterial));
         }
     }
@@ -110,6 +118,7 @@ public class SkyboxController : MonoBehaviour
         sunlight = sun.GetComponent<Light>();
         yield return new WaitForSeconds(fadeObject.fadeDuration); // Wait for fade-in to complete
         RenderSettings.skybox = skyboxMaterial;
+        
         fadeObject.StartFadeOut(); // Start fade-out after changing
         sunlight.intensity = 1.0f;
     }

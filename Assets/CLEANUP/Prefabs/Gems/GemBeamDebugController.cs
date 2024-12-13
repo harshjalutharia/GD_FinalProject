@@ -31,15 +31,23 @@ public class GemBeamDebugController : MonoBehaviour
     {
         if (particleSystem != null)
         {
-            isParticleActive = !isParticleActive; // Toggle the state
-            if (isParticleActive)
-            {
-                particleSystem.Play(); // Start the particle system
-            }
-            else
-            {
-                particleSystem.Stop(); // Stop the particle system
-            }
+            particleSystem.Play(); 
+            StartCoroutine(StopParticle());
+            //isParticleActive = !isParticleActive; // Toggle the state
+            //if (isParticleActive)
+            //{
+            //    particleSystem.Play(); // Start the particle system
+            //}
+            //else
+            //{
+            //    particleSystem.Stop(); // Stop the particle system
+            //}
         }
+    }
+
+    private IEnumerator StopParticle(){
+        yield return new WaitForSeconds(3f);
+        particleSystem.Stop(); 
+        //Debug.Log("Stop Particle");
     }
 }
