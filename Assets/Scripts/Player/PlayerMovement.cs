@@ -139,6 +139,9 @@ public class PlayerMovement : MonoBehaviour
 
     [Tooltip("when refill boost activated, how many times the recovery speed is provided")] 
     public float refillBoost;
+    
+    [Tooltip("if the refill speed up is activated")] 
+    public bool staminaBoosting;
 
     [Tooltip("Provides refill boost when the current region's gem collection progress reaches a certain percentage.")]
     public float refillBoostTriggerPercentage;
@@ -233,6 +236,13 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] 
     private bool boostingActivated;
+    
+    [SerializeField] 
+    private bool accelerationActivated; // acceleration provided by arch
+
+    [SerializeField] 
+    private bool risingUpActivated;
+
 
     [SerializeField, Tooltip("Private state of SFX")]
     private SoundFXState sfxState;
@@ -315,9 +325,8 @@ public class PlayerMovement : MonoBehaviour
     public bool jumpTutorialCompleted = false;
     public bool boostTutorialCompleted = false;
     [HideInInspector] public bool canMove = false;
-    [HideInInspector] public bool canJump = false;
-    [HideInInspector] public bool canSprint = true;
-    [HideInInspector] public bool canBoost = false;
+    [HideInInspector]public bool canJump = false;
+    [HideInInspector]public bool canSprint = true;
 
     private void Awake()
     {
@@ -356,6 +365,8 @@ public class PlayerMovement : MonoBehaviour
         paraglidingActivated = false;
         sprintActivated = true;
         boostingActivated = false;
+        accelerationActivated = false;
+        risingUpActivated = false;
         
         if (iconManager == null)
         {
@@ -377,7 +388,9 @@ public class PlayerMovement : MonoBehaviour
             if (Voronoi.current != null) {
                 Region region = Voronoi.current.playerRegion;
                 // if collect enough gems in current region, provide stamina refill boost
-                flightStamina += flightStaminaRefillSpeed * Time.deltaTime * ((float)region.collectedGems.Count/region.smallGems.Count > refillBoostTriggerPercentage ? refillBoost : 1);
+                staminaBoosting = (float)region.collectedGems.Count / region.smallGems.Count >
+                                  refillBoostTriggerPercentage;
+                flightStamina += flightStaminaRefillSpeed * Time.deltaTime * (staminaBoosting ? refillBoost : 1);
             }
             else {
                 flightStamina += flightStaminaRefillSpeed * Time.deltaTime;
@@ -565,16 +578,11 @@ public class PlayerMovement : MonoBehaviour
 
         
         // ======== update the boosting state
-        if (boosting && (!canBoost || flightStamina <= 0))
+        if (boosting && flightStamina <= 0)
         {
             OffBoostingInput(new InputAction.CallbackContext());
-            if (boostingActivated && !boostTutorialCompleted)
-            {
-                boostTutorialCompleted = true;
-                Debug.Log("BOOST FINISH");
-            }
         }
-        if (boostActionReference.action.phase == InputActionPhase.Performed && canBoost)
+        if (boostActionReference.action.phase == InputActionPhase.Performed)
         {
             OnBoostingInput(new InputAction.CallbackContext());
         }
@@ -660,6 +668,11 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!boosting)
             return;
+        if (!boostTutorialCompleted)
+        {
+            boostTutorialCompleted = true;
+            Debug.Log("BOOST FINISH");
+        }
         boosting = false;
         StartCoroutine(FadeoutBoostTrail());
     }
@@ -831,7 +844,7 @@ public class PlayerMovement : MonoBehaviour
         // in case of accelerator collider
         if (other.CompareTag("Accelerator"))
         {
-            if (currentAccelerationCoroutine != null)
+            if (accelerationActivated && currentAccelerationCoroutine != null)
             {
                 StopCoroutine(currentAccelerationCoroutine);
             }
@@ -842,21 +855,28 @@ public class PlayerMovement : MonoBehaviour
         // large gem
         if (other.CompareTag("LargeGem"))
         {
+            SoundManager.current.PlaySFX("Collect Gem");
             largeGemCollected++;
             if (largeGemCollected >= 3)
             {
                 ActivateFlight();
                 ActivateParagliding();
+                ActivateRisingUp();
                 ActivatePBoosting();
+                ActivateAcceleration();
             }
             if (largeGemCollected >= 2)
             {
                 ActivateParagliding();
+                ActivateRisingUp();
                 ActivatePBoosting();
+                ActivateAcceleration();
             }
             else if (largeGemCollected >= 1)
             {
                 ActivatePBoosting();
+                ActivateAcceleration();
+                StartCoroutine(BoostTutorialSequence());
             }
             return;
         }
@@ -864,8 +884,7 @@ public class PlayerMovement : MonoBehaviour
         // bell tower
         if (other.CompareTag("BellTower"))
         {
-            Debug.Log(uprisingReady  + " " + Voronoi.current.playerRegion.destinationCollected);
-            if (uprisingReady && Voronoi.current.playerRegion.destinationCollected)
+            if (risingUpActivated && uprisingReady && Voronoi.current.playerRegion.destinationCollected)
             {
                 uprisingReady = false;
                 Debug.Log("startUPPpp");
@@ -1127,7 +1146,16 @@ public class PlayerMovement : MonoBehaviour
     public void ActivatePBoosting()
     {
         boostingActivated = true;
-        StartCoroutine(BoostTutorialSequence());
+    }
+    
+    public void ActivateAcceleration()
+    {
+        accelerationActivated = true;
+    }
+
+    public void ActivateRisingUp()
+    {
+        risingUpActivated = true;
     }
 
     public IEnumerator ActivatePlayer()

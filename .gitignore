@@ -87,7 +87,10 @@ crashlytics-build.properties
 /[Aa]ssets/[Pp]roxy Games.meta
 /[Aa]ssets/[Pp]refabs/[Bb]irch Tree/[Bb]irch_Tree.fbx
 /[Aa]ssets/[Pp]refabs/[Bb]irch Tree/[Bb]irch_Tree.fbx.meta
-
+/[Aa]ssets/[Pp]olytope Studio/**
+/[Aa]ssets/[Pp]olytope Studio.meta
+/[Aa]ssets/[Ss]kySeries Freebie/**
+/[Aa]ssets/[Ss]kySeries Freebie.meta
 
 
 # Custom Ignores

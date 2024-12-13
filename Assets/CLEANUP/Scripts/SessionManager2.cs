@@ -75,7 +75,6 @@ public class SessionManager2 : MonoBehaviour
         PlayerMovement.current.canMove = false;
         PlayerMovement.current.canJump = false;
         PlayerMovement.current.canSprint = true; // doesn't really matter if there's no other input
-        PlayerMovement.current.canBoost = false;
     }
 
     private IEnumerator RingTutorialSequence()
