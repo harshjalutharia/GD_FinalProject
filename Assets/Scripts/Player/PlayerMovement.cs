@@ -1185,6 +1185,7 @@ public class PlayerMovement : MonoBehaviour
 
     public IEnumerator BoostTutorialSequence()
     {
+        yield return new WaitForSeconds(3f);
         Debug.Log("Starting BOOST");
         yield return StartCoroutine(TutorialIconManager.current.ShowIconUntilCondition(
             TutorialIconManager.current.ShowBoostIcon,

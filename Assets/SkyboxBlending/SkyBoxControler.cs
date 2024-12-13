@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class SkyboxController : MonoBehaviour
 {
+    public static SkyboxController current;
+    
     [Header("=======SkyBoxPreset=======")]
     [SerializeField] private Material daySkyBox;
     [SerializeField] private Material twilightSkyBox;
@@ -28,6 +30,15 @@ public class SkyboxController : MonoBehaviour
     [SerializeField] private Gradient equatorColor;
     [SerializeField] private Gradient sunColor;
 
+    private enum Daytime
+    {
+        Morning1,
+        Morning2,
+        Twilight,
+        Evening
+    }
+    [SerializeField] private Daytime daytime = Daytime.Morning1;
+    
     private void OnValidate()
     {
         if (sun != null)
@@ -35,6 +46,11 @@ public class SkyboxController : MonoBehaviour
             UpdateSunRotation();
             UpdateLighting();
         }
+    }
+    
+    private void Awake()
+    {
+        current = this;
     }
 
     void Start()
@@ -95,6 +111,27 @@ public class SkyboxController : MonoBehaviour
         StartCoroutine(StartFadeTransition(nightSkyBox, 24f));
         //RenderSettings.skybox = nightSkyBox;
         
+    }
+
+    public void TimeChangeAuto()
+    {
+        if (daytime == Daytime.Morning1)
+            daytime = Daytime.Morning2;  // do not change time for the first time
+        else if (daytime == Daytime.Morning2)
+        {
+            TurningTwilight();
+            daytime = Daytime.Twilight;
+        }
+        else if (daytime == Daytime.Twilight)
+        {
+            TurningEvening();
+            daytime = Daytime.Evening;
+        }
+        else if (daytime == Daytime.Evening)
+        {
+            TurningMorning();
+            daytime = Daytime.Morning1;
+        }
     }
 
     private IEnumerator StartFadeTransition(Material skyboxMaterial, float timeTo)

@@ -231,6 +231,7 @@ public class SessionManager2 : MonoBehaviour
             destination.PlayAudioSource();
             foreach(Gem gem in region.smallGems) gem.RingGem();
         }
+        SkyboxController.current.TimeChangeAuto();  // change the time of the day
         yield return new WaitForSeconds(2f);
         destination.ToggleShoulderCamera(false);
         m_gemTrail.Reset();
