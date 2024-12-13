@@ -107,6 +107,7 @@ public class LandmarkGenerator2 : MonoBehaviour
             ? Quaternion.Euler(0f, m_prng.Next(0,360), 0f)
             : Quaternion.LookRotation(kingDirection.normalized, Vector3.up);
         Landmark kingTower = InstantiateLandmark(m_kingBellTowerPrefab, terrainPoint, kingRotation);
+        kingTower.regionIndex = 0;
         Voronoi.current.regions[0].towerLandmark = kingTower;
 
         // Major bell towers in other major regions' core clusters
@@ -118,6 +119,7 @@ public class LandmarkGenerator2 : MonoBehaviour
                 ? Quaternion.Euler(0f, m_prng.Next(0,360), 0f)
                 : Quaternion.LookRotation(majorDirection.normalized, Vector3.up);
             Landmark bellTower = InstantiateLandmark(m_majorBellTowerPrefab, terrainPoint, majorRotation);
+            bellTower.regionIndex = i;
             Voronoi.current.regions[i].towerLandmark = bellTower;
         }
 
@@ -132,6 +134,7 @@ public class LandmarkGenerator2 : MonoBehaviour
                         ? Quaternion.Euler(0f, m_prng.Next(0,360), 0f)
                         : Quaternion.LookRotation(minorDirection.normalized, Vector3.up);
                     Landmark minorLandmark = InstantiateLandmark(m_minorBellTowerPrefab, terrainPoint, minorRotation);
+                    minorLandmark.regionIndex = i;
                     Voronoi.current.regions[i].minorLandmarks.Add(minorLandmark);
                 }
             }
@@ -167,7 +170,7 @@ public class LandmarkGenerator2 : MonoBehaviour
         // Instantiate the landmark itself, given the prefab, position, and rotation
         Landmark newWeenie = Instantiate(prefab, pos, rot, m_landmarkParent) as Landmark;
         if (addToLandmarks) m_landmarks.Add(newWeenie);
-        if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(pos, 20f);
+        if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(pos, 50f);
         return newWeenie;
     }
 

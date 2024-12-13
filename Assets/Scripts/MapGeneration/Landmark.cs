@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -11,6 +12,13 @@ public class Landmark : MonoBehaviour
     [SerializeField, Tooltip("Reference to this object's renderer")]    private Renderer[] m_renderers;
     public Renderer[] _renderers => m_renderers;
     [SerializeField, Tooltip("Reference to an audio source, if present.")]  private AudioSource m_audioSource;
+    [SerializeField, Tooltip("Reference to the Cinemachine camera attached to this landmark's shoulder, if present")]  private CinemachineVirtualCamera m_shoulderCamera;
+    [SerializeField, Tooltip("Reference to the Cinemachine camera attached above this landmark, if present")]  private CinemachineVirtualCamera m_overheadCamera;
+    [SerializeField, Tooltip("Destination of the destination gem trail")]   private Transform m_pathingDestination;
+    public Transform pathingDestination => m_pathingDestination;
+    [SerializeField, Tooltip("Forward point of the destination gem trail")] private Transform m_pathingForward;
+    public Transform pathingForward => m_pathingForward;
+    public int regionIndex = 0;
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("The bounds of this landmark")]    private Bounds m_bounds;
@@ -102,6 +110,11 @@ public class Landmark : MonoBehaviour
     public void PlayAudioSource() {
         if (m_audioSource == null) return;
         m_audioSource.Play();
+    }
+
+    public void ToggleShoulderCamera(bool setTo) {
+        if (m_shoulderCamera == null) return;
+        m_shoulderCamera.m_Priority = (setTo) ? 10 : 0;
     }
 }
 

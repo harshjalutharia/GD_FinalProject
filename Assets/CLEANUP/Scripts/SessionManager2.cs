@@ -20,6 +20,7 @@ public class SessionManager2 : MonoBehaviour
     [Header("== Core references ===")]
     [SerializeField, Tooltip("The player character's transform")]   private Transform m_playerRef;
     public Transform playerRef => m_playerRef;
+    [SerializeField, Tooltip("Destination Gem Trail")]  private DestinationGemTrail m_destinationGemTrail;
 
     [Header("=== Checks ===")]
     [SerializeField, Tooltip("Has the environment finished generating?")]   private bool m_environmentGenerated = false;
@@ -56,6 +57,9 @@ public class SessionManager2 : MonoBehaviour
         m_skipCutsceneAction.action.Disable();
         m_playerJumpAction.action.Disable();
         m_playerRingBellAction.action.Disable();
+
+        // If destination gem trail set, add a listener
+        if (m_destinationGemTrail != null) m_destinationGemTrail.onDestinationReached.AddListener(DestinationGemTrailReached);
         
         // Chck that we have the necessary generators
         if (!TryCheckGenerators()) {
@@ -93,7 +97,6 @@ public class SessionManager2 : MonoBehaviour
         VegetationGenerator2.current.SetDimensions(TerrainManager.current.width, TerrainManager.current.height);
         VegetationGenerator2.current.onGenerationEnd.AddListener(this.OnVegetationGenerated);
         VegetationGenerator2.current.Generate();
-
     }
     public void OnVegetationGenerated() {
         Debug.Log("Session Manager 2: Vegetation Generated");
@@ -165,13 +168,23 @@ public class SessionManager2 : MonoBehaviour
 
         // If voronoi regions is not null, then we proceed with updating that region's counter
         if (Voronoi.current != null) {
+            // What region is this gem in?
             Region region = Voronoi.current.regions[gem.regionIndex];
             Debug.Log($"Detected Region: {region.attributes.name}");
+
+            // Initialize the gem trailer to go back to the destination
+            // The trail will make the gem "go back" to the primary landmark of this region
+            if (m_destinationGemTrail != null) m_destinationGemTrail.SetDestination(region.towerLandmark);
+
+            // Depending on the gem type, we do different things
             if (gem.gemType == Gem.GemType.Destination) {
                 if (!region.destinationCollected && gem == region.destinationGem) {
                     // The region has collected its destination gem
                     region.destinationCollected = true;
+                    // Toggle the destination gem icon to TRUE as a result
                     if (CanvasController.current != null) CanvasController.current.ToggleDestinationGemIcon(true);
+                    // If this is a destination gem, then let's make the player see it return
+                    if (m_destinationGemTrail != null) region.towerLandmark.ToggleShoulderCamera(true);
                     Debug.Log("Destination gem for this region now collected");
                 }
                 else {
@@ -193,6 +206,21 @@ public class SessionManager2 : MonoBehaviour
             }
             
         }
+    }
+    
+    public void DestinationGemTrailReached(Landmark destination) {
+        StartCoroutine(DestinationGemTrailReachedCoroutine(destination));
+    }
+    public IEnumerator DestinationGemTrailReachedCoroutine(Landmark destination) {
+        // Which region are we in?
+        Region region = Voronoi.current.regions[destination.regionIndex];
+        // Has this region regained its destination gem yet? If so, ring it.
+        if (region.destinationCollected) {
+            destination.PlayAudioSource();
+            foreach(Gem gem in region.smallGems) gem.RingGem();
+        }
+        yield return new WaitForSeconds(2f);
+        destination.ToggleShoulderCamera(false);
     }
 
     public void RingBellAction(InputAction.CallbackContext ctx) { RingBell(); }
@@ -227,6 +255,8 @@ public class SessionManager2 : MonoBehaviour
         if (VegetationGenerator2.current != null) VegetationGenerator2.current.onGenerationEnd.RemoveListener(this.OnVegetationGenerated);
         if (GemGenerator2.current != null) GemGenerator2.current.onGenerationEnd.RemoveListener(this.OnGemsGenerated);
         if (LandmarkGenerator.current != null) LandmarkGenerator.current.onGenerationEnd.RemoveListener(this.OnLandmarksGenerated);
+        // Destination Gem Trail - remove listener
+        if (m_destinationGemTrail != null) m_destinationGemTrail.onDestinationReached.RemoveListener(DestinationGemTrailReached);
         // input actions - remove listeners
         m_skipCutsceneAction.action.performed -= InitializeGameplayAction;
         m_playerRingBellAction.action.performed -= RingBellAction;

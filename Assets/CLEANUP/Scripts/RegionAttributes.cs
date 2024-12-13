@@ -6,6 +6,7 @@ public class RegionAttributes : ScriptableObject
 {
     public string name;
     public Color color;
+    public Gradient gradient;
     [Header("=== Gem Prefabs ===")]
     public Gem destinationGemPrefab;
     public Gem smallGemPrefab;
