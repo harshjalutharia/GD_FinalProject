@@ -7405,7 +7405,7 @@ MonoBehaviour:
   boostingStartMinStamina: 5.9
   sprintMinStamina: 0
   flightStaminaRefillSpeed: 4
-  refillBoost: 2
+  refillBoost: 3
   staminaBoosting: 0
   refillBoostTriggerPercentage: 0.7
   jumpActionReference: {fileID: 1297723305485046813, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
@@ -7458,7 +7458,7 @@ MonoBehaviour:
   acceleratorTrail: {fileID: 5818113442044331413}
   uprisingReady: 0
   uprisingSpeed: 8
-  uprisingHeight: 50
+  uprisingHeight: 40
   orientation: {fileID: 55721271762500533}
   rotationSpeed: 6
   collectGemParticles: {fileID: 1050984376907890951}

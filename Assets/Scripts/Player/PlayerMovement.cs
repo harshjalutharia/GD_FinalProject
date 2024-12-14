@@ -304,8 +304,6 @@ public class PlayerMovement : MonoBehaviour
     
     [Tooltip("The boosting trail TrailRenderer componet")] 
     public TrailRenderer boostingTrail;
-
-    public event Action OnLanding;
     
     private Transform playerObj;
     
@@ -475,7 +473,7 @@ public class PlayerMovement : MonoBehaviour
         grounded = colliders.Length > 0;
         if (!latestGround && grounded)
         {
-            OnLanding?.Invoke();  // invoke landing event
+            SoundManager.current.PlaySFX("Landing");
         }
         
         
@@ -888,8 +886,8 @@ public class PlayerMovement : MonoBehaviour
             if (risingUpActivated && uprisingReady && Voronoi.current.playerRegion.destinationCollected)
             {
                 uprisingReady = false;
-                Debug.Log("startUPPpp");
                 StartCoroutine(UprisingAcceleration());
+                
             }
             return;
         }
@@ -899,7 +897,9 @@ public class PlayerMovement : MonoBehaviour
     // apply uprising acceleration provide by bell tower
     private IEnumerator UprisingAcceleration()
     {
-        Debug.Log("upppppping");
+        // play soundfx
+        SoundManager.current.PlaySFX("Accelerating");
+        //show the trail
         acceleratorTrail.SetActive(true);
         TrailRenderer trailRenderer = acceleratorTrail.GetComponent<TrailRenderer>();
         trailRenderer.time = 1;
@@ -916,6 +916,10 @@ public class PlayerMovement : MonoBehaviour
         uprisingReady = true;
         rb.isKinematic = false;
         rb.velocity = new Vector3(0, uprisingSpeed, 0);
+        
+        // stop soundfx
+        SoundManager.current.FadeOutSFX("Accelerating", 0.5f);
+        // hide the trail
         StartCoroutine(FadeoutAccelerationTrail());
 
     }
@@ -925,6 +929,9 @@ public class PlayerMovement : MonoBehaviour
     // apply acceleration of arch ruins
     private IEnumerator ExtraAccelerate()
     {
+        // play soundfx
+        SoundManager.current.PlaySFX("Accelerating");
+        
         // set the accelerator direction based on input direction
         acceleratorOriginalDirection = moveDirection.normalized;
         // in case player is not moving
@@ -975,6 +982,8 @@ public class PlayerMovement : MonoBehaviour
         //acceleratorTrail.SetActive(false);
         currentAccelerationCoroutine = null;
         StartCoroutine(FadeoutAccelerationTrail());
+        // stop soundfx
+        SoundManager.current.FadeOutSFX("Accelerating", 1f);
     }
 
 
