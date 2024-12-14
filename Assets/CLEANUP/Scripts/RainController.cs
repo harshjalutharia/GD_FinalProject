@@ -15,6 +15,11 @@ public class RainController : MonoBehaviour
     [SerializeField, Tooltip("Slow rain angle values")] private float slowRainZMin = 4f;
     [SerializeField, Tooltip("Slow rain angle values")] private float slowRainZMax = 8f;
 
+    [Header("Player Settings")]
+    [SerializeField, Tooltip("Reference to the player GameObject")] private Transform player;
+    [SerializeField, Tooltip("Offset from the player position")] private Vector3 offset = new Vector3(0f, 5f, 0f);
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +27,17 @@ public class RainController : MonoBehaviour
         m_rainSystem = GetComponent<ParticleSystem>();
         if (m_rainSystem != null)
             m_rainSystem.Stop(true);
+
+        if (m_rainSystem == null) Debug.LogError("No Particle System set for rain");
+    }
+
+    void Update()
+    {
+        if (player != null)
+        {
+            // Update the position of the rain system to follow the player
+            transform.position = player.position + offset;
+        }
     }
 
     public void ToggleRain(bool enable, bool fastRain = false)

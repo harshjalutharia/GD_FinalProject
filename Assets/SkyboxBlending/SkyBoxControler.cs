@@ -7,29 +7,24 @@ public class SkyboxController : MonoBehaviour
     public static SkyboxController current;
     
     [Header("=======SkyBoxPreset=======")]
-    [SerializeField] private Material daySkyBox;
-    [SerializeField] private Material twilightSkyBox;
-    [SerializeField] private Material nightSkyBox;
+    [SerializeField, Tooltip("Skybox Present for the Day")] private Material daySkyBox;
+    [SerializeField, Tooltip("Skybox Present for the Twilight")] private Material twilightSkyBox;
+    [SerializeField, Tooltip("Skybox Present for the Night")] private Material nightSkyBox;
 
     [Header("=======CloudlyFading Preset=======")]
-    [SerializeField] private GameObject Cloud; // Reference to the Cloud GameObject
+    [SerializeField, Tooltip("Transition Skybox")] private GameObject Cloud; // Reference to the Cloud GameObject
     private FadeObject fadeObject; // Reference to the FadeObject script on Cloud
 
     [Header("=======Control for Time=======")]
-    [SerializeField] private GameObject sun;
+    [SerializeField, Tooltip("Directional Light for sun")] private GameObject sun;
     private Light sunlight;
-    [SerializeField, Range(0, 24)] private float timeOfDay;
+    [SerializeField, Range(0, 24), Tooltip("Control for Day of Time, it associates with directional light")] private float timeOfDay;
     [SerializeField] private float sunRotationSpeed;
 
     private float targetTimeOfDay;
     [SerializeField] private float timeToChange = 3f;
     private float timeChangeProgress = 0f;
-
-    [Header("=======LightingPreset=======")]
-    [SerializeField] private Gradient skyColor;
-    [SerializeField] private Gradient equatorColor;
-    [SerializeField] private Gradient sunColor;
-
+    
     private enum Daytime
     {
         Morning1,
@@ -38,6 +33,19 @@ public class SkyboxController : MonoBehaviour
         Evening
     }
     [SerializeField] private Daytime daytime = Daytime.Morning1;
+
+    [Header("=======LightingPreset=======")]
+    [SerializeField] private Gradient skyColor;
+    [SerializeField] private Gradient equatorColor;
+    [SerializeField] private Gradient sunColor;
+
+    [Header("=======WeatherSystem=======")]
+
+    [SerializeField, Tooltip("GameObject for Rain")] private GameObject RainController;
+
+    private RainController rainController; //reference to the RainController's component
+
+    
     
     private void OnValidate()
     {
@@ -57,10 +65,18 @@ public class SkyboxController : MonoBehaviour
     {
         sunlight = sun.GetComponent<Light>();
         fadeObject = Cloud.GetComponent<FadeObject>();
+        rainController=RainController.GetComponent<RainController>();
+
+        
 
         if (fadeObject == null)
         {
             Debug.LogError("FadeObject script is not attached to the Cloud GameObject.");
+        }
+
+        if (rainController == null)
+        {
+            Debug.LogError("rainController script is not attached to the RainController GameObject.");
         }
 
         TurningMorning();
@@ -93,6 +109,7 @@ public class SkyboxController : MonoBehaviour
     {
         
         StartCoroutine(StartFadeTransition(daySkyBox, 11f));
+        rainController.ToggleRain(false, false); // stop the rain
         //RenderSettings.skybox = daySkyBox;
         
     }
@@ -102,6 +119,7 @@ public class SkyboxController : MonoBehaviour
         
         StartCoroutine(StartFadeTransition(twilightSkyBox, 17f));
         //RenderSettings.skybox = twilightSkyBox;
+        rainController.ToggleRain(true, false); // start to rain, but small
         
     }
 
@@ -110,27 +128,33 @@ public class SkyboxController : MonoBehaviour
         
         StartCoroutine(StartFadeTransition(nightSkyBox, 24f));
         //RenderSettings.skybox = nightSkyBox;
+        rainController.ToggleRain(true, false); // start to rain, but fast
         
     }
 
     public void TimeChangeAuto()
     {
-        if (daytime == Daytime.Morning1)
+        if (daytime == Daytime.Morning1){
             daytime = Daytime.Morning2;  // do not change time for the first time
+           
+        }
         else if (daytime == Daytime.Morning2)
         {
             TurningTwilight();
             daytime = Daytime.Twilight;
+           
         }
         else if (daytime == Daytime.Twilight)
         {
             TurningEvening();
             daytime = Daytime.Evening;
+            
         }
         else if (daytime == Daytime.Evening)
         {
             TurningMorning();
             daytime = Daytime.Morning1;
+            
         }
     }
 
@@ -157,6 +181,7 @@ public class SkyboxController : MonoBehaviour
         RenderSettings.skybox = skyboxMaterial;
         
         fadeObject.StartFadeOut(); // Start fade-out after changing
+        
         sunlight.intensity = 1.0f;
     }
 

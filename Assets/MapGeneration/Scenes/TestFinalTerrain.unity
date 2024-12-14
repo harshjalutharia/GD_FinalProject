@@ -500,6 +500,16 @@ Transform:
   m_Children: []
   m_Father: {fileID: 455408003}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &262395819 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5177844775988190619, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+  m_PrefabInstance: {fileID: 619289658}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &262395823 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5240080887968632242, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+  m_PrefabInstance: {fileID: 619289658}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &267181205 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1251778824085870430, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
@@ -793,6 +803,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1001 &619289658
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 703609672}
+    m_Modifications:
+    - target: {fileID: 141702022713295017, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 9062041}
+    - target: {fileID: 5177844775988190619, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: m_Name
+      value: Rain
+      objectReference: {fileID: 0}
+    - target: {fileID: 5240080887968632242, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5240080887968632242, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5240080887968632242, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5240080887968632242, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5240080887968632242, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5240080887968632242, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5240080887968632242, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5240080887968632242, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5240080887968632242, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5240080887968632242, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
 --- !u!1 &679005447
 GameObject:
   m_ObjectHideFlags: 0
@@ -959,6 +1030,7 @@ MonoBehaviour:
   timeOfDay: 0
   sunRotationSpeed: 0
   timeToChange: 300
+  daytime: 0
   skyColor:
     serializedVersion: 2
     key0: {r: 0.4773941, g: 0.54467785, b: 0.68235296, a: 1}
@@ -1049,7 +1121,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
-  daytime: 0
+  RainController: {fileID: 262395819}
 --- !u!114 &703609671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1077,6 +1149,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1518026529}
+  - {fileID: 262395823}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705080396
