@@ -85,7 +85,7 @@ public class SkyboxController : MonoBehaviour
         timeOfDay += Time.deltaTime * sunRotationSpeed;
         if (timeOfDay > 24f) timeOfDay -= 24f;
 
-        UpdateSunRotation();
+        UpdateSunRotation(); 
         UpdateLighting();
     }
 
