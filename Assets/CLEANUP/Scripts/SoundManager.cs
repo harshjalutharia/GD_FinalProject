@@ -13,29 +13,130 @@ public class SoundManager : MonoBehaviour
     }
     
     [Header("=== Sound Effects ===")]
-    [SerializeField, Tooltip("Ref. to the BGM Audio source, which is separate from SFX")]   private List<AudioSource> m_BMGAudioSource;
+    [SerializeField, Tooltip("Ref. to the BGM Audio sources for morning, evening and twilight")] private List<AudioSource> m_BGMAudioSources;
+    [SerializeField, Tooltip("BGM fade out/in duration")] private float m_BGMFadeDuration = 5f;
+    [SerializeField, Tooltip("Ref. to slow rain audio source")] private AudioSource m_slowRainAudioSource;
+    [SerializeField, Tooltip("Ref. to fast rain audio source")] private AudioSource m_fastRainAudioSource;
+    [SerializeField, Tooltip("Ref. to thunder audio source")] private AudioSource m_thunderAudioSource;
+    [SerializeField, Tooltip("Thunder gap duration")] private float m_thunderGap = 20f;
+    [SerializeField, Tooltip("Thunder gap randomness")] private float m_thunderGapRandomness = 5f;
+    [SerializeField, Tooltip("Audio clips for thunder sfx")] private List<AudioClip> m_thunderClips;
     [SerializeField, Tooltip("Audio clips to use during the game")] private List<SoundClip> m_sfxClips;
     private Dictionary<string, AudioSource> m_sfxMapper;
+
+    private int m_currentActiveBGMAudioSourcesIndex; // 0 for morning, 1 for twilight, 2 for evening, -1 for nothing being played
+    private Coroutine m_thunderCoroutine;
 
     private void Awake() {
         current = this;
         m_sfxMapper = new Dictionary<string, AudioSource>();
+        m_currentActiveBGMAudioSourcesIndex = -1;
         foreach(SoundClip sc in m_sfxClips) {
             if(!m_sfxMapper.ContainsKey(sc.name)) m_sfxMapper.Add(sc.name, sc.audioSource);
         }
     }
 
-    public void PlayBGM() {
-
-        foreach(AudioSource bgm in m_BMGAudioSource){
-            if (!bgm.isPlaying) bgm.Play();
+    public void ToggleRainSound(bool enable, bool fastRain = false)
+    {
+        if (enable)
+        {
+            if (fastRain)
+            {
+                if (m_slowRainAudioSource.isPlaying)
+                    m_slowRainAudioSource.Stop();
+                m_fastRainAudioSource.Play();
+            }
+            else
+            {
+                if (m_fastRainAudioSource.isPlaying)
+                    m_fastRainAudioSource.Stop();
+                m_slowRainAudioSource.Play();
+            }
         }
-        
+        else
+        {
+            if (m_slowRainAudioSource.isPlaying)
+                m_slowRainAudioSource.Stop();
+            if (m_fastRainAudioSource.isPlaying)
+                m_fastRainAudioSource.Stop();
+        }
     }
-    public void StopBMG() {
-        //if (m_BMGAudioSource.isPlaying) m_BMGAudioSource.Stop();
-        foreach(AudioSource bgm in m_BMGAudioSource){
-            if (!bgm.isPlaying) bgm.Stop();
+
+    // 0 for morning, 1 for twilight, 2 for evening, -1 for stopping BGM
+    public void PlayBGM(int audioSourceIndex)
+    {
+        if (audioSourceIndex == -1)
+        {
+            for (int i = 0; i < m_BGMAudioSources.Count; i++)
+            {
+                if (m_BGMAudioSources[i].isPlaying)
+                    StartCoroutine(FadeOutBGM(i, m_BGMFadeDuration / 2));
+                
+            }
+            return;
+        }
+
+        StartCoroutine(FadeOutBGM(m_currentActiveBGMAudioSourcesIndex, m_BGMFadeDuration / 2));
+        StartCoroutine(FadeInBGM(audioSourceIndex, m_BGMFadeDuration));
+        m_currentActiveBGMAudioSourcesIndex = audioSourceIndex;
+    }
+
+    // index must be from 0 to 2
+    public IEnumerator FadeOutBGM(int audioSourceIndex, float fadeDuration)
+    {
+        if (audioSourceIndex >= 0 && audioSourceIndex <= 2 && m_BGMAudioSources.Count == 3)
+        {
+            float startVolume = m_BGMAudioSources[audioSourceIndex].volume;   //record initial volume
+            float t = 0;
+            while (m_BGMAudioSources[audioSourceIndex].volume > 0.05f)
+            {
+                m_BGMAudioSources[audioSourceIndex].volume = Mathf.Lerp(startVolume, 0, t / fadeDuration);
+                t += Time.deltaTime;
+                yield return null;
+            }
+
+            m_BGMAudioSources[audioSourceIndex].Stop();
+            m_BGMAudioSources[audioSourceIndex].volume = startVolume; // reset the volume
+        }
+    }
+
+    // index must be from 0 to 2
+    public IEnumerator FadeInBGM(int audioSourceIndex, float fadeDuration)
+    {
+        if (audioSourceIndex >= 0 && audioSourceIndex <= 2 && m_BGMAudioSources.Count == 3)
+        {
+            float finalVolume = m_BGMAudioSources[audioSourceIndex].volume;   //record final volume
+            m_BGMAudioSources[audioSourceIndex].Play();
+            m_BGMAudioSources[audioSourceIndex].volume = 0.01f;
+            float t = 0;
+            while (m_BGMAudioSources[audioSourceIndex].volume < finalVolume - 0.05f)
+            {
+                m_BGMAudioSources[audioSourceIndex].volume = Mathf.Lerp(0, finalVolume, t / fadeDuration);
+                t += Time.deltaTime;
+                yield return null;
+            }
+
+            m_BGMAudioSources[audioSourceIndex].volume = finalVolume; // set the final volume
+        }
+    }
+
+    public void ToggleThunderSFX(bool enable)
+    {
+        if (m_thunderCoroutine != null)
+            StopCoroutine(m_thunderCoroutine);
+        if (enable)
+            m_thunderCoroutine = StartCoroutine(PlayThunderSFX());
+    }
+
+    public IEnumerator PlayThunderSFX()
+    {
+        while (true)
+        {
+            float randomTime = Random.Range(-m_thunderGapRandomness, m_thunderGapRandomness);
+            yield return new WaitForSeconds(m_thunderGap + randomTime);
+
+            int r = Random.Range(0, m_thunderClips.Count);
+            m_thunderAudioSource.PlayOneShot(m_thunderClips[r]);
         }
     }
 

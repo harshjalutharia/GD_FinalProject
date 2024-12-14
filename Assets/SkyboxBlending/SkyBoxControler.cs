@@ -38,13 +38,6 @@ public class SkyboxController : MonoBehaviour
     [SerializeField] private Gradient skyColor;
     [SerializeField] private Gradient equatorColor;
     [SerializeField] private Gradient sunColor;
-
-    [Header("=======WeatherSystem=======")]
-
-    [SerializeField, Tooltip("GameObject for Rain")] private GameObject RainController;
-
-    private RainController rainController; //reference to the RainController's component
-
     
     
     private void OnValidate()
@@ -65,18 +58,10 @@ public class SkyboxController : MonoBehaviour
     {
         sunlight = sun.GetComponent<Light>();
         fadeObject = Cloud.GetComponent<FadeObject>();
-        rainController=RainController.GetComponent<RainController>();
-
-        
 
         if (fadeObject == null)
         {
             Debug.LogError("FadeObject script is not attached to the Cloud GameObject.");
-        }
-
-        if (rainController == null)
-        {
-            Debug.LogError("rainController script is not attached to the RainController GameObject.");
         }
 
         TurningMorning();
@@ -107,29 +92,32 @@ public class SkyboxController : MonoBehaviour
 
     public void TurningMorning()
     {
-        
         StartCoroutine(StartFadeTransition(daySkyBox, 11f));
-        rainController.ToggleRain(false, false); // stop the rain
         //RenderSettings.skybox = daySkyBox;
-        
+        if (RainController.current != null) RainController.current.ToggleRain(false, false); // stop the rain
+        if (SoundManager.current != null) SoundManager.current.PlayBGM(0);
+        if (SoundManager.current != null) SoundManager.current.ToggleRainSound(false);
+        if (SoundManager.current != null) SoundManager.current.ToggleThunderSFX(false);
     }
 
     public void TurningTwilight()
     {
-        
         StartCoroutine(StartFadeTransition(twilightSkyBox, 17f));
         //RenderSettings.skybox = twilightSkyBox;
-        rainController.ToggleRain(true, false); // start to rain, but small
-        
+        if (RainController.current != null) RainController.current.ToggleRain(true, false); // start to rain, but slow
+        if (SoundManager.current != null) SoundManager.current.PlayBGM(1);
+        if (SoundManager.current != null) SoundManager.current.ToggleRainSound(true, false);
+        if (SoundManager.current != null) SoundManager.current.ToggleThunderSFX(false);
     }
 
     public void TurningEvening()
     {
-        
         StartCoroutine(StartFadeTransition(nightSkyBox, 24f));
         //RenderSettings.skybox = nightSkyBox;
-        rainController.ToggleRain(true, true); // start to rain, but fast
-        
+        if (RainController.current != null) RainController.current.ToggleRain(true, true); // start to rain, but fast
+        if (SoundManager.current != null) SoundManager.current.PlayBGM(2);
+        if (SoundManager.current != null) SoundManager.current.ToggleRainSound(true, true);
+        if (SoundManager.current != null) SoundManager.current.ToggleThunderSFX(true);
     }
 
     public void TimeChangeAuto()

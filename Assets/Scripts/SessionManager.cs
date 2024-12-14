@@ -191,7 +191,7 @@ public class SessionManager : MonoBehaviour
         CanvasController.current.ToggleGameplay(true);
 
         // Start playing BGM
-        SoundManager.current.PlayBGM();
+        SoundManager.current.PlayBGM(0);
 
         // Let the camera fade in
         m_playerCameraFader.FadeIn();       
