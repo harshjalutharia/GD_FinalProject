@@ -5962,9 +5962,12 @@ MonoBehaviour:
   jumpkbIcon: {fileID: 21300000, guid: 69fab70748088bf4aacef7a3cad6118a, type: 3}
   jumpxbIcon: {fileID: 21300000, guid: dd1c0aae24eef874f8de3744e9adc09c, type: 3}
   jumppsIcon: {fileID: 21300000, guid: dd1c0aae24eef874f8de3744e9adc09c, type: 3}
-  sprintkbIcon: {fileID: 21300000, guid: a06bafea022b3f24a9f15bee0105a752, type: 3}
-  sprintxbIcon: {fileID: 21300000, guid: 5a7f29b788c13174a811228d773df40b, type: 3}
-  sprintpsIcon: {fileID: 21300000, guid: 5a7f29b788c13174a811228d773df40b, type: 3}
+  ringkbIcon: {fileID: 0}
+  ringxbIcon: {fileID: 0}
+  ringpsIcon: {fileID: 0}
+  boostkbIcon: {fileID: 0}
+  boostxbIcon: {fileID: 0}
+  boostpsIcon: {fileID: 0}
   mapkbIcon: {fileID: 21300000, guid: e75c0f1aeb5f888459c65c29aaf1b53d, type: 3}
   inputActionAsset: {fileID: -944628639613478452, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
 --- !u!1 &3322238736838711034
@@ -7373,15 +7376,15 @@ MonoBehaviour:
   jumpForce: 3.5
   jumpCooldown: 0.8
   walkSpeed: 1.666
-  slideSpeedThreshold: 3.2
-  slidingDropThreshold: 3.2
+  slideSpeedThreshold: 3.4
+  slidingDropThreshold: 3.4
   maxSprintSpeed: 3
   maxBoostingSpeed: 10
-  slideStopSpeed: 1.7
+  slideStopSpeed: 2
   maxFlightSpeed: 3.3
   maxParaglidingSpeed: 10
   paraglidingFallingSpeed: 3
-  paraglidingStartSpeedOffset: 0
+  paraglidingStartSpeedOffset: -0.3
   groundDrag: 0
   groundDragSprint: 0
   airDragHorizontal: 0
@@ -7403,6 +7406,7 @@ MonoBehaviour:
   sprintMinStamina: 0
   flightStaminaRefillSpeed: 4
   refillBoost: 2
+  staminaBoosting: 0
   refillBoostTriggerPercentage: 0.7
   jumpActionReference: {fileID: 1297723305485046813, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
   flyActionReference: {fileID: 9078852185209867360, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
@@ -7432,6 +7436,8 @@ MonoBehaviour:
   sprintActivated: 0
   paraglidingActivated: 0
   boostingActivated: 0
+  accelerationActivated: 0
+  risingUpActivated: 0
   sfxState:
     slideSFXOn: 0
     sprintSFXOn: 0
@@ -7462,6 +7468,12 @@ MonoBehaviour:
   debugText1: {fileID: 0}
   debugText2: {fileID: 0}
   iconManager: {fileID: 4378231521919717175}
+  moveTutorialCompleted: 0
+  jumpTutorialCompleted: 0
+  boostTutorialCompleted: 0
+  canMove: 0
+  canJump: 0
+  canSprint: 1
 --- !u!114 &1655585082693902188
 MonoBehaviour:
   m_ObjectHideFlags: 0
