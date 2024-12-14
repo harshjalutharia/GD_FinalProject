@@ -239,6 +239,10 @@ PrefabInstance:
       propertyPath: m_audioSource
       value: 
       objectReference: {fileID: 31697700985114832}
+    - target: {fileID: 4748057832654619263, guid: 23bd2aab5291cd94daaf1892e28c8ecf, type: 3}
+      propertyPath: m_gemTrailPrefab
+      value: 
+      objectReference: {fileID: 751570440043371640, guid: 795ee681e3946de42918c560b3831fa6, type: 3}
     - target: {fileID: 5774944208453963322, guid: 23bd2aab5291cd94daaf1892e28c8ecf, type: 3}
       propertyPath: m_Size
       value: 47.639317

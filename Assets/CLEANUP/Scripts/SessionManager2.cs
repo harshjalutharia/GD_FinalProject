@@ -193,13 +193,22 @@ public class SessionManager2 : MonoBehaviour
 
             // Depending on the gem type, we do different things
             if (gem.gemType == Gem.GemType.Destination) {
-                if (!region.destinationCollected && gem == region.destinationGem) {
+                if (!region.destinationCollected && gem == region.destinationGem) 
+                {
                     // The region has collected its destination gem
                     region.destinationCollected = true;
                     // Toggle the destination gem icon to TRUE as a result
                     if (CanvasController.current != null) CanvasController.current.ToggleDestinationGemIcon(true);
                     // If this is a destination gem, then let's make the player see it return
                     if (m_gemTrail != null) region.towerLandmark.ToggleShoulderCamera(true);
+                    if (LandmarkGenerator2.current != null)
+                    {
+                        foreach (var landmark in LandmarkGenerator2.current.landmarks)
+                        {
+                            if (landmark.regionIndex == gem.regionIndex)
+                                landmark.TogglePathTrails(true);
+                        }
+                    }
                     Debug.Log("Destination gem for this region now collected");
                 }
                 else {

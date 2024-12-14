@@ -14,18 +14,23 @@ public class Landmark : MonoBehaviour
     [SerializeField, Tooltip("Reference to an audio source, if present.")]  private AudioSource m_audioSource;
     [SerializeField, Tooltip("Should camera parent ref")]   private Transform m_shoulderCameraParent;
     [SerializeField, Tooltip("Reference to the Cinemachine camera attached to this landmark's shoulder, if present")]  private CinemachineVirtualCamera m_shoulderCamera;
+
+    [SerializeField, Tooltip("Path Trail effect prefab")] private GemTrail m_gemTrailPrefab;
+    [SerializeField, Tooltip("Time between each trail effect spawn")] private float m_trailInterval = 20f;
     [SerializeField, Tooltip("Destination of the destination gem trail")]   private Transform m_pathingDestination;
     public Transform pathingDestination => m_pathingDestination;
     [SerializeField, Tooltip("Forward point of the destination gem trail")] private Transform m_pathingForward;
     public Transform pathingForward => m_pathingForward;
     public int regionIndex = 0;
     public List<LandmarkGenerator2.PathBetweenLandmarks> m_pathsToOtherLandmarks = new List<LandmarkGenerator2.PathBetweenLandmarks>();
+    private bool pathTrailsEnabled;
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("The bounds of this landmark")]    private Bounds m_bounds;
     public Bounds bounds => m_bounds;
 
     private List<Vector3> m_toDrawGizmos = new List<Vector3>();
+    private float _time = 0f;
 
     #if UNITY_EDITOR
     void OnDrawGizmos() {
@@ -49,6 +54,45 @@ public class Landmark : MonoBehaviour
         m_renderers = GetComponentsInChildren<Renderer>();
         // Offset Landmark
         OffsetLandmarkInYaxis();
+        _time = 0f;
+        pathTrailsEnabled = false;
+    }
+
+    public void TogglePathTrails(bool enable)
+    {
+        pathTrailsEnabled = enable;
+        if (enable)
+        {
+            _time = 0f;
+            SpawnPathTrails();
+        }
+    }
+
+    private void Update()
+    {
+        if (pathTrailsEnabled)
+        {
+            _time += Time.deltaTime;
+            if (_time >= m_trailInterval)
+            {
+                _time -= m_trailInterval;
+                SpawnPathTrails();
+            }
+        }
+    }
+
+    private void SpawnPathTrails()
+    {
+        if (m_gemTrailPrefab == null)
+        {
+            Debug.Log("Gem trail object for path not assigned in editor");
+            return;
+        }
+        foreach (var path in m_pathsToOtherLandmarks)
+        {
+            GemTrail trailEffect = Instantiate(m_gemTrailPrefab, transform.position, Quaternion.identity, transform);
+            trailEffect.Initialize(path.generatedPath);
+        }
     }
 
     public void CalculateBounds() {

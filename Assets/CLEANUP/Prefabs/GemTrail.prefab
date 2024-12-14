@@ -163,7 +163,7 @@ MonoBehaviour:
   traveling: 0
   points: []
   velocity: {x: 0, y: 0, z: 0}
-  travelTimePerPoint: 0.05
+  travelTimePerPoint: 0.1
   trailTime: 3
   gem: {fileID: 0}
   destination: {fileID: 0}

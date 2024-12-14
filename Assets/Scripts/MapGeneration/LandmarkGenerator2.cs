@@ -95,6 +95,7 @@ public class LandmarkGenerator2 : MonoBehaviour
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("The final list of landmarks generated.")]                    private List<Landmark> m_landmarks;
+    public List<Landmark> landmarks => m_landmarks;
     [SerializeField] private bool m_generated = false;
     public bool generated => m_generated;
     public UnityEvent onGenerationEnd;
@@ -262,7 +263,8 @@ public class LandmarkGenerator2 : MonoBehaviour
             var reversedPath = new PathBetweenLandmarks(path.landmark2, path.landmark1, path.distance);
 
             path.generatedPath = GeneratePathBetweenPoints(path.landmark1.transform.position, path.landmark2.transform.position);
-            reversedPath.generatedPath = GeneratePathBetweenPoints(path.landmark2.transform.position, path.landmark1.transform.position);
+            reversedPath.generatedPath = new List<Vector3>(path.generatedPath);
+            reversedPath.generatedPath.Reverse();
 
             path.landmark1.m_pathsToOtherLandmarks.Add(path);
             path.landmark2.m_pathsToOtherLandmarks.Add(reversedPath);
@@ -310,8 +312,8 @@ public class LandmarkGenerator2 : MonoBehaviour
         Vector2 lastPointv2 = point1v2;
         Vector3 lastPoint = point1;
 
-        while (distance >= 6f) {
-            Vector2 spawnPointv2 = lastPointv2 + (directionv2 * 3f);
+        while (distance >= 4f) {
+            Vector2 spawnPointv2 = lastPointv2 + (directionv2 * 2f);
 
             TerrainManager.current.TryGetPointOnTerrain(spawnPointv2.x, spawnPointv2.y, out var spawnPoint,
                 out var normal, out var steepness);
@@ -330,7 +332,7 @@ public class LandmarkGenerator2 : MonoBehaviour
                 out normal, out steepness);
 
             pointsInPath.Add(spawnPoint);
-            Debug.DrawLine(lastPoint, spawnPoint, lastPoint == point1 ? Color.blue : Color.red, 3000f, false);
+            //Debug.DrawLine(lastPoint, spawnPoint, lastPoint == point1 ? Color.blue : Color.red, 3000f, false);
 
             directionv2 = point2v2 - spawnPointv2;
             directionv2.Normalize();

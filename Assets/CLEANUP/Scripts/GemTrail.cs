@@ -32,22 +32,28 @@ public class GemTrail : MonoBehaviour
     }
     
     public void Initialize(List<Vector3> points) {
-        this.points = points;
+        this.points = new List<Vector3>(points);
         trailRenderer.time = trailTime;
         traveling = true;
     }
 
-    private void Update() {
-        if (!traveling) {
+    private void Update() 
+    {
+        if (!traveling) 
+        {
             if (defaultFollowRef != null) transform.position = defaultFollowRef.position;
             return;
         }
-        if (points.Count > 0) {
-            if (Vector3.Distance(transform.position, points[0]) <= 0.05f) {
+        if (points.Count > 0) 
+        {
+            if (Vector3.Distance(transform.position, points[0]) <= 0.05f) 
+            {
                 points.RemoveAt(0);
-                if (points.Count == 0) {
+                if (points.Count == 0) 
+                {
                     onLandmarkDestinationReached?.Invoke(gem, destination);
                     onDestinationReached?.Invoke();
+                    Destroy(gameObject, trailRenderer.time);
                     return;
                 }
             }

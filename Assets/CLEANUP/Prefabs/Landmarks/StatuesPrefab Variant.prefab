@@ -1983,9 +1983,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 382689993717844651}
     - target: {fileID: 7749286727764677152, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
+      propertyPath: m_trailInterval
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749286727764677152, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
       propertyPath: m_virtualCamera
       value: 
       objectReference: {fileID: 295054735192743665}
+    - target: {fileID: 7749286727764677152, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
+      propertyPath: m_gemTrailPrefab
+      value: 
+      objectReference: {fileID: 751570440043371640, guid: 795ee681e3946de42918c560b3831fa6, type: 3}
     - target: {fileID: 7749286727764677152, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
       propertyPath: m_pathingForward
       value: 

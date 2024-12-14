@@ -357,17 +357,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c2e9d49cc4534e10a7a2076b67d5eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_cameraController: {fileID: 0}
   m_renderers: []
-  m_totalTimeToDetect: 5
-  m_mapColor: {r: 0.35684407, g: 0.41780525, b: 0.764151, a: 1}
+  m_audioSource: {fileID: 0}
+  m_shoulderCameraParent: {fileID: 0}
+  m_shoulderCamera: {fileID: 0}
+  m_gemTrailPrefab: {fileID: 0}
+  m_trailInterval: 20
+  m_pathingDestination: {fileID: 0}
+  m_pathingForward: {fileID: 0}
+  regionIndex: 0
+  m_pathsToOtherLandmarks: []
+  pathTrailsEnabled: 1
   m_bounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
-  m_inFustrum: 0
-  m_drawnOnMap: 0
-  m_viewportPoint: {x: 0, y: 0}
-  m_distToCamCenter: 0
 --- !u!1 &6838140244059966309
 GameObject:
   m_ObjectHideFlags: 0
