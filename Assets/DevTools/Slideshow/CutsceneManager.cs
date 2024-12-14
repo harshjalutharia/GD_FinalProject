@@ -37,16 +37,16 @@ public class CutsceneManager : MonoBehaviour
         // For each slide
         for (int i = 0; i < cutscene.slides.Count; i++) {
             // Set the sprite
-            m_cutsceneImage.sprite = cutscene.slides[i];
+            m_cutsceneImage.sprite = cutscene.slides[i].slide;
 
             // Fade in the image
-            yield return StartCoroutine(FadeImage(m_cutsceneImage, 0f, 1f, cutscene.slideTransitionTime));
+            yield return StartCoroutine(FadeImage(m_cutsceneImage, 0f, 1f, cutscene.slides[i].transitionTime));
 
             // Wait for display time
-            yield return new WaitForSeconds(cutscene.slideDisplayTime);
+            yield return new WaitForSeconds(cutscene.slides[i].displayTime);
 
             // Fade out the image
-            yield return StartCoroutine(FadeImage(m_cutsceneImage, 1f, 0f, cutscene.slideTransitionTime));
+            yield return StartCoroutine(FadeImage(m_cutsceneImage, 1f, 0f, cutscene.slides[i].transitionTime));
         }
 
         // After finishing the slideshow:
