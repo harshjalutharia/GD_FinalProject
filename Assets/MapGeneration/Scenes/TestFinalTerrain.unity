@@ -904,7 +904,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   daySkyBox: {fileID: 2100000, guid: 7416536dbe0334cfd888dd1beb75a9fb, type: 2}
   twilightSkyBox: {fileID: 2100000, guid: e391f00234292cc4f935308c11cf0e54, type: 2}
-  nightSkyBox: {fileID: 2100000, guid: 51b74d7bad397457d883c5940f7664d8, type: 2}
+  nightSkyBox: {fileID: 2100000, guid: 81f714daf7144784b8a2f42f1cd30927, type: 2}
   Cloud: {fileID: 1518026524}
   sun: {fileID: 1578846183}
   timeOfDay: 0
