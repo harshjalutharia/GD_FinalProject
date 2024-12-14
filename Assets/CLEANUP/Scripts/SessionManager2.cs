@@ -27,8 +27,6 @@ public class SessionManager2 : MonoBehaviour
     [SerializeField, Tooltip("Has the loading cutscene finished playing?")]                 private bool m_loadingCutsceneFinished = false;
     [SerializeField, Tooltip("Has gameplay been initialized?")]                             private bool m_gameplayInitialized = false;
     public bool gameplayInitialized => m_gameplayInitialized;
-    [SerializeField, Tooltip("Ring tutorial needs to be completed before player can move")] private bool m_ringTutorialCompleted = false;
-    public bool ringTutorialCompleted => m_ringTutorialCompleted;
     [Space]
     [SerializeField, Tooltip("Timestamp last time the player rang the bells")]                                          private float m_timeLastRung = 0f;
     [SerializeField, Tooltip("The amount of time we want to allow the player before they can ring the bells again")]    private float m_ringDelay = 3f;
@@ -169,7 +167,10 @@ public class SessionManager2 : MonoBehaviour
         mainCameraFader.enabled = true;
         mainCameraFader.FadeIn();
         StartCoroutine(PlayerMovement.current.ActivatePlayer());
-        StartCoroutine(RingTutorialSequence());
+
+        // If tutorial exists, Tell them to start ring bell tutorial
+        if (TutorialIconManager.current != null) TutorialIconManager.current.InitializeRingTutorial();
+        //StartCoroutine(RingTutorialSequence());
     }
 
     public void CollectGem(Gem gem) {
@@ -199,7 +200,10 @@ public class SessionManager2 : MonoBehaviour
                     // The region has collected its destination gem
                     region.destinationCollected = true;
                     // Toggle the destination gem icon to TRUE as a result
-                    if (CanvasController.current != null) CanvasController.current.ToggleDestinationGemIcon(true);
+                    if (CanvasController.current != null) {
+                        CanvasController.current.ToggleDestinationGemIcon(true);
+                        CanvasController.current.ToggleGameplay(false);
+                    }
                     // If this is a destination gem, then let's make the player see it return
                     if (m_gemTrailPrefab != null) region.towerLandmark.ToggleShoulderCamera(true);
                     if (LandmarkGenerator2.current != null)
@@ -248,24 +252,11 @@ public class SessionManager2 : MonoBehaviour
         if (gem.gemType == Gem.GemType.Destination) {
             SkyboxController.current.TimeChangeAuto();  // change the time of the day
         }
+        if (CanvasController.current != null) CanvasController.current.ToggleGameplay(true);
         destination.ToggleShoulderCamera(false);
     }
 
-    public void RingBellAction(InputAction.CallbackContext ctx) { 
-        RingBell();
-        if (!m_ringTutorialCompleted)
-        {
-            m_ringTutorialCompleted = true;
-            Debug.Log("RING DONE");
-            StartCoroutine(PlayerMovement.current.MoveTutorialSequence());
-        }
-
-        // Now unlock basic movement
-        PlayerMovement.current.canMove = true;
-        PlayerMovement.current.canJump = true;
-        PlayerMovement.current.canSprint = true;
-
-    }
+    public void RingBellAction(InputAction.CallbackContext ctx) { RingBell(); }
     public void RingBell() {
         // Can't do anything if Voronoi isn't set
         if (Voronoi.current == null) return;
@@ -289,12 +280,14 @@ public class SessionManager2 : MonoBehaviour
         }
     }
 
-    private IEnumerator RingTutorialSequence() {
+    /*
+    private IEnumerator RingTutorialSequence() {  
         yield return StartCoroutine(TutorialIconManager.current.ShowIconUntilCondition(
             TutorialIconManager.current.ShowRingIcon,
             () => m_ringTutorialCompleted
         ));
     }
+    */
 
     private void OnDestroy() {
         StopAllCoroutines();

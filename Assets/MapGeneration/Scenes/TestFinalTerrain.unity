@@ -135,6 +135,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 488786517927074774, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 691844705312844327, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -183,6 +187,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1251778824085870430, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1417706047336814763, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
       propertyPath: m_Name
       value: CanvasController
@@ -191,6 +199,18 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: c04178551b4b1be4a9d3e8266168e18f, type: 3}
+    - target: {fileID: 1810584292725917326, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1993227723495321024, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2408907271717488024, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2720140392408648527, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
       propertyPath: m_text
       value: 
@@ -202,6 +222,18 @@ PrefabInstance:
     - target: {fileID: 2720140392408648527, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
       propertyPath: m_fontSizeBase
       value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 2836761745179938745, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2937356985633489489, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2942751853312446224, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_Alpha
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3155431391218125720, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
       propertyPath: m_text
@@ -250,6 +282,10 @@ PrefabInstance:
     - target: {fileID: 5270301617368729625, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
       propertyPath: m_fontSizeBase
       value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 6282447738065688028, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_Alpha
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7292112237587484452, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
       propertyPath: m_Sprite
@@ -349,6 +385,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8044894116396209765, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8683772065089215070, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
+      propertyPath: m_Alpha
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8696536057888032018, guid: b690efe58df094ad581cf096c19e67eb, type: 3}
@@ -599,6 +639,30 @@ PrefabInstance:
       propertyPath: boostxbIcon
       value: 
       objectReference: {fileID: 21300000, guid: d617ed1c1bf45354c8381dcada083e87, type: 3}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: m_jumpAction
+      value: 
+      objectReference: {fileID: 1297723305485046813, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: m_boostAction
+      value: 
+      objectReference: {fileID: -7162708240651820031, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: m_sprintAction
+      value: 
+      objectReference: {fileID: -9023399260662952479, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: m_movementAction
+      value: 
+      objectReference: {fileID: 4375073066022016516, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: m_ringBellAction
+      value: 
+      objectReference: {fileID: 8035770346209381568, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+    - target: {fileID: 4378231521919717175, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
+      propertyPath: m_skipCutsceneAction
+      value: 
+      objectReference: {fileID: 789659568516712295, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
     - target: {fileID: 8217776322400629397, guid: 1e6ce0b2ac6082643aa706265b7d5770, type: 3}
       propertyPath: m_Name
       value: Player
@@ -1580,7 +1644,6 @@ MonoBehaviour:
   m_environmentGenerated: 0
   m_loadingCutsceneFinished: 0
   m_gameplayInitialized: 0
-  m_ringTutorialCompleted: 0
   m_timeLastRung: 0
   m_ringDelay: 3
 --- !u!4 &945464006

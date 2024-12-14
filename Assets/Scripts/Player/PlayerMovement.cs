@@ -558,7 +558,7 @@ public class PlayerMovement : MonoBehaviour
         if (!hasMoved && (horizontalInput != 0 || verticalInput != 0))
         {
             hasMoved = true;
-            if (SessionManager2.current.ringTutorialCompleted && !moveTutorialCompleted)
+            if (TutorialIconManager.current.ringTutorialCompleted && !moveTutorialCompleted)
             {
                 moveTutorialCompleted = true;
                 Debug.Log("FINISHED MOVE");
@@ -876,7 +876,8 @@ public class PlayerMovement : MonoBehaviour
             {
                 ActivatePBoosting();
                 ActivateAcceleration();
-                StartCoroutine(BoostTutorialSequence());
+                //StartCoroutine(BoostTutorialSequence());
+                if (TutorialIconManager.current != null) TutorialIconManager.current.InitializeBoostTutorial();
             }
             return;
         }
@@ -1183,6 +1184,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    /*
     public IEnumerator BoostTutorialSequence()
     {
         yield return new WaitForSeconds(3f);
@@ -1195,6 +1197,7 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("All tutorials done!");
         // Do anything else needed after tutorials
     }
+    */
 
 
     [System.Serializable] 

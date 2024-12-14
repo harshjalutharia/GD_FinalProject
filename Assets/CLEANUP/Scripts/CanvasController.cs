@@ -62,8 +62,21 @@ public class CanvasController : MonoBehaviour
     [SerializeField, Tooltip("The image UI element for region destination gem")]    private Image m_destinationGemImage;
     [SerializeField, Tooltip("The image for the incomplete destination gem")]       private Sprite m_uncollectedDestGemSprite;
     [SerializeField, Tooltip("The image for the completed gem destination")]        private Sprite m_collectedDestGemSprite;
+    [Space]
+    [SerializeField, Tooltip("Ref. to the canvas group for keyboard inputs")]       private CanvasGroup m_keyboardInputs;
+    [SerializeField, Tooltip("Ref. to the canvas group for xbox inputs")]           private CanvasGroup m_xboxInputs;
+    [SerializeField, Tooltip("Ref. to the canvas group for playstation inputs")]    private CanvasGroup m_playstationInputs;
+    [Space]
+    [SerializeField, Tooltip("Refs. to the canvas groups for movement")]            private CanvasGroup[] m_movementGroups;
+    [SerializeField, Tooltip("Refs. to the canvas groups for bell ringing")]        private CanvasGroup[] m_ringBellGroups;
+    [SerializeField, Tooltip("Refs. to the canvas groups for boosting")]            private CanvasGroup[] m_boostGroups;
+    [SerializeField, Tooltip("Refs. to the canvas groups for flying")]              private CanvasGroup[] m_flyGroups;
+    [Space]
     [SerializeField, Tooltip("Is the gameplay canvas active?")]                     private bool m_gameplayCanvasActive = false;
     public bool gameplayCanvasActive => m_gameplayCanvasActive;
+
+    [Header("=== Tutorial Canvas ===")]
+    [SerializeField, Tooltip("Reference to the tutorial canvas group")]             private CanvasGroup m_tutorialCanvas;
     
 
     private void Awake() {
@@ -156,13 +169,47 @@ public class CanvasController : MonoBehaviour
         m_gameplayCanvasActive = setTo;
         SetCanvasGroupAlpha(m_gameplayCanvasGroup, setTo);
     }
-
     public void ToggleDestinationGemIcon(bool collected, Color color) {
         m_destinationGemImage.sprite = (collected) ? m_collectedDestGemSprite : m_uncollectedDestGemSprite;
         m_destinationGemImage.color = color;
     }
     public void ToggleDestinationGemIcon(bool collected) {
         m_destinationGemImage.sprite = (collected) ? m_collectedDestGemSprite : m_uncollectedDestGemSprite;
+    }
+    public void ToggleKeyboard() {
+        SetCanvasGroupAlpha(m_keyboardInputs, true);
+        SetCanvasGroupAlpha(m_xboxInputs, false);
+        SetCanvasGroupAlpha(m_playstationInputs, false);
+    }
+    public void ToggleXBox() {
+        SetCanvasGroupAlpha(m_xboxInputs, true);
+        SetCanvasGroupAlpha(m_keyboardInputs, false);
+        SetCanvasGroupAlpha(m_playstationInputs, false);
+    }
+    public void TogglePlaystation() {
+        SetCanvasGroupAlpha(m_playstationInputs, true);
+        SetCanvasGroupAlpha(m_xboxInputs, false);
+        SetCanvasGroupAlpha(m_keyboardInputs, false);
+    }
+    public void ToggleMovementIcons(bool setTo) {
+        foreach(CanvasGroup group in m_movementGroups) {
+            SetCanvasGroupAlpha(group, setTo);
+        }
+    }
+    public void ToggleRingBellIcons(bool setTo) {
+        foreach(CanvasGroup group in m_ringBellGroups) {
+            SetCanvasGroupAlpha(group, setTo);
+        }
+    }
+    public void ToggleBoostIcons(bool setTo) {
+        foreach(CanvasGroup group in m_boostGroups) {
+            SetCanvasGroupAlpha(group, setTo);
+        }
+    }
+    public void ToggleFlyIcons(bool setTo) {
+        foreach(CanvasGroup group in m_flyGroups) {
+            SetCanvasGroupAlpha(group, setTo);
+        }
     }
     
     public void ToggleAllCanvases(bool setTo) {
