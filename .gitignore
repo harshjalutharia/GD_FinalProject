@@ -91,7 +91,10 @@ crashlytics-build.properties
 /[Aa]ssets/[Pp]olytope Studio.meta
 /[Aa]ssets/[Ss]kySeries Freebie/**
 /[Aa]ssets/[Ss]kySeries Freebie.meta
-
+/[Aa]ssets/[Ss]kySeries Freebie/[Cc]asualDay.mat
+/[Aa]ssets/[Ss]kySeries Freebie/[Cc]asualDay.mat.meta
+/[Aa]ssets/[Ss]kySeries Freebie/[Cc]loudymorning.mat
+/[Aa]ssets/[Ss]kySeries Freebie/[Cc]loudymorning.mat.meta
 
 # Custom Ignores
 **/.DS_Store

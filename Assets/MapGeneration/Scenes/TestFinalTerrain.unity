@@ -902,9 +902,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57f6ac6ece180fe4980c69e503f5baea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  daySkyBox: {fileID: 2100000, guid: d9dca9ae1786c394f9e79c637aa9a7bf, type: 2}
-  twilightSkyBox: {fileID: 2100000, guid: cede08c9fc471e64884909cd4bbeaf59, type: 2}
-  nightSkyBox: {fileID: 2100000, guid: 369b9ebe3a62b904dbc19bd332b44086, type: 2}
+  daySkyBox: {fileID: 2100000, guid: 7416536dbe0334cfd888dd1beb75a9fb, type: 2}
+  twilightSkyBox: {fileID: 2100000, guid: e391f00234292cc4f935308c11cf0e54, type: 2}
+  nightSkyBox: {fileID: 2100000, guid: c494c335823f54b52b2e87e1b7a63a23, type: 2}
   Cloud: {fileID: 1518026524}
   sun: {fileID: 1578846183}
   timeOfDay: 0
