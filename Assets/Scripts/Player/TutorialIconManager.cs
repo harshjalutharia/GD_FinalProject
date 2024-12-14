@@ -81,6 +81,7 @@ public class TutorialIconManager : MonoBehaviour
         }
         // Boolean check
         m_ringTutorialCompleted = true;
+        SpeechBubbleController.current.ShowText(SpeechBubbleController.current.textTemplates[8].text);
     }
 
     public void InitializeBoostTutorial() {

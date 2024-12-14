@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -473,7 +472,10 @@ public class PlayerMovement : MonoBehaviour
         grounded = colliders.Length > 0;
         if (!latestGround && grounded)
         {
-            SoundManager.current.PlaySFX("Landing");
+            if (horizontalVelocity.magnitude < slideSpeedThreshold)
+            {
+                SoundManager.current.PlaySFX("Landing");
+            }
         }
         
         
@@ -828,6 +830,14 @@ public class PlayerMovement : MonoBehaviour
         // detect gem that increases stamina
         if (other.CompareTag("StaminaPowerUp")) // tag name might be changed
         {
+            // There's a certain probability that the dialogue shows up
+            int randint = Random.Range(0, 100); 
+            SpeechBubbleController.TextTemplate[] textTemplates = SpeechBubbleController.current.GetTextTemplates();
+            if (randint < 60)
+            {
+                SpeechBubbleController.current.ShowText(textTemplates[Random.Range(4, 7)].text);
+            }
+            
             // increase fixed amount of stamina
             maxFlightStamina += staminaPerGem;
             flightStamina += staminaPerGem;
@@ -842,11 +852,18 @@ public class PlayerMovement : MonoBehaviour
         // in case of accelerator collider
         if (other.CompareTag("Accelerator"))
         {
-            if (accelerationActivated && currentAccelerationCoroutine != null)
+            if (currentAccelerationCoroutine != null)
             {
                 StopCoroutine(currentAccelerationCoroutine);
             }
-            currentAccelerationCoroutine = StartCoroutine(ExtraAccelerate());
+            if (accelerationActivated)
+            {
+                currentAccelerationCoroutine = StartCoroutine(ExtraAccelerate());
+            }
+            else
+            {
+                SpeechBubbleController.current.ShowText(SpeechBubbleController.current.textTemplates[7].text);
+            }
             return;
         }
         
@@ -892,7 +909,10 @@ public class PlayerMovement : MonoBehaviour
             {
                 uprisingReady = false;
                 StartCoroutine(UprisingAcceleration());
-                
+            }
+            else
+            {
+                SpeechBubbleController.current.ShowText(SpeechBubbleController.current.textTemplates[0].text);
             }
             return;
         }
@@ -1179,6 +1199,7 @@ public class PlayerMovement : MonoBehaviour
         rb.isKinematic = false;
         maxAccessibleStamina += GemGenerator2.current.smallGems.Count * staminaPerGem;
         // StartCoroutine(Tutorial());
+        
     }
 
     // --- Tutorials ---

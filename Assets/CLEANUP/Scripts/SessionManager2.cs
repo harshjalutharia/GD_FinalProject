@@ -171,6 +171,7 @@ public class SessionManager2 : MonoBehaviour
             m_cameraFaderRef.FadeIn();
         }
         StartCoroutine(PlayerMovement.current.ActivatePlayer());
+        ThirdPersonCam.current.transform.position = playerStartPos;
 
         // If tutorial exists, Tell them to start ring bell tutorial
         if (TutorialIconManager.current != null) TutorialIconManager.current.InitializeRingTutorial();
@@ -260,6 +261,14 @@ public class SessionManager2 : MonoBehaviour
         }
         if (PlayerMovement.current.largeGemCollected < 4 && CanvasController.current != null) CanvasController.current.ToggleGameplay(true);
         destination.ToggleShoulderCamera(false);
+        
+        // show the dialogue
+        int collected = PlayerMovement.current.largeGemCollected;
+        if (gem.gemType == Gem.GemType.Destination && collected <= 3)
+        {
+            SpeechBubbleController.current.ShowText(SpeechBubbleController.current.textTemplates[collected].text);
+        }
+        
     }
 
     public void RingBellAction(InputAction.CallbackContext ctx) { RingBell(); }
