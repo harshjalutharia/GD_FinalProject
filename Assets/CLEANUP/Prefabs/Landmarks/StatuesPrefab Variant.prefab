@@ -1984,7 +1984,7 @@ PrefabInstance:
       objectReference: {fileID: 382689993717844651}
     - target: {fileID: 7749286727764677152, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
       propertyPath: m_trailInterval
-      value: 20
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7749286727764677152, guid: 252c32433fa0f42498082f445b3fb2cc, type: 3}
       propertyPath: m_virtualCamera

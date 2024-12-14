@@ -20,7 +20,7 @@ public class SessionManager2 : MonoBehaviour
     [Header("== Core references ===")]
     [SerializeField, Tooltip("The player character's transform")]   private Transform m_playerRef;
     public Transform playerRef => m_playerRef;
-    [SerializeField, Tooltip("Gem Trail Ref")]  private GemTrail m_gemTrail;
+    [SerializeField, Tooltip("Gem Trail Prefab")]  private GemTrail m_gemTrailPrefab;
 
     [Header("=== Checks ===")]
     [SerializeField, Tooltip("Has the environment finished generating?")]   private bool m_environmentGenerated = false;
@@ -58,9 +58,6 @@ public class SessionManager2 : MonoBehaviour
         m_skipCutsceneAction.action.Disable();
         m_playerJumpAction.action.Disable();
         m_playerRingBellAction.action.Disable();
-
-        // If destination gem trail set, add a listener
-        if (m_gemTrail != null) m_gemTrail.onLandmarkDestinationReached.AddListener(DestinationGemTrailReached);
         
         // Chck that we have the necessary generators
         if (!TryCheckGenerators()) {
@@ -186,9 +183,11 @@ public class SessionManager2 : MonoBehaviour
 
             // Initialize the gem trailer to go back to the destination
             // The trail will make the gem "go back" to the primary landmark of this region
-            if (m_gemTrail != null) {
-                m_gemTrail.SetTrailGradient(region.attributes.gradient);
-                m_gemTrail.InitializeAsGem(gem, region.towerLandmark);
+            if (m_gemTrailPrefab != null) {
+                GemTrail gemTrail = Instantiate(m_gemTrailPrefab, m_playerRef.position, Quaternion.identity) as GemTrail;
+                gemTrail.onLandmarkDestinationReached.AddListener(DestinationGemTrailReached);
+                gemTrail.SetTrailGradient(region.attributes.gradient);
+                gemTrail.InitializeAsGem(gem, region.towerLandmark);
             }
 
             // Depending on the gem type, we do different things
@@ -200,7 +199,7 @@ public class SessionManager2 : MonoBehaviour
                     // Toggle the destination gem icon to TRUE as a result
                     if (CanvasController.current != null) CanvasController.current.ToggleDestinationGemIcon(true);
                     // If this is a destination gem, then let's make the player see it return
-                    if (m_gemTrail != null) region.towerLandmark.ToggleShoulderCamera(true);
+                    if (m_gemTrailPrefab != null) region.towerLandmark.ToggleShoulderCamera(true);
                     if (LandmarkGenerator2.current != null)
                     {
                         foreach (var landmark in LandmarkGenerator2.current.landmarks)
@@ -248,7 +247,6 @@ public class SessionManager2 : MonoBehaviour
             SkyboxController.current.TimeChangeAuto();  // change the time of the day
         }
         destination.ToggleShoulderCamera(false);
-        m_gemTrail.Reset();
     }
 
     public void RingBellAction(InputAction.CallbackContext ctx) { 
@@ -297,8 +295,6 @@ public class SessionManager2 : MonoBehaviour
         if (VegetationGenerator2.current != null) VegetationGenerator2.current.onGenerationEnd.RemoveListener(this.OnVegetationGenerated);
         if (GemGenerator2.current != null) GemGenerator2.current.onGenerationEnd.RemoveListener(this.OnGemsGenerated);
         if (LandmarkGenerator.current != null) LandmarkGenerator.current.onGenerationEnd.RemoveListener(this.OnLandmarksGenerated);
-        // Destination Gem Trail - remove listener
-        if (m_gemTrail != null) m_gemTrail.onLandmarkDestinationReached.RemoveListener(DestinationGemTrailReached);
         // input actions - remove listeners
         m_skipCutsceneAction.action.performed -= InitializeGameplayAction;
         m_playerRingBellAction.action.performed -= RingBellAction;

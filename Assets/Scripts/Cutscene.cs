@@ -14,4 +14,5 @@ public class Slide {
     public Sprite slide;
     public float displayTime;
     public float transitionTime;
+    public string text;
 }

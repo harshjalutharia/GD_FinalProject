@@ -58,39 +58,32 @@ public class Landmark : MonoBehaviour
         pathTrailsEnabled = false;
     }
 
-    public void TogglePathTrails(bool enable)
-    {
+    public void TogglePathTrails(bool enable) {
         pathTrailsEnabled = enable;
-        if (enable)
-        {
+        if (enable) {
             _time = 0f;
             SpawnPathTrails();
         }
     }
 
-    private void Update()
-    {
-        if (pathTrailsEnabled)
-        {
+    private void Update() {
+        if (pathTrailsEnabled) {
             _time += Time.deltaTime;
-            if (_time >= m_trailInterval)
-            {
+            if (_time >= m_trailInterval) {
                 _time -= m_trailInterval;
                 SpawnPathTrails();
             }
         }
     }
 
-    private void SpawnPathTrails()
-    {
-        if (m_gemTrailPrefab == null)
-        {
+    private void SpawnPathTrails() {
+        if (m_gemTrailPrefab == null) {
             Debug.Log("Gem trail object for path not assigned in editor");
             return;
         }
-        foreach (var path in m_pathsToOtherLandmarks)
-        {
+        foreach (var path in m_pathsToOtherLandmarks) {
             GemTrail trailEffect = Instantiate(m_gemTrailPrefab, transform.position, Quaternion.identity, transform);
+            if (Voronoi.current != null) trailEffect.SetTrailGradient(Voronoi.current.regions[regionIndex].attributes.gradient);
             trailEffect.Initialize(path.generatedPath);
         }
     }
