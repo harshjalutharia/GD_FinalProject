@@ -855,6 +855,11 @@ public class PlayerMovement : MonoBehaviour
         {
             SoundManager.current.PlaySFX("Collect Gem");
             largeGemCollected++;
+            if (largeGemCollected >= 4) {
+                // 4. all destination gems collected
+                if (SessionManager2.current != null) SessionManager2.current.EndGameplay();
+                return;
+            }
             if (largeGemCollected >= 3)
             {
                 ActivateFlight();
@@ -1177,6 +1182,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // --- Tutorials ---
+    /*
     public IEnumerator MoveTutorialSequence()
     {
         yield return new WaitForSeconds(1f);
@@ -1193,7 +1199,6 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    /*
     public IEnumerator BoostTutorialSequence()
     {
         yield return new WaitForSeconds(3f);

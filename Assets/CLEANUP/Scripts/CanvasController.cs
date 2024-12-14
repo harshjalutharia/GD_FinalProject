@@ -76,8 +76,12 @@ public class CanvasController : MonoBehaviour
     public bool gameplayCanvasActive => m_gameplayCanvasActive;
 
     [Header("=== Tutorial Canvas ===")]
-    [SerializeField, Tooltip("Reference to the tutorial canvas group")]             private CanvasGroup m_tutorialCanvas;
-    
+    [SerializeField, Tooltip("Reference to the end cutscene canvas group")]     private CanvasGroup m_endingCanvasGroup;
+    [SerializeField, Tooltip("Ref. to the end cutscene skip dialogue")]         private CanvasGroup m_endingSkipGroup;
+    [SerializeField, Tooltip("is the ending cutscene canvas active?")]          private bool m_endingCanvasActive = false;
+    public bool endingCanvasActive => m_endingCanvasActive;
+
+
 
     private void Awake() {
         // Set current reference
@@ -90,6 +94,7 @@ public class CanvasController : MonoBehaviour
         m_movementCanvasActive = m_movementCanvasGroup.alpha > 0f;
         m_fpsCanvasActive = m_fpsCanvasGroup.alpha > 0f;
         m_gameplayCanvasActive = m_gameplayCanvasGroup.alpha > 0f;
+        m_endingCanvasActive = m_endingCanvasGroup.alpha > 0f;
 
         // Enable all actions if toggled
         if (m_enableOnStart) {
@@ -211,6 +216,16 @@ public class CanvasController : MonoBehaviour
             SetCanvasGroupAlpha(group, setTo);
         }
     }
+
+    public void ToggleEnding(bool setTo, bool skipSetTo) {
+        m_endingCanvasActive = setTo;
+        SetCanvasGroupAlpha(m_endingCanvasGroup, setTo);
+        ToggleEndingSkip(skipSetTo);
+    }
+    public void ToggleEnding(bool setTo) { ToggleEnding(setTo, false); }
+    public void ToggleEndingSkip(bool setTo) {
+        SetCanvasGroupAlpha(m_endingSkipGroup, setTo);
+    }
     
     public void ToggleAllCanvases(bool setTo) {
         ToggleLoadingScreen(setTo);
@@ -219,6 +234,7 @@ public class CanvasController : MonoBehaviour
         ToggleMovement(setTo);
         ToggleFPS(setTo);
         ToggleGameplay(setTo);
+        ToggleEnding(setTo);
     }
 
     // === STATIC CLASS FUNCTIONS === //

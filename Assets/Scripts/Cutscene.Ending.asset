@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49c530a489a964c1fadb8a7ad92843a7, type: 3}
+  m_Name: Cutscene.Ending
+  m_EditorClassIdentifier: 
+  sceneName: Ending
+  slide:
+    slide: {fileID: 0}
+    displayTime: 0
+    transitionTime: 0
+  texts:
+  - text: When my hands touched the final gem, suddenly all was still. I felt the
+      warmth of the sunshine on my back. Once more, the lands glowed like the legends
+      foretold.
+    displayTime: 3
+    transitionTime: 2
+  - text: "As I slowly rose back to my feet, my old bones felt rejuvenated. A nostalgic
+      feeling! Was it some remnant of the gems\u2019 energies?"
+    displayTime: 3
+    transitionTime: 2
+  - text: "Looks like this isn\u2019t my final journey after all."
+    displayTime: 3
+    transitionTime: 2

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Cinemachine;
+using UnityEngine.SceneManagement;
+
 
 public class SessionManager2 : MonoBehaviour
 {
@@ -20,6 +22,7 @@ public class SessionManager2 : MonoBehaviour
     [Header("== Core references ===")]
     [SerializeField, Tooltip("The player character's transform")]   private Transform m_playerRef;
     public Transform playerRef => m_playerRef;
+    [SerializeField, Tooltip("Camera fader ref")]   private CameraFader m_cameraFaderRef;
     [SerializeField, Tooltip("Gem Trail Prefab")]  private GemTrail m_gemTrailPrefab;
 
     [Header("=== Generation & Tutorial Checks ===")]
@@ -163,14 +166,17 @@ public class SessionManager2 : MonoBehaviour
         TerrainManager.current.ToggleLODMethod(TerrainManager.LODMethod.Grid);
         
         // Activate the player and camera
-        CameraFader mainCameraFader = ThirdPersonCam.current.gameObject.GetComponent<CameraFader>();
-        mainCameraFader.enabled = true;
-        mainCameraFader.FadeIn();
+        if (m_cameraFaderRef != null) {
+            m_cameraFaderRef.enabled = true;
+            m_cameraFaderRef.FadeIn();
+        }
         StartCoroutine(PlayerMovement.current.ActivatePlayer());
 
         // If tutorial exists, Tell them to start ring bell tutorial
         if (TutorialIconManager.current != null) TutorialIconManager.current.InitializeRingTutorial();
-        //StartCoroutine(RingTutorialSequence());
+        
+        // If cutscene manager exists, tell it to initialize ending camera
+        if (CutsceneManager.current != null) CutsceneManager.current.InitializeEndingCameraPosition();
     }
 
     public void CollectGem(Gem gem) {
@@ -244,7 +250,7 @@ public class SessionManager2 : MonoBehaviour
         // Which region are we in?
         Region region = Voronoi.current.regions[destination.regionIndex];
         // Has this region regained its destination gem yet? If so, ring it.
-        if (region.destinationCollected) {
+        if (region.destinationCollected && PlayerMovement.current.largeGemCollected < 4) {
             destination.PlayAudioSource();
             foreach(Gem g in region.smallGems) g.RingGem();
         }
@@ -252,7 +258,7 @@ public class SessionManager2 : MonoBehaviour
         if (gem.gemType == Gem.GemType.Destination) {
             SkyboxController.current.TimeChangeAuto();  // change the time of the day
         }
-        if (CanvasController.current != null) CanvasController.current.ToggleGameplay(true);
+        if (PlayerMovement.current.largeGemCollected < 4 && CanvasController.current != null) CanvasController.current.ToggleGameplay(true);
         destination.ToggleShoulderCamera(false);
     }
 
@@ -280,14 +286,29 @@ public class SessionManager2 : MonoBehaviour
         }
     }
 
-    /*
-    private IEnumerator RingTutorialSequence() {  
-        yield return StartCoroutine(TutorialIconManager.current.ShowIconUntilCondition(
-            TutorialIconManager.current.ShowRingIcon,
-            () => m_ringTutorialCompleted
-        ));
+    public void EndGameplay() {
+        // This should be called when the player finally gets all four destination gems
+        // Firstly, we make the cutscene controller show the loading screen again.
+        // this time, we tell it to show the end cutscene, which should wrap up the game.
+        // Disable all other movement options
+        PlayerMovement.current.canMove = false;
+        PlayerMovement.current.canJump = false;
+        PlayerMovement.current.canSprint = false;
+        m_playerJumpAction.action.Disable();
+
+        if (CanvasController.current != null) CanvasController.current.ToggleEnding(true, true);
+        if (CutsceneManager.current != null) CutsceneManager.current.PlayEndingCutscene();
+        m_skipCutsceneAction.action.performed += CloseEndingCutscene;
+        m_skipCutsceneAction.action.Enable();
     }
-    */
+    public void CloseEndingCutscene(InputAction.CallbackContext ctx) {
+        // Disable the skip cutscene again.
+        m_skipCutsceneAction.action.performed -= CloseEndingCutscene;
+        m_skipCutsceneAction.action.Disable();
+
+        // Activate camera fader to close out the scene
+        SceneManager.LoadScene("Start");
+    }
 
     private void OnDestroy() {
         StopAllCoroutines();
@@ -299,6 +320,7 @@ public class SessionManager2 : MonoBehaviour
         if (LandmarkGenerator.current != null) LandmarkGenerator.current.onGenerationEnd.RemoveListener(this.OnLandmarksGenerated);
         // input actions - remove listeners
         m_skipCutsceneAction.action.performed -= InitializeGameplayAction;
+        m_skipCutsceneAction.action.performed -= CloseEndingCutscene;
         m_playerRingBellAction.action.performed -= RingBellAction;
     }
 }

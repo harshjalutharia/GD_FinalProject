@@ -3,17 +3,22 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using TMPro;
+using Cinemachine;
 
 public class CutsceneManager : MonoBehaviour
 {
     public static CutsceneManager current;
 
-    [Header("=== Cutscenes ===")]
+    [Header("=== Loading Cutscene ===")]
     [SerializeField, Tooltip("The cutscene elements for the loading scene")] private Cutscene m_loadingCutscene;
-
-    [Header("=== Settings ===")]
     [SerializeField, Tooltip("The Image UI element that the cutscene slides are presented on")] private Image m_cutsceneImage;
     [SerializeField, Tooltip("The first, second, and third TextMeshProUGUI textboxes")]  private TextMeshProUGUI[] m_textboxes;
+
+    [Header("=== Ending Cutscene ===")]
+    [SerializeField, Tooltip("The cutscene elements for the ending screen")] private Cutscene m_endingCutscene;
+    [SerializeField, Tooltip("The Image UI element that the cutscene slides are presented on")] private Image m_endingCutsceneImage;
+    [SerializeField, Tooltip("The first, second, and third TextMeshProUGUI textboxes")]  private TextMeshProUGUI[] m_endingCutsceneTextboxes;
+    [SerializeField, Tooltip("The cinemachine virtual camera that is used for the ending cutscene")]    private CinemachineVirtualCamera m_endingVirtualCamera;
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("Current cutscene's slide index")] private int m_currentSlideIndex = 0;
@@ -26,36 +31,56 @@ public class CutsceneManager : MonoBehaviour
         current = this;
     }
 
-    public void PlayLoadingCutscene() {
-        StartCoroutine(PlaySlideshowCoroutine(m_loadingCutscene));
+    public void InitializeEndingCameraPosition() {
+        Vector3 camPosition = new Vector3(50f,100f,50f);
+        Vector3 toLookAt = new Vector3(25f, 50f, 25f);
+        if (TerrainManager.current != null) {
+            camPosition = new Vector3(50f, TerrainManager.current.noiseRange.max, 50f);
+            toLookAt = TerrainManager.current.worldCenter;
+        }
+        m_endingVirtualCamera.transform.position = camPosition;
+        m_endingVirtualCamera.transform.LookAt(toLookAt);
+
     }
 
-    private IEnumerator PlaySlideshowCoroutine(Cutscene cutscene) {
+    public void PlayLoadingCutscene() {
+        StartCoroutine(PlaySlideshowCoroutine(m_loadingCutscene, m_cutsceneImage, m_textboxes));
+    }
+
+    public void PlayEndingCutscene() {
+        m_endingVirtualCamera.m_Priority = 20;
+        StartCoroutine(PlaySlideshowCoroutine(m_endingCutscene, m_endingCutsceneImage, m_endingCutsceneTextboxes));
+    }
+
+    private IEnumerator PlaySlideshowCoroutine(Cutscene cutscene, Image image, TextMeshProUGUI[] textboxes) {
         // Initialize the boolean that indicates that the slideshow has started
         m_playing = true;
 
         // Initialize the slideshow image alpha to 0
-        Color color = m_cutsceneImage.color;
-        color.a = 0f;
-        m_cutsceneImage.color = color;
+        if (image != null && cutscene.slide != null) {
+            Color color = image.color;
+            color.a = 0f;
+            image.color = color;
 
-        if (cutscene.slide != null) {
-            m_cutsceneImage.sprite = cutscene.slide.slide;
+            image.sprite = cutscene.slide.slide;
             // Fade in the image
-            yield return FadeImage(m_cutsceneImage, 0f, 1f, cutscene.slide.transitionTime);
+            yield return FadeImage(image, 0f, 1f, cutscene.slide.transitionTime);
             // Wait for display time
             yield return new WaitForSeconds(cutscene.slide.displayTime);
         }
 
-        for(int i = 0; i < Mathf.Min(cutscene.texts.Count, m_textboxes.Length); i++) {
+        for(int i = 0; i < Mathf.Min(cutscene.texts.Count, textboxes.Length); i++) {
             SlideText t = cutscene.texts[i];
-            TextMeshProUGUI textbox = m_textboxes[i];
+            TextMeshProUGUI textbox = textboxes[i];
             textbox.text = t.text;
             // Fade in the textbox
             yield return FadeTextbox(textbox, 0f, 1f, t.transitionTime);
             // wait for display time
             yield return new WaitForSeconds(t.displayTime);
         }
+
+        m_playing = false;
+        onFinishedCutscene?.Invoke();
     }
 
     /*

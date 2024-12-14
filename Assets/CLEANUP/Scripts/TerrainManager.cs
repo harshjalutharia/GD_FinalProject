@@ -52,6 +52,7 @@ public class TerrainManager : MonoBehaviour
     [SerializeField, Tooltip("The falloff representation for traversable terrain")] private Falloff m_traversableFalloff;
     [SerializeField, Tooltip("The falloff representation for border terrain")]      private Falloff m_borderFalloff;
     [SerializeField, Tooltip("READ ONLY")]  private TerrainChunk.MinMax m_noiseRange;
+    public TerrainChunk.MinMax noiseRange => m_noiseRange;
 
     [Header("=== On Completion ===")]
     [SerializeField] private int m_numInitializedChunks = 0;
