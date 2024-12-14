@@ -164,8 +164,8 @@ public class SkyboxController : MonoBehaviour
         if (fadeObject != null)
         {
             
-            yield return new WaitForSeconds(3f);
-            Debug.Log("Wait for 3 sec");
+            yield return new WaitForSeconds(2.5f);
+            Debug.Log("Wait for 2.5 sec");
             sunlight.intensity = 1.5f;
             StartChangeTimeOfDay(timeTo);
             fadeObject.StartFadeIn(); // Start fade-in before changing
