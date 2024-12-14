@@ -14,6 +14,8 @@ public class Landmark : MonoBehaviour
     [SerializeField, Tooltip("Reference to an audio source, if present.")]  private AudioSource m_audioSource;
     [SerializeField, Tooltip("Should camera parent ref")]   private Transform m_shoulderCameraParent;
     [SerializeField, Tooltip("Reference to the Cinemachine camera attached to this landmark's shoulder, if present")]  private CinemachineVirtualCamera m_shoulderCamera;
+    [SerializeField, Tooltip("Reference to the location where the player could potentially spawn")] private Transform m_playerSpawnRef;
+    public Transform playerSpawnRef => m_playerSpawnRef;
 
     [SerializeField, Tooltip("Path Trail effect prefab")] private GemTrail m_gemTrailPrefab;
     [SerializeField, Tooltip("Time between each trail effect spawn")] private float m_trailInterval = 20f;

@@ -37,7 +37,6 @@ public class GemGenerator2 : MonoBehaviour
     private float heightBorderRange => m_heightBorderRange * m_height;
     [SerializeField, Tooltip("Min distance from region centroid that destination gem must be placed")]  private float m_minDistanceFromRegionCentroid = 15f;
     [SerializeField, Tooltip("Steepness threshold - if a location is too steep, do not place here"), Range(0f,90f)]     private float m_maxSteepnessThreshold = 45f; 
-    [SerializeField, Tooltip("Distance threshold - if a location is too close, we cannot place there")] private float m_minDistanceThreshold = 20f;
     [SerializeField, Tooltip("The max number of gem locations per region")] private int m_maxGemCountPerRegion = 15;
 
     [Header("=== Outputs - READ ONLY ===")]
@@ -121,21 +120,34 @@ public class GemGenerator2 : MonoBehaviour
     private void GenerateRegion(Region region) {
         // We must place a major gem and other smaller gems around where the region's clusters' points are positioned. We will place the major gem in one of the core cluster's points, and all points in either the core or sub clusters are fair game.
         // Not all placements are suitable. For example, it'll be hard to find a gem that's lodged itself into the side of a mountain, for example.
-        // We'll therefore restrict all gem placements within a boundary and steepness.
+        // In addition, we also need to consider the grasslands region, where we want to place the major gem to be really dang close to the major landmark
         
         // Firstly, the major gem. We'll place this at one of the core cluster's points.
+        // Sole exception being the grasslands, where the major gem will be only a few meters away
         DBScanCluster coreCluster = region.coreCluster;
         List<Centroid> unvisitedCentroids = new List<Centroid>(region.centroids);
 
-        // Search for the closest centroid. Should still be within this region. 
-        List<Centroid> closestCentroids = region.QueryKNearestCentroids(coreCluster.centroid, 10, true);
-        Centroid closestCentroid = closestCentroids[0];
-        foreach(Centroid c in closestCentroids) {
-            closestCentroid = c;
-            if (Vector3.Distance(coreCluster.centroid, c.position) >= m_minDistanceFromRegionCentroid) break;
+        // Determine the destination gem based on if this is the first region or not.\
+        Vector3 majorGemLocation, majorNormal;
+        Centroid closestCentroid;
+        if (region.id == 0) {
+            // We place the destination gem to be within a close distance in the forward direction of the landmark.
+            // We identify which cluster this destination gem ends up being in, and remove it from the list of visited centroids
+            Vector3 proposedMajorLocation = region.towerLandmark.transform.position + region.towerLandmark.transform.forward * 50f;
+            TerrainManager.current.TryGetPointOnTerrain(proposedMajorLocation.x, proposedMajorLocation.z, out majorGemLocation, out majorNormal, out float majorSteepness);
+            closestCentroid = region.QueryClosestCentroid(majorGemLocation, true);
+            unvisitedCentroids.Remove(closestCentroid);
+        } else {
+            // Search for the closest centroid. Should still be within this region. 
+            List<Centroid> closestCentroids = region.QueryKNearestCentroids(coreCluster.centroid, 10, true);
+            closestCentroid = closestCentroids[0];
+            foreach(Centroid c in closestCentroids) {
+                closestCentroid = c;
+                if (Vector3.Distance(coreCluster.centroid, c.position) >= m_minDistanceFromRegionCentroid) break;
+            }
+            TerrainManager.current.TryGetPointOnTerrain(closestCentroid.position.x, closestCentroid.position.z, out majorGemLocation, out majorNormal, out float majorSteepness);
+            unvisitedCentroids.Remove(closestCentroid);
         }
-        TerrainManager.current.TryGetPointOnTerrain(closestCentroid.position.x, closestCentroid.position.z, out Vector3 majorGemLocation, out Vector3 majorNormal, out float majorSteepness);
-        unvisitedCentroids.Remove(closestCentroid);
 
         // Instantiate the major gem. Make sure to delete any trees in the region
         majorGemLocation += majorNormal * 0.25f;

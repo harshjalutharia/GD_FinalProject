@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24f9e016c8879404cb8cfb84728b5730, type: 3}
   m_Name: Region.Spruce
   m_EditorClassIdentifier: 
-  name: Spruce
+  regionName: Spruce
   color: {r: 0.043137256, g: 0.8509804, b: 1, a: 1}
   gradient:
     serializedVersion: 2

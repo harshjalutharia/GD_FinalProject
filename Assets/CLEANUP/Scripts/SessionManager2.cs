@@ -22,14 +22,17 @@ public class SessionManager2 : MonoBehaviour
     public Transform playerRef => m_playerRef;
     [SerializeField, Tooltip("Gem Trail Prefab")]  private GemTrail m_gemTrailPrefab;
 
-    [Header("=== Checks ===")]
-    [SerializeField, Tooltip("Has the environment finished generating?")]   private bool m_environmentGenerated = false;
-    [SerializeField, Tooltip("Has the loading cutscene finished playing?")] private bool m_loadingCutsceneFinished = false;
-    [SerializeField, Tooltip("Has gameplay been initialized?")]  private bool m_gameplayInitialized = false;
+    [Header("=== Generation & Tutorial Checks ===")]
+    [SerializeField, Tooltip("Has the environment finished generating?")]                   private bool m_environmentGenerated = false;
+    [SerializeField, Tooltip("Has the loading cutscene finished playing?")]                 private bool m_loadingCutsceneFinished = false;
+    [SerializeField, Tooltip("Has gameplay been initialized?")]                             private bool m_gameplayInitialized = false;
     public bool gameplayInitialized => m_gameplayInitialized;
-    [SerializeField, Tooltip("Timestamp last time the player rang the bells")] private float m_timeLastRung = 0f;
+    [SerializeField, Tooltip("Ring tutorial needs to be completed before player can move")] private bool m_ringTutorialCompleted = false;
+    public bool ringTutorialCompleted => m_ringTutorialCompleted;
+    [Space]
+    [SerializeField, Tooltip("Timestamp last time the player rang the bells")]                                          private float m_timeLastRung = 0f;
     [SerializeField, Tooltip("The amount of time we want to allow the player before they can ring the bells again")]    private float m_ringDelay = 3f;
-    [SerializeField, Tooltip("Ring tutorial needs to be completed before player can move")] public bool ringTutorialCompleted = false;
+    
 
     public virtual void SetSeed(string newSeed) {
         if (newSeed.Length > 0 && int.TryParse(newSeed, out int validNewSeed)) {    m_seed = validNewSeed;  return; }
@@ -59,7 +62,7 @@ public class SessionManager2 : MonoBehaviour
         m_playerJumpAction.action.Disable();
         m_playerRingBellAction.action.Disable();
         
-        // Chck that we have the necessary generators
+        // Check that we have the necessary generators
         if (!TryCheckGenerators()) {
             Debug.LogError("Session Manager 2: Cannot proceed without generators (Terrain Generator, Voronoi, etc.");
             return;
@@ -69,26 +72,21 @@ public class SessionManager2 : MonoBehaviour
         TerrainManager.current.SetSeed(m_seed);
         TerrainManager.current.onGenerationEnd.AddListener(this.OnTerrainGenerated);
         TerrainManager.current.Generate();
+
+        // We can then toggle the player movement to set its boolean checks
         PlayerMovement.current.canMove = false;
         PlayerMovement.current.canJump = false;
         PlayerMovement.current.canSprint = true; // doesn't really matter if there's no other input
-    }
-
-    private IEnumerator RingTutorialSequence()
-    {
-        yield return StartCoroutine(TutorialIconManager.current.ShowIconUntilCondition(
-            TutorialIconManager.current.ShowRingIcon,
-            () => ringTutorialCompleted
-        ));
     }
 
     public bool TryCheckGenerators() {
         return TerrainManager.current != null
             && Voronoi.current != null
             && VegetationGenerator2.current != null
-            && GemGenerator2.current != null
-            && LandmarkGenerator2.current != null;
+            && LandmarkGenerator2.current != null
+            && GemGenerator2.current != null;
     }
+    
     public void OnTerrainGenerated() { 
         Debug.Log("Session Manager 2: Terrain Generation Acknowledged. Starting Voronoi Generation");
         // Initialize voronoi generation
@@ -111,6 +109,15 @@ public class SessionManager2 : MonoBehaviour
         Debug.Log("Session Manager 2: Vegetation Generated");
         // Toggle the loading screen to show that vegetation generation has finished, if canvas controller exists
         if (CanvasController.current != null) CanvasController.current.ToggleLoadedIcon("Trees");
+        // Initialize landmark generation
+        LandmarkGenerator2.current.SetSeed(m_seed);
+        LandmarkGenerator2.current.onGenerationEnd.AddListener(this.OnLandmarksGenerated);
+        LandmarkGenerator2.current.Generate();
+    }
+    public void OnLandmarksGenerated() {
+        Debug.Log("Session Manager 2: Landmarks Generated");
+        // Initialize transition from loading to skip.
+        if (CanvasController.current != null) CanvasController.current.ToggleLoadingIconsGroup(false);
         // Initialize gem generation
         GemGenerator2.current.SetSeed(m_seed);
         GemGenerator2.current.SetDimensions(TerrainManager.current.width, TerrainManager.current.height);
@@ -121,23 +128,10 @@ public class SessionManager2 : MonoBehaviour
         Debug.Log("Session Manager 2: Gems Generated");
         // Toggle the loading screen to show that gem generation has finished, if canvas controller exists
         if (CanvasController.current != null) CanvasController.current.ToggleLoadedIcon("Gems");
-        // Initialize landmark generation
-        LandmarkGenerator2.current.SetSeed(m_seed);
-        LandmarkGenerator2.current.onGenerationEnd.AddListener(this.OnLandmarksGenerated);
-        LandmarkGenerator2.current.Generate();
-    }
-    public void OnLandmarksGenerated() {
-        Debug.Log("Session Manager 2: Landmarks Generated");
-        // Initialize transition from loading to skip.
-        if (CanvasController.current != null) CanvasController.current.ToggleLoadingIconsGroup(false);
-        m_environmentGenerated = true;
-        // Tell TerrainManager to toggle LOD mode
-        TerrainManager.current.ToggleLODMethod(TerrainManager.LODMethod.Grid);
         // At this point, we very much can check if the cutscene is finished loading or not.
-        if (!m_gameplayInitialized) {
-            // If not finished, enabled the skip cutscene feature
-            m_skipCutsceneAction.action.Enable();
-        }
+        m_environmentGenerated = true;
+        // Enable the end cutscene feature
+        m_skipCutsceneAction.action.Enable();
     }
 
     public void OnLoadingCutsceneFinished() {
@@ -161,6 +155,14 @@ public class SessionManager2 : MonoBehaviour
             CanvasController.current.ToggleLoadingScreen(false, false);
             CanvasController.current.ToggleGameplay(true);
         }
+
+        // Determine the start position of the player. Determined by looking at Voronoi.current's first region major landmark's spawn
+        Vector3 potentialPlayerStart = Voronoi.current.regions[0].towerLandmark.playerSpawnRef.position;
+        TerrainManager.current.TryGetPointOnTerrain(potentialPlayerStart.x, potentialPlayerStart.z, out Vector3 playerStartPos, out Vector3 startNormal, out float startSteepness);
+        m_playerRef.position = playerStartPos;
+
+        // Tell TerrainManager to toggle LOD mode
+        TerrainManager.current.ToggleLODMethod(TerrainManager.LODMethod.Grid);
         
         // Activate the player and camera
         CameraFader mainCameraFader = ThirdPersonCam.current.gameObject.GetComponent<CameraFader>();
@@ -251,9 +253,9 @@ public class SessionManager2 : MonoBehaviour
 
     public void RingBellAction(InputAction.CallbackContext ctx) { 
         RingBell();
-        if (!ringTutorialCompleted)
+        if (!m_ringTutorialCompleted)
         {
-            ringTutorialCompleted = true;
+            m_ringTutorialCompleted = true;
             Debug.Log("RING DONE");
             StartCoroutine(PlayerMovement.current.MoveTutorialSequence());
         }
@@ -285,6 +287,13 @@ public class SessionManager2 : MonoBehaviour
             // Not collected. We instead, we highlight just the gem. We do NOT ring the bell.
             region.destinationGem.RingGem();
         }
+    }
+
+    private IEnumerator RingTutorialSequence() {
+        yield return StartCoroutine(TutorialIconManager.current.ShowIconUntilCondition(
+            TutorialIconManager.current.ShowRingIcon,
+            () => m_ringTutorialCompleted
+        ));
     }
 
     private void OnDestroy() {

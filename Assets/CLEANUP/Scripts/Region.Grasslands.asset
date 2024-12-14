@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24f9e016c8879404cb8cfb84728b5730, type: 3}
   m_Name: Region.Grasslands
   m_EditorClassIdentifier: 
-  name: Grasslands
+  regionName: Grasslands
   color: {r: 1, g: 0.9137255, b: 0.043137256, a: 1}
   gradient:
     serializedVersion: 2

@@ -24,74 +24,62 @@ public class TutorialIconManager : MonoBehaviour
 
     private bool tutorialActive = false;
 
-    private void Awake()
-    {
+    private void Awake() {
         current = this;
     }
-    private void Start()
-    {
+
+    private void Start() {
         iconCanvas.SetActive(false); // Hide the icon at the start
     }
 
-    private void DoTestAction(InputAction.CallbackContext ctx)
-    {
+    private void DoTestAction(InputAction.CallbackContext ctx) {
         string deviceName = ctx.action.activeControl.device.name;
         lastDeviceUsed = deviceName;
     }
 
-    public string checkInput()
-    {
-        if (lastDeviceUsed.Contains("Keyboard") || lastDeviceUsed.Contains("Mouse"))
-        {
+    public string checkInput() {
+        if (lastDeviceUsed.Contains("Keyboard") || lastDeviceUsed.Contains("Mouse")) {
             return "Keyboard";
         }
-        else if (lastDeviceUsed.Contains("XInput"))
-        {
+        else if (lastDeviceUsed.Contains("XInput")) {
             return "Xbox";
         }
-        else if (lastDeviceUsed.Contains("DualShock") || lastDeviceUsed.Contains("DualSense") || lastDeviceUsed.Contains("Wireless Controller"))
-        {
+        else if (lastDeviceUsed.Contains("DualShock") || lastDeviceUsed.Contains("DualSense") || lastDeviceUsed.Contains("Wireless Controller")) {
             return "PlayStation";
         }
         return "Unknown";
     }
 
     // ====== Existing Show/Hide Methods ======
-    public void ShowRingIcon()
-    {
+    public void ShowRingIcon() {
         SelectRingSprite();
         iconCanvas.SetActive(true);
         tutorialActive = true;
     }
-    public void ShowMoveIcon()
-    {
+    public void ShowMoveIcon() {
         SelectMoveSprite();
         Debug.Log("showing move icon");
         iconCanvas.SetActive(true);
         tutorialActive = true;
     }
-    public void ShowBoostIcon()
-    {
+    public void ShowBoostIcon() {
         SelectBoostSprite();
         iconCanvas.SetActive(true);
         tutorialActive = true;
     }
-    public void ShowJumpIcon()
-    {
+    public void ShowJumpIcon() {
         SelectJumpSprite();
         iconCanvas.SetActive(true);
         tutorialActive = true;
     }
-    public void HideIcon()
-    {
+    public void HideIcon() {
         iconCanvas.SetActive(false);
         tutorialActive = false;
     }
 
     // ====== Example Coroutines ======
     // A generic coroutine that: show icon, wait until tutorialComplete is true, hide icon
-    public IEnumerator ShowIconUntilCondition(System.Action showMethod, System.Func<bool> condition)
-    {
+    public IEnumerator ShowIconUntilCondition(System.Action showMethod, System.Func<bool> condition) {
         // 1. Show the icon
         showMethod.Invoke();
         // 2. Wait until the condition is met

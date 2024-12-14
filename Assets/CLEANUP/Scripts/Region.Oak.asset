@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24f9e016c8879404cb8cfb84728b5730, type: 3}
   m_Name: Region.Oak
   m_EditorClassIdentifier: 
-  name: Orchards
+  regionName: Orchards
   color: {r: 1, g: 0.21176471, b: 0.22352941, a: 1}
   gradient:
     serializedVersion: 2

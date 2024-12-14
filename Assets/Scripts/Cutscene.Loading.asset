@@ -13,25 +13,23 @@ MonoBehaviour:
   m_Name: Cutscene.Loading
   m_EditorClassIdentifier: 
   sceneName: Loading
-  slides:
-  - slide: {fileID: 21300000, guid: 1c07176761856c94e8ed8f0b7e99a406, type: 3}
-    displayTime: 2
-    transitionTime: 1
-  - slide: {fileID: 21300000, guid: 948d702a064bfef4785e1e8a77722714, type: 3}
-    displayTime: 2
-    transitionTime: 1
-  - slide: {fileID: 21300000, guid: 36127ba293d92fe4380908d065fcbceb, type: 3}
-    displayTime: 2
-    transitionTime: 1
-  - slide: {fileID: 21300000, guid: b994a1e27f59b3f439bf99b1156d8af4, type: 3}
-    displayTime: 2
-    transitionTime: 1
-  - slide: {fileID: 21300000, guid: fdaf9f39c5aa03641b35262717e426b3, type: 3}
-    displayTime: 2
-    transitionTime: 1
-  - slide: {fileID: 21300000, guid: b4b1ac8a0119d1b4fa6d28d5562272e1, type: 3}
-    displayTime: 2
-    transitionTime: 1
-  - slide: {fileID: 21300000, guid: bf81519ead88a6d49850bfb00c0a2f1f, type: 3}
-    displayTime: 2
-    transitionTime: 1
+  slide:
+    slide: {fileID: 0}
+    displayTime: 0
+    transitionTime: 0
+  texts:
+  - text: "Many have heard the legends \u2013 of hidden lands brimming with power.
+      What better way to end my journeys as a traveler than to find these lands and
+      verify the legends for myself?"
+    displayTime: 3
+    transitionTime: 2
+  - text: "Yet, to my shock, only a land of empty stands before me. No doubt, something
+      was amiss! These gems\u2026 could they be some form of power whispered of in
+      the legends?"
+    displayTime: 3
+    transitionTime: 2
+  - text: "Dark storms approach from the horizon. The gems \u2013 their twinkle and
+      gentle hum belie the power they hold. What would happen if I collected all
+      of them?"
+    displayTime: 3
+    transitionTime: 2

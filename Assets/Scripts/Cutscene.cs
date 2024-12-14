@@ -6,7 +6,15 @@ using UnityEngine.UI;
 public class Cutscene : ScriptableObject
 {
     public string sceneName;
-    public List<Slide> slides;
+    public Slide slide;
+    public List<SlideText> texts;
+}
+
+[System.Serializable]
+public class SlideText {
+    public string text;
+    public float displayTime;
+    public float transitionTime;
 }
 
 [System.Serializable]
@@ -14,5 +22,4 @@ public class Slide {
     public Sprite slide;
     public float displayTime;
     public float transitionTime;
-    public string text;
 }
