@@ -60,7 +60,7 @@ public class SessionManager2 : MonoBehaviour
         m_playerRingBellAction.action.Disable();
 
         // If destination gem trail set, add a listener
-        if (m_gemTrail != null) m_gemTrail.onDestinationReached.AddListener(DestinationGemTrailReached);
+        if (m_gemTrail != null) m_gemTrail.onLandmarkDestinationReached.AddListener(DestinationGemTrailReached);
         
         // Chck that we have the necessary generators
         if (!TryCheckGenerators()) {
@@ -186,7 +186,10 @@ public class SessionManager2 : MonoBehaviour
 
             // Initialize the gem trailer to go back to the destination
             // The trail will make the gem "go back" to the primary landmark of this region
-            if (m_gemTrail != null) m_gemTrail.SetDestination(region.towerLandmark);
+            if (m_gemTrail != null) {
+                m_gemTrail.SetTrailGradient(region.attributes.gradient);
+                m_gemTrail.InitializeAsGem(gem, region.towerLandmark);
+            }
 
             // Depending on the gem type, we do different things
             if (gem.gemType == Gem.GemType.Destination) {
@@ -220,19 +223,21 @@ public class SessionManager2 : MonoBehaviour
         }
     }
     
-    public void DestinationGemTrailReached(Landmark destination) {
-        StartCoroutine(DestinationGemTrailReachedCoroutine(destination));
+    public void DestinationGemTrailReached(Gem gem, Landmark destination) {
+        StartCoroutine(DestinationGemTrailReachedCoroutine(gem, destination));
     }
-    public IEnumerator DestinationGemTrailReachedCoroutine(Landmark destination) {
+    public IEnumerator DestinationGemTrailReachedCoroutine(Gem gem, Landmark destination) {
         // Which region are we in?
         Region region = Voronoi.current.regions[destination.regionIndex];
         // Has this region regained its destination gem yet? If so, ring it.
         if (region.destinationCollected) {
             destination.PlayAudioSource();
-            foreach(Gem gem in region.smallGems) gem.RingGem();
+            foreach(Gem g in region.smallGems) g.RingGem();
         }
-        SkyboxController.current.TimeChangeAuto();  // change the time of the day
         yield return new WaitForSeconds(2f);
+        if (gem.gemType == Gem.GemType.Destination) {
+            SkyboxController.current.TimeChangeAuto();  // change the time of the day
+        }
         destination.ToggleShoulderCamera(false);
         m_gemTrail.Reset();
     }
@@ -284,7 +289,7 @@ public class SessionManager2 : MonoBehaviour
         if (GemGenerator2.current != null) GemGenerator2.current.onGenerationEnd.RemoveListener(this.OnGemsGenerated);
         if (LandmarkGenerator.current != null) LandmarkGenerator.current.onGenerationEnd.RemoveListener(this.OnLandmarksGenerated);
         // Destination Gem Trail - remove listener
-        if (m_gemTrail != null) m_gemTrail.onDestinationReached.RemoveListener(DestinationGemTrailReached);
+        if (m_gemTrail != null) m_gemTrail.onLandmarkDestinationReached.RemoveListener(DestinationGemTrailReached);
         // input actions - remove listeners
         m_skipCutsceneAction.action.performed -= InitializeGameplayAction;
         m_playerRingBellAction.action.performed -= RingBellAction;

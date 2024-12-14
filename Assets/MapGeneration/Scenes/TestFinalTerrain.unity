@@ -1000,6 +1000,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
+  daytime: 0
 --- !u!114 &703609671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1306,14 +1307,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0b7bacfb2961ca45b87fcc03b3947d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerRef: {fileID: 9062041}
+  defaultFollowRef: {fileID: 9062041}
   trailRenderer: {fileID: 875263371}
   traveling: 0
   points: []
   velocity: {x: 0, y: 0, z: 0}
   travelTimePerPoint: 0.05
   trailTime: 3
+  gem: {fileID: 0}
   destination: {fileID: 0}
+  onLandmarkDestinationReached:
+    m_PersistentCalls:
+      m_Calls: []
   onDestinationReached:
     m_PersistentCalls:
       m_Calls: []

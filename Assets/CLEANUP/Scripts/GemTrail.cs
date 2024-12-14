@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class GemTrail : MonoBehaviour
 {
-    public Transform playerRef;
+    public Transform defaultFollowRef;
     public TrailRenderer trailRenderer;
 
     public bool traveling = false;
@@ -14,30 +14,40 @@ public class GemTrail : MonoBehaviour
     public float travelTimePerPoint = 0.1f;
     public float trailTime = 3f;
 
+    public Gem gem;
     public Landmark destination;
-    public UnityEvent<Landmark> onDestinationReached;
+    public UnityEvent<Gem, Landmark> onLandmarkDestinationReached;
+    public UnityEvent onDestinationReached;
 
-    public void SetDestination(Landmark destination) {
+    public void SetTrailGradient(Gradient gradient) {
+        trailRenderer.colorGradient = gradient;
+    }
+
+    public void InitializeAsGem(Gem gem, Landmark destination) {
+        this.gem = gem;
         this.destination = destination;
-        points = BezierCurves.DetermineQuadraticCurve(20, transform.position, destination.pathingForward.position, destination.pathingDestination.position);
+        this.points = BezierCurves.DetermineQuadraticCurve(20, transform.position, destination.pathingForward.position, destination.pathingDestination.position);
         trailRenderer.time = trailTime;
-        if (Voronoi.current != null) {
-            Region region = Voronoi.current.regions[destination.regionIndex];
-            trailRenderer.colorGradient = region.attributes.gradient;
-        }
+        traveling = true;
+    }
+    
+    public void Initialize(List<Vector3> points) {
+        this.points = points;
+        trailRenderer.time = trailTime;
         traveling = true;
     }
 
     private void Update() {
         if (!traveling) {
-            transform.position = playerRef.position;
+            if (defaultFollowRef != null) transform.position = defaultFollowRef.position;
             return;
         }
         if (points.Count > 0) {
             if (Vector3.Distance(transform.position, points[0]) <= 0.05f) {
                 points.RemoveAt(0);
                 if (points.Count == 0) {
-                    onDestinationReached?.Invoke(destination);
+                    onLandmarkDestinationReached?.Invoke(gem, destination);
+                    onDestinationReached?.Invoke();
                     return;
                 }
             }
@@ -47,7 +57,9 @@ public class GemTrail : MonoBehaviour
 
     public void Reset() {
         trailRenderer.time = 0f;
-        transform.position = playerRef.position;
+        if (defaultFollowRef != null) transform.position = defaultFollowRef.position;
+        this.gem = null;
+        this.destination = null;
         velocity = Vector3.zero;
         traveling = false;
     }
