@@ -128,7 +128,7 @@ public class SkyboxController : MonoBehaviour
         
         StartCoroutine(StartFadeTransition(nightSkyBox, 24f));
         //RenderSettings.skybox = nightSkyBox;
-        rainController.ToggleRain(true, false); // start to rain, but fast
+        rainController.ToggleRain(true, true); // start to rain, but fast
         
     }
 
