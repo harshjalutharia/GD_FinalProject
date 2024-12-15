@@ -37,6 +37,7 @@ public class TerrainManager : MonoBehaviour
     [SerializeField, Tooltip("The TerrainChunk prefab")]    private TerrainChunk m_chunkPrefab;
     [SerializeField, Tooltip("Reference to the player")]    private Transform m_playerRef; 
     [SerializeField, Tooltip("What layer should we assign to each child?")] private LayerMask m_terrainLayer;
+    [SerializeField, Tooltip("Collider prefab for generating boundaries")]  private Transform m_boundariesPrefab;
 
     [Header("=== Material Generation ===")]
     [SerializeField] private Material m_meshMaterialSrc;
@@ -314,8 +315,12 @@ public class TerrainManager : MonoBehaviour
 
         // Cannot do anything until all chunks are complete.
         if (m_numInitializedChunks < m_chunks.Count) return;
-
         Debug.Log($"Terrain Manager: Mesh Generation Completed");
+
+        // If we have an inverse box boundary, let's instantiate one
+        Transform boundary = Instantiate(m_boundariesPrefab, new Vector3(width/2f, m_noiseRange.min, height/2f), Quaternion.identity, this.transform) as Transform;
+        boundary.localScale = new Vector3(width-1f, (m_noiseRange.max-m_noiseRange.min)*2f, height-1f);
+
         // Assuming teh check passes, then we can safely declare that we're initialized
         m_generated = true;
         // If any events are tied to on generation end, invoke them
