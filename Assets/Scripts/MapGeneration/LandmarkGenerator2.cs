@@ -166,7 +166,7 @@ public class LandmarkGenerator2 : MonoBehaviour
                     Quaternion minorRotation = (minorDirection.magnitude == 0) 
                         ? Quaternion.Euler(0f, m_prng.Next(0,360), 0f)
                         : Quaternion.LookRotation(minorDirection.normalized, Vector3.up);
-                    Landmark minorLandmark = InstantiateLandmark(m_minorBellTowerPrefab, terrainPoint, minorRotation, true, 40f);
+                    Landmark minorLandmark = InstantiateLandmark(m_minorBellTowerPrefab, terrainPoint, minorRotation, true, 50f);
                     minorLandmark.regionIndex = i;
                     Voronoi.current.regions[i].minorLandmarks.Add(minorLandmark);
                 }
@@ -189,7 +189,7 @@ public class LandmarkGenerator2 : MonoBehaviour
 
                     Vector3 direction = path.generatedPath[(pointsInEachSegment * i) + 1] - path.generatedPath[(pointsInEachSegment * i)];
                     direction.Normalize();
-                    InstantiateLandmark(m_archPrefab, path.generatedPath[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), false, 30f);
+                    InstantiateLandmark(m_archPrefab, path.generatedPath[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), false, 40f);
                     archPositions.Add(path.generatedPath[pointsInEachSegment * i]);
                 }
             }
