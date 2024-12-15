@@ -9,9 +9,6 @@ public class TutorialIconManager : MonoBehaviour
     public static TutorialIconManager current;
     public enum Device { Keyboard, XBox, Playstation, Unknown }
 
-    public GameObject iconCanvas; // Reference to the Canvas object
-    public Image iconImage;       // Reference to the Image component
-
     [Header("=== Input Actions ===")]
     [SerializeField, Tooltip("Skip Cutscene Action")]   private InputActionReference m_skipCutsceneAction;
     [SerializeField, Tooltip("Movement Action")]    private InputActionReference m_movementAction;
@@ -26,12 +23,6 @@ public class TutorialIconManager : MonoBehaviour
     public bool ringTutorialCompleted => m_ringTutorialCompleted;
     [SerializeField, Tooltip("Boost tutorial needs to be completed")] private bool m_boostTutorialCompleted = false;
     public bool boostTutorialCompleted => m_boostTutorialCompleted;
-    
-    // All the icons we might show
-    public Sprite movekbIcon, movexbIcon, movepsIcon;
-    public Sprite jumpkbIcon, jumpxbIcon, jumppsIcon;
-    public Sprite ringkbIcon, ringxbIcon, ringpsIcon;
-    public Sprite boostkbIcon, boostxbIcon, boostpsIcon;
 
     private void Awake() {
         current = this;
@@ -147,98 +138,15 @@ public class TutorialIconManager : MonoBehaviour
 
     // ====== Existing Show/Hide Methods ======
     public void ShowRingIcon() {
-        /*
-        SelectRingSprite();
-        iconCanvas.SetActive(true);
-        tutorialActive = true;
-        */
         if (CanvasController.current != null) CanvasController.current.ToggleRingBellIcons(true);
     }
     public void ShowMoveIcon() {
-        //SelectMoveSprite();
-        //Debug.Log("showing move icon");
-        //iconCanvas.SetActive(true);
-        //tutorialActive = true;
         if (CanvasController.current != null) CanvasController.current.ToggleMovementIcons(true);
     }
     public void ShowBoostIcon() {
-        //SelectBoostSprite();
-        //iconCanvas.SetActive(true);
-        //tutorialActive = true;
         if (CanvasController.current != null) CanvasController.current.ToggleBoostIcons(true);
     }
     public void ShowJumpIcon() {
-        //SelectJumpSprite();
-        //iconCanvas.SetActive(true);
-        //tutorialActive = true;
         if (CanvasController.current != null) CanvasController.current.ToggleBoostIcons(true);
     }
-    public void HideIcon() {
-        //iconCanvas.SetActive(false);
-        //tutorialActive = false;
-    }
-
-    // ====== Example Coroutines ======
-    // A generic coroutine that: show icon, wait until tutorialComplete is true, hide icon
-    public IEnumerator ShowIconUntilCondition(System.Action showMethod, System.Func<bool> condition) {
-        // 1. Show the icon
-        showMethod.Invoke();
-        // 2. Wait until the condition is met
-        while (!condition())
-        {
-            yield return null;
-        }
-        // 3. Hide the icon
-        HideIcon();
-    }
-
-    // Similarly for Move, Jump, Boost, etc., but reusing ShowIconUntilCondition is simpler.
-
-    // ====== Helper Methods to pick the right sprite based on input ======
-    /*
-    private void SelectRingSprite()
-    {
-        if (currentInput == "Xbox") iconImage.sprite = ringxbIcon;
-        else if (currentInput == "PlayStation") iconImage.sprite = ringpsIcon;
-        else iconImage.sprite = ringkbIcon;
-    }
-    private void SelectMoveSprite()
-    {
-        if (currentInput == "Xbox") iconImage.sprite = movexbIcon;
-        else if (currentInput == "PlayStation") iconImage.sprite = movepsIcon;
-        else iconImage.sprite = movekbIcon;
-    }
-    private void SelectBoostSprite()
-    {
-        if (currentInput == "Xbox") iconImage.sprite = boostxbIcon;
-        else if (currentInput == "PlayStation") iconImage.sprite = boostpsIcon;
-        else iconImage.sprite = boostkbIcon;
-    }
-    private void SelectJumpSprite()
-    {
-        if (currentInput == "Xbox") iconImage.sprite = jumpxbIcon;
-        else if (currentInput == "PlayStation") iconImage.sprite = jumppsIcon;
-        else iconImage.sprite = jumpkbIcon;
-    }
-
-    // Example map icon is commented out, but you can replicate similarly
-    public void ShowMapIcon()
-    {
-        return;
-    }
-    */
-
-    /*
-    // ====== Existing Update method ======
-    private void Update()
-    {
-        if (tutorialActive) {
-            //currentInput = checkInput();
-
-            // Make the canvas always face the camera
-            iconCanvas.transform.LookAt(Camera.main.transform);
-            iconCanvas.transform.Rotate(0, 180, 0);
-        }
-    }
-    */
 }

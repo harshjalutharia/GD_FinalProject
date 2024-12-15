@@ -26,8 +26,6 @@ public class VegetationGenerator2 : MonoBehaviour
     [SerializeField, Tooltip("The total number of vegetation items we want to generate")]           private int m_maxGeneratedItems;                
     [Space]
     [SerializeField, Tooltip("When iterating across the map, how much do we advance the steps by?")]    private int m_iterationIncrement = 2;
-    [SerializeField, Tooltip("The spawn delay between spawning.")]                                      private float m_coroutineSpawnDelay = 0.05f;
-    [SerializeField, Tooltip("How many vegetation items do you spawn at a single time?")]               private int m_coroutineNumItems = 3;
     
     [Header("=== Outputs - READ ONLY ===")]
     private List<GameObject> m_generatedVegetation;
@@ -141,10 +139,7 @@ public class VegetationGenerator2 : MonoBehaviour
                 m_generatedPoints.Add(pos);
                 
                 // Break early of the total # of generated trees already has reached the max number possible.
-                //if (m_generatedItemsCount >= m_coroutineNumItems) {
-                    yield return null;
-                //    m_generatedItemsCount = 0;
-                //}
+                yield return null;
                 if (m_generatedVegetation.Count >= m_maxGeneratedItems) break;
             }
             if (m_generatedVegetation.Count >= m_maxGeneratedItems) break;
@@ -160,7 +155,7 @@ public class VegetationGenerator2 : MonoBehaviour
         Debug.Log("Vegetation Generator 2: KD Tree generated");
 
         // If there's an event callback we want to call, we do so here.
-        yield return new WaitForSecondsRealtime(5f);
+        yield return new WaitForSecondsRealtime(3f);
         Debug.Log("FUCK NO");
         m_generated = true;
         Debug.Log("FUCK YEAH");
