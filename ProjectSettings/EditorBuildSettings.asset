@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/CLEANUP/Scenes/Start.unity
     guid: 767a484fb726c434d88d212dbbf944c9
   - enabled: 1
-    path: Assets/MapGeneration/Scenes/TestFinalTerrain.unity
+    path: Assets/CLEANUP/Scenes/TestFinalTerrain.unity
     guid: 120e9f58ad0faf4458f19337b2633686
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 0168e0823e1f9c746aa6bee02a39e46d, type: 2}
