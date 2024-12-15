@@ -24,6 +24,7 @@ public class SkyboxController : MonoBehaviour
     private float targetTimeOfDay;
     [SerializeField] private float timeToChange = 3f;
     private float timeChangeProgress = 0f;
+
     
     private enum Daytime
     {
@@ -38,6 +39,12 @@ public class SkyboxController : MonoBehaviour
     [SerializeField] private Gradient skyColor;
     [SerializeField] private Gradient equatorColor;
     [SerializeField] private Gradient sunColor;
+
+    [Header("=======Lightning Light=======")]
+    [SerializeField, Tooltip("Directional Light for lightning")] private GameObject Lightning;
+    private Light lightninglight;
+
+
     
     
     private void OnValidate()
@@ -58,6 +65,7 @@ public class SkyboxController : MonoBehaviour
     {
         sunlight = sun.GetComponent<Light>();
         fadeObject = Cloud.GetComponent<FadeObject>();
+        lightninglight = Lightning.GetComponent<Light>();
 
         if (fadeObject == null)
         {
@@ -98,6 +106,8 @@ public class SkyboxController : MonoBehaviour
         if (SoundManager.current != null) SoundManager.current.PlayBGM(0);
         if (SoundManager.current != null) SoundManager.current.ToggleRainSound(false);
         if (SoundManager.current != null) SoundManager.current.ToggleThunderSFX(false);
+
+        lightninglight.enabled = false; // Turn off
     }
 
     public void TurningTwilight()
@@ -108,6 +118,7 @@ public class SkyboxController : MonoBehaviour
         if (SoundManager.current != null) SoundManager.current.PlayBGM(1);
         if (SoundManager.current != null) SoundManager.current.ToggleRainSound(true, false);
         if (SoundManager.current != null) SoundManager.current.ToggleThunderSFX(false);
+        lightninglight.enabled = false; // Turn off
     }
 
     public void TurningEvening()
@@ -118,6 +129,7 @@ public class SkyboxController : MonoBehaviour
         if (SoundManager.current != null) SoundManager.current.PlayBGM(2);
         if (SoundManager.current != null) SoundManager.current.ToggleRainSound(true, true);
         if (SoundManager.current != null) SoundManager.current.ToggleThunderSFX(true);
+        
     }
 
     public void TimeChangeAuto()

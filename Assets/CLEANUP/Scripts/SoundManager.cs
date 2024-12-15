@@ -27,7 +27,22 @@ public class SoundManager : MonoBehaviour
     private int m_currentActiveBGMAudioSourcesIndex; // 0 for morning, 1 for twilight, 2 for evening, -1 for nothing being played
     private Coroutine m_thunderCoroutine;
 
+
+    [Header("=======Lightning Light=======")]
+    [SerializeField, Tooltip("Directional Light for lightning")] private GameObject Lightning;
+    private Light lightninglight;
+
+    public float minInterval = 2.0f; // Minimum time between flashes (adjust for less frequent flashes)
+    public float maxInterval = 8.0f; // Maximum time between flashes (adjust for less frequent flashes)
+    public float flashDuration = 1.0f; // Duration of each flash
+
+    void Start(){
+        lightninglight = Lightning.GetComponent<Light>();
+        //lightninglight.enabled = false; // Turn off
+    }
+
     private void Awake() {
+
         current = this;
         m_sfxMapper = new Dictionary<string, AudioSource>();
         m_currentActiveBGMAudioSourcesIndex = -1;
@@ -124,8 +139,11 @@ public class SoundManager : MonoBehaviour
     {
         if (m_thunderCoroutine != null)
             StopCoroutine(m_thunderCoroutine);
-        if (enable)
+        if (enable){
             m_thunderCoroutine = StartCoroutine(PlayThunderSFX());
+        }else{
+            lightninglight.enabled = false; // Turn off
+        }
     }
 
     public IEnumerator PlayThunderSFX()
@@ -135,8 +153,19 @@ public class SoundManager : MonoBehaviour
             float randomTime = Random.Range(-m_thunderGapRandomness, m_thunderGapRandomness);
             yield return new WaitForSeconds(m_thunderGap + randomTime);
 
+            float randomFlash= Random.Range(0.1f, flashDuration);
+
+
+
             int r = Random.Range(0, m_thunderClips.Count);
             m_thunderAudioSource.PlayOneShot(m_thunderClips[r]);
+
+
+            lightninglight.enabled = true;
+            yield return new WaitForSeconds(randomFlash); // Keep the light on for the flash duration
+            lightninglight.enabled = false;
+        
+
         }
     }
 
@@ -179,5 +208,10 @@ public class SoundManager : MonoBehaviour
         m_sfxMapper[name].Stop();
         m_sfxMapper[name].volume = startVolume; // reset the volume
     }
+
+
+
+    
+    
     
 }
