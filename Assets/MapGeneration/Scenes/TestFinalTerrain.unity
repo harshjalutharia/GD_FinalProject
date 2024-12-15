@@ -7489,6 +7489,7 @@ MonoBehaviour:
   onGenerationEnd:
     m_PersistentCalls:
       m_Calls: []
+  m_generatedItemsCount: 0
   m_debugPositionRef: {fileID: 0}
   m_debugRadius: 10
 --- !u!4 &1226547438
@@ -8025,7 +8026,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 5158585984371833436, guid: d2d09a2757535f642b2db996820d3220, type: 2}
-  m_audioClip: {fileID: 8300000, guid: 347ed6714a9479b46b3e6a72d22b51e6, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 845292b0a36ed134bb405c6f44779989, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.25
   m_Pitch: 1
@@ -10692,7 +10693,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 5158585984371833436, guid: d2d09a2757535f642b2db996820d3220, type: 2}
-  m_audioClip: {fileID: 8300000, guid: 2caf12fc04159594b81322e72bbea4a3, type: 3}
+  m_audioClip: {fileID: 8300000, guid: a2906238e4375c14986931c044e4f83a, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.4
   m_Pitch: 1
