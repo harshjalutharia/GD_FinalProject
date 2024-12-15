@@ -910,7 +910,7 @@ public class PlayerMovement : MonoBehaviour
                 uprisingReady = false;
                 StartCoroutine(UprisingAcceleration());
             }
-            else
+            else if (!risingUpActivated || !Voronoi.current.playerRegion.destinationCollected)
             {
                 SpeechBubbleController.current.ShowText(SpeechBubbleController.current.textTemplates[0].text);
             }
