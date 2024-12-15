@@ -23,6 +23,10 @@ public class TutorialIconManager : MonoBehaviour
     public bool ringTutorialCompleted => m_ringTutorialCompleted;
     [SerializeField, Tooltip("Boost tutorial needs to be completed")] private bool m_boostTutorialCompleted = false;
     public bool boostTutorialCompleted => m_boostTutorialCompleted;
+    [SerializeField, Tooltip("Glide tutorial needs to be completed")] private bool m_glideTutorialCompleted = false;
+    public bool glideTutorialCompleted => m_glideTutorialCompleted;
+    [SerializeField, Tooltip("Fly tutorial needs to be completed")] private bool m_flyTutorialCompleted = false;
+    public bool flyTutorialCompleted => m_flyTutorialCompleted;
 
     private void Awake() {
         current = this;
@@ -90,12 +94,23 @@ public class TutorialIconManager : MonoBehaviour
         m_boostTutorialCompleted = true;
     }
 
-    
-    /*
-    private void Start() {
-        iconCanvas.SetActive(false); // Hide the icon at the start
+    public void InitializeGlideTutorial() {
+        // This tutorial is comprised of a single subtutorial: gliding in the air
+        // Let's make the glide icons appear
+        ShowGlideIcon();
+        // Unlike previous tutorials, we can't really do anything to check that we've done this successfully...
+        // ... So we just indicate the tutorial is complete
+        m_glideTutorialCompleted = true;
     }
-    */
+
+    public void InitializeFlyTutorial() {
+        // This tutorial is comprised of a single subtutorial: flying in the air
+        // Let's make the fly icons appear
+        ShowFlyIcon();
+        // Unlike previous tutorials, we can't really do anything to check that we've done this successfully...
+        // ... So we just indicate the tutorial is complete
+        m_flyTutorialCompleted = true;
+    }
 
     private void GetDeviceAction(InputAction.CallbackContext ctx) {
         string deviceName = ctx.action.activeControl.device.name;
@@ -146,7 +161,10 @@ public class TutorialIconManager : MonoBehaviour
     public void ShowBoostIcon() {
         if (CanvasController.current != null) CanvasController.current.ToggleBoostIcons(true);
     }
-    public void ShowJumpIcon() {
-        if (CanvasController.current != null) CanvasController.current.ToggleBoostIcons(true);
+    public void ShowGlideIcon() {
+        if (CanvasController.current != null) CanvasController.current.ToggleGlideIcons(true);
+    }
+    public void ShowFlyIcon() {
+        if (CanvasController.current != null) CanvasController.current.ToggleFlyIcons(true);
     }
 }

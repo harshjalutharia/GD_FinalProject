@@ -264,7 +264,7 @@ public class SessionManager2 : MonoBehaviour
         // Which region are we in?
         Region region = Voronoi.current.regions[destination.regionIndex];
         // Has this region regained its destination gem yet? If so, ring it.
-        if (region.destinationCollected && PlayerMovement.current.largeGemCollected < 4) {
+        if (gem.gemType == Gem.GemType.Destination && PlayerMovement.current.largeGemCollected < 4) {
             destination.PlayAudioSource();
             foreach(Gem g in region.smallGems) g.RingGem();
         }

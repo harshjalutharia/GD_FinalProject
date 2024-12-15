@@ -884,6 +884,7 @@ public class PlayerMovement : MonoBehaviour
                 ActivateRisingUp();
                 ActivatePBoosting();
                 ActivateAcceleration();
+                if (TutorialIconManager.current != null) TutorialIconManager.current.InitializeFlyTutorial();
             }
             if (largeGemCollected >= 2)
             {
@@ -891,6 +892,7 @@ public class PlayerMovement : MonoBehaviour
                 ActivateRisingUp();
                 ActivatePBoosting();
                 ActivateAcceleration();
+                if (TutorialIconManager.current != null) TutorialIconManager.current.InitializeGlideTutorial();
             }
             else if (largeGemCollected >= 1)
             {

@@ -70,6 +70,7 @@ public class CanvasController : MonoBehaviour
     [SerializeField, Tooltip("Refs. to the canvas groups for movement")]            private CanvasGroup[] m_movementGroups;
     [SerializeField, Tooltip("Refs. to the canvas groups for bell ringing")]        private CanvasGroup[] m_ringBellGroups;
     [SerializeField, Tooltip("Refs. to the canvas groups for boosting")]            private CanvasGroup[] m_boostGroups;
+    [SerializeField, Tooltip("Refs. to the canvas groups for gliding")]              private CanvasGroup[] m_glideGroups;
     [SerializeField, Tooltip("Refs. to the canvas groups for flying")]              private CanvasGroup[] m_flyGroups;
     [Space]
     [SerializeField, Tooltip("Is the gameplay canvas active?")]                     private bool m_gameplayCanvasActive = false;
@@ -208,6 +209,11 @@ public class CanvasController : MonoBehaviour
     }
     public void ToggleBoostIcons(bool setTo) {
         foreach(CanvasGroup group in m_boostGroups) {
+            SetCanvasGroupAlpha(group, setTo);
+        }
+    }
+    public void ToggleGlideIcons(bool setTo) {
+        foreach(CanvasGroup group in m_glideGroups) {
             SetCanvasGroupAlpha(group, setTo);
         }
     }
