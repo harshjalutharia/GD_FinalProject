@@ -139,7 +139,7 @@ public class LandmarkGenerator2 : MonoBehaviour
         Quaternion kingRotation = (kingDirection.magnitude == 0) 
             ? Quaternion.Euler(0f, m_prng.Next(0,360), 0f)
             : Quaternion.LookRotation(kingDirection.normalized, Vector3.up);
-        Landmark kingTower = InstantiateLandmark(m_kingBellTowerPrefab, terrainPoint, kingRotation);
+        Landmark kingTower = InstantiateLandmark(m_kingBellTowerPrefab, terrainPoint, kingRotation, true, 50f);
         kingTower.regionIndex = 0;
         Voronoi.current.regions[0].towerLandmark = kingTower;
 
@@ -151,7 +151,7 @@ public class LandmarkGenerator2 : MonoBehaviour
             Quaternion majorRotation = (majorDirection.magnitude == 0) 
                 ? Quaternion.Euler(0f, m_prng.Next(0,360), 0f)
                 : Quaternion.LookRotation(majorDirection.normalized, Vector3.up);
-            Landmark bellTower = InstantiateLandmark(m_majorBellTowerPrefab, terrainPoint, majorRotation);
+            Landmark bellTower = InstantiateLandmark(m_majorBellTowerPrefab, terrainPoint, majorRotation, true, 50f);
             bellTower.regionIndex = i;
             Voronoi.current.regions[i].towerLandmark = bellTower;
         }
@@ -166,7 +166,7 @@ public class LandmarkGenerator2 : MonoBehaviour
                     Quaternion minorRotation = (minorDirection.magnitude == 0) 
                         ? Quaternion.Euler(0f, m_prng.Next(0,360), 0f)
                         : Quaternion.LookRotation(minorDirection.normalized, Vector3.up);
-                    Landmark minorLandmark = InstantiateLandmark(m_minorBellTowerPrefab, terrainPoint, minorRotation);
+                    Landmark minorLandmark = InstantiateLandmark(m_minorBellTowerPrefab, terrainPoint, minorRotation, true, 30f);
                     minorLandmark.regionIndex = i;
                     Voronoi.current.regions[i].minorLandmarks.Add(minorLandmark);
                 }
@@ -189,7 +189,7 @@ public class LandmarkGenerator2 : MonoBehaviour
 
                     Vector3 direction = path.generatedPath[(pointsInEachSegment * i) + 1] - path.generatedPath[(pointsInEachSegment * i)];
                     direction.Normalize();
-                    InstantiateLandmark(m_archPrefab, path.generatedPath[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), false);
+                    InstantiateLandmark(m_archPrefab, path.generatedPath[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), false, 15f);
                     archPositions.Add(path.generatedPath[pointsInEachSegment * i]);
                 }
             }
@@ -199,11 +199,11 @@ public class LandmarkGenerator2 : MonoBehaviour
         onGenerationEnd?.Invoke();
     }
 
-    public Landmark InstantiateLandmark(Landmark prefab, Vector3 pos, Quaternion rot, bool addToLandmarks = true) {
+    public Landmark InstantiateLandmark(Landmark prefab, Vector3 pos, Quaternion rot, bool addToLandmarks = true, float treeRemovalRadius = 0f) {
         // Instantiate the landmark itself, given the prefab, position, and rotation
         Landmark newWeenie = Instantiate(prefab, pos, rot, m_landmarkParent) as Landmark;
         if (addToLandmarks) m_landmarks.Add(newWeenie);
-        if (VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(pos, 50f);
+        if (treeRemovalRadius > 0f && VegetationGenerator2.current != null) VegetationGenerator2.current.DeactivateTreesInRadius(pos, treeRemovalRadius);
         return newWeenie;
     }
 
