@@ -59,6 +59,7 @@ public class TerrainManager : MonoBehaviour
     private int m_totalNumChunks => m_numCols * m_numRows;
     [SerializeField, Tooltip("Is the terrain generated?")]  private bool m_generated = false;
     public bool generated => m_generated;
+    [Space]
     public UnityEvent onGenerationEnd;
 
     private Dictionary<Vector2Int, TerrainChunk> m_chunks;
@@ -71,9 +72,7 @@ public class TerrainManager : MonoBehaviour
         Debug.Log($"Provided seed {newSeed} not viable. Auto-generating new seed...");
         m_seed = UnityEngine.Random.Range(0, 1000001);
     }
-    public void SetSeed(int newSeed) {
-        m_seed = newSeed;
-    }
+    public void SetSeed(int newSeed) { m_seed = newSeed; }
 
     private void Awake() {
         current = this;
@@ -388,6 +387,10 @@ public class TerrainManager : MonoBehaviour
     public void ClearChildrenChunks() {
         TerrainChunk[] chunks = GetComponentsInChildren<TerrainChunk>();
         if (chunks.Length > 0) foreach(TerrainChunk chunk in chunks) DestroyImmediate(chunk.gameObject);
+    }
+
+    public void TerminateCoroutines() {
+        StopAllCoroutines();
     }
 
     private void OnDisable() {

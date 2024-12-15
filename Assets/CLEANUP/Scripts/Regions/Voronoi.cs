@@ -42,17 +42,17 @@ public class Voronoi : MonoBehaviour
     [SerializeField, Tooltip("The TextMeshProUGUI textbox for the current # of gems collected")]    private TextMeshProUGUI m_regionCurrentCountTextbox = null;
 
     [Header("=== Outputs - READ ONLY ===")]
-    [SerializeField, Tooltip("The voronoi segment centroids")] protected Centroid[] m_centroids;
+    protected Centroid[] m_centroids;
     private KDTree m_centroidsTree;
     [Space]
-    [SerializeField] private List<DBScanCluster> m_clusters;
+    private List<DBScanCluster> m_clusters;
     private KDTree m_clustersTree;
     [Space]
-    [SerializeField] private List<Region> m_regions;
     [SerializeField] private Region m_grasslandsRegion;
     [SerializeField] private Region m_oakRegion;
     [SerializeField] private Region m_birchRegion;
     [SerializeField] private Region m_spruceRegion;
+    private List<Region> m_regions;
     [SerializeField, Tooltip("Which region is the player currently in?")]   private Region m_playerRegion = null;
     // ---
     public KDTree normalizedCentroidsTree;
@@ -68,7 +68,7 @@ public class Voronoi : MonoBehaviour
     public Region playerRegion => m_playerRegion;
 
     [Header("=== On Completion ===")]
-    private bool m_generated = false;
+    [SerializeField] private bool m_generated = false;
     public bool generated => m_generated;
     public UnityEvent onGenerationEnd;
 

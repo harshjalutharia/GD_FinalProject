@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2226193122471759716}
   - component: {fileID: 4242721687716322376}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Collioder1 (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -65,7 +65,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2518458924900315906}
   - component: {fileID: 3306529961509404707}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Collioder1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 3331124062285925212}
   - component: {fileID: 1559523349650783756}
   - component: {fileID: 3504168879965321124}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Birch_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3340624459126905098}
   - component: {fileID: 4053629812601767593}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Collioder1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 2612187581226526964}
   - component: {fileID: 8565414131041750967}
   - component: {fileID: 7812076763004068124}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Birch_4_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -343,7 +343,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6084128215924173301}
   - component: {fileID: 7078485273525787628}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Birch 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -409,7 +409,7 @@ GameObject:
   m_Component:
   - component: {fileID: 896664491575376103}
   - component: {fileID: 2566240959517294254}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Collioder1 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -465,7 +465,7 @@ GameObject:
   - component: {fileID: 8064628501571909674}
   - component: {fileID: 8884418992067851776}
   - component: {fileID: 6676911537886014077}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Birch_4_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

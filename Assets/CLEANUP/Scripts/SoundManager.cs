@@ -51,42 +51,28 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void ToggleRainSound(bool enable, bool fastRain = false)
-    {
-        if (enable)
-        {
-            if (fastRain)
-            {
-                if (m_slowRainAudioSource.isPlaying)
-                    m_slowRainAudioSource.Stop();
+    public void ToggleRainSound(bool enable, bool fastRain = false) {
+        if (enable) {
+            if (fastRain) {
+                if (m_slowRainAudioSource.isPlaying) m_slowRainAudioSource.Stop();
                 m_fastRainAudioSource.Play();
             }
-            else
-            {
-                if (m_fastRainAudioSource.isPlaying)
-                    m_fastRainAudioSource.Stop();
+            else {
+                if (m_fastRainAudioSource.isPlaying) m_fastRainAudioSource.Stop();
                 m_slowRainAudioSource.Play();
             }
         }
-        else
-        {
-            if (m_slowRainAudioSource.isPlaying)
-                m_slowRainAudioSource.Stop();
-            if (m_fastRainAudioSource.isPlaying)
-                m_fastRainAudioSource.Stop();
+        else {
+            if (m_slowRainAudioSource.isPlaying) m_slowRainAudioSource.Stop();
+            if (m_fastRainAudioSource.isPlaying) m_fastRainAudioSource.Stop();
         }
     }
 
     // 0 for morning, 1 for twilight, 2 for evening, -1 for stopping BGM
-    public void PlayBGM(int audioSourceIndex)
-    {
-        if (audioSourceIndex == -1)
-        {
-            for (int i = 0; i < m_BGMAudioSources.Count; i++)
-            {
-                if (m_BGMAudioSources[i].isPlaying)
-                    StartCoroutine(FadeOutBGM(i, m_BGMFadeDuration / 2));
-                
+    public void PlayBGM(int audioSourceIndex) {
+        if (audioSourceIndex == -1) {
+            for (int i = 0; i < m_BGMAudioSources.Count; i++) {
+                if (m_BGMAudioSources[i].isPlaying) StartCoroutine(FadeOutBGM(i, m_BGMFadeDuration / 2));
             }
             return;
         }
@@ -97,14 +83,11 @@ public class SoundManager : MonoBehaviour
     }
 
     // index must be from 0 to 2
-    public IEnumerator FadeOutBGM(int audioSourceIndex, float fadeDuration)
-    {
-        if (audioSourceIndex >= 0 && audioSourceIndex <= 2 && m_BGMAudioSources.Count == 3)
-        {
+    public IEnumerator FadeOutBGM(int audioSourceIndex, float fadeDuration) {
+        if (audioSourceIndex >= 0 && audioSourceIndex <= 2 && m_BGMAudioSources.Count == 3) {
             float startVolume = m_BGMAudioSources[audioSourceIndex].volume;   //record initial volume
             float t = 0;
-            while (m_BGMAudioSources[audioSourceIndex].volume > 0.05f)
-            {
+            while (m_BGMAudioSources[audioSourceIndex].volume > 0.05f) {
                 m_BGMAudioSources[audioSourceIndex].volume = Mathf.Lerp(startVolume, 0, t / fadeDuration);
                 t += Time.deltaTime;
                 yield return null;
@@ -116,16 +99,13 @@ public class SoundManager : MonoBehaviour
     }
 
     // index must be from 0 to 2
-    public IEnumerator FadeInBGM(int audioSourceIndex, float fadeDuration)
-    {
-        if (audioSourceIndex >= 0 && audioSourceIndex <= 2 && m_BGMAudioSources.Count == 3)
-        {
+    public IEnumerator FadeInBGM(int audioSourceIndex, float fadeDuration) {
+        if (audioSourceIndex >= 0 && audioSourceIndex <= 2 && m_BGMAudioSources.Count == 3) {
             float finalVolume = m_BGMAudioSources[audioSourceIndex].volume;   //record final volume
             m_BGMAudioSources[audioSourceIndex].Play();
             m_BGMAudioSources[audioSourceIndex].volume = 0.01f;
             float t = 0;
-            while (m_BGMAudioSources[audioSourceIndex].volume < finalVolume - 0.05f)
-            {
+            while (m_BGMAudioSources[audioSourceIndex].volume < finalVolume - 0.05f) {
                 m_BGMAudioSources[audioSourceIndex].volume = Mathf.Lerp(0, finalVolume, t / fadeDuration);
                 t += Time.deltaTime;
                 yield return null;
@@ -135,37 +115,25 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void ToggleThunderSFX(bool enable)
-    {
-        if (m_thunderCoroutine != null)
-            StopCoroutine(m_thunderCoroutine);
-        if (enable){
-            m_thunderCoroutine = StartCoroutine(PlayThunderSFX());
-        }else{
-            lightninglight.enabled = false; // Turn off
-        }
+    public void ToggleThunderSFX(bool enable) {
+        if (m_thunderCoroutine != null) StopCoroutine(m_thunderCoroutine);
+        if (enable)                     m_thunderCoroutine = StartCoroutine(PlayThunderSFX());
+        else                            lightninglight.enabled = false; // Turn off
     }
 
-    public IEnumerator PlayThunderSFX()
-    {
-        while (true)
-        {
+    public IEnumerator PlayThunderSFX() {
+        while (true) {
             float randomTime = Random.Range(-m_thunderGapRandomness, m_thunderGapRandomness);
             yield return new WaitForSeconds(m_thunderGap + randomTime);
 
             float randomFlash= Random.Range(0.1f, flashDuration);
 
-
-
             int r = Random.Range(0, m_thunderClips.Count);
             m_thunderAudioSource.PlayOneShot(m_thunderClips[r]);
-
 
             lightninglight.enabled = true;
             yield return new WaitForSeconds(randomFlash); // Keep the light on for the flash duration
             lightninglight.enabled = false;
-        
-
         }
     }
 
@@ -194,8 +162,7 @@ public class SoundManager : MonoBehaviour
         StartCoroutine(FadeOutCoroutine(name, fadeDuration));
     }
     
-    private IEnumerator FadeOutCoroutine(string name, float fadeDuration)
-    {
+    private IEnumerator FadeOutCoroutine(string name, float fadeDuration) {
         float startVolume = m_sfxMapper[name].volume;   //record initial volume
         float t = 0;
         while (m_sfxMapper[name].volume > 0.05f)
@@ -208,10 +175,4 @@ public class SoundManager : MonoBehaviour
         m_sfxMapper[name].Stop();
         m_sfxMapper[name].volume = startVolume; // reset the volume
     }
-
-
-
-    
-    
-    
 }

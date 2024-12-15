@@ -127,6 +127,10 @@ public class LandmarkGenerator2 : MonoBehaviour
             return;
         }
 
+        StartCoroutine(GenerateCoroutine());
+    }
+
+    private IEnumerator GenerateCoroutine() {
         // Initialize random number generator
         m_prng = new System.Random(m_seed);
 
@@ -143,6 +147,9 @@ public class LandmarkGenerator2 : MonoBehaviour
         kingTower.regionIndex = 0;
         Voronoi.current.regions[0].towerLandmark = kingTower;
 
+        Debug.Log("Generated Grasslands major landmark");
+        yield return null;
+
         // Major bell towers in other major regions' core clusters
         for (int i = 1; i < Voronoi.current.regions.Count; i++) {
             TerrainManager.current.TryGetPointOnTerrain(Voronoi.current.regions[i].coreCluster.centroid, out terrainPoint,
@@ -155,6 +162,9 @@ public class LandmarkGenerator2 : MonoBehaviour
             bellTower.regionIndex = i;
             Voronoi.current.regions[i].towerLandmark = bellTower;
         }
+
+        Debug.Log("Generated other regions' major landmark");
+        yield return null;
 
         // Minor bell towers in the regions' sub-clusters
         for (int i = 0; i < Voronoi.current.regions.Count; i++) {
@@ -169,13 +179,20 @@ public class LandmarkGenerator2 : MonoBehaviour
                     Landmark minorLandmark = InstantiateLandmark(m_minorBellTowerPrefab, terrainPoint, minorRotation, true, 50f);
                     minorLandmark.regionIndex = i;
                     Voronoi.current.regions[i].minorLandmarks.Add(minorLandmark);
+
+                    yield return null;
                 }
             }
         }
 
+        Debug.Log("Generated minor bell towers");
+
         var generatedPaths = GeneratePathsBetweenLandmarks();
 
+        Debug.Log("Generated paths between landmarks");
+
         if (m_archPrefab != null) {
+            Debug.Log("Generating arches along pathways");
             List<Vector3> archPositions = new List<Vector3>();
             // Spawn arches in the paths generated
             foreach (var path in generatedPaths) {
@@ -191,10 +208,12 @@ public class LandmarkGenerator2 : MonoBehaviour
                     direction.Normalize();
                     InstantiateLandmark(m_archPrefab, path.generatedPath[pointsInEachSegment * i], Quaternion.LookRotation(direction, Vector3.up), false, 40f);
                     archPositions.Add(path.generatedPath[pointsInEachSegment * i]);
+                    yield return null;
                 }
             }
         }
 
+        Debug.Log("Landmark Generation Completed");
         m_generated = true;
         onGenerationEnd?.Invoke();
     }

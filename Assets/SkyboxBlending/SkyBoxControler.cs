@@ -43,40 +43,29 @@ public class SkyboxController : MonoBehaviour
     [Header("=======Lightning Light=======")]
     [SerializeField, Tooltip("Directional Light for lightning")] private GameObject Lightning;
     private Light lightninglight;
-
-
     
-    
-    private void OnValidate()
-    {
-        if (sun != null)
-        {
+    private void OnValidate() {
+        if (sun != null) {
             UpdateSunRotation();
             UpdateLighting();
         }
     }
     
-    private void Awake()
-    {
+    private void Awake() {
         current = this;
     }
 
-    void Start()
-    {
+    void Start() {
         sunlight = sun.GetComponent<Light>();
         fadeObject = Cloud.GetComponent<FadeObject>();
         lightninglight = Lightning.GetComponent<Light>();
 
-        if (fadeObject == null)
-        {
-            Debug.LogError("FadeObject script is not attached to the Cloud GameObject.");
-        }
+        if (fadeObject == null) Debug.LogError("FadeObject script is not attached to the Cloud GameObject.");
 
         TurningMorning();
     }
 
-    void Update()
-    {
+    void Update() {
         if (Input.GetKeyDown(KeyCode.Alpha8)) TurningMorning();
         else if (Input.GetKeyDown(KeyCode.Alpha9)) TurningTwilight();
         else if (Input.GetKeyDown(KeyCode.Alpha0)) TurningEvening();
@@ -98,8 +87,7 @@ public class SkyboxController : MonoBehaviour
         UpdateLighting();
     }
 
-    public void TurningMorning()
-    {
+    public void TurningMorning() {
         StartCoroutine(StartFadeTransition(daySkyBox, 11f));
         //RenderSettings.skybox = daySkyBox;
         if (RainController.current != null) RainController.current.ToggleRain(false, false); // stop the rain
@@ -132,38 +120,27 @@ public class SkyboxController : MonoBehaviour
         
     }
 
-    public void TimeChangeAuto()
-    {
+    public void TimeChangeAuto() {
         if (daytime == Daytime.Morning1){
             daytime = Daytime.Morning2;  // do not change time for the first time
-           
         }
-        else if (daytime == Daytime.Morning2)
-        {
+        else if (daytime == Daytime.Morning2) {
             TurningTwilight();
-            daytime = Daytime.Twilight;
-           
+            daytime = Daytime.Twilight;  
         }
-        else if (daytime == Daytime.Twilight)
-        {
+        else if (daytime == Daytime.Twilight) {
             TurningEvening();
             daytime = Daytime.Evening;
-            
         }
-        else if (daytime == Daytime.Evening)
-        {
+        else if (daytime == Daytime.Evening) {
             TurningMorning();
             daytime = Daytime.Morning1;
-            
         }
     }
 
-    private IEnumerator StartFadeTransition(Material skyboxMaterial, float timeTo)
-    {
+    private IEnumerator StartFadeTransition(Material skyboxMaterial, float timeTo) {
         sunlight = sun.GetComponent<Light>();
-        if (fadeObject != null)
-        {
-            
+        if (fadeObject != null) {
             yield return new WaitForSeconds(2.5f);
             Debug.Log("Wait for 2.5 sec");
             sunlight.intensity = 1.5f;
@@ -174,31 +151,25 @@ public class SkyboxController : MonoBehaviour
         }
     }
 
-    private IEnumerator WaitForFadeOut(Material skyboxMaterial)
-    {
+    private IEnumerator WaitForFadeOut(Material skyboxMaterial) {
         sunlight = sun.GetComponent<Light>();
         yield return new WaitForSeconds(fadeObject.fadeDuration); // Wait for fade-in to complete
         RenderSettings.skybox = skyboxMaterial;
-        
         fadeObject.StartFadeOut(); // Start fade-out after changing
-        
         sunlight.intensity = 1.0f;
     }
 
-    private void StartChangeTimeOfDay(float newTime)
-    {
+    private void StartChangeTimeOfDay(float newTime) {
         targetTimeOfDay = newTime;
         timeChangeProgress = 0f;
     }
 
-    private void UpdateSunRotation()
-    {
+    private void UpdateSunRotation() {
         float sunRotation = Mathf.Lerp(-90, 270, timeOfDay / 24f);
         sun.transform.rotation = Quaternion.Euler(sunRotation, 0f, 0f);
     }
 
-    private void UpdateLighting()
-    {
+    private void UpdateLighting() {
         sunlight = sun.GetComponent<Light>();
 
         float timeFraction = timeOfDay / 24f;

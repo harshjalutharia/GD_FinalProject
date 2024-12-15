@@ -6617,6 +6617,7 @@ MonoBehaviour:
   m_maxGemCountPerRegion: 10
   m_destinationGems: []
   m_smallGems: []
+  m_generated: 0
   onGenerationEnd:
     m_PersistentCalls:
       m_Calls: []
@@ -7490,8 +7491,6 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_generatedItemsCount: 0
-  m_debugPositionRef: {fileID: 0}
-  m_debugRadius: 10
 --- !u!4 &1226547438
 Transform:
   m_ObjectHideFlags: 0
@@ -10458,6 +10457,7 @@ MonoBehaviour:
     destinationCollected: 0
     towerLandmark: {fileID: 0}
     minorLandmarks: []
+  m_generated: 0
   onGenerationEnd:
     m_PersistentCalls:
       m_Calls: []
@@ -11491,6 +11491,10 @@ PrefabInstance:
     - target: {fileID: 476452817469867417, guid: c1125d07069a4c44eb71793d11bd93b8, type: 3}
       propertyPath: near clip plane
       value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 476452817469867417, guid: c1125d07069a4c44eb71793d11bd93b8, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 11127
       objectReference: {fileID: 0}
     - target: {fileID: 609291592816136480, guid: c1125d07069a4c44eb71793d11bd93b8, type: 3}
       propertyPath: player

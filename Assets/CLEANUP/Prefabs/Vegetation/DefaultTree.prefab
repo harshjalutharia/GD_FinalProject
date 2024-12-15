@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1225188966108482525}
   - component: {fileID: 7209341326162106529}
   - component: {fileID: 6813138598534170714}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -152,6 +152,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: LOD2
       objectReference: {fileID: 0}
+    - target: {fileID: 570905906132603332, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 2187513939821381110, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 2187513939821381110, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -176,9 +184,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: DefaultTree
       objectReference: {fileID: 0}
+    - target: {fileID: 5361428799875542787, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 6567692543045439752, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
       propertyPath: m_Name
       value: LOD1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6567692543045439752, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 6631951447468464209, guid: c31bf8ec8e29cd74f9fb9a970fde7a53, type: 3}
       propertyPath: m_Mesh

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4636948455220629738}
   - component: {fileID: 7209982951378314071}
   - component: {fileID: 4886717044961258578}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,6 +96,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LOD1
       objectReference: {fileID: 0}
+    - target: {fileID: 163004174657376329, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 2256188382494855856, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
       propertyPath: m_Size
       value: 7.8219233
@@ -156,6 +160,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LOD2
       objectReference: {fileID: 0}
+    - target: {fileID: 4396159832342145111, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 4604217538834115015, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -163,6 +171,10 @@ PrefabInstance:
     - target: {fileID: 5935278547815300987, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
       propertyPath: m_Name
       value: AppleTree
+      objectReference: {fileID: 0}
+    - target: {fileID: 5935278547815300987, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 6419187236850804161, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -175,6 +187,10 @@ PrefabInstance:
     - target: {fileID: 6419187236850804161, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7513603357302551873, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 7513603357302551873, guid: e05ae677c7b3bc546bd36b488586fb0c, type: 3}
       propertyPath: m_IsActive

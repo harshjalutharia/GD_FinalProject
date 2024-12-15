@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6268118211974766486}
   - component: {fileID: 3323049476782845941}
   - component: {fileID: 2512620817264521648}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Birch_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 6375856912649201621}
   - component: {fileID: 4213821216995808031}
   - component: {fileID: 3906193668227439982}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Birch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -179,7 +179,7 @@ GameObject:
   - component: {fileID: 8397272031226219044}
   - component: {fileID: 2089690384647537139}
   - component: {fileID: 3147135593663771166}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Birch 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -262,7 +262,7 @@ GameObject:
   - component: {fileID: 1471272864539575790}
   - component: {fileID: 6476243913848883251}
   - component: {fileID: 2814727391430817884}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Birch_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

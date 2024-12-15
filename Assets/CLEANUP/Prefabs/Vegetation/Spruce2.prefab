@@ -81,12 +81,24 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6636346802525006572}
     - target: {fileID: 3013064464910278001, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 3013064464910278001, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3731095390187986728, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
       propertyPath: m_Name
-      value: Spruce2-Variant
+      value: Spruce2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731095390187986728, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 3828991336546146468, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 4945563664222880364, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -101,8 +113,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5289512668786254364, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 5289512668786254364, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6119422277959754521, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 6610538961354909891, guid: 04054a3651be51d4193414f850cf6bde, type: 3}
       propertyPath: m_LocalPosition.x

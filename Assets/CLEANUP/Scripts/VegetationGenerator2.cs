@@ -30,18 +30,15 @@ public class VegetationGenerator2 : MonoBehaviour
     [SerializeField, Tooltip("How many vegetation items do you spawn at a single time?")]               private int m_coroutineNumItems = 3;
     
     [Header("=== Outputs - READ ONLY ===")]
-    [SerializeField, Tooltip("The generated vegetation items")] private List<GameObject> m_generatedVegetation;
+    private List<GameObject> m_generatedVegetation;
     public List<GameObject> generatedVegetation => m_generatedVegetation;
     private List<Vector3> m_generatedPoints;
+    private int m_generatedItemsCount;
 
     [Header("=== On Generation End")]
     [SerializeField, Tooltip("Has vegetation been generated?")] private bool m_generated = false;
     public bool generated => m_generated;
     public UnityEvent onGenerationEnd;
-
-    private IEnumerator m_spawnCoroutine;
-    private Queue<ToSpawn> m_coroutineSpawnQueue;
-    [SerializeField] private int m_generatedItemsCount;
 
     private KDQuery m_vegetationQuery;
     private KDTree m_vegetationTree;
@@ -53,19 +50,6 @@ public class VegetationGenerator2 : MonoBehaviour
         public Quaternion rotation;
         public Vector3 scale;
     }
-
-    #if UNITY_EDITOR
-    [Header("=== Debug Tree Indice Radius Search ===")]
-    [SerializeField] private Transform m_debugPositionRef;
-    [SerializeField] private float m_debugRadius = 10f;
-    void OnDrawGizmos() {
-        if (!m_generated || m_debugPositionRef == null) return;
-        List<int> treeIndices = QueryTreeIndicesInRadius(m_debugPositionRef.position, m_debugRadius);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(m_debugPositionRef.position, m_debugRadius);
-        foreach(int i in treeIndices) Gizmos.DrawSphere(m_generatedPoints[i], 10f);
-    }
-    #endif
 
     private void Awake() {
         current = this;
@@ -107,7 +91,8 @@ public class VegetationGenerator2 : MonoBehaviour
 
         // Initialize the spawn coroutine. This requires:
         m_generatedItemsCount = 0;                      // Keeping a count of the total number of generated items
-        m_coroutineSpawnQueue = new Queue<ToSpawn>();   // The queue when instantiating the generated items
+        m_generatedVegetation = new List<GameObject>(); // The list of vegetation items generated;
+        m_generatedPoints = new List<Vector3>();        // KDTree for easy vegetation search
 
         // We want to iterate across the entire map. At most, the total number of possible vegetation elements we can add is m_width*m_height.
         // We first start by iterating through our map
@@ -145,74 +130,42 @@ public class VegetationGenerator2 : MonoBehaviour
                 Vector3 pos = point;
                 Quaternion rot = normalRotation * Quaternion.Euler(0f, m_prng.Next(0,360), 0f);
                 Vector3 scale = Vector3.one * (float)m_prng.Next(Mathf.RoundToInt(prefabs[prefabIndex].scaleRange.x*1000f), Mathf.RoundToInt(prefabs[prefabIndex].scaleRange.y*1000f))/1000f;
-
-                // Initialize a `ToSpawn` object, populate it, and add it to the spawn queue for our spawn coroutine
-                ToSpawn toSpawn = new ToSpawn { prefab=prefab, position=pos, rotation=rot, scale=scale };
-                m_coroutineSpawnQueue.Enqueue(toSpawn);
-
-                // Break early of the total # of generated trees already has reached the max number possible.
+         
+                // Instantiate the necessary prefab with the given position and rotation
                 m_generatedItemsCount++;
-                if (((float)m_generatedItemsCount) % m_coroutineNumItems == 0) yield return null;
-                if (m_generatedItemsCount >= m_maxGeneratedItems) break;
-            }
-            if (m_generatedItemsCount >= m_maxGeneratedItems) break;
-        }
-
-        Debug.Log("Vegetation Generator 2: Finished determining spawn points for vegetation. Starting spawning");
-
-        // At the end, we must start the spawn coroutine;
-        m_spawnCoroutine = SpawnCoroutine();            // The coroutine for spawning the vegetation items
-        StartCoroutine(m_spawnCoroutine);
-    }
-
-    private IEnumerator SpawnCoroutine() {
-        // Initialize waitforseconds delay
-        WaitForSeconds spawnDelay = new WaitForSeconds(m_coroutineSpawnDelay);
-
-        // Let's actually wait for the spawn delay first, to give the system enough time to generate some number of trees to generate
-        yield return spawnDelay;
-
-        // Because we want to form a KDTree for easy vegetation search, we must initialize a list o positions here
-        m_generatedPoints = new List<Vector3>();
-
-        // Track timing
-        float startTime = Time.time;
-
-        // initiate loop
-        while(m_generatedVegetation.Count < m_generatedItemsCount) {
-            // Check if we still have something to spawn. If not, skip
-            if (m_coroutineSpawnQueue.Count == 0) {
-                yield return null;
-                // break early if the time diff. between the last start time and the current timestamp is longer than 3
-                if (Time.time - startTime > 1f) break;
-                continue;
-            }
-
-            // Get the first object in the queue
-            ToSpawn toSpawn = m_coroutineSpawnQueue.Dequeue();
-
-            // Instantiate the necessary prefab with the given position and rotation
-            GameObject t = Instantiate (toSpawn.prefab, toSpawn.position , toSpawn.rotation, m_vegetationParent);
-            t.transform.localScale = toSpawn.scale;
+                GameObject t = Instantiate (prefab, pos, rot, m_vegetationParent);
+                t.transform.localScale = scale;
+                    
+                // Add it to our list of generated vegetation
+                m_generatedVegetation.Add(t);
+                m_generatedPoints.Add(pos);
                 
-            // Add it to our list of generated vegetation
-            m_generatedVegetation.Add(t);
-            m_generatedPoints.Add(toSpawn.position);
-
-            // Update the start time, since we just spawned a tree
-            startTime = Time.time;
-
-            // We only yield return in certain caess
-            if ( ((float)m_generatedVegetation.Count) % m_coroutineNumItems == 0 ) yield return spawnDelay;
+                // Break early of the total # of generated trees already has reached the max number possible.
+                //if (m_generatedItemsCount >= m_coroutineNumItems) {
+                    yield return null;
+                //    m_generatedItemsCount = 0;
+                //}
+                if (m_generatedVegetation.Count >= m_maxGeneratedItems) break;
+            }
+            if (m_generatedVegetation.Count >= m_maxGeneratedItems) break;
         }
+
+        yield return null;
+        Debug.Log("Vegetation Generator 2: Finished determining spawn points for vegetation. Starting spawning");
 
         // When reaching this point, we have generated all our trees. 
         m_vegetationQuery = new KDQuery();
         m_vegetationTree = new KDTree(m_generatedPoints.ToArray(), 32);
 
+        Debug.Log("Vegetation Generator 2: KD Tree generated");
+
         // If there's an event callback we want to call, we do so here.
+        yield return new WaitForSecondsRealtime(5f);
+        Debug.Log("FUCK NO");
         m_generated = true;
+        Debug.Log("FUCK YEAH");
         onGenerationEnd?.Invoke();
+        Debug.Log("FUCK ALL");
     }
 
     public List<int> QueryTreeIndicesInRadius(Vector3 query, float radius) {
@@ -227,6 +180,10 @@ public class VegetationGenerator2 : MonoBehaviour
         List<int> results = QueryTreeIndicesInRadius(query, radius);
         if (results == null) return;
         foreach(int i in results) m_generatedVegetation[i].SetActive(false);
+    }
+
+    public void TerminateCoroutines() {
+        StopAllCoroutines();
     }
 
     private void OnValidate() {

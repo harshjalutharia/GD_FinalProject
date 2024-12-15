@@ -50,7 +50,7 @@ public class GemGenerator2 : MonoBehaviour
     private KDTree m_gemTree;
 
     [Header("=== Post-Generation ===")]
-    private bool m_generated = false;
+    [SerializeField] private bool m_generated = false;
     public bool generated => m_generated;
     public UnityEvent onGenerationEnd;
 

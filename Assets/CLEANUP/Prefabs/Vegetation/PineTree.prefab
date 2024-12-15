@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6759397268290225124}
   - component: {fileID: 6330263488940827380}
   - component: {fileID: 915124482459922127}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: LOD3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,12 +97,20 @@ PrefabInstance:
       value: LOD0
       objectReference: {fileID: 0}
     - target: {fileID: 649165938051307759, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 649165938051307759, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1720328307436147672, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
       propertyPath: m_Name
       value: LOD2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1720328307436147672, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 1870679391148259636, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
       propertyPath: m_Size
@@ -154,7 +162,11 @@ PrefabInstance:
       objectReference: {fileID: 915124482459922127}
     - target: {fileID: 6117071349010126079, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
       propertyPath: m_Name
-      value: PT_Pine_Tree_03_green Variant
+      value: PineTree
+      objectReference: {fileID: 0}
+    - target: {fileID: 6117071349010126079, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 6203392517139920881, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
       propertyPath: m_Mesh
@@ -175,6 +187,10 @@ PrefabInstance:
     - target: {fileID: 8169898343365794049, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
       propertyPath: m_Name
       value: LOD1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8169898343365794049, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 8379061657498843178, guid: d250af4848f51154f9a2bf6a85b60ac2, type: 3}
       propertyPath: m_Mesh

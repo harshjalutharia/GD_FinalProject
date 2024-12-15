@@ -69,60 +69,73 @@ public class SessionManager2 : MonoBehaviour
             return;
         }
 
-        //Assuming we reach this far, we can now start the terrain generation first and foremost
-        TerrainManager.current.SetSeed(m_seed);
-        TerrainManager.current.onGenerationEnd.AddListener(this.OnTerrainGenerated);
-        TerrainManager.current.Generate();
-
-        // We can then toggle the player movement to set its boolean checks
+        // Assuming we reach this far, we can then toggle the player movement to set its boolean checks
         PlayerMovement.current.canMove = false;
         PlayerMovement.current.canJump = false;
         PlayerMovement.current.canSprint = true; // doesn't really matter if there's no other input
+
+        // We can now start the terrain generation first and foremost
+        TerrainManager.current.Generate();
     }
 
     public bool TryCheckGenerators() {
-        return TerrainManager.current != null
-            && Voronoi.current != null
-            && VegetationGenerator2.current != null
-            && LandmarkGenerator2.current != null
-            && GemGenerator2.current != null;
-    }
-    
-    public void OnTerrainGenerated() { 
-        Debug.Log("Session Manager 2: Terrain Generation Acknowledged. Starting Voronoi Generation");
-        // Initialize voronoi generation
+        // Return false if any of these generators are not present
+        if (TerrainManager.current == null
+            || Voronoi.current == null
+            || VegetationGenerator2.current == null
+            || LandmarkGenerator2.current == null
+            || GemGenerator2.current == null) return false;
+
+        // Update each generator with seed and dimensions
+        // - Terrain Manager
+        TerrainManager.current.SetSeed(m_seed);
+        TerrainManager.current.onGenerationEnd.AddListener(this.OnTerrainGenerated);
+        // - Voronoi
         Voronoi.current.SetSeed(m_seed);
         Voronoi.current.SetDimensions(TerrainManager.current.width, TerrainManager.current.height);
         Voronoi.current.onGenerationEnd.AddListener(this.OnVoronoiGenerated);
+        // - Vegetation
+        VegetationGenerator2.current.SetSeed(m_seed);
+        VegetationGenerator2.current.SetDimensions(TerrainManager.current.width, TerrainManager.current.height);
+        VegetationGenerator2.current.onGenerationEnd.AddListener(this.OnVegetationGenerated);
+        // - Landmarks
+        LandmarkGenerator2.current.SetSeed(m_seed);
+        LandmarkGenerator2.current.onGenerationEnd.AddListener(this.OnLandmarksGenerated);
+        // - Gems
+        GemGenerator2.current.SetSeed(m_seed);
+        GemGenerator2.current.SetDimensions(TerrainManager.current.width, TerrainManager.current.height);
+        GemGenerator2.current.onGenerationEnd.AddListener(this.OnGemsGenerated);
+        
+        // Return that we've validated everything
+        return true;
+    }
+    
+    // Initialize voronoi generation
+    public void OnTerrainGenerated() { 
+        TerrainManager.current.TerminateCoroutines();
+        Debug.Log("Session Manager 2: Terrain Generation Acknowledged. Starting Voronoi Generation");
         Voronoi.current.Generate();
     }
+    // Initialize vegetation generation
     public void OnVoronoiGenerated() {
         Debug.Log("Session Manager 2: Voronoi Generation Acknowledged. Starting Vegetation Generation");
         // Toggle the loading screen to show that terrain generation has finished, if canvas controller exists
         if (CanvasController.current != null) CanvasController.current.ToggleLoadedIcon("Terrain");
-        // Initialize vegetation generation
-        VegetationGenerator2.current.SetSeed(m_seed);
-        VegetationGenerator2.current.SetDimensions(TerrainManager.current.width, TerrainManager.current.height);
-        VegetationGenerator2.current.onGenerationEnd.AddListener(this.OnVegetationGenerated);
         VegetationGenerator2.current.Generate();
     }
+    // Initialize landmark generation
     public void OnVegetationGenerated() {
+        VegetationGenerator2.current.TerminateCoroutines();
         Debug.Log("Session Manager 2: Vegetation Generated");
         // Toggle the loading screen to show that vegetation generation has finished, if canvas controller exists
         if (CanvasController.current != null) CanvasController.current.ToggleLoadedIcon("Trees");
-        // Initialize landmark generation
-        LandmarkGenerator2.current.SetSeed(m_seed);
-        LandmarkGenerator2.current.onGenerationEnd.AddListener(this.OnLandmarksGenerated);
         LandmarkGenerator2.current.Generate();
     }
+    // Initialize gem generation
     public void OnLandmarksGenerated() {
         Debug.Log("Session Manager 2: Landmarks Generated");
         // Initialize transition from loading to skip.
         if (CanvasController.current != null) CanvasController.current.ToggleLoadingIconsGroup(false);
-        // Initialize gem generation
-        GemGenerator2.current.SetSeed(m_seed);
-        GemGenerator2.current.SetDimensions(TerrainManager.current.width, TerrainManager.current.height);
-        GemGenerator2.current.onGenerationEnd.AddListener(this.OnGemsGenerated);
         GemGenerator2.current.Generate();
     }
     public void OnGemsGenerated() {
@@ -321,13 +334,13 @@ public class SessionManager2 : MonoBehaviour
 
     private void OnDestroy() {
         StopAllCoroutines();
-        // All managers - remove listeners
-        if (TerrainManager.current != null) TerrainManager.current.onGenerationEnd.RemoveListener(this.OnTerrainGenerated);
-        if (Voronoi.current != null) Voronoi.current.onGenerationEnd.RemoveListener(this.OnVoronoiGenerated);
-        if (VegetationGenerator2.current != null) VegetationGenerator2.current.onGenerationEnd.RemoveListener(this.OnVegetationGenerated);
-        if (GemGenerator2.current != null) GemGenerator2.current.onGenerationEnd.RemoveListener(this.OnGemsGenerated);
-        if (LandmarkGenerator.current != null) LandmarkGenerator.current.onGenerationEnd.RemoveListener(this.OnLandmarksGenerated);
-        // input actions - remove listeners
+        // Remove listeners
+        TerrainManager.current.onGenerationEnd.RemoveListener(this.OnTerrainGenerated);
+        Voronoi.current.onGenerationEnd.RemoveListener(this.OnVoronoiGenerated);
+        VegetationGenerator2.current.onGenerationEnd.RemoveListener(this.OnVegetationGenerated);
+        LandmarkGenerator2.current.onGenerationEnd.RemoveListener(this.OnLandmarksGenerated);
+        GemGenerator2.current.onGenerationEnd.RemoveListener(this.OnGemsGenerated);
+        // ---
         m_skipCutsceneAction.action.performed -= InitializeGameplayAction;
         m_skipCutsceneAction.action.performed -= CloseEndingCutscene;
         m_playerRingBellAction.action.performed -= RingBellAction;

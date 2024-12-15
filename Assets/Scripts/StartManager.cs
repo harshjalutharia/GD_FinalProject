@@ -9,23 +9,11 @@ public class StartManager : MonoBehaviour
 {
     public static StartManager current;
 
-    [Header("=== Start Menu ===")]
     [SerializeField, Tooltip("Start menu canvas group")]    private CanvasGroup m_startMenuGroup;
     [SerializeField, Tooltip("Ref. to Seed Input Text")]    private TMP_InputField m_startSeedInputField;
     [SerializeField, Tooltip("Start camera fader")]         private CameraFader m_startCameraFader;
     [SerializeField, Tooltip("Start transition time")]      private float m_startTransitionTime = 1f;
-
-    [Header("=== Generation Engines ===")]
     [SerializeField, Tooltip("The user's set seed via UI")]                 private int m_userSeed;
-
-    [Header("=== UI References ===")]
-    [SerializeField] private CanvasGroup m_winMenuGroup;
-    [SerializeField] private CanvasGroup m_downloadGroup;
-    [SerializeField] private CanvasGroup m_loseMenuGroup;
-    [SerializeField] private CanvasGroup m_inGameMenuGroup;
-
-    [Header("=== Player Avatar References ===")]
-    [SerializeField] private CameraFader m_playerCameraFader;
 
     public void SetSeed(int inputSeed, bool setInputField = false) {
         m_userSeed = inputSeed;
@@ -53,20 +41,7 @@ public class StartManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // We Must have a terrrain manaager present in the scene
-        if (TerrainManager.current == null) {
-            Debug.LogError("Terrain Manager must exist in this scene");
-            return;
-        }
-        TerrainManager.current.SetSeed(m_userSeed);
-        TerrainManager.current.onGenerationEnd.AddListener(this.OnGenerationEnd);
-        TerrainManager.current.Generate();
-    }
-
-    public void OnGenerationEnd() {
-        TerrainManager.current.onGenerationEnd.RemoveListener(this.OnGenerationEnd);
-
-         // === Start Camera ===
+        // === Start Camera ===
         m_startCameraFader.gameObject.SetActive(true);
         m_startCameraFader.FadeIn();
 
