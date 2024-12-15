@@ -31,6 +31,8 @@ public class SoundManager : MonoBehaviour
     [Header("=======Lightning Light=======")]
     [SerializeField, Tooltip("Directional Light for lightning")] private GameObject Lightning;
     private Light lightninglight;
+    [SerializeField, Tooltip("Directional Light for lightning")] private GameObject Lightning2;
+    private Light lightninglight2;
 
     public float minInterval = 2.0f; // Minimum time between flashes (adjust for less frequent flashes)
     public float maxInterval = 8.0f; // Maximum time between flashes (adjust for less frequent flashes)
@@ -38,6 +40,7 @@ public class SoundManager : MonoBehaviour
 
     void Start(){
         lightninglight = Lightning.GetComponent<Light>();
+        lightninglight2 = Lightning2.GetComponent<Light>();
         //lightninglight.enabled = false; // Turn off
     }
 
@@ -118,7 +121,7 @@ public class SoundManager : MonoBehaviour
     public void ToggleThunderSFX(bool enable) {
         if (m_thunderCoroutine != null) StopCoroutine(m_thunderCoroutine);
         if (enable)                     m_thunderCoroutine = StartCoroutine(PlayThunderSFX());
-        else                            lightninglight.enabled = false; // Turn off
+        else                            {lightninglight.enabled = false; lightninglight2.enabled = false; }
     }
 
     public IEnumerator PlayThunderSFX() {
@@ -127,14 +130,32 @@ public class SoundManager : MonoBehaviour
             yield return new WaitForSeconds(m_thunderGap + randomTime);
 
             float randomFlash= Random.Range(0.1f, flashDuration);
+            float randomFlash2= Random.Range(0.1f, flashDuration);
 
             int r = Random.Range(0, m_thunderClips.Count);
             m_thunderAudioSource.PlayOneShot(m_thunderClips[r]);
 
-            lightninglight.enabled = true;
-            yield return new WaitForSeconds(randomFlash); // Keep the light on for the flash duration
-            lightninglight.enabled = false;
+            // Start both flashes simultaneously
+            Coroutine flash1 = StartCoroutine(FlashLightning(lightninglight, randomFlash));
+            Coroutine flash2 = StartCoroutine(FlashLightning(lightninglight2, randomFlash2));
+
+            // Wait for both flashes to finish
+            yield return flash1;
+            yield return flash2;
+
+
         }
+    }
+
+    // Separate coroutine to handle individual light flashes
+    private IEnumerator FlashLightning(Light light, float duration) {
+
+        float randomWaittime =Random.Range( 0.0f, duration/2);
+
+        yield return new WaitForSeconds(randomWaittime);
+        light.enabled = true;
+        yield return new WaitForSeconds(duration); // Keep the light on for the duration
+        light.enabled = false;
     }
 
     public void PlaySFX(string name) {

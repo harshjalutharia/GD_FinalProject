@@ -43,6 +43,9 @@ public class SkyboxController : MonoBehaviour
     [Header("=======Lightning Light=======")]
     [SerializeField, Tooltip("Directional Light for lightning")] private GameObject Lightning;
     private Light lightninglight;
+
+    [SerializeField, Tooltip("Directional Light for lightning")] private GameObject Lightning2;
+    private Light lightninglight2;
     
     private void OnValidate() {
         if (sun != null) {
@@ -59,6 +62,7 @@ public class SkyboxController : MonoBehaviour
         sunlight = sun.GetComponent<Light>();
         fadeObject = Cloud.GetComponent<FadeObject>();
         lightninglight = Lightning.GetComponent<Light>();
+        lightninglight2 = Lightning2.GetComponent<Light>();
 
         if (fadeObject == null) Debug.LogError("FadeObject script is not attached to the Cloud GameObject.");
 
@@ -96,6 +100,7 @@ public class SkyboxController : MonoBehaviour
         if (SoundManager.current != null) SoundManager.current.ToggleThunderSFX(false);
 
         lightninglight.enabled = false; // Turn off
+        lightninglight2.enabled = false; // Turn off
     }
 
     public void TurningTwilight()
@@ -107,6 +112,7 @@ public class SkyboxController : MonoBehaviour
         if (SoundManager.current != null) SoundManager.current.ToggleRainSound(true, false);
         if (SoundManager.current != null) SoundManager.current.ToggleThunderSFX(false);
         lightninglight.enabled = false; // Turn off
+        lightninglight2.enabled = false; // Turn off
     }
 
     public void TurningEvening()
