@@ -94,9 +94,6 @@ public class TerrainManager : MonoBehaviour
 
         // Start Coroutine to generate materials
         StartCoroutine(GenerateMaterial());
-
-        // We CANNOT declare that we're ready - becuse we haven't initialized the chunks yet!
-        //StartCoroutine(GenerateMap());
     }
 
     public IEnumerator GenerateMaterial() {
@@ -228,8 +225,6 @@ public class TerrainManager : MonoBehaviour
                 clampedDistance = Mathf.Clamp(distance, 0, m_maxLOD);
             }
 
-        
-
             // Check if the LOD is different or not. If so, update
             // We don't need a coroutine because we already generated it. It's just about switching the model, which is a quick function call.
             if (chunkLOD != clampedDistance) chunk.SetLODMesh(clampedDistance);
@@ -255,10 +250,6 @@ public class TerrainManager : MonoBehaviour
         // Finally, combine the traversible and border values
         float terrainValue = traversible + border;
 
-        // Double check if this can be considered a min or max value in our noise range
-        //if (terrainValue < m_noiseRange.min) m_noiseRange.min = terrainValue;
-        //if (terrainValue > m_noiseRange.max) m_noiseRange.max = terrainValue;
-
         // Return the value.
         return terrainValue;
     }
@@ -276,22 +267,6 @@ public class TerrainManager : MonoBehaviour
             yield return null;
         }
     } 
-
-    /*
-    public void OnChunkNoiseCompletion(TerrainChunk chunk) {
-        // Remove the listener for noise generation
-        chunk.onNoiseGenerationEnd.RemoveListener(this.OnChunkNoiseCompletion);
-        
-        // Set this chunk's noise range to that determiend when calcualteing terrain values
-        chunk.SetMinMax(m_noiseRange);
-        
-        // Add the listener for chunk adjustment
-        chunk.onNoiseAdjustmentEnd.AddListener(this.OnChunkNoiseAdjustment);
-        
-        // And start the coroutine
-        StartCoroutine(chunk.AdjustHeightToFloor());
-    }
-    */
 
     public void OnChunkNoiseCompletion(TerrainChunk chunk) {
         // Increment our counter.
@@ -318,9 +293,7 @@ public class TerrainManager : MonoBehaviour
         // Firstly, remove the listener for noise adjustment
         chunk.onNoiseAdjustmentEnd.RemoveListener(this.OnChunkNoiseAdjustment);
         // Now, tell it to generate the materials
-        //chunk.onMaterialGenerationEnd.AddListener(this.OnChunkMaterialCompletion);
         chunk.onMeshGenerationEnd.AddListener(this.OnChunkMeshCompletion);
-        //StartCoroutine(chunk.GenerateMaterialCoroutine());
         StartCoroutine(chunk.GenerateMeshDataCoroutine());
     }
 
