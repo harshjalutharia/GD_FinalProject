@@ -728,7 +728,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 230539915}
   serializedVersion: 8
-  lengthInSec: 30
+  lengthInSec: 40
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -910,7 +910,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.8747983, b: 1, a: 1}
+      maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -1721,7 +1721,7 @@ ParticleSystem:
       repeatInterval: 0.02
       probability: 1
   SizeModule:
-    enabled: 0
+    enabled: 1
     curve:
       serializedVersion: 2
       minMaxState: 1
@@ -2054,17 +2054,17 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 1}
-        key2: {r: 0, g: 0, b: 0, a: 0}
-        key3: {r: 0, g: 0, b: 0, a: 0}
+        key1: {r: 0.99191505, g: 1, b: 0.8396226, a: 1}
+        key2: {r: 0.5518868, g: 1, b: 0.9843242, a: 0}
+        key3: {r: 0, g: 0.55724955, b: 1, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
         ctime0: 0
-        ctime1: 65535
-        ctime2: 0
-        ctime3: 0
+        ctime1: 20528
+        ctime2: 35755
+        ctime3: 65535
         ctime4: 0
         ctime5: 0
         ctime6: 0
@@ -2079,7 +2079,7 @@ ParticleSystem:
         atime7: 0
         m_Mode: 0
         m_ColorSpace: 0
-        m_NumColorKeys: 2
+        m_NumColorKeys: 4
         m_NumAlphaKeys: 3
       minGradient:
         serializedVersion: 2
@@ -5510,8 +5510,8 @@ Transform:
   m_GameObject: {fileID: 230539915}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.04, y: 1.04, z: 1.04}
+  m_LocalPosition: {x: 400, y: 420, z: 400}
+  m_LocalScale: {x: 120, y: 120, z: 120}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -5989,6 +5989,10 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 9062041}
+    - target: {fileID: 141702022713295017, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: LightningSystem
+      value: 
+      objectReference: {fileID: 230539915}
     - target: {fileID: 975783990001447023, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
       propertyPath: m_BoundingSphereOverride.w
       value: 0
@@ -6260,6 +6264,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 3411167365519735153, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+    - {fileID: 5537317876133797248, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
@@ -8341,7 +8346,7 @@ Transform:
   m_GameObject: {fileID: 1518026524}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 450, y: 0, z: 450}
+  m_LocalPosition: {x: 400, y: 0, z: 400}
   m_LocalScale: {x: 5000, y: 5000, z: 5000}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10777,6 +10782,10 @@ PrefabInstance:
     - target: {fileID: 5177844775988190619, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
       propertyPath: m_Name
       value: Rain
+      objectReference: {fileID: 0}
+    - target: {fileID: 5177844775988190619, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5240080887968632242, guid: 13fc4f30c6fd4c34fb565921085185a2, type: 3}
       propertyPath: m_LocalPosition.x
