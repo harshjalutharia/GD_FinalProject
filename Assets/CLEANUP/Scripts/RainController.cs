@@ -70,6 +70,7 @@ public class RainController : MonoBehaviour
         else
         {
             m_rainSystem.Stop(true);
+            m_lightningSystem.Stop(true);
         }
     }
 }
