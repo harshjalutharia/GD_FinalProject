@@ -115,11 +115,11 @@ public class TutorialIconManager : MonoBehaviour
     private void GetDeviceAction(InputAction.CallbackContext ctx) {
         string deviceName = ctx.action.activeControl.device.name;
         Device device;
-        if (deviceName.Contains("DualShock") || deviceName.Contains("DualSense") || deviceName.Contains("Wireless Controller")) {
+        if (deviceName.Contains("DualShock") || deviceName.Contains("DualSense") || deviceName.Contains("dualShock") || deviceName.Contains("dualSense") || deviceName.Contains("Wireless Controller")) {
             device = Device.Playstation;
             if (device != m_currentDevice && CanvasController.current != null) CanvasController.current.TogglePlaystation();
         }
-        else if (deviceName.Contains("XInput")) {
+        else if (deviceName.Contains("XInput") || deviceName.Contains("xinput")) {
             device = Device.XBox;
             if (device != m_currentDevice && CanvasController.current != null) CanvasController.current.ToggleXBox();
         } else {

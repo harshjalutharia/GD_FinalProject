@@ -6702,7 +6702,7 @@ MonoBehaviour:
   m_sunlight: {fileID: 1578846184}
   timeOfDay: 0
   sunRotationSpeed: 0
-  timeToChange: 300
+  timeToChange: 200
   daytime: 0
   skyColor:
     serializedVersion: 2
