@@ -6027,29 +6027,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5797e52680a5bd54e97b85c4fbd11fc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconCanvas: {fileID: 0}
-  iconImage: {fileID: 0}
-  m_skipCutsceneAction: {fileID: 0}
-  m_movementAction: {fileID: 0}
-  m_jumpAction: {fileID: 0}
-  m_sprintAction: {fileID: 0}
-  m_ringBellAction: {fileID: 0}
-  m_boostAction: {fileID: 0}
+  m_skipCutsceneAction: {fileID: 789659568516712295, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+  m_movementAction: {fileID: 4375073066022016516, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+  m_jumpAction: {fileID: 1297723305485046813, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+  m_sprintAction: {fileID: -9023399260662952479, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+  m_ringBellAction: {fileID: 8035770346209381568, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
+  m_boostAction: {fileID: -7162708240651820031, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
   m_currentDevice: 3
   m_ringTutorialCompleted: 0
   m_boostTutorialCompleted: 0
-  movekbIcon: {fileID: 21300000, guid: faa8ff5e5e8b9e54fb85805a63de4940, type: 3}
-  movexbIcon: {fileID: 21300000, guid: 7524693828d20a54f873463902862001, type: 3}
-  movepsIcon: {fileID: 21300000, guid: 7524693828d20a54f873463902862001, type: 3}
-  jumpkbIcon: {fileID: 21300000, guid: 69fab70748088bf4aacef7a3cad6118a, type: 3}
-  jumpxbIcon: {fileID: 21300000, guid: dd1c0aae24eef874f8de3744e9adc09c, type: 3}
-  jumppsIcon: {fileID: 21300000, guid: dd1c0aae24eef874f8de3744e9adc09c, type: 3}
-  ringkbIcon: {fileID: 0}
-  ringxbIcon: {fileID: 0}
-  ringpsIcon: {fileID: 0}
-  boostkbIcon: {fileID: 0}
-  boostxbIcon: {fileID: 0}
-  boostpsIcon: {fileID: 0}
+  m_glideTutorialCompleted: 0
+  m_flyTutorialCompleted: 0
 --- !u!1 &3322238736838711034
 GameObject:
   m_ObjectHideFlags: 0
@@ -6542,8 +6530,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0888cc3d4328bd245918c42ee7e8f0ec, type: 2}
+  m_sharedMaterial: {fileID: -2356718105490668071, guid: 0888cc3d4328bd245918c42ee7e8f0ec, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6573,7 +6561,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535

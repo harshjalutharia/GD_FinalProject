@@ -19,8 +19,8 @@ MonoBehaviour:
     transitionTime: 0
   texts:
   - text: "Many have heard the legends \u2013 of hidden lands brimming with power.
-      What better way to end my journeys as a traveler than to find these lands and
-      verify the legends for myself?"
+      What better way to end my journey as a traveler than to verify the legends
+      for myself?"
     displayTime: 3
     transitionTime: 2
   - text: "Yet, to my shock, only a land of empty stands before me. No doubt, something

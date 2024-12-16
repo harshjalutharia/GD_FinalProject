@@ -34,9 +34,15 @@ public class Voronoi : MonoBehaviour
     [SerializeField] private RegionAttributes m_oakAttributes;
     [SerializeField] private RegionAttributes m_birchAttributes;
     [SerializeField] private RegionAttributes m_spruceAttributes;
+    [SerializeField] private RegionCanvasElements m_grasslandsCanvasElements;
+    [SerializeField] private RegionCanvasElements m_oakCanvasElements;
+    [SerializeField] private RegionCanvasElements m_birchCanvasElements;
+    [SerializeField] private RegionCanvasElements m_spruceCanvasElements;
 
     [Header("=== Gameplay ===")]
     [SerializeField, Tooltip("Reference to the player transform")]  private Transform m_playerRef;
+
+    [Header("=== UI Elements ===")]
     [SerializeField, Tooltip("The TextMeshProUGUI textbox for the region's name")]  private TextMeshProUGUI m_regionNameTextbox = null;
     [SerializeField, Tooltip("The TextMeshProUGUI textbox for the total # of gems")]    private TextMeshProUGUI m_regionTotalCountTextbox = null;
     [SerializeField, Tooltip("The TextMeshProUGUI textbox for the current # of gems collected")]    private TextMeshProUGUI m_regionCurrentCountTextbox = null;
@@ -185,21 +191,6 @@ public class Voronoi : MonoBehaviour
                     m_query.ClosestPoint(tree, p, closestIndices);
                     centroidTotals[closestIndices[0]] += p;
                     centroidCounts[closestIndices[0]] += 1;
-
-                    /*
-                    float smallestDistance = float.MaxValue;
-                    int smallestIndex = 0;
-
-                    for(int i = 0; i < centroids.Length; i++) {
-                        Vector3 c = relaxedCentroids[i];
-                        float distance = Vector3.Distance(c,p);
-                        if (distance < smallestDistance) {
-                            smallestDistance = distance;
-                            smallestIndex = i;
-                        }
-                    }
-                    */
-                    
                 }
             }
             for(int i = 0; i < initial.Length; i++) centroidTotals[i] /= (float)centroidCounts[i];
@@ -413,6 +404,7 @@ public class Voronoi : MonoBehaviour
         m_grasslandsRegion.attributes = m_grasslandsAttributes;
         m_grasslandsRegion.coreCluster.regionIndex = 0;
         m_grasslandsRegion.centroids.AddRange(m_grasslandsRegion.coreCluster.centroids);
+        m_grasslandsRegion.canvasElements = m_grasslandsCanvasElements;
         m_regionCentroids[0] = m_grasslandsRegion.coreCluster.centroid;
         // Second region: oak
         m_oakRegion = regions[1];
@@ -420,6 +412,7 @@ public class Voronoi : MonoBehaviour
         m_oakRegion.attributes = m_oakAttributes;
         m_oakRegion.coreCluster.regionIndex = 1;
         m_oakRegion.centroids.AddRange(m_oakRegion.coreCluster.centroids);
+        m_oakRegion.canvasElements = m_oakCanvasElements;
         m_regionCentroids[1] = m_oakRegion.coreCluster.centroid;
         // Third region: birch
         m_birchRegion = regions[2];
@@ -427,6 +420,7 @@ public class Voronoi : MonoBehaviour
         m_birchRegion.attributes = m_birchAttributes;
         m_birchRegion.coreCluster.regionIndex = 2;
         m_birchRegion.centroids.AddRange(m_birchRegion.coreCluster.centroids);
+        m_birchRegion.canvasElements = m_birchCanvasElements;
         m_regionCentroids[2] = m_birchRegion.coreCluster.centroid;
         // Fourth region: spruce
         m_spruceRegion = regions[3];
@@ -434,6 +428,7 @@ public class Voronoi : MonoBehaviour
         m_spruceRegion.attributes = m_spruceAttributes;
         m_spruceRegion.coreCluster.regionIndex = 3;
         m_spruceRegion.centroids.AddRange(m_spruceRegion.coreCluster.centroids);
+        m_spruceRegion.canvasElements = m_spruceCanvasElements;
         m_regionCentroids[3] = m_spruceRegion.coreCluster.centroid;
         // Set `m_regions`
         m_regions = new List<Region>() { m_grasslandsRegion, m_oakRegion, m_birchRegion, m_spruceRegion };
@@ -453,10 +448,13 @@ public class Voronoi : MonoBehaviour
         } 
 
         m_grasslandsRegion.GenerateTree();
+        m_grasslandsRegion.InitializeCanvases();
         m_oakRegion.GenerateTree();
+        m_oakRegion.InitializeCanvases();
         m_birchRegion.GenerateTree();
+        m_birchRegion.InitializeCanvases();
         m_spruceRegion.GenerateTree();
-
+        m_spruceRegion.InitializeCanvases();
     }
     
     // Note: query MUST BE NORMALIZED BETWEEN 0 and 1 for each axis
@@ -572,6 +570,8 @@ public class Region : IComparable<Region> {
     [Space]
     public Landmark towerLandmark;
     public List<Landmark> minorLandmarks = new List<Landmark>();
+    [Space]
+    public RegionCanvasElements canvasElements;
 
     public void GenerateTree() {
         this.query = new KDQuery();
@@ -601,4 +601,37 @@ public class Region : IComparable<Region> {
 	    if (other == null) return 1;
 		return other.majorRegionWeight.CompareTo(this.majorRegionWeight);
 	}
+
+    public void UpdateSmallGem(Gem gem) {
+        if (!this.collectedGems.Contains(gem)) {
+            this.collectedGems.Add(gem);
+        }
+        UpdateCanvases();
+    }
+
+    public void UpdateDestinationGem(Gem gem) {
+        if (this.destinationGem == gem && !this.destinationCollected) {
+            this.destinationCollected = true;
+        }
+        UpdateCanvases();
+    }
+
+    public void InitializeCanvases() {
+        foreach(Image img in this.canvasElements.destinationGemIcons) img.color = this.attributes.color;
+    }
+    public void UpdateCanvases() {
+        foreach(TextMeshProUGUI t in this.canvasElements.totalCountTextboxes) t.text = this.smallGems.Count.ToString();
+        foreach(TextMeshProUGUI t in this.canvasElements.currentCountTextboxes) t.text = this.collectedGems.Count.ToString();
+        foreach(Image img in this.canvasElements.destinationGemIcons) img.sprite = (this.destinationCollected) 
+            ? CanvasController.current.collectedDestGemSprite
+            : CanvasController.current.uncollectedDestGemSprite;
+    }
+}
+
+[System.Serializable]
+public class RegionCanvasElements {
+    public CanvasGroup[] canvasGroups;
+    public Image[] destinationGemIcons;
+    public TextMeshProUGUI[] totalCountTextboxes;
+    public TextMeshProUGUI[] currentCountTextboxes;
 }

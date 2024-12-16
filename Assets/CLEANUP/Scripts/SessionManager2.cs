@@ -215,43 +215,28 @@ public class SessionManager2 : MonoBehaviour
 
             // Depending on the gem type, we do different things
             if (gem.gemType == Gem.GemType.Destination) {
-                if (!region.destinationCollected && gem == region.destinationGem) 
-                {
-                    // The region has collected its destination gem
-                    region.destinationCollected = true;
-                    // Toggle the destination gem icon to TRUE as a result
-                    if (CanvasController.current != null) {
-                        CanvasController.current.ToggleDestinationGemIcon(true);
-                        CanvasController.current.ToggleGameplay(false);
-                    }
-                    // If this is a destination gem, then let's make the player see it return
-                    if (m_gemTrailPrefab != null) region.towerLandmark.ToggleShoulderCamera(true);
-                    if (LandmarkGenerator2.current != null)
-                    {
-                        foreach (var landmark in LandmarkGenerator2.current.landmarks)
-                        {
-                            if (landmark.regionIndex == gem.regionIndex)
-                                landmark.TogglePathTrails(true);
-                        }
-                    }
-                    Debug.Log("Destination gem for this region now collected");
+                // The region has collected its destination gem
+                region.UpdateDestinationGem(gem);
+
+                // Toggle the destination gem icon to TRUE as a result
+                if (CanvasController.current != null) {
+                    CanvasController.current.ToggleDestinationGemIcon(true);
+                    CanvasController.current.ToggleGameplay(false);
                 }
-                else {
-                    // For some reason the destination gem was collected already...
-                    Debug.LogError("ERROR: Destination gem for this region already collected. This is a double...");
+                
+                // If this is a destination gem, then let's make the player see it return
+                if (m_gemTrailPrefab != null) region.towerLandmark.ToggleShoulderCamera(true);
+                if (LandmarkGenerator2.current != null) {
+                    foreach (var landmark in LandmarkGenerator2.current.landmarks) {
+                        if (landmark.regionIndex == gem.regionIndex) landmark.TogglePathTrails(true);
+                    }
                 }
+                Debug.Log("Destination gem for this region now collected");
             }
             else {
                 // This is a small gem
-                if (!region.collectedGems.Contains(gem)) {
-                    // successfully collected this gem;
-                    region.collectedGems.Add(gem);
-                    Debug.Log("Small gem for this region successfully collected");
-                    // TODO - link to powerup
-                } else {
-                    // for some reason, this gem was ALREADY collected! What the f?
-                    Debug.LogError("ERROR: Small gem for this region already collected. This is a double...");
-                }
+                region.UpdateSmallGem(gem);
+                Debug.Log("Small gem for this region successfully collected");
             }
             
         }
@@ -317,19 +302,29 @@ public class SessionManager2 : MonoBehaviour
         PlayerMovement.current.canJump = false;
         PlayerMovement.current.canSprint = false;
         m_playerJumpAction.action.Disable();
+        m_playerRingBellAction.action.Disable();
 
-        if (CanvasController.current != null) CanvasController.current.ToggleEnding(true, true);
+        if (CanvasController.current != null) {
+            CanvasController.current.ToggleGameplay(false);
+            CanvasController.current.ToggleEnding(true, true);
+        }
         if (CutsceneManager.current != null) CutsceneManager.current.PlayEndingCutscene();
-        m_skipCutsceneAction.action.performed += CloseEndingCutscene;
-        m_skipCutsceneAction.action.Enable();
     }
-    public void CloseEndingCutscene(InputAction.CallbackContext ctx) {
-        // Disable the skip cutscene again.
-        m_skipCutsceneAction.action.performed -= CloseEndingCutscene;
-        m_skipCutsceneAction.action.Disable();
 
-        // Activate camera fader to close out the scene
+    public void ReturnToStart() {
         SceneManager.LoadScene("Start");
+    }
+    public void ResumeGame() {
+        PlayerMovement.current.canMove = true;
+        PlayerMovement.current.canJump = true;
+        PlayerMovement.current.canSprint = true;
+        m_playerJumpAction.action.Enable();
+        m_playerRingBellAction.action.Enable();
+        if (CanvasController.current != null) {
+            CanvasController.current.ToggleGameplay(true);
+            CanvasController.current.ToggleEnding(false, false);
+        }
+        if (CutsceneManager.current != null) CutsceneManager.current.DeactivateEndingCamera();
     }
 
     private void OnDestroy() {
@@ -342,7 +337,6 @@ public class SessionManager2 : MonoBehaviour
         GemGenerator2.current.onGenerationEnd.RemoveListener(this.OnGemsGenerated);
         // ---
         m_skipCutsceneAction.action.performed -= InitializeGameplayAction;
-        m_skipCutsceneAction.action.performed -= CloseEndingCutscene;
         m_playerRingBellAction.action.performed -= RingBellAction;
     }
 }

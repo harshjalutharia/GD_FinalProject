@@ -180,6 +180,9 @@ public class GemGenerator2 : MonoBehaviour
             m_smallGems.Add(smallGem);
             region.smallGems.Add(smallGem);
         }
+
+        // Finally, tell the region to update its canvaes
+        region.UpdateCanvases();
     }
 
     //  start` must be normalized between 0 and 1.

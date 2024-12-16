@@ -61,7 +61,9 @@ public class CanvasController : MonoBehaviour
     [SerializeField, Tooltip("Reference to the gameplay canvas group")]             private CanvasGroup m_gameplayCanvasGroup;
     [SerializeField, Tooltip("The image UI element for region destination gem")]    private Image m_destinationGemImage;
     [SerializeField, Tooltip("The image for the incomplete destination gem")]       private Sprite m_uncollectedDestGemSprite;
+    public Sprite uncollectedDestGemSprite => m_uncollectedDestGemSprite;
     [SerializeField, Tooltip("The image for the completed gem destination")]        private Sprite m_collectedDestGemSprite;
+    public Sprite collectedDestGemSprite => m_collectedDestGemSprite;
     [Space]
     [SerializeField, Tooltip("Ref. to the canvas group for keyboard inputs")]       private CanvasGroup m_keyboardInputs;
     [SerializeField, Tooltip("Ref. to the canvas group for xbox inputs")]           private CanvasGroup m_xboxInputs;
@@ -157,6 +159,7 @@ public class CanvasController : MonoBehaviour
         Cursor.lockState = (setTo) 
             ? CursorLockMode.None
             : CursorLockMode.Locked;
+        Cursor.visible = setTo;
     }
 
     public void ToggleMovementAction(InputAction.CallbackContext ctx) { ToggleMovement(!m_movementCanvasActive); }
@@ -225,12 +228,16 @@ public class CanvasController : MonoBehaviour
 
     public void ToggleEnding(bool setTo, bool skipSetTo) {
         m_endingCanvasActive = setTo;
-        SetCanvasGroupAlpha(m_endingCanvasGroup, setTo);
+        ToggleCanvasGroup(m_endingCanvasGroup, setTo);
         ToggleEndingSkip(skipSetTo);
+        Cursor.lockState = (setTo) 
+            ? CursorLockMode.None
+            : CursorLockMode.Locked;
+        Cursor.visible = setTo;
     }
     public void ToggleEnding(bool setTo) { ToggleEnding(setTo, false); }
     public void ToggleEndingSkip(bool setTo) {
-        SetCanvasGroupAlpha(m_endingSkipGroup, setTo);
+        ToggleCanvasGroup(m_endingSkipGroup, setTo);
     }
     
     public void ToggleAllCanvases(bool setTo) {

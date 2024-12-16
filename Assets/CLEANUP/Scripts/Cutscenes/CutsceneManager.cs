@@ -19,6 +19,7 @@ public class CutsceneManager : MonoBehaviour
     [SerializeField, Tooltip("The Image UI element that the cutscene slides are presented on")] private Image m_endingCutsceneImage;
     [SerializeField, Tooltip("The first, second, and third TextMeshProUGUI textboxes")]  private TextMeshProUGUI[] m_endingCutsceneTextboxes;
     [SerializeField, Tooltip("The cinemachine virtual camera that is used for the ending cutscene")]    private CinemachineVirtualCamera m_endingVirtualCamera;
+    [SerializeField, Tooltip("The canvas group to show the final button groups")]   private CanvasGroup m_endingInteractableGroup;
 
     [Header("=== Outputs - READ ONLY ===")]
     [SerializeField, Tooltip("Current cutscene's slide index")] private int m_currentSlideIndex = 0;
@@ -40,7 +41,9 @@ public class CutsceneManager : MonoBehaviour
         }
         m_endingVirtualCamera.transform.position = camPosition;
         m_endingVirtualCamera.transform.LookAt(toLookAt);
-
+    }
+    public void DeactivateEndingCamera() {
+        m_endingVirtualCamera.m_Priority = 0;
     }
 
     public void PlayLoadingCutscene() {
@@ -49,10 +52,10 @@ public class CutsceneManager : MonoBehaviour
 
     public void PlayEndingCutscene() {
         m_endingVirtualCamera.m_Priority = 20;
-        StartCoroutine(PlaySlideshowCoroutine(m_endingCutscene, m_endingCutsceneImage, m_endingCutsceneTextboxes));
+        StartCoroutine(PlaySlideshowCoroutine(m_endingCutscene, m_endingCutsceneImage, m_endingCutsceneTextboxes, m_endingInteractableGroup));
     }
 
-    private IEnumerator PlaySlideshowCoroutine(Cutscene cutscene, Image image, TextMeshProUGUI[] textboxes) {
+    private IEnumerator PlaySlideshowCoroutine(Cutscene cutscene, Image image, TextMeshProUGUI[] textboxes, CanvasGroup group = null) {
         // Initialize the boolean that indicates that the slideshow has started
         m_playing = true;
 
@@ -77,6 +80,10 @@ public class CutsceneManager : MonoBehaviour
             yield return FadeTextbox(textbox, 0f, 1f, t.transitionTime);
             // wait for display time
             yield return new WaitForSeconds(t.displayTime);
+        }
+
+        if (group != null) {
+            yield return FadeGroup(group, 0f, 1f, 2f);
         }
 
         m_playing = false;
@@ -130,6 +137,18 @@ public class CutsceneManager : MonoBehaviour
         }
         color.a = endAlpha;
         image.color = color;
+    }
+
+    private static IEnumerator FadeGroup(CanvasGroup group, float startAlpha, float endAlpha, float duration) {
+        float time = 0f;
+        while (time < duration) {
+            time += Time.deltaTime;
+            float t = time / duration;
+            float alpha = Mathf.Lerp(startAlpha, endAlpha, t);
+            group.alpha = alpha;
+            yield return null;
+        }
+        group.alpha = endAlpha;
     }
 
     private static IEnumerator FadeTextbox(TextMeshProUGUI textbox, float startAlpha, float endAlpha, float duration) {

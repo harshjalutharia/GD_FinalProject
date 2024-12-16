@@ -12,12 +12,10 @@ public class SkyboxController : MonoBehaviour
     [SerializeField, Tooltip("Skybox Present for the Night")] private Material nightSkyBox;
 
     [Header("=======CloudlyFading Preset=======")]
-    [SerializeField, Tooltip("Transition Skybox")] private GameObject Cloud; // Reference to the Cloud GameObject
-    private FadeObject fadeObject; // Reference to the FadeObject script on Cloud
+    [SerializeField, Tooltip("Transition Skybox")] private FadeObject m_fadeObject;
 
     [Header("=======Control for Time=======")]
-    [SerializeField, Tooltip("Directional Light for sun")] private GameObject sun;
-    private Light sunlight;
+    [SerializeField, Tooltip("Directional Light for sun")] private Light m_sunlight;
     [SerializeField, Range(0, 24), Tooltip("Control for Day of Time, it associates with directional light")] private float timeOfDay;
     [SerializeField] private float sunRotationSpeed;
 
@@ -26,8 +24,7 @@ public class SkyboxController : MonoBehaviour
     private float timeChangeProgress = 0f;
 
     
-    private enum Daytime
-    {
+    private enum Daytime {
         Morning1,
         Morning2,
         Twilight,
@@ -41,31 +38,15 @@ public class SkyboxController : MonoBehaviour
     [SerializeField] private Gradient sunColor;
 
     [Header("=======Lightning Light=======")]
-    [SerializeField, Tooltip("Directional Light for lightning")] private GameObject Lightning;
-    private Light lightninglight;
-
-    [SerializeField, Tooltip("Directional Light for lightning")] private GameObject Lightning2;
-    private Light lightninglight2;
-    
-    private void OnValidate() {
-        if (sun != null) {
-            UpdateSunRotation();
-            UpdateLighting();
-        }
-    }
+    [SerializeField, Tooltip("Directional Light #1 for lightning")] private Light m_lightningLight1;
+    [SerializeField, Tooltip("Directional Light for lightning")] private Light m_lightningLight2;
     
     private void Awake() {
         current = this;
     }
 
     void Start() {
-        sunlight = sun.GetComponent<Light>();
-        fadeObject = Cloud.GetComponent<FadeObject>();
-        lightninglight = Lightning.GetComponent<Light>();
-        lightninglight2 = Lightning2.GetComponent<Light>();
-
-        if (fadeObject == null) Debug.LogError("FadeObject script is not attached to the Cloud GameObject.");
-
+        if (m_fadeObject == null) Debug.LogError("fadeObject script is not attached to the Cloud GameObject.");
         TurningMorning();
     }
 
@@ -99,8 +80,8 @@ public class SkyboxController : MonoBehaviour
         if (SoundManager.current != null) SoundManager.current.ToggleRainSound(false);
         if (SoundManager.current != null) SoundManager.current.ToggleThunderSFX(false);
 
-        lightninglight.enabled = false; // Turn off
-        lightninglight2.enabled = false; // Turn off
+        m_lightningLight1.enabled = false; // Turn off
+        m_lightningLight2.enabled = false; // Turn off
     }
 
     public void TurningTwilight()
@@ -111,8 +92,8 @@ public class SkyboxController : MonoBehaviour
         if (SoundManager.current != null) SoundManager.current.PlayBGM(1);
         if (SoundManager.current != null) SoundManager.current.ToggleRainSound(true, false);
         if (SoundManager.current != null) SoundManager.current.ToggleThunderSFX(false);
-        lightninglight.enabled = false; // Turn off
-        lightninglight2.enabled = false; // Turn off
+        m_lightningLight1.enabled = false; // Turn off
+        m_lightningLight2.enabled = false; // Turn off
     }
 
     public void TurningEvening()
@@ -145,24 +126,24 @@ public class SkyboxController : MonoBehaviour
     }
 
     private IEnumerator StartFadeTransition(Material skyboxMaterial, float timeTo) {
-        sunlight = sun.GetComponent<Light>();
-        if (fadeObject != null) {
+        if (m_sunlight != null && m_fadeObject != null) {
             yield return new WaitForSeconds(2.5f);
             Debug.Log("Wait for 2.5 sec");
-            sunlight.intensity = 1.5f;
+            m_sunlight.intensity = 1.5f;
             StartChangeTimeOfDay(timeTo);
-            fadeObject.StartFadeIn(); // Start fade-in before changing
+            m_fadeObject.StartFadeIn(); // Start fade-in before changing
             
             StartCoroutine(WaitForFadeOut(skyboxMaterial));
         }
     }
 
     private IEnumerator WaitForFadeOut(Material skyboxMaterial) {
-        sunlight = sun.GetComponent<Light>();
-        yield return new WaitForSeconds(fadeObject.fadeDuration); // Wait for fade-in to complete
-        RenderSettings.skybox = skyboxMaterial;
-        fadeObject.StartFadeOut(); // Start fade-out after changing
-        sunlight.intensity = 1.0f;
+        if (m_sunlight != null) {
+            yield return new WaitForSeconds(m_fadeObject.fadeDuration); // Wait for fade-in to complete
+            RenderSettings.skybox = skyboxMaterial;
+            m_fadeObject.StartFadeOut(); // Start fade-out after changing
+            m_sunlight.intensity = 1.0f;
+        }
     }
 
     private void StartChangeTimeOfDay(float newTime) {
@@ -172,15 +153,13 @@ public class SkyboxController : MonoBehaviour
 
     private void UpdateSunRotation() {
         float sunRotation = Mathf.Lerp(-90, 270, timeOfDay / 24f);
-        sun.transform.rotation = Quaternion.Euler(sunRotation, 0f, 0f);
+        m_sunlight.transform.rotation = Quaternion.Euler(sunRotation, 0f, 0f);
     }
 
     private void UpdateLighting() {
-        sunlight = sun.GetComponent<Light>();
-
         float timeFraction = timeOfDay / 24f;
         RenderSettings.ambientEquatorColor = equatorColor.Evaluate(timeFraction);
         RenderSettings.ambientSkyColor = skyColor.Evaluate(timeFraction);
-        sunlight.color = sunColor.Evaluate(timeFraction);
+        m_sunlight.color = sunColor.Evaluate(timeFraction);
     }
 }
