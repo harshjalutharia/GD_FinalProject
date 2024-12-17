@@ -187,28 +187,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""aadb22f6-7c7a-464c-8190-37f0b2253b0b"",
-                    ""path"": ""<Gamepad>/rightStick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""View"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""2e6ed541-d02e-4453-8ae1-e46dc7ded0cd"",
-                    ""path"": ""<Mouse>/delta"",
-                    ""interactions"": """",
-                    ""processors"": ""ScaleVector2(x=0.1,y=0.2)"",
-                    ""groups"": """",
-                    ""action"": ""View"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""d59e05ac-fb46-4e75-83a9-2b4f5b363e94"",
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
@@ -242,8 +220,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""ba557ba4-89a3-48d9-a258-1235d6a50ebd"",
-                    ""path"": ""<Keyboard>/e"",
+                    ""id"": ""2a20a618-5cd6-49b7-a53f-2e1b0ae56981"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -253,8 +231,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""2a20a618-5cd6-49b7-a53f-2e1b0ae56981"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""id"": ""9d18c55d-2754-47a9-bf62-d86c1c12deef"",
+                    ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -369,6 +347,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Switch Boost"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aadb22f6-7c7a-464c-8190-37f0b2253b0b"",
+                    ""path"": ""<Gamepad>/rightStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""View"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2e6ed541-d02e-4453-8ae1-e46dc7ded0cd"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": ""ScaleVector2(x=0.1,y=0.2)"",
+                    ""groups"": """",
+                    ""action"": ""View"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }

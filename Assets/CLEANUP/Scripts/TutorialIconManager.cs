@@ -117,18 +117,36 @@ public class TutorialIconManager : MonoBehaviour
         Device device;
         if (deviceName.Contains("DualShock") || deviceName.Contains("DualSense") || deviceName.Contains("dualShock") || deviceName.Contains("dualSense") || deviceName.Contains("Wireless Controller")) {
             device = Device.Playstation;
-            if (device != m_currentDevice && CanvasController.current != null) CanvasController.current.TogglePlaystation();
+            if (CanvasController.current != null) CanvasController.current.TogglePlaystation();
         }
         else if (deviceName.Contains("XInput") || deviceName.Contains("xinput")) {
             device = Device.XBox;
-            if (device != m_currentDevice && CanvasController.current != null) CanvasController.current.ToggleXBox();
+            if (CanvasController.current != null) CanvasController.current.ToggleXBox();
         } else {
             // Default - Keyboard and Mouse
             device = Device.Keyboard;
-            if (device != m_currentDevice && CanvasController.current != null) CanvasController.current.ToggleKeyboard();
+            if (CanvasController.current != null) CanvasController.current.ToggleKeyboard();
         }
         // Finally, set the device to be the current device
         m_currentDevice = device;
+    }
+
+    public void ShowDeviceUI() {
+        if (CanvasController.current == null) {
+            Debug.LogError("Cannot show UI if Canvas Controller isn't set");
+            return;
+        }
+        switch(m_currentDevice) {
+            case Device.Playstation:
+                CanvasController.current.TogglePlaystation();
+                break;
+            case Device.XBox:
+                CanvasController.current.ToggleXBox();
+                break;
+            default:
+                CanvasController.current.ToggleKeyboard();
+                break;
+        }
     }
 
     /*

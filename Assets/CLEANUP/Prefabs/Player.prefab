@@ -6033,7 +6033,7 @@ MonoBehaviour:
   m_sprintAction: {fileID: -9023399260662952479, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
   m_ringBellAction: {fileID: 8035770346209381568, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
   m_boostAction: {fileID: -7162708240651820031, guid: 7c4b47a30c34ba94791ea1e820e501ea, type: 3}
-  m_currentDevice: 3
+  m_currentDevice: 0
   m_ringTutorialCompleted: 0
   m_boostTutorialCompleted: 0
   m_glideTutorialCompleted: 0

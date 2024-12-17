@@ -187,7 +187,10 @@ public class SessionManager2 : MonoBehaviour
         ThirdPersonCam.current.transform.position = playerStartPos;
 
         // If tutorial exists, Tell them to start ring bell tutorial
-        if (TutorialIconManager.current != null) TutorialIconManager.current.InitializeRingTutorial();
+        if (TutorialIconManager.current != null) {
+            TutorialIconManager.current.ShowDeviceUI();
+            TutorialIconManager.current.InitializeRingTutorial();
+        }
         
         // If cutscene manager exists, tell it to initialize ending camera
         if (CutsceneManager.current != null) CutsceneManager.current.InitializeEndingCameraPosition();
