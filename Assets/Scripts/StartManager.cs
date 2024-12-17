@@ -67,6 +67,10 @@ public class StartManager : MonoBehaviour
         SceneManager.LoadScene("TestFinalTerrain");
     }
 
+    public void QuitGame() {
+        Application.Quit();
+    }
+
     public void ToggleCanvasGroup(CanvasGroup group, bool setTo) {
         float setToFloat = setTo ? 1f : 0f;
         group.alpha = setTo ? 1f : 0f;
