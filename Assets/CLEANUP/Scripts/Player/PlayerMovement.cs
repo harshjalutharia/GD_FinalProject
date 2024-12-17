@@ -530,7 +530,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
 
-        // ======== 56use new input system to get the input value
+        // ======== use new input system to get the input value
         Vector2 movement2D = directionInput.ReadValue<Vector2>();
         if (directionInput.activeControl != null && directionInput.activeControl.device.name != "Keyboard")
         {
@@ -570,6 +570,10 @@ public class PlayerMovement : MonoBehaviour
         if (sprintActivated && grounded && canSprint && sprinting && moveDirection.magnitude > 0.02f && !sliding)
         {
             //sprinting = flightStamina > 0;  // end sprinting if stamina less than 0
+        }
+        else if (!sprinting && sprintActionReference.action.phase == InputActionPhase.Performed)
+        {
+            OnSprintInput(new InputAction.CallbackContext());
         }
         else
         {
@@ -800,11 +804,11 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (!grounded && !animationVars.paragliding)  // free-fall drag
         {
-            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * airDragHorizontal, 0, flightForce*2);
+            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * airDragHorizontal, 0, flightForce);
         }
         else  // !grounded && animationVars.paragliding  // paragliding drag
         {
-            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * airDragParaglidingHorizontal, 0, flightForce*2);
+            resistanceMag = Mathf.Clamp(horizontalVelocity.magnitude * airDragParaglidingHorizontal, 0, flightForce);
         }
         Vector3 resistanceForce = resistanceMag * horizontalVelocity.normalized;
         return resistanceForce;
