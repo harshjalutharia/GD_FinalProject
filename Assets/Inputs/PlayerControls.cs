@@ -231,7 +231,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""9d18c55d-2754-47a9-bf62-d86c1c12deef"",
+                    ""id"": ""dd88bcce-b07c-49fd-b97b-691db3219eca"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",

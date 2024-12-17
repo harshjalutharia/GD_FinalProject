@@ -113,6 +113,12 @@ public class TutorialIconManager : MonoBehaviour
     }
 
     private void GetDeviceAction(InputAction.CallbackContext ctx) {
+        if (ctx.action.activeControl == null) {
+            Debug.LogError("Tutorial Icon Manager: CTX active control undetermined. Forcing Keyboard as device");
+            m_currentDevice = Device.Keyboard;
+            if (CanvasController.current != null) CanvasController.current.ToggleKeyboard();
+            return;
+        }
         string deviceName = ctx.action.activeControl.device.name;
         Device device;
         if (deviceName.Contains("DualShock") || deviceName.Contains("DualSense") || deviceName.Contains("dualShock") || deviceName.Contains("dualSense") || deviceName.Contains("Wireless Controller")) {
